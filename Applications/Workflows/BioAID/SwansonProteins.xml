@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:2da96870-80f9-40cd-a9b3-4f9c83ba12bc" author="Marco Roos (AID)" title="DiscoverProteinLink">This workflow implements Swanson's prinicple with services from the AIDA toolbox. It tries to find proteins that link two topics, while they never mentioned together with both topics in any one of the top ranking papers related to either topic 1 or topic 2.
+
+It uses the following logic:
+Discovered Protein Link = (Protein[Topic1 AND NOT Topic2]  AND Protein[Topic2 AND NOT Topic1]) AND NOT Protein[Topic1 AND Topic2]
+where 'Protein[Topic1 OPERATOR Topic2]' represents a protein discovered in abstracts returned from Medline using 'Topic1 OPERATOR Topic2' as query.
+
+Comments:
+- It may be useful to optimize the queries for the topics by experimenting with a DiscoverProteins subworkflow first. For example 'cancer' surprisingly does not return any proteins, possibly because clinical papers dominate the retrieval results. The query '+cancer -(therapy clinic) +(protein^10.0 proteins^10.0 gene^9 genes^9)' performs much better. It contains the Lucene priority operator '^[priority], where priority=1 is the default.
+- The nature of the Swansson algorithm makes it much more likely that this workflow returns no results or false positives, than that it returns true positives.
+- True positives returned by this workflow are true with respect to the results of the information retrieval step and information extraction step. Limits: 1. Information retrieval: limited number of documents returned, uses indexes for searching, searches and returns abstracts only; 2. entity recognition: not guaranteed to recognize all instances of proteins.</s:workflowdescription>
+  <s:processor name="DiscoverProteinsTopic1not2">
+    <s:workflow>
+      <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/BioAID/BioAID_protein_discovery.xml</s:xscufllocation>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="DiscoverProteinsTopic2not1">
+    <s:workflow>
+      <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/BioAID/BioAID_protein_discovery.xml</s:xscufllocation>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="DiscoverProteinsTopic1and2">
+    <s:workflow>
+      <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/BioAID/BioAID_protein_discovery.xml</s:xscufllocation>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="CombineTopics">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:c7232751-3a47-4e9a-9ec8-fe2a59561321" author="" title="TwoTopics" />
+        <s:processor name="topic1not2">
+          <s:beanshell>
+            <s:scriptvalue>String topic1not2 = "+(" + topic1 + ") -(" + topic2 + ")";</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">topic1</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">topic2</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">topic1not2</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="topic1and2">
+          <s:beanshell>
+            <s:scriptvalue>String topic1and2 = "+(" + topic1 + ") +(" + topic2 + ")";</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">topic1</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">topic2</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">topic1and2</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="topic2not1">
+          <s:beanshell>
+            <s:scriptvalue>String topic2not1 = "+(" + topic2 + ") -(" + topic1 + ")";</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">topic1</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">topic2</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">topic2not1</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:link source="topic1" sink="topic1and2:topic1" />
+        <s:link source="topic1" sink="topic1not2:topic1" />
+        <s:link source="topic1" sink="topic2not1:topic1" />
+        <s:link source="topic2" sink="topic1and2:topic2" />
+        <s:link source="topic2" sink="topic1not2:topic2" />
+        <s:link source="topic2" sink="topic2not1:topic2" />
+        <s:link source="topic1and2:topic1and2" sink="topic1and2" />
+        <s:link source="topic1not2:topic1not2" sink="topic1not2" />
+        <s:link source="topic2not1:topic2not1" sink="topic2not1" />
+        <s:source name="topic1" />
+        <s:source name="topic2" />
+        <s:sink name="topic1and2" />
+        <s:sink name="topic1not2" />
+        <s:sink name="topic2not1" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="IntersectProteinsTopic1not2and2not1">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetIntersection</s:local>
+  </s:processor>
+  <s:processor name="SubtractProteins">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:b067d45c-86a8-48fe-be16-50b07c863856" author="" title="Stringlist1minus2" />
+        <s:processor name="String_list_intersection">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetIntersection</s:local>
+        </s:processor>
+        <s:processor name="String_list_difference">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetDifference</s:local>
+        </s:processor>
+        <s:link source="stringlist1" sink="String_list_difference:list1" />
+        <s:link source="stringlist1" sink="String_list_intersection:list1" />
+        <s:link source="stringlist2" sink="String_list_intersection:list2" />
+        <s:link source="String_list_difference:difference" sink="stringlist1minus2" />
+        <s:link source="String_list_intersection:intersection" sink="String_list_difference:list2" />
+        <s:source name="stringlist1" />
+        <s:source name="stringlist2" />
+        <s:sink name="stringlist1minus2" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="AddProteinTag">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:a00444ad-ee3e-4c09-bdc1-bad006224621" author="" title="AddXMLProteinTag" />
+        <s:processor name="AddXMLtag">
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:fda63299-4e33-49a9-b611-60b97fc5e3d6" author="" title="XMLTagInput" />
+              <s:processor name="Add_xml_tag">
+                <s:beanshell>
+                  <s:scriptvalue>String tagged_input = "&lt;" + tag + "&gt;" + input + "&lt;/" + tag + "&gt;";</s:scriptvalue>
+                  <s:beanshellinputlist>
+                    <s:beanshellinput s:syntactictype="'text/plain'">tag</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">input</s:beanshellinput>
+                  </s:beanshellinputlist>
+                  <s:beanshelloutputlist>
+                    <s:beanshelloutput s:syntactictype="'text/plain'">tagged_input</s:beanshelloutput>
+                  </s:beanshelloutputlist>
+                  <s:dependencies s:classloader="iteration" />
+                </s:beanshell>
+              </s:processor>
+              <s:link source="non_xml_input" sink="Add_xml_tag:input" />
+              <s:link source="tag_to_xml" sink="Add_xml_tag:tag" />
+              <s:link source="Add_xml_tag:tagged_input" sink="xml_tagged_input" />
+              <s:source name="tag_to_xml">
+                <s:metadata>
+                  <s:description>tag without any brackets</s:description>
+                </s:metadata>
+              </s:source>
+              <s:source name="non_xml_input" />
+              <s:sink name="xml_tagged_input">
+                <s:metadata>
+                  <s:mimeTypes>
+                    <s:mimeType>text/xml</s:mimeType>
+                  </s:mimeTypes>
+                </s:metadata>
+              </s:sink>
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="Protein_molecule_tag" boring="true">
+          <s:stringconstant>protein_molecule</s:stringconstant>
+        </s:processor>
+        <s:link source="Protein_molecule_tag:value" sink="AddXMLtag:tag_to_xml" />
+        <s:link source="protein" sink="AddXMLtag:non_xml_input" />
+        <s:link source="AddXMLtag:xml_tagged_input" sink="protein_xml" />
+        <s:source name="protein" />
+        <s:sink name="protein_xml">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:link source="AddProteinTag:protein_xml" sink="discovered_protein_links" />
+  <s:link source="CombineTopics:topic1and2" sink="DiscoverProteinsTopic1and2:query_string" />
+  <s:link source="topic1" sink="CombineTopics:topic1" />
+  <s:link source="topic2" sink="CombineTopics:topic2" />
+  <s:link source="CombineTopics:topic1not2" sink="DiscoverProteinsTopic1not2:query_string" />
+  <s:link source="CombineTopics:topic2not1" sink="DiscoverProteinsTopic2not1:query_string" />
+  <s:link source="DiscoverProteinsTopic1and2:discovered_proteins" sink="SubtractProteins:stringlist2" />
+  <s:link source="DiscoverProteinsTopic1not2:discovered_proteins" sink="IntersectProteinsTopic1not2and2not1:list1" />
+  <s:link source="DiscoverProteinsTopic2not1:discovered_proteins" sink="IntersectProteinsTopic1not2and2not1:list2" />
+  <s:link source="IntersectProteinsTopic1not2and2not1:intersection" sink="SubtractProteins:stringlist1" />
+  <s:link source="SubtractProteins:stringlist1minus2" sink="AddProteinTag:protein" />
+  <s:link source="DiscoverProteinsTopic1and2:discovered_proteins" sink="discovered_proteins_topic1and2" />
+  <s:link source="DiscoverProteinsTopic1not2:discovered_proteins" sink="discovered_proteins_topic1not2" />
+  <s:link source="DiscoverProteinsTopic2not1:discovered_proteins" sink="discovered_proteins_topic2not1" />
+  <s:link source="IntersectProteinsTopic1not2and2not1:intersection" sink="proteins_topic1not2_and_2not1" />
+  <s:source name="topic1" />
+  <s:source name="topic2" />
+  <s:sink name="discovered_proteins_topic1not2" />
+  <s:sink name="discovered_proteins_topic2not1" />
+  <s:sink name="discovered_proteins_topic1and2" />
+  <s:sink name="proteins_topic1not2_and_2not1" />
+  <s:sink name="discovered_protein_links">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+      <s:semanticType>text/xml</s:semanticType>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

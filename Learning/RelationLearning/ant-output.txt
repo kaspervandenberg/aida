@@ -1,0 +1,156 @@
+Buildfile: build.xml
+
+-pre-init:
+
+-init-private:
+
+-init-user:
+
+-init-project:
+
+-init-macrodef-property:
+
+-do-ear-init:
+
+-do-init:
+
+-post-init:
+
+-init-check:
+
+-init-macrodef-javac:
+
+-init-macrodef-junit:
+
+-init-macrodef-java:
+
+-init-macrodef-nbjpda:
+
+-init-macrodef-debug:
+
+init:
+
+remove:
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/META-INF/MANIFEST.MF
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/META-INF/context.xml
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/RelationLearning.xml
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/ArffHeaderR.class
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/ArffHeaderTestR.class
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/ArffHeaderTrainR.class
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/BK.txt
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/LogUnMarshallerR.class
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/RelationExtraction.class
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/RelationExtractionServlet.class
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/RelationLearning.class
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/Stemmer.class
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/WriterToXMLR.class
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/XMLR.class
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/test.txt
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/training.txt
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws/vle.jpg
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/activation.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/axis.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/commons-discovery-0.2.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/commons-logging-1.0.4.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/commons-math-1.1.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/jaxrpc.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/jsr173_1.0_api.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/junit-3.8.1.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/log4j-1.2.8.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/mail.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/saaj.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/servlet-api.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/weka-src.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/weka.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/wsdl4j-1.5.1.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/xercesImpl-2.7.1.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/xml-apis-2.7.1.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib/xmlsec-1.3.0.jar
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/web.xml
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/index.jsp
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/lib
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko/ws
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes/katrenko
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF/classes
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/WEB-INF
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning/META-INF
+   [delete] Deleting /home/aida/tomcat-dev/webapps/RelationLearning
+[axis-admin] Processing file /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/RelationLearning/undeploy.wsdd
+[axis-admin] <Admin>Done processing</Admin>
+
+-pre-init:
+
+-init-private:
+
+-init-user:
+
+-init-project:
+
+-init-macrodef-property:
+
+-do-ear-init:
+
+-do-init:
+
+-post-init:
+
+-init-check:
+
+-init-macrodef-javac:
+
+-init-macrodef-junit:
+
+-init-macrodef-java:
+
+-init-macrodef-nbjpda:
+
+-init-macrodef-debug:
+
+init:
+
+deps-module-jar:
+
+deps-ear-jar:
+
+deps-jar:
+
+-pre-pre-compile:
+
+-pre-compile:
+
+-copy-manifest:
+
+library-inclusion-in-archive:
+
+library-inclusion-in-manifest:
+
+-do-compile:
+    [javac] Compiling 1 source file to /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/RelationLearning/build/web/WEB-INF/classes
+
+-post-compile:
+
+compile:
+
+-pre-dist:
+
+compile-jsps:
+
+-do-dist-with-manifest:
+      [jar] Building jar: /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/RelationLearning/dist/RelationLearning.war
+
+-do-dist-without-manifest:
+
+do-dist:
+
+-post-dist:
+
+dist:
+
+install:
+     [copy] Copying 1 file to /home/aida/tomcat-dev/webapps
+[axis-admin] Processing file /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/RelationLearning/deploy.wsdd
+[axis-admin] <Admin>Done processing</Admin>
+     [copy] Copying 14 files to /home/aida/tomcat-dev/webapps/axis/WEB-INF/classes
+
+BUILD SUCCESSFUL
+Total time: 5 seconds

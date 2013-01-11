@@ -1,0 +1,11 @@
+import java.util.*;
+String synstring="\"" + query_term + "\"";
+String syn;
+Iterator iterator = synonymlist.iterator();
+while ( iterator.hasNext() ) 
+	{
+	synstring = synstring + " OR ";
+	syn = ((String) iterator.next());
+	synstring = synstring + "\"" + syn + "\"";
+}
+new_query = synstring;

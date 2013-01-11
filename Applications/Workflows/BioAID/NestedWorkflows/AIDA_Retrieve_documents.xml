@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:858efe24-26c0-4090-be46-c9a5b4f21cad" author="Marco Roos (workflow), Edgard Meij (service)" title="AIDA_Retrieve_documents">This workflow applies the search web service from the AIDA toolbox.
+
+Comments:
+This search service is based on lucene defaults; it may be necessary to optimize the querystring to adopt the behaviour to what is most relevant in a particular domain (e.g. for medline prioritizing based on publication date is useful). Lucene favours shorter sentences, which may be bad for subsequent information extraction.</s:workflowdescription>
+  <s:processor name="search">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/SearcherWS?wsdl</s:wsdl>
+      <s:operation>search</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="document_index" sink="search:index" />
+  <s:link source="maxHits" sink="search:maxHits" />
+  <s:link source="queryString" sink="search:queryString" />
+  <s:link source="search_field" sink="search:defaultField" />
+  <s:link source="search:searchReturn" sink="relevant_documents" />
+  <s:source name="queryString">
+    <s:metadata>
+      <s:description>Lucene query for search. Simple AND and OR queries will work. For advanced queries see http://lucene.apache.org for more information.</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="document_index">
+    <s:metadata>
+      <s:description>e.g. MedLine will give access to a weekly update index of the medline corpus.</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="search_field">
+    <s:metadata>
+      <s:description>e.g.' content' will search abstract and title; abstract just the abstract, title just the title.</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="maxHits">
+    <s:metadata>
+      <s:description>limits the maximum number of hits search will produce. In Taverna 1 '100' works well while a 1000 and above is likely to halt Taverna 1 due to memory problems. This also depends on the memory setting for the java virtual machine by the client (usually your local Taverna).</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="relevant_documents">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

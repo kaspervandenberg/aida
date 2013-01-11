@@ -1,0 +1,7 @@
+build.xml has to be modified according to the user's settings. Fields to be most likely modified are 
+the port (now the property "manager.port" is set to "8084") and catalina.home. Please note
+that all changes which concern the port to be used must be also reflected in the client's
+code (e.g., LearnModel\src\java\katrenko\ws\LeranModelServlet.java)
+
+
+More documentation is to be found in learner.html

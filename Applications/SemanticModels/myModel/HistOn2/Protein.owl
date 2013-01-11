@@ -1,0 +1,1079 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rfp="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#"
+    xmlns:obo_rel="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/obo_relationship_selection.owl#"
+    xmlns:spec="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/Species.owl#"
+    xmlns:tbio_e="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:seq="http://www.co-ode.org/ontologies/basic-bio/sequences.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/Protein.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:rlp="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:tbio="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#"
+    xmlns:meta="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#"
+    xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xml:base="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/Protein.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Glutamate">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Methionine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Amino_acid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Cysteine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Isoleucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Lysine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Tryptophan"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Serine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Aspartate"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Isoleucine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Amino_acid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Serine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Aspartate"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Methionine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Lysine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="Di_methylation">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Methylated"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Mono_methylation"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Tri_methylation"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Aspartate">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Amino_acid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Lysine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Methionine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Serine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tryptophan"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Mono_phosphorylated">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Other phosphorylations may or may not exist, but this one is used</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Phosphorylated"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Tryptophan">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Amino_acid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cysteine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Serine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Methionine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Lysine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Tri_methylation">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Methylated"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Di_methylation"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Mono_methylation"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Cysteine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Lysine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Methionine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Amino_acid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Serine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Modified_protein_molecule">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="Protein_molecule"/>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:ID="Modified_amino_acid"/>
+            </owl:someValuesFrom>
+            <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_determinate_part"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Lysine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Methionine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Amino_acid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Serine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Histidine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Amino_acid">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological_small_molecule"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Histidine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Serine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Methionine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Methionine">
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Serine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Valine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Valine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Asparagine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Serine"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Asparagine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Arginine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Serine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Valine"/>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Methylated">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Sumoylated"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Acetylated"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Ubiquitilated"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phosphorylated"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Ribosylated"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Amino_acid_modification_state"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Arginine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Serine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith rdf:resource="#Valine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Amino_acid_modification_state">
+    <rdfs:subClassOf rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Modification_state"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Modification state of amino acids.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#Serine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith rdf:resource="#Arginine"/>
+    <owl:disjointWith rdf:resource="#Valine"/>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glycine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Modified_amino_acid">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Amino_acid"/>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:ID="Amino_acid_modification"/>
+            </owl:someValuesFrom>
+            <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#Modifier_property"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Glycine">
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith rdf:resource="#Valine"/>
+    <owl:disjointWith rdf:resource="#Arginine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phenylalanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Ubiquitilated">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Acetylated"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Methylated"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Sumoylated"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ribosylated"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phosphorylated"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#Amino_acid_modification_state"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Phenylalanine">
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Glycine"/>
+    <owl:disjointWith rdf:resource="#Arginine"/>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Proline"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Valine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Proline">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Glycine"/>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Glutamine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Arginine"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith rdf:resource="#Valine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Serine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Protein_molecule">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological_Macromolecule"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Amino_acid"/>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_determinate_part"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Proteins as we biologist know them. Did not go so far as to state that anything that has amino acids as determinate parts is a protein. Maybe if we defined that a protein is a (folded) chain of amino acids. Did not go that far either.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#Acetylated">
+    <owl:disjointWith rdf:resource="#Methylated"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Phosphorylated"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Ubiquitilated"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Sumoylated"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ribosylated"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#Amino_acid_modification_state"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Mono_ubiquitilated">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Other ubiquitinilations may exist, but not for histones, therefore not defined at this time.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#Ubiquitilated"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Glutamine">
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Leucine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Arginine"/>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith rdf:resource="#Proline"/>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Glycine"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Valine"/>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Leucine">
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tyrosine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Glycine"/>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith rdf:resource="#Arginine"/>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith rdf:resource="#Valine"/>
+    <owl:disjointWith rdf:resource="#Proline"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Mono_acetylated">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Di_acetylated"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#Acetylated"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Phosphorylated">
+    <owl:disjointWith rdf:resource="#Acetylated"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ribosylated"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Ubiquitilated"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Sumoylated"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Methylated"/>
+    <rdfs:subClassOf rdf:resource="#Amino_acid_modification_state"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Tyrosine">
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Glycine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Alanine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Valine"/>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith rdf:resource="#Proline"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith rdf:resource="#Arginine"/>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Di_acetylated">
+    <owl:disjointWith rdf:resource="#Mono_acetylated"/>
+    <rdfs:subClassOf rdf:resource="#Acetylated"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Sumoylated">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ribosylated"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Ubiquitilated"/>
+    <owl:disjointWith rdf:resource="#Methylated"/>
+    <owl:disjointWith rdf:resource="#Phosphorylated"/>
+    <owl:disjointWith rdf:resource="#Acetylated"/>
+    <rdfs:subClassOf rdf:resource="#Amino_acid_modification_state"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Mono_methylation">
+    <rdfs:subClassOf rdf:resource="#Methylated"/>
+    <owl:disjointWith rdf:resource="#Di_methylation"/>
+    <owl:disjointWith rdf:resource="#Tri_methylation"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Ribosylated">
+    <owl:disjointWith rdf:resource="#Methylated"/>
+    <owl:disjointWith rdf:resource="#Sumoylated"/>
+    <owl:disjointWith rdf:resource="#Acetylated"/>
+    <owl:disjointWith rdf:resource="#Ubiquitilated"/>
+    <owl:disjointWith rdf:resource="#Phosphorylated"/>
+    <rdfs:subClassOf rdf:resource="#Amino_acid_modification_state"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Amino_acid_modification">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#has_value"/>
+        <owl:allValuesFrom rdf:resource="#Amino_acid_modification_state"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Amino_acid"/>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#is_quality_of"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Modification"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Alanine">
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Valine"/>
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith rdf:resource="#Proline"/>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+    <owl:disjointWith rdf:resource="#Glycine"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Threonine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith rdf:resource="#Arginine"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Threonine">
+    <owl:disjointWith rdf:resource="#Glycine"/>
+    <owl:disjointWith rdf:resource="#Cysteine"/>
+    <owl:disjointWith rdf:resource="#Valine"/>
+    <owl:disjointWith rdf:resource="#Isoleucine"/>
+    <owl:disjointWith rdf:resource="#Alanine"/>
+    <owl:disjointWith rdf:resource="#Serine"/>
+    <owl:disjointWith rdf:resource="#Aspartate"/>
+    <owl:disjointWith rdf:resource="#Tyrosine"/>
+    <owl:disjointWith rdf:resource="#Histidine"/>
+    <owl:disjointWith rdf:resource="#Glutamate"/>
+    <owl:disjointWith rdf:resource="#Phenylalanine"/>
+    <owl:disjointWith rdf:resource="#Arginine"/>
+    <owl:disjointWith rdf:resource="#Asparagine"/>
+    <owl:disjointWith rdf:resource="#Tryptophan"/>
+    <owl:disjointWith rdf:resource="#Methionine"/>
+    <owl:disjointWith rdf:resource="#Glutamine"/>
+    <owl:disjointWith rdf:resource="#Lysine"/>
+    <rdfs:subClassOf rdf:resource="#Amino_acid"/>
+    <owl:disjointWith rdf:resource="#Leucine"/>
+    <owl:disjointWith rdf:resource="#Proline"/>
+  </owl:Class>
+  <owl:SymmetricProperty rdf:ID="covelently_binds">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Covalent bond between biological molecules</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#has_direct_real_physical_relationship_with"/>
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological_small_molecule"/>
+          <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Biological_macromolecule_part"/>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological_Macromolecule"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological_small_molecule"/>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological_Macromolecule"/>
+          <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Biological_macromolecule_part"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <owl:inverseOf rdf:resource="#covelently_binds"/>
+  </owl:SymmetricProperty>
+  <rdf:List/>
+  <rdf:List>
+    <rdf:first rdf:resource="#Amino_acid"/>
+  </rdf:List>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.2.1, Build 365)  http://protege.stanford.edu -->

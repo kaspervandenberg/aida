@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:WV1HWAEXXZ2" author="" title="VLAM_SigWin" />
+  <s:processor name="ValuesColumn" boring="true">
+    <s:stringconstant>2</s:stringconstant>
+  </s:processor>
+  <s:processor name="DataFileName" boring="true">
+    <s:stringconstant>/home/inda/data/col.100</s:stringconstant>
+  </s:processor>
+  <s:processor name="Call_WSVLAM">
+    <s:beanshell>
+      <s:scriptvalue>/*
+input
+	nColumn (column that contains the values to run SigWin on in the tab delimited input file)
+	filename (name of tab delimited data input file)
+	base (localGlobusDirectory installed globus toolkit that contains the lib dir)
+	vlamHome (location on local Grid node where the vlam engine is installed)
+	vlamWorkflowName (name of xml file containing the vlam workflow)
+output
+	SigWinScorePerGeneURL (URL of file containing per gene the 'significant window' score that reflects the representation of the gene in significant windows of all window sizes, weighted per window size (smallest and largest windows count less)
+	SigWinsURL (URL of file containing the ranges of significant windows, previously ridges, per window size)
+	
+	The library wsvlam-gui.jar from the VLAM client installation (e.g. D:\ProgramFiles\VL-e\ws-vlam-client\composer\lib) has to be copied to the Taverna lib directory
+*/
+
+import java.util.Vector;
+import org.globus.bootstrap.*;
+
+// String base = "D:\ProgramFiles\VL-e\ws-vlam-client\composer\lib\auxlib\gt4.1";// was: System.getenv("GLOBUS_LOCATION"); // possibly 
+// String vlamHome = "/home/wibisono/myvlam/composer/"; // the directory where the VLAM workflows are at the local machine(e.g. D:\Marco\vlam\module_descriptions\templates)
+
+System.setProperty("GLOBUS_LOCATION",base);
+addClassPath(base+"\lib\bootstrap.jar");
+
+Bootstrap boot = new Bootstrap();
+boot.addDirectory(base); // add necessary globus libs, // this can possibly be done the Taverna way (also dirty), i.e. by copying all neccesary libs to the lib directory in the Taverna program directory, e.g. c:\\WINNT\profiles\&lt;your_windows_name&gt;\Application Data\&lt;Taverna program directory&gt;\lib (see Dependencies tab of the beanshell)
+boot.addLibDirectory(base); // idem
+boot.addLibDirectory(vlamHome); // idem
+
+String [] wsvlamDesc = new String[5];
+wsvlamDesc[0] = vlamHome+vlamWorkflowName; // see vlamHome above
+wsvlamDesc[1] = "ColumnReader.file_name";
+wsvlamDesc[2] = fileName; // data file reference, must be on the machine where the workflow is run
+wsvlamDesc[3] = "ColumnReader.column";
+wsvlamDesc[4] = nColumn;
+
+/* code to clear the output files, such that they do not exist if the workflow is running or failing? */
+
+boot.launch("nl.wtcw.vle.gui.monitor.SetupAndLaunchTopology", wsvlamDesc); // the client
+
+/* code to poll the existence of the output files before instantiating the outputURLs? */
+
+String SigWinScorePerGeneURL = "/home/inda/data/SigWinScorePerGeneURL.dat"; // ? what could be the filename+path here?
+String SigWinsURL = "/home/inda/data/SigWinsURL.dat"; // ? idem</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">fileName</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">nColumn</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">vlamHome</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">vlamWorkflowName</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">localGlobusDirectory</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">SigWinScorePerGeneURL</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="'text/plain'">SigWinsURL</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="vlamHome" boring="true">
+    <s:stringconstant>D:\Marco\vlam\module_descriptions\templates</s:stringconstant>
+  </s:processor>
+  <s:processor name="vlamWorkflowName" boring="true">
+    <s:stringconstant>SigWin-basic.xml</s:stringconstant>
+  </s:processor>
+  <s:processor name="Write_Text_File">
+    <s:local>net.sourceforge.taverna.scuflworkers.io.TextFileWriter</s:local>
+  </s:processor>
+  <s:processor name="localGlobusDirectory" boring="true">
+    <s:stringconstant>D:\ProgramFiles\VL-e\ws-vlam-client\composer\lib\auxlib\gt4.1</s:stringconstant>
+  </s:processor>
+  <s:processor name="DataProducingWorkflow">
+    <s:abstractprocessor>
+      To be replaced with a workflow that produces
+a file with tabulated data of which one colums
+is an ordered sequence of values.
+E.g. genes in order of their chromosomal
+position and their expression value under
+some condition.
+      <s:inputPortList />
+      <s:outputPortList>
+        <s:outputPort s:syntacticType="'text/plain'">SequenceOfValues</s:outputPort>
+      </s:outputPortList>
+    </s:abstractprocessor>
+  </s:processor>
+  <s:processor name="SigWinResultsProcessingWorkflow">
+    <s:abstractprocessor>
+      To be replaced by workflow that does something
+with the output of SigWin.
+E.g. draw a karyotype with the significant genes
+or provide extra information, e.g. from Ensembl,
+on the genes found in significant windows 
+('Ridges' in case of gene expression along
+chromosomes).
+      <s:inputPortList>
+        <s:inputPort s:syntacticType="'text/plain'">SigWinScorePerGeneURL</s:inputPort>
+      </s:inputPortList>
+      <s:outputPortList />
+    </s:abstractprocessor>
+  </s:processor>
+  <s:link source="Call_WSVLAM:SigWinScorePerGeneURL" sink="SigWinResultsProcessingWorkflow:SigWinScorePerGeneURL" />
+  <s:link source="DataFileName:value" sink="Call_WSVLAM:fileName" />
+  <s:link source="DataFileName:value" sink="Write_Text_File:outputFile" />
+  <s:link source="DataProducingWorkflow:SequenceOfValues" sink="Write_Text_File:filecontents" />
+  <s:link source="Call_WSVLAM:SigWinScorePerGeneURL" sink="SigWinScorePerGeneFileURL" />
+  <s:link source="Call_WSVLAM:SigWinsURL" sink="SigWinsFileURL" />
+  <s:link source="ValuesColumn:value" sink="Call_WSVLAM:nColumn" />
+  <s:link source="localGlobusDirectory:value" sink="Call_WSVLAM:localGlobusDirectory" />
+  <s:link source="vlamHome:value" sink="Call_WSVLAM:vlamHome" />
+  <s:link source="vlamWorkflowName:value" sink="Call_WSVLAM:vlamWorkflowName" />
+  <s:sink name="SigWinScorePerGeneFileURL" />
+  <s:sink name="SigWinsFileURL" />
+  <s:coordination name="Call_WSVLAM_BLOCKON_Write_Text_File">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>Write_Text_File</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>Call_WSVLAM</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="Call_WSVLAM_BLOCKON_DataFileName">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>DataFileName</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>Call_WSVLAM</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+</s:scufl>
+

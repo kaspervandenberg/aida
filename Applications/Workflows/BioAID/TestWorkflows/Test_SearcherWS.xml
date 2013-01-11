@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:99d1b9cd-b35b-42f5-8fc6-ac30c9b5ba5a" author="" title="Test_SearcherWS" />
+  <s:processor name="search8888">
+    <s:defaults>
+      <s:default name="index">MedLine</s:default>
+      <s:default name="queryString">EZH2</s:default>
+      <s:default name="maxHits">1</s:default>
+      <s:default name="defaultField">content</s:default>
+    </s:defaults>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:8888/axis/services/SearcherWS?wsdl</s:wsdl>
+      <s:operation>search</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="index" boring="true">
+    <s:stringconstant>MedLine</s:stringconstant>
+  </s:processor>
+  <s:processor name="query" boring="true">
+    <s:stringconstant>EZH2</s:stringconstant>
+  </s:processor>
+  <s:processor name="maxHits" boring="true">
+    <s:stringconstant>3</s:stringconstant>
+  </s:processor>
+  <s:processor name="defaultField" boring="true">
+    <s:stringconstant>content</s:stringconstant>
+  </s:processor>
+  <s:processor name="search9999">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:9999/axis/services/SearcherWS?wsdl</s:wsdl>
+      <s:operation>search</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="searchWS">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/SearcherWS?wsdl</s:wsdl>
+      <s:operation>search</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="defaultField:value" sink="search8888:defaultField" />
+  <s:link source="defaultField:value" sink="search9999:defaultField" />
+  <s:link source="defaultField:value" sink="searchWS:defaultField" />
+  <s:link source="index:value" sink="search8888:index" />
+  <s:link source="index:value" sink="search9999:index" />
+  <s:link source="index:value" sink="searchWS:index" />
+  <s:link source="maxHits:value" sink="search8888:maxHits" />
+  <s:link source="maxHits:value" sink="search9999:maxHits" />
+  <s:link source="maxHits:value" sink="searchWS:maxHits" />
+  <s:link source="query:value" sink="search8888:queryString" />
+  <s:link source="query:value" sink="search9999:queryString" />
+  <s:link source="query:value" sink="searchWS:queryString" />
+  <s:link source="search8888:searchReturn" sink="output8888" />
+  <s:link source="search9999:searchReturn" sink="output9999" />
+  <s:link source="searchWS:searchReturn" sink="outputWS" />
+  <s:sink name="output8888" />
+  <s:sink name="output9999" />
+  <s:sink name="outputWS" />
+</s:scufl>
+

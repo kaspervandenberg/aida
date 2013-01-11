@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:fd7d0d06-932c-45cc-af4a-3d301b0a5a9f" author="Marco Roos (workflow), Willem R. van Hage (services)" title="AddProteinToSemanticModel">Add Protein to Semantic model with Sesame service cf example Discovered Proteins</s:workflowdescription>
+  <s:link source="uniprot_id" sink="protein_instance" />
+  <s:source name="protein_name" />
+  <s:source name="uniprot_id" />
+  <s:source name="doc_instance" />
+  <s:source name="entrez_pubmed_URL" />
+  <s:source name="expasy_URL" />
+  <s:source name="iHop_sentence_URL" />
+  <s:source name="iHop_search_URL" />
+  <s:sink name="protein_instance" />
+</s:scufl>
+

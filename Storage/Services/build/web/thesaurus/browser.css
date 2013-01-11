@@ -1,0 +1,219 @@
+#result_display {
+    position: absolute;
+    left: 35%;
+    top: 35%;
+    width: 30%;
+    background: #FFF;
+    border: solid #999 1px;
+    text-align: center;
+    font-size: large;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+#left_activity_animation,
+#right_activity_animation {
+    margin-left: 5px;
+}
+
+div.relation {
+    font-size: medium;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+div.top_concept > div.relation,
+div.scheme > div.relation {
+    margin-top: 15px;
+}
+
+div.scheme > ul > li > div.concept_scheme {
+    display: inline;
+}
+
+div.number_of_narrower_terms + div.top_concept_ns_label {
+/*
+    display: block;
+*/
+}
+
+div.top_concept > div.concept_scheme {
+    margin-bottom: 10px;
+}
+
+ul {
+    margin-left: 20px;
+    padding: 0px;
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+div.note_header, div.definition_header {
+    display: inline;
+    margin-right: 10px;
+    font-size: large;
+    font-weight: bold;
+}
+
+div.note, div.definition {
+    margin-bottom: 20px;
+}
+
+div.prefLabel, div.label {
+    font-size: large;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+div.altLabel {
+    font-size: large;
+    margin-bottom: 20px;
+}
+
+div.scheme_ns_label, div.todo_ns_label {
+        display: block;
+}
+
+div.top_concept_ns_label, 
+div.mapping_ns_label, 
+div.search_ns_label {
+    display: inline;
+}
+
+div.number_of_narrower_terms {
+        margin-left: 5px;
+        font-size: x-small;
+        display:inline;
+}
+
+div.ns_label, 
+div.top_concept_ns_label, 
+div.scheme_ns_label, 
+div.mapping_ns_label, 
+div.search_ns_label,
+div.todo_ns_label {
+    font-size: x-small;
+    font-weight: normal;
+    color: grey;
+}
+
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+#left, #right, #mapping, #todo {
+    padding: 1%;    
+}
+
+#left {
+    float: left;
+    clear: both;
+    width: 32%;    
+    margin: 3px;
+    background-color: #EEE;
+    border: solid #CCC 1px;
+}
+
+#right {
+    float: left;
+    width: 32%;
+    margin: 3px;
+    background-color: #DDD;
+    border: solid #AAA 1px;
+}
+
+#mapping {
+    float: left;
+}
+
+#todo {
+    float: left;
+    width: 25%;
+    margin: 3px;
+    padding-top: 0px; 
+}
+
+#todo > #left_todo > div.relation,
+#todo > #right_todo > div.relation {
+    padding: 2px;
+    padding-left: 5px;
+/*
+    background-color: #FFC;
+    border: solid #CCA 1px;
+*/
+}
+
+#todo > #left_todo > ul,
+#todo > #right_todo > ul {
+    margin-top: 5px;
+}
+
+div.open, div.close {
+    float: right;
+    font-size: x-small;
+    margin-bottom: 10px;
+    clear: right;
+    display: block; 
+}
+
+span.existing_mapping_label {
+    font-weight: bold;
+}
+
+div.mapping_modifier {
+    margin-left: 20px;
+    float: left;
+    clear: left;
+}
+
+div.logo {
+    width: 160px;
+    float: left;
+}
+
+img.logo {
+    width: 160px; 
+    height: 55px; 
+    display: block;
+    margin: 10px;
+}
+
+div.left_history, div.right_history {
+    float: right;
+    padding-right: 5px;
+    padding-left: 5px;
+    padding-bottom: 5px;
+    padding-top: 2px;
+    background-color: #FFF;
+    border: #CCC solid 1px;
+    clear: right;
+}
+
+div.history_header {
+    font-size: x-small;
+    font-weight: bold;
+}
+
+div.right_history > ol,
+div.left_history > ol {
+    padding-left: 20px;
+    margin: 2px;
+    font-size: x-small;
+}
+
+a {
+    color: #44C;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a.uri {
+    color: black;
+}
+
+

@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rfp="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#"
+    xmlns:obo_rel="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/obo_relationship_selection.owl#"
+    xmlns="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/TopEpiGenetics.owl#"
+    xmlns:spec="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/Species.owl#"
+    xmlns:tbio_e="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:seq="http://www.co-ode.org/ontologies/basic-bio/sequences.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:tbio_eseq="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended_seq.owl#"
+    xmlns:rlp="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:tbio="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#"
+    xmlns:meta="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#"
+    xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xml:base="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/TopEpiGenetics.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended_seq.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="DNA_region">
+    <rdfs:subClassOf rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Numbered_interval"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#is_pattern_of"/>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="DNA_molecule_true_part_obs"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Chromosome_part">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Group"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Example of useful deferred commitment for parts: indeed chromosome parts can exist outside of chromosomes</rdfs:comment>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Part of a chromosome (or at least, originally derived from it).
+Note: part does not mean member in this case.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological_object"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_in_group"/>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="DNA_molecule_part_obs"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Chromosomal_DNA_region">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#is_pattern_of"/>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Chromosomal_DNA_molecule_part"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#DNA_region"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Amount_of_RNA_obs">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Amount_of_DNA_obs"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Chromatin"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Amount_of_Biological_substance"/>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Amount_of_protein_obs"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Amount_of_protein_obs">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Amount_of_DNA_obs"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Chromatin"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Amount_of_Biological_substance"/>
+    <owl:disjointWith rdf:resource="#Amount_of_RNA_obs"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Chromosome">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/sequences.owl#DNA_molecule"/>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_in_group"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological_object"/>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Group"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Amount_of_DNA_obs">
+    <owl:disjointWith rdf:resource="#Amount_of_protein_obs"/>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Amount_of_Biological_substance"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >DNA as the substance, not the molecule</rdfs:comment>
+    <owl:disjointWith rdf:resource="#Amount_of_RNA_obs"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Chromatin"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#DNA_molecule_part_obs">
+    <rdfs:subClassOf rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Biological_macromolecule_part"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Not restricted to part_of DNA molecule, because can exist outside the molecule</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Chromosomal_DNA_molecule">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/sequences.owl#DNA_molecule"/>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#is_in_group_of"/>
+            <owl:someValuesFrom rdf:resource="#Chromosome"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#DNA_molecule_true_part_obs">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#DNA_molecule_part_obs"/>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                  <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/sequences.owl#DNA_molecule"/>
+                  <owl:Class rdf:about="#DNA_molecule_part_obs"/>
+                </owl:unionOf>
+              </owl:Class>
+            </owl:someValuesFrom>
+            <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#is_determinate_part_of"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A DNA molecule_part that is truely a part of a DNA_molecule(_part)</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#Chromatin">
+    <owl:disjointWith rdf:resource="#Amount_of_DNA_obs"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_ingredient"/>
+        <owl:someValuesFrom rdf:resource="#Amount_of_protein_obs"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Amount of biological molecules that together form the material that chromosomes are made of (proteins, RNA and DNA)</rdfs:comment>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Not entirely sure Biological_substance is intended to subsume this concept, or that a new 'amount_of' should be created for subcellular masses.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Amount_of_DNA_obs"/>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_ingredient"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Amount_of_protein_obs"/>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Amount_of_Biological_substance"/>
+    <owl:disjointWith rdf:resource="#Amount_of_RNA_obs"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Chromosomal_DNA_molecule_part">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_in_group"/>
+            <owl:someValuesFrom rdf:resource="#Chromosome_part"/>
+          </owl:Restriction>
+          <owl:Class rdf:about="#DNA_molecule_part_obs"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 331)  http://protege.stanford.edu -->

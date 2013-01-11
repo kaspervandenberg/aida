@@ -1,0 +1,53 @@
+/*
+Variables (all a Plain Text):
+workflowURI
+article_id
+article_label
+
+RDFformat
+rdf_document
+data_URI
+*/
+
+// http://rdf.adaptivedisclosure.org/~marco/BioAID/Preliminary/Workflows/BeanshellScrtips/DiscoveredArticleRDFdoc.java
+// D://Marco/adaptivedisclosure.org/public_html/BioAID/Preliminary/Workflows/BeanshellScrtips/DiscoveredArticleRDFdoc.java
+
+// Comment: a lot of URIs (namespaces of ontology elements) are hard-coded here; I would like to find ways to make it less so
+// 		perhaps by asking a user to select the right elements from a list which may have been compiled from a search in the ontology on keyword or label value
+
+// Notation
+String RDFformat = "rdfxml";
+
+//data or base URI
+data_URI = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl";
+
+//Concepts
+String discartCon = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#DiscoveredArticle";
+
+//Properties
+String hasDiscStatProp = "disc:discoveredThroughProcedure";
+
+//Individuals
+String articleInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#" + article_id;
+String discoveryInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#" + workflowURI;
+
+//Relations (rdfxml):
+String rdf_doc;
+String oftypestring = " rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\"";
+String oftypeURI = " rdf:datatype=\"http://www.w3.org/2001/XMLSchema#anyURI\"";
+
+//header
+rdf_doc = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+rdf_doc = rdf_doc + "<rdf:RDF\n	xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n	xmlns:edis=\"http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#\"\n	xmlns:disc=\"http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#\"\n	xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\">\n";
+
+//body
+rdf_doc = rdf_doc + "<rdf:Description rdf:about=\"" + articleInd + "\">\n";
+rdf_doc = rdf_doc + "	<rdf:type rdf:resource=\"" + discartCon + "\"/>\n";
+rdf_doc = rdf_doc + "	<rdfs:label " + oftypestring + ">" + article_label + "</rdfs:label>\n";
+rdf_doc = rdf_doc + "	<rdfs:label " + oftypeURI + ">" + article_label + "</rdfs:label>\n";
+rdf_doc = rdf_doc + "	<" + hasDiscStatProp + " rdf:resource=\"" + discoveryInd + "\"/>\n";
+
+//footer
+rdf_doc = rdf_doc + "</rdf:Description>\n</rdf:RDF>\n";
+	
+rdf_document = rdf_doc;

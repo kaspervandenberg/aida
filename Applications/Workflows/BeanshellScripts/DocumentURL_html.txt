@@ -1,0 +1,5 @@
+String html_string = "<html><head><title>document_url</title></head>";
+html_string = html_string + "<body><a href='" + document_url + "' class='url'>" + document_url + "</a>";
+html_string = html_string + "</body></html>";
+
+document_html = html_string;

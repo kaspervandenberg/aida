@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="Marco Roos (AID)" title="Extract_proteins">This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:workflowdescription>
+  <s:processor name="splitOn_protein_molecule_regexp" boring="true">
+    <s:stringconstant>(?=&lt;protein_molecule&gt;)|(?&lt;=&lt;/protein_molecule&gt;)</s:stringconstant>
+  </s:processor>
+  <s:processor name="Remove_duplicate_strings">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates</s:local>
+  </s:processor>
+  <s:processor name="Filter2">
+    <s:defaults>
+      <s:default name="regex">.+</s:default>
+    </s:defaults>
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+  </s:processor>
+  <s:processor name="SplitOn_protein_molecule">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+  </s:processor>
+  <s:processor name="filter_protein_molecule_regexp" boring="true">
+    <s:stringconstant>&lt;protein_molecule&gt;\w*&lt;/protein_molecule&gt;</s:stringconstant>
+  </s:processor>
+  <s:processor name="UniProtOrNot">
+    <s:beanshell>
+      <s:scriptvalue>Iterator i;
+
+if (uniprotIDlist.isEmpty()) {
+	uniprotID_or_False = "False";
+} else {
+	uniprotID_or_False = (String) uniprotIDlist.iterator().next().toString();
+}</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">uniprotIDlist</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">uniprotID_or_False</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Filter_protein_molecules">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+  </s:processor>
+  <s:processor name="FilterTrueProteinByUniProtID">
+    <s:beanshell>
+      <s:scriptvalue>if (uniprot!="False") {
+	true_protein=protein;
+	true_uniprot=uniprot;
+}</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">protein</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">uniprot</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">true_protein</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="'text/plain'">true_uniprot</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+    <s:iterationstrategy>
+      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="uniprot" />
+        <i:iterator name="protein" />
+      </i:dot>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:processor name="getUniprotID">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://bubbles.biosemantics.org:8180/axis/services/SynsetServer/SynsetServer.jws?wsdl</s:wsdl>
+      <s:operation>getUniprotID</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Filter1">
+    <s:defaults>
+      <s:default name="regex">.+</s:default>
+    </s:defaults>
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+  </s:processor>
+  <s:processor name="Strip_xml">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.regex.*;
+Pattern pattern = Pattern.compile("&lt;/?[\\w\\d-]+&gt;");
+Matcher matcher = pattern.matcher(tagged_term);
+String term= matcher.replaceAll("");</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/xml'">tagged_term</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">term</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="input_string" sink="SplitOn_protein_molecule:string" />
+  <s:link source="Filter1:filteredlist" sink="uniprotID" />
+  <s:link source="Filter2:filteredlist" sink="protein_molecule" />
+  <s:link source="FilterTrueProteinByUniProtID:true_protein" sink="Filter2:stringlist" />
+  <s:link source="FilterTrueProteinByUniProtID:true_uniprot" sink="Filter1:stringlist" />
+  <s:link source="Filter_protein_molecules:filteredlist" sink="Remove_duplicate_strings:stringlist" />
+  <s:link source="Remove_duplicate_strings:strippedlist" sink="Strip_xml:tagged_term" />
+  <s:link source="SplitOn_protein_molecule:split" sink="Filter_protein_molecules:stringlist" />
+  <s:link source="Strip_xml:term" sink="FilterTrueProteinByUniProtID:protein" />
+  <s:link source="Strip_xml:term" sink="getUniprotID:term" />
+  <s:link source="UniProtOrNot:uniprotID_or_False" sink="FilterTrueProteinByUniProtID:uniprot" />
+  <s:link source="filter_protein_molecule_regexp:value" sink="Filter_protein_molecules:regex" />
+  <s:link source="getUniprotID:getUniprotIDReturn" sink="UniProtOrNot:uniprotIDlist" />
+  <s:link source="splitOn_protein_molecule_regexp:value" sink="SplitOn_protein_molecule:regex" />
+  <s:source name="input_string">
+    <s:metadata>
+      <s:description>Example:
+&lt;result_final&gt;&lt;doc id="15208672"&gt;&lt;other_name&gt;Replicative&lt;/other_name&gt;&lt;other_name&gt;cell&lt;/other_name&gt;&lt;cell_type&gt;damaged&lt;/cell_type&gt;&lt;other_name&gt;tumor&lt;/other_name&gt;&lt;protein_molecule&gt;tumor&lt;/protein_molecule&gt;&lt;protein_molecule&gt;p53&lt;/protein_molecule&gt;&lt;other_name&gt;EZH2&lt;/other_name&gt;&lt;protein_molecule&gt;p53&lt;/protein_molecule&gt;&lt;other_name&gt;epigenetic&lt;/other_name&gt;&lt;other_name&gt;genetic&lt;/other_name&gt;&lt;other_name&gt;EZH2&lt;/other_name&gt;&lt;tissue&gt;tumors&lt;/tissue&gt;&lt;protein_molecule&gt;p53&lt;/protein_molecule&gt;&lt;other_name&gt;cancer&lt;/other_name&gt;&lt;/doc&gt;&lt;doc id="15520282"&gt;&lt;protein_molecule&gt;Ezh2&lt;/protein_molecule&gt;&lt;protein_molecule&gt;Polycomb&lt;/protein_molecule&gt;&lt;protein_complex&gt;PRC3&lt;/protein_complex&gt;&lt;other_organic_compound&gt;histone&lt;/other_organic_compound&gt;&lt;other_name&gt;HKMT&lt;/other_name&gt;&lt;protein_molecule&gt;Ezh2&lt;/protein_molecule&gt;&lt;protein_molecule&gt;HDAC1&lt;/protein_molecule&gt;&lt;protein_family_or_group&gt;YY1&lt;/protein_family_or_group&gt;&lt;other_organic_compound&gt;H3&lt;/other_organic_compound&gt;&lt;protein_molecule&gt;MyoD&lt;/protein_molecule&gt;&lt;protein_molecule&gt;SRF&lt;/protein_molecule&gt;&lt;DNA_family_or_group&gt;chromatin&lt;/DNA_family_or_group&gt;&lt;other_organic_compound&gt;H3&lt;/other_organic_compound&gt;&lt;protein_complex&gt;Ezh2&lt;/protein_complex&gt;&lt;protein_family_or_group&gt;positive&lt;/protein_family_or_group&gt;&lt;DNA_domain_or_region&gt;genomic&lt;/DNA_domain_or_region&gt;&lt;other_name&gt;muscle&lt;/other_name&gt;&lt;other_name&gt;cell&lt;/other_name&gt;&lt;/doc&gt;&lt;/result_final&gt;</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="protein_molecule" />
+  <s:sink name="uniprotID" />
+</s:scufl>
+

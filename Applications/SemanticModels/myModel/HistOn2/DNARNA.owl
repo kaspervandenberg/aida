@@ -1,0 +1,339 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rfp="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#"
+    xmlns:obo_rel="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/obo_relationship_selection.owl#"
+    xmlns:spec="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/Species.owl#"
+    xmlns:tbio_e="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/DNARNA.owl#"
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:seq="http://www.co-ode.org/ontologies/basic-bio/sequences.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:rlp="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:tbio="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#"
+    xmlns:meta="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#"
+    xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xml:base="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/DNARNA.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended_seq.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/sequences.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="DNA_RNA_status">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#Intrinsic_characteristic"/>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="DNA_nucleotide_status"/>
+          <owl:Class rdf:ID="RNA_nucleotide_status"/>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="DNA_molecule_part">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_determinate_part"/>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="DNA_nucleotide"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_determinate_part"/>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#DNA_nucleotide"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Biological_macromolecule_part"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >DNA molecule that is part of a real or virtual DNA molecule.
+Not restricted to part_of DNA molecule, because it is allowed to exist on its own.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#RNA_nucleotide_status">
+    <rdfs:subClassOf rdf:resource="#DNA_RNA_status"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#DNA_nucleotide_status"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="DNA_region">
+    <rdfs:subClassOf rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Numbered_interval"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="DNA_molecule_true_part"/>
+        </owl:someValuesFrom>
+        <owl:onProperty rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#is_reified_location_of"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#DNA_molecule_true_part">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#DNA_molecule_part"/>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#is_determinate_part_of"/>
+                <owl:someValuesFrom>
+                  <owl:Class>
+                    <owl:unionOf rdf:parseType="Collection">
+                      <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/sequences.owl#DNA_molecule">
+                        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                        >Apperently, I cannot move restrictions added to an imported concept to necessary and sufficient</rdfs:comment>
+                        <rdfs:subClassOf>
+                          <owl:Restriction>
+                            <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_determinate_part"/>
+                            <owl:allValuesFrom>
+                              <owl:Class rdf:about="#DNA_nucleotide"/>
+                            </owl:allValuesFrom>
+                          </owl:Restriction>
+                        </rdfs:subClassOf>
+                        <rdfs:subClassOf>
+                          <owl:Restriction>
+                            <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_determinate_part"/>
+                            <owl:someValuesFrom>
+                              <owl:Class rdf:about="#DNA_nucleotide"/>
+                            </owl:someValuesFrom>
+                          </owl:Restriction>
+                        </rdfs:subClassOf>
+                      </rdf:Description>
+                      <owl:Class rdf:about="#DNA_molecule_part"/>
+                    </owl:unionOf>
+                  </owl:Class>
+                </owl:someValuesFrom>
+              </owl:Restriction>
+            </owl:someValuesFrom>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="has_DNA_RNA_nucleotide_status"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A DNA molecule_part that is truely a part of a DNA_molecule(_part). Hence, itdoes not exist on its own.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Uracil_residue">
+    <owl:disjointWith>
+      <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Guanine_residue">
+        <owl:disjointWith rdf:resource="#Uracil_residue"/>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#has_DNA_RNA_nucleotide_status"/>
+            </owl:onProperty>
+            <owl:allValuesFrom rdf:resource="#DNA_RNA_status"/>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+      </rdf:Description>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Cytosine_residue">
+        <owl:disjointWith rdf:resource="#Uracil_residue"/>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#has_DNA_RNA_nucleotide_status"/>
+            </owl:onProperty>
+            <owl:allValuesFrom rdf:resource="#DNA_RNA_status"/>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#has_DNA_RNA_nucleotide_status"/>
+            </owl:onProperty>
+            <owl:someValuesFrom rdf:resource="#DNA_RNA_status"/>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+      </rdf:Description>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Thymine_residue">
+        <owl:disjointWith rdf:resource="#Uracil_residue"/>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#has_DNA_RNA_nucleotide_status"/>
+            </owl:onProperty>
+            <owl:allValuesFrom>
+              <owl:Class rdf:about="#DNA_nucleotide_status"/>
+            </owl:allValuesFrom>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+      </rdf:Description>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Adenine_residue">
+        <owl:disjointWith rdf:resource="#Uracil_residue"/>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:allValuesFrom rdf:resource="#DNA_RNA_status"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#has_DNA_RNA_nucleotide_status"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+      </rdf:Description>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#RNA_nucleotide_status"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#has_DNA_RNA_nucleotide_status"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Nucleic_acid_base_residue">
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:allValuesFrom rdf:resource="#DNA_RNA_status"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#has_DNA_RNA_nucleotide_status"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+      </rdf:Description>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="RNA_molecule_true_part">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="RNA_molecule_part"/>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Restriction>
+                <owl:someValuesFrom>
+                  <owl:Class>
+                    <owl:unionOf rdf:parseType="Collection">
+                      <owl:Class rdf:ID="RNA_molecule"/>
+                      <owl:Class rdf:about="#RNA_molecule_part"/>
+                    </owl:unionOf>
+                  </owl:Class>
+                </owl:someValuesFrom>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#is_determinate_part_of"/>
+              </owl:Restriction>
+            </owl:someValuesFrom>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#has_DNA_RNA_nucleotide_status"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#RNA_molecule_part">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_determinate_part"/>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="RNA_nucleotide"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#RNA_nucleotide"/>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_determinate_part"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Biological_macromolecule_part"/>
+  </owl:Class>
+  <owl:Class rdf:about="#DNA_nucleotide_status">
+    <rdfs:subClassOf rdf:resource="#DNA_RNA_status"/>
+    <owl:disjointWith rdf:resource="#RNA_nucleotide_status"/>
+  </owl:Class>
+  <owl:Class rdf:about="#RNA_molecule">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological_Macromolecule"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_determinate_part"/>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#RNA_nucleotide"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_determinate_part"/>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#RNA_nucleotide"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#DNA_nucleotide">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Adenine_residue"/>
+              <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Cytosine_residue"/>
+              <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Guanine_residue"/>
+              <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Thymine_residue"/>
+            </owl:unionOf>
+          </owl:Class>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Nucleic_acid_base_residue"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#has_DNA_RNA_nucleotide_status"/>
+            </owl:onProperty>
+            <owl:allValuesFrom rdf:resource="#DNA_nucleotide_status"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#RNA_nucleotide">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Adenine_residue"/>
+              <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Cytosine_residue"/>
+              <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Guanine_residue"/>
+              <owl:Class rdf:about="#Uracil_residue"/>
+            </owl:unionOf>
+          </owl:Class>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Nucleic_acid_base_residue"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#has_DNA_RNA_nucleotide_status"/>
+            </owl:onProperty>
+            <owl:allValuesFrom rdf:resource="#RNA_nucleotide_status"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="#has_DNA_RNA_nucleotide_status">
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#intrinsic_property"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#Thing"/>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Nucleic_acid_base_residue"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="#DNA_RNA_status"/>
+  </owl:ObjectProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.2.1, Build 365)  http://protege.stanford.edu -->

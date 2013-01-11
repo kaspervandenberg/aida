@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Additional self-standing properties that extend the basic dichotomies in ways required for the specific views in advanced bio ontology using advanced-relational-properties.owl
+
+Imports: top-self-standing.owl
+Used_by: advanced-relational-properties.owl</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Quality">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >First approximation: Qualities or features of things - height, weight, etc.
+
+Qualities define a "Quality space" that inheres in other things. 
+
+Slogan: Entities have qualities that have values. 
+
+Questions: Can it exist on its own? (If not, may be a quality)
+                  Can it have a 'value" (If so, may be a quality)
+                  Does everything of a given type have it, even if you don't know
+                  its value (Then probably a quality)
+
+Distinctions: values or quale - the actual position in value space.
+
+Pattern: Self_standing_entity has_quality Quality has_value Value
+
+Qualities are Self_standing rather than Refining because there is an open disjoint list.  The total number of qualities for an enttiy cannot be exhaustively enumerated.
+
+Qualities are Complexes because they do not exist on their own.
+
+Qualities are not refining because</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Composed_entity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Discrete_continuant_entity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Added as domain for is_grain_of</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Discrete_entity"/>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Continuant_entity"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Relationship">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Composed_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Entities which exist as a relationship between two other entities -
+connections, marriages, etc.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Collective">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Collectives are things like the grains of sand on the beach or the cells in a tissue.  Collectives of discrete things form amounts of mass things.
+
+Slogans: Discrete things at one level form mass collectives at the next.
+            Collectives of molecules form substances.
+            Collectives of cells form (portions of) tissues.
+
+Distinction: Group
+
+Questions:  Can I measure it? Does it behave like a mass entity?  (then collective)
+
+Examples: Water is (in part) a collective of molecules; Tissue is (in part) a collection of cells, etc. 
+
+Anti examples: Flock of geese. (I can count the flocks)
+
+NB Whether the distinction between Group and Collective is useful remains controversial.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Aggregation"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Aggregation">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Groups, collectives, etc. and 'sets' in the sense of the Foundational Model of Anatomy.  Not mathematical sets. 
+
+Questions: Can I say an Aggregation of one particular kind of thing?
+                  Do all members perform the same function?
+                  Does it retain its identity if it loses or gains a member?
+                  If yes, probably an aggregation.
+                  Am I interested in the behaviour of the individual members or
+                  only of the whole? 
+
+See Collective and Group for further questions.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Composed_entity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Group">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Groups of discrete things form discrete groups.
+
+Discrete aggegations
+
+Distinction: Collective
+
+See: Collective</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#Aggregation"/>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Discrete_entity"/>
+  </owl:Class>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 331)  http://protege.stanford.edu -->

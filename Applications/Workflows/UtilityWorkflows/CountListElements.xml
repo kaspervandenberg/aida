@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:bc985989-2fee-4b0c-92b0-c5031adc6c85" author="Marco Roos" title="CountListElements">Very simple workflow to count the number of items in a list (top level only in case of nested lists). Does no more than
+count = list.size();</s:workflowdescription>
+  <s:processor name="CountListElements">
+    <s:beanshell>
+      <s:scriptvalue>count = list.size();</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/xml')">list</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">count</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="xml_list" sink="CountListElements:list" />
+  <s:link source="CountListElements:count" sink="count" />
+  <s:source name="xml_list">
+    <s:metadata>
+      <s:description>(xml) list</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="count">
+    <s:metadata>
+      <s:description>number of elements counted</s:description>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:a6242028-e20a-45d4-9111-49377c24a36b" author="" title="mrs_blast" />
+  <s:processor name="BlastJobResultParams">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.XMLInputSplitter
+      <s:extensions>
+        <s:complextype optional="false" unbounded="false" typename="BlastJobResult" name="parameters" qname="{http://mrs.cmbi.ru.nl/mrsws-blast}BlastJobResult">
+          <s:elements>
+            <s:basetype optional="false" unbounded="false" typename="string" name="job-id" qname="{http://www.w3.org/2001/XMLSchema}string" />
+          </s:elements>
+        </s:complextype>
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="Flatten_list">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="BlastJobResultOutputParams">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.XMLOutputSplitter
+      <s:extensions>
+        <s:complextype optional="false" unbounded="false" typename="BlastResult" name="parameters" qname="{http://mrs.cmbi.ru.nl/mrsws-blast}BlastResult">
+          <s:elements>
+            <s:basetype optional="false" unbounded="false" typename="unsignedLong" name="db-count" qname="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+            <s:basetype optional="false" unbounded="false" typename="unsignedLong" name="db-length" qname="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+            <s:basetype optional="false" unbounded="false" typename="unsignedLong" name="eff-space" qname="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+            <s:basetype optional="false" unbounded="false" typename="double" name="kappa" qname="{http://www.w3.org/2001/XMLSchema}double" />
+            <s:basetype optional="false" unbounded="false" typename="double" name="lambda" qname="{http://www.w3.org/2001/XMLSchema}double" />
+            <s:basetype optional="false" unbounded="false" typename="double" name="entropy" qname="{http://www.w3.org/2001/XMLSchema}double" />
+            <s:arraytype optional="true" unbounded="true" wrapped="false" typename="Hit" name="hits" qname="{http://mrs.cmbi.ru.nl/mrsws-blast}Hit[0,unbounded]">
+              <s:elementtype>
+                <s:complextype optional="false" unbounded="false" typename="Hit" name="" qname="{http://mrs.cmbi.ru.nl/mrsws-blast}Hit">
+                  <s:elements>
+                    <s:basetype optional="false" unbounded="false" typename="string" name="id" qname="{http://www.w3.org/2001/XMLSchema}string" />
+                    <s:basetype optional="false" unbounded="false" typename="string" name="title" qname="{http://www.w3.org/2001/XMLSchema}string" />
+                    <s:arraytype optional="true" unbounded="true" wrapped="false" typename="Hsp" name="hsps" qname="{http://mrs.cmbi.ru.nl/mrsws-blast}Hsp[0,unbounded]">
+                      <s:elementtype>
+                        <s:complextype optional="false" unbounded="false" typename="Hsp" name="" qname="{http://mrs.cmbi.ru.nl/mrsws-blast}Hsp">
+                          <s:elements>
+                            <s:basetype optional="false" unbounded="false" typename="unsignedLong" name="score" qname="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+                            <s:basetype optional="false" unbounded="false" typename="double" name="bit-score" qname="{http://www.w3.org/2001/XMLSchema}double" />
+                            <s:basetype optional="false" unbounded="false" typename="double" name="expect" qname="{http://www.w3.org/2001/XMLSchema}double" />
+                            <s:basetype optional="false" unbounded="false" typename="unsignedLong" name="query-start" qname="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+                            <s:basetype optional="false" unbounded="false" typename="unsignedLong" name="subject-start" qname="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+                            <s:basetype optional="false" unbounded="false" typename="unsignedLong" name="identity" qname="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+                            <s:basetype optional="false" unbounded="false" typename="unsignedLong" name="positive" qname="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+                            <s:basetype optional="false" unbounded="false" typename="unsignedLong" name="gaps" qname="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+                            <s:basetype optional="false" unbounded="false" typename="unsignedLong" name="subject-length" qname="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+                            <s:basetype optional="false" unbounded="false" typename="string" name="query-alignment" qname="{http://www.w3.org/2001/XMLSchema}string" />
+                            <s:basetype optional="false" unbounded="false" typename="string" name="subject-alignment" qname="{http://www.w3.org/2001/XMLSchema}string" />
+                            <s:basetype optional="false" unbounded="false" typename="string" name="midline" qname="{http://www.w3.org/2001/XMLSchema}string" />
+                          </s:elements>
+                        </s:complextype>
+                      </s:elementtype>
+                    </s:arraytype>
+                  </s:elements>
+                </s:complextype>
+              </s:elementtype>
+            </s:arraytype>
+          </s:elements>
+        </s:complextype>
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="BlastASyncParams">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.XMLInputSplitter
+      <s:extensions>
+        <s:complextype optional="false" unbounded="false" typename="BlastAsync" name="parameters" qname="{http://mrs.cmbi.ru.nl/mrsws-blast}BlastAsync">
+          <s:elements>
+            <s:basetype optional="false" unbounded="false" typename="string" name="db" qname="{http://www.w3.org/2001/XMLSchema}string" />
+            <s:basetype optional="false" unbounded="false" typename="string" name="mrsBooleanQuery" qname="{http://www.w3.org/2001/XMLSchema}string" />
+            <s:basetype optional="false" unbounded="false" typename="string" name="query" qname="{http://www.w3.org/2001/XMLSchema}string" />
+            <s:basetype optional="false" unbounded="false" typename="string" name="program" qname="{http://www.w3.org/2001/XMLSchema}string" />
+            <s:basetype optional="false" unbounded="false" typename="string" name="matrix" qname="{http://www.w3.org/2001/XMLSchema}string" />
+            <s:basetype optional="false" unbounded="false" typename="unsignedLong" name="word-size" qname="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+            <s:basetype optional="false" unbounded="false" typename="double" name="expect" qname="{http://www.w3.org/2001/XMLSchema}double" />
+            <s:basetype optional="false" unbounded="false" typename="boolean" name="low-complexity-filter" qname="{http://www.w3.org/2001/XMLSchema}boolean" />
+            <s:basetype optional="false" unbounded="false" typename="boolean" name="gapped" qname="{http://www.w3.org/2001/XMLSchema}boolean" />
+            <s:basetype optional="false" unbounded="false" typename="unsignedLong" name="gap-open" qname="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+            <s:basetype optional="false" unbounded="false" typename="unsignedLong" name="gap-extend" qname="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+          </s:elements>
+        </s:complextype>
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="BlastASyncOutputParams">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.XMLOutputSplitter
+      <s:extensions>
+        <s:complextype optional="false" unbounded="false" typename="BlastAsyncResponse" name="parameters" qname="{http://mrs.cmbi.ru.nl/mrsws-blast}BlastAsyncResponse">
+          <s:elements>
+            <s:basetype optional="false" unbounded="false" typename="string" name="response" qname="{http://www.w3.org/2001/XMLSchema}string" />
+          </s:elements>
+        </s:complextype>
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="BlastAsync">
+    <s:description>Service definition of function ns__BlastAsync</s:description>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mrs.cmbi.ru.nl/mrs/mrsws_blast.wsdl</s:wsdl>
+      <s:operation>BlastAsync</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="BlastJobResult">
+    <s:description>Service definition of function ns__BlastJobResult</s:description>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mrs.cmbi.ru.nl/mrs/mrsws_blast.wsdl</s:wsdl>
+      <s:operation>BlastJobResult</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="checkBlastStatus">
+    <s:workflow maxretries="30" retrydelay="5000" critical="true">
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:6d808ea4-f774-48c5-b38f-134bdbcf3449" author="" title="retry_blast" />
+        <s:processor name="BlastJobOutputParams">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.XMLOutputSplitter
+            <s:extensions>
+              <s:complextype optional="false" unbounded="false" typename="BlastJobStatusResponse" name="parameters" qname="{http://mrs.cmbi.ru.nl/mrsws-blast}BlastJobStatusResponse">
+                <s:elements>
+                  <s:complextype optional="false" unbounded="false" typename="JobStatus" name="response" qname="{http://mrs.cmbi.ru.nl/mrsws-blast}JobStatus">
+                    <s:elements>
+                      <s:basetype optional="false" unbounded="false" typename="string" name="value" qname="{http://www.w3.org/2001/XMLSchema}string" />
+                    </s:elements>
+                  </s:complextype>
+                </s:elements>
+              </s:complextype>
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="BlastJobInputParams">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.XMLInputSplitter
+            <s:extensions>
+              <s:complextype optional="false" unbounded="false" typename="BlastJobStatus" name="parameters" qname="{http://mrs.cmbi.ru.nl/mrsws-blast}BlastJobStatus">
+                <s:elements>
+                  <s:basetype optional="false" unbounded="false" typename="string" name="job-id" qname="{http://www.w3.org/2001/XMLSchema}string" />
+                </s:elements>
+              </s:complextype>
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Fail_if_false">
+          <s:local critical="true">org.embl.ebi.escience.scuflworkers.java.FailIfFalse</s:local>
+        </s:processor>
+        <s:processor name="checkStatus">
+          <s:beanshell>
+            <s:scriptvalue>output = "";
+input_tmp = input.replaceAll("\\&lt;.*?\\&gt;", "");
+
+if (input_tmp.equals("finished"))
+{
+	output = "true";
+}
+
+else
+{
+	output = "false";
+}</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">input</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">output</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="BlastJobStatus">
+          <s:description>Service definition of function ns__BlastJobStatus</s:description>
+          <s:arbitrarywsdl>
+            <s:wsdl>http://mrs.cmbi.ru.nl/mrs/mrsws_blast.wsdl</s:wsdl>
+            <s:operation>BlastJobStatus</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:link source="BlastJobInputParams:output" sink="BlastJobStatus:parameters" />
+        <s:link source="jobId" sink="BlastJobInputParams:job-id" />
+        <s:link source="BlastJobOutputParams:response" sink="checkStatus:input" />
+        <s:link source="BlastJobStatus:parameters" sink="BlastJobOutputParams:input" />
+        <s:link source="checkStatus:output" sink="Fail_if_false:test" />
+        <s:source name="jobId" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:link source="BlastASyncOutputParams:response" sink="BlastJobResultParams:job-id" />
+  <s:link source="BlastASyncOutputParams:response" sink="checkBlastStatus:jobId" />
+  <s:link source="BlastASyncParams:output" sink="BlastAsync:parameters" />
+  <s:link source="BlastAsync:parameters" sink="BlastASyncOutputParams:input" />
+  <s:link source="BlastJobResult:parameters" sink="BlastJobResultOutputParams:input" />
+  <s:link source="BlastJobResultOutputParams:hits" sink="Flatten_list:inputlist" />
+  <s:link source="BlastJobResultParams:output" sink="BlastJobResult:parameters" />
+  <s:link source="databank" sink="BlastASyncParams:db" />
+  <s:link source="sequence" sink="BlastASyncParams:query" />
+  <s:link source="Flatten_list:outputlist" sink="hits" />
+  <s:source name="sequence" />
+  <s:source name="databank" />
+  <s:sink name="hits">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:coordination name="BlastJobResultParams_BLOCKON_Nested_Workflow">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>checkBlastStatus</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>BlastJobResultParams</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+</s:scufl>
+

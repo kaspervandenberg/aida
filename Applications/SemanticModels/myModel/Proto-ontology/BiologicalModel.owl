@@ -1,0 +1,270 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/BiologicalModel.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:pub="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/Publication.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/BiologicalModel.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/Publication.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="BiologicalModel">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Class representing the biological model.</rdfs:comment>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >TODO: redefine restriction with at least a biological entity once integration with upper bio ontology is done</owl:versionInfo>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >biological model</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="BiologicalThing"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="partially_represented_by"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:ID="Disease"/>
+              <owl:Class rdf:ID="Protein"/>
+              <owl:Class rdf:about="#BiologicalModel"/>
+              <owl:Class rdf:ID="BiologicalDocumentSearch"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Disease">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Disease</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#BiologicalThing"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Protein">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#BiologicalThing"/>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Protein</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#BiologicalDocumentSearch">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/Publication.owl#DocumentSearch"/>
+          <owl:Class rdf:about="#BiologicalThing"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Biological query</rdfs:label>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >TODO: add restriction 'is_biological' once integration with upper bio ontology is done</owl:versionInfo>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A biological topic defined by a boolean query phrase.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Enzyme">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Protein with catalytic properties</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Enzyme</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#Protein"/>
+  </owl:Class>
+  <owl:Class rdf:about="#BiologicalThing">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</owl:hasValue>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="is_biological"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="#partially_represented_by">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >partially represents</rdfs:label>
+    <owl:inverseOf>
+      <owl:TransitiveProperty rdf:ID="partially_represents"/>
+    </owl:inverseOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >a thing (biomodel is expected) is represented by other things, e.g. a query phrase or proteins or diseases (parthood relationship)</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="protein_url">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >protein url</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >URL from which information about a protein can be derived</rdfs:comment>
+    <rdfs:domain rdf:resource="#Protein"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="#is_biological">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >thing is biological</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >is biological</rdfs:label>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="uniprot_id">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >uniprot identifyer</rdfs:comment>
+    <rdfs:subPropertyOf>
+      <owl:FunctionalProperty rdf:ID="protein_id"/>
+    </rdfs:subPropertyOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >uniprot id</rdfs:label>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="protein_name">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >name of a protein</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >name</rdfs:label>
+    <rdfs:domain rdf:resource="#Protein"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:TransitiveProperty rdf:ID="associated_with">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <owl:inverseOf rdf:resource="#associated_with"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >associated with</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Weakest form of biological association between any two individuals of any type. Transitive symmetrical association: 
+R(x,y) implies R(y,x); e.g. a protein A associated with a protein B implies the B is also associated with A.
+R(x,y), R(y,z) implies R(x,z); e.g. a A associated with B, and B with C implies an association between A and C.
+Note: domain and range left at 'thing' to allow symmetry (need to be equal because any type used as domain or range becomes a subtype to the types defined here =&gt; symmetry implies  range becomes subtype of domain and vice versa). I assume it is valid to use this relationship for individuals at the level of their common supertype.</rdfs:comment>
+  </owl:TransitiveProperty>
+  <owl:TransitiveProperty rdf:about="#partially_represents">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <owl:inverseOf rdf:resource="#partially_represented_by"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >thing that partially represents another thing (a biomodel is expected) (parthood relationship)</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >represents</rdfs:label>
+  </owl:TransitiveProperty>
+  <owl:SymmetricProperty rdf:ID="directly_associated_with">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:subPropertyOf rdf:resource="#associated_with"/>
+    <owl:inverseOf rdf:resource="#directly_associated_with"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Stronger association between two things than associated_with, e.g. when two proteins bind to each other, or can have a direct chemical influence on one another. The relationship is symmetric (no direction), but not transitive. When A-&gt;B-&gt;C, then A is associated with C, but not necessarily directly associated with C.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >directly associated with</rdfs:label>
+  </owl:SymmetricProperty>
+  <owl:FunctionalProperty rdf:ID="expacy_uniprot_url">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Expacy protein url</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >expacy url</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="#protein_url"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="iHop_search_url">
+    <rdfs:subPropertyOf rdf:resource="#protein_url"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >iHop search url</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >iHop search url</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="entrez_uniprot_url">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:subPropertyOf rdf:resource="#protein_url"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >entrez url</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ncbi's entrez uniprot url</rdfs:comment>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="#protein_id">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >protein identifyer</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Protein"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >protein id</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="iHop_sentence_url">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >iHop sentence url</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >iHop sentence url</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="#protein_url"/>
+  </owl:FunctionalProperty>
+  <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/Publication.owl#ExampleInstance_Article">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >In BioModel 'mentions' is defined</rdfs:comment>
+  </rdf:Description>
+  <Enzyme rdf:ID="ExampleInstance_Enzyme">
+    <iHop_sentence_url rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http&amp;#58;//www.ihop-net.org/UniPub/iHOP/gismo/91352.html?ORGANISM_ID=1</iHop_sentence_url>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Example Instance Enzyme</rdfs:comment>
+    <entrez_uniprot_url rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http&amp;#58;//www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&amp;val=Q15190</entrez_uniprot_url>
+    <uniprot_id rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Q15190</uniprot_id>
+    <expacy_uniprot_url rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http&amp;#58;//expasy.org/uniprot/Q15190</expacy_uniprot_url>
+    <iHop_search_url rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http&amp;#58;//www.ihop-net.org/UniPub/iHOP/?field=UNIPROT__AC&amp;ncbi_tax_id=9606&amp;organism_syn=&amp;search=Q15190</iHop_search_url>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Example Instance Enzyme</rdfs:label>
+    <partially_represents>
+      <BiologicalModel rdf:ID="ExampleInstance_BiologicalModel">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Example instance Biological Model</rdfs:label>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Example instance Biological Model</rdfs:comment>
+        <partially_represented_by rdf:resource="#ExampleInstance_Enzyme"/>
+        <partially_represented_by>
+          <BiologicalDocumentSearch rdf:ID="ExampleInstance_BiologicalQuery">
+            <partially_represents rdf:resource="#ExampleInstance_BiologicalModel"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Example Instance Biological Query</rdfs:comment>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Example Instance Biological Query</rdfs:label>
+            <pub:boolean_search_query_lucene rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >ExampleBiologicalQuery</pub:boolean_search_query_lucene>
+            <pub:search_on rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/Publication.owl#ExampleInstance_Corpus"/>
+          </BiologicalDocumentSearch>
+        </partially_represented_by>
+        <partially_represented_by>
+          <Disease rdf:ID="ExampleInstance_Disease">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Example Instance Disease</rdfs:comment>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Example Instance Disease</rdfs:label>
+            <partially_represents rdf:resource="#ExampleInstance_BiologicalModel"/>
+          </Disease>
+        </partially_represented_by>
+      </BiologicalModel>
+    </partially_represents>
+    <protein_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ExampleProtein</protein_name>
+  </Enzyme>
+  <Protein rdf:ID="ExampleInstance_Protein">
+    <uniprot_id rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Q15960</uniprot_id>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Example Instance Protein</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Example Instance Protein</rdfs:comment>
+  </Protein>
+  <owl:AnnotationProperty rdf:ID="abbreviation">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:AnnotationProperty>
+  <owl:AnnotationProperty rdf:ID="full_name">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:AnnotationProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3, Build 395)  http://protege.stanford.edu -->

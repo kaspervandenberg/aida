@@ -1,0 +1,74 @@
+/*
+Variables (all a Plain Text):
+protein_id
+full_name
+abbreviation
+short_name
+alt_full_name
+alt_abbreviation
+alt_short_name
+
+RDFformat
+rdf_document
+data_URI
+*/
+
+// http://rdf.adaptivedisclosure.org/~marco/BioAID/Preliminary/Workflows/BeanshellScrtips/ProteinRDFdoc.java
+// D://Marco/adaptivedisclosure.org/public_html/BioAID/Preliminary/Workflows/BeanshellScrtips/ProteinRDFdoc.java
+
+// Comment: a lot of URIs (namespaces of ontology elements) are hard-coded here; I would like to find ways to make it less so
+// 		perhaps by asking a user to select the right elements from a list which may have been compiled from a search in the ontology on keyword or label value
+
+// Notation
+String RDFformat = "rdfxml";
+
+//data or base URI
+data_URI = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl";
+
+//Concepts
+String protCon = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Protein";
+
+//Properties
+// String hasDiscStatProp = "disc:discoveredThroughProcedure";
+// String assocproteinProp = "edis:associatedWith";
+String abbrevProp = "edis:abbreviation";
+String fullnameProp = "edis:full_name";
+String shortnameProp = "edis:short_name";
+
+//Individuals
+String proteinInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#" + protein_id;
+// String discoveryInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#" + workflowURI;
+
+// String proteinInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#" + associatedProtein;
+
+//Relations (rdfxml):
+String rdf_doc;
+String oftypestring = " rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\"";
+
+//header
+rdf_doc = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+rdf_doc = rdf_doc + "<rdf:RDF\n	xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n	xmlns:edis=\"http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#\"\n	xmlns:disc=\"http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#\"\n	xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\">\n";
+
+//body
+rdf_doc = rdf_doc + "<rdf:Description rdf:about=\"" + proteinInd + "\">\n";
+rdf_doc = rdf_doc + "	<rdf:type rdf:resource=\"" + protCon + "\"/>\n";
+rdf_doc = rdf_doc + "	<rdfs:label " + oftypestring + ">" + short_name + "</rdfs:label>\n";
+// rdf_doc = rdf_doc + "	<" + hasDiscStatProp + " rdf:resource=\"" + discoveryInd + "\"/>\n";
+// rdf_doc = rdf_doc + "	<" + assocproteinProp + " rdf:resource=\"" + proteinInd + "\"/>\n";
+if (abbreviation.length()>0) 
+	{ rdf_doc = rdf_doc + "	<" + abbrevProp + oftypestring + ">" + abbreviation + "</" + abbrevProp + ">\n"; }
+if (full_name.length()>0) 
+	{ rdf_doc = rdf_doc + "	<" + fullnameProp + oftypestring + ">" + full_name + "</" + fullnameProp + ">\n"; }
+if (short_name.length()>0) 
+	{ rdf_doc = rdf_doc + "	<" + shortnameProp + oftypestring + ">" + short_name + "</" + shortnameProp + ">\n"; }
+if (alt_abbreviation.length()>0) 
+	{ rdf_doc = rdf_doc + "	<" + abbrevProp + oftypestring + ">" + alt_abbreviation + "</" + abbrevProp + ">\n"; }
+if (alt_full_name.length()>0) 
+	{ rdf_doc = rdf_doc + "	<" + fullnameProp + oftypestring + ">" + alt_full_name + "</" + fullnameProp + ">\n"; }
+if (alt_short_name.length()>0) 
+	{ rdf_doc = rdf_doc + "	<" + shortnameProp + oftypestring + ">" + alt_short_name + "</" + shortnameProp + ">\n"; }
+
+//footer
+rdf_doc = rdf_doc + "</rdf:Description>\n</rdf:RDF>\n";
+	
+rdf_document = rdf_doc;

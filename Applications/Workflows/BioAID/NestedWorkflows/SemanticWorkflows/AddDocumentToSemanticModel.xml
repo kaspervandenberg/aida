@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:c5beeaee-ff9a-4f34-af41-a33a0c19c141" author="Marco Roos (workflow), Willem R. van Hage (service)" title="AddDocumentToSemanticModel">Add Document to Semantic model with Sesame service cf example discovered document:
+
+&lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl#ExampleInstance_DiscoveredArticle&gt; a &lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl#DiscoveredArticle&gt; ;
+	pub:contained_in_corpus pub:ExampleInstance_Corpus ;
+	pub:pubmed_URL "http&amp;#58;//www.ncbi.nlm.nih.gov/sites/entrez?cmd=Retrieve&amp;amp;db=PubMed&amp;amp;list_uids=18377425"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	pub:pubmed_id "18377425"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	dsc:discoveredThroughProcedure dsc:ExampleInstance_TextMiningDiscoveryWorkflow ;
+	rdfs:comment "Example Instance Discovered Article"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	rdfs:label "Example Instance Discovered Article"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; .</s:workflowdescription>
+  <s:link source="pubmed_id" sink="doc_instance" />
+  <s:source name="pubmed_id" />
+  <s:source name="pubmed_URL" />
+  <s:source name="query_instance" />
+  <s:source name="corpus" />
+  <s:sink name="doc_instance" />
+</s:scufl>
+

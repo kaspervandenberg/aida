@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:3d2eebb7-0b04-4979-9aa9-3d39b1464216" author="Marco Roos (workflow)" title="Lucene_bioquery_optimizer_with_synonyms">Workflow to optimize a Lucene document retrieval query to
+1. increase the priority of recent years (in decreasing order from 2009 down to 2002)
+2. replace protein names with protein synonym strings.</s:workflowdescription>
+  <s:processor name="Lucene_year_priorities" boring="true">
+    <s:stringconstant>year:(2009^10 2008^9 2007^8 2007^7 2006^6 2005^5 2004^4 2003^3 2002^2 2002^1)</s:stringconstant>
+  </s:processor>
+  <s:processor name="Prioritise_lucene_query">
+    <s:beanshell>
+      <s:scriptvalue>StringBuffer temp=new StringBuffer();
+temp.append("+(");
+temp.append(query_string);
+temp.append(") +");
+temp.append(priority_string);
+String lucene_query = temp.toString();</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">query_string</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">priority_string</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">lucene_query</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="ProteinQueryToSynomyms">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:ecb927cc-a200-4290-9342-302d5fc836ca" author="Marco Roos (workflow) and Martijn Schuemie (service)" title="ProteinSynonymsToQuery">This workflow creates a query string from the query term using Martijn Schuemie's synonym service. The service is limited to proteins, enzymes and genes. An input query that is a boolean string will be split and processed. Until I find a smarter regular expression only terms withing double quotes will be replaced by synonym strings.</s:workflowdescription>
+        <s:processor name="Flatten_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Concat_synonyms">
+          <s:beanshell>
+            <s:scriptvalue>import java.util.*;
+String synstring="\"" + query_term + "\"";
+String syn;
+Iterator iterator = synonymlist.iterator();
+while ( iterator.hasNext() ) 
+	{
+	synstring = synstring + " OR ";
+	syn = ((String) iterator.next());
+	synstring = synstring + "\"" + syn + "\"";
+}
+new_query = synstring;</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="l('text/plain')">synonymlist</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">query_term</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">new_query</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+          <s:mergemode input="synonymlist" mode="merge" />
+          <s:iterationstrategy>
+            <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+              <i:iterator name="synonymlist" />
+              <i:iterator name="query_term" />
+            </i:dot>
+          </s:iterationstrategy>
+        </s:processor>
+        <s:processor name="getSynsets">
+          <s:description>Protein synonym service by Martijn Schuemie, Erasmus Medical Centre, University of Rotterdam, The Netherlands.</s:description>
+          <s:arbitrarywsdl>
+            <s:wsdl>http://aida.science.uva.nl:8888/axis/SynsetServer.jws?wsdl</s:wsdl>
+            <s:operation>getSynsets</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:processor name="SplitQuery">
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="Marco Roos" title="Split_query_string_MR3">Splits and input query string into its parts. Works for queries that contain search terms, search phrases between double quotes, connected by AND or OR. Behaviour undetermined when other characters such as +, -, or brackets are used. Should work now for well formed patterns with bracketed substrings separated by AND/OR/AND NOT/OR NOT, e.g. (Topic1) AND NOT (Topic2), but not extensively tested.</s:workflowdescription>
+              <s:processor name="filterQuotes_regexp" boring="true">
+                <s:stringconstant>".+"</s:stringconstant>
+              </s:processor>
+              <s:processor name="quotes_regexp" boring="true">
+                <s:stringconstant>(((?&lt;=") (?=\w))|((?&lt;=\w) (?=")))|((?&lt;=") (?="))</s:stringconstant>
+              </s:processor>
+              <s:processor name="splitANDOR_regexp" boring="true">
+                <s:stringconstant>( +AND +NOT +)|( +OR +NOT +)|( +AND +)|( +OR +)|\(|\)</s:stringconstant>
+              </s:processor>
+              <s:processor name="cleanStrippedQuotes_regexp" boring="true">
+                <s:stringconstant>\w.*</s:stringconstant>
+              </s:processor>
+              <s:processor name="stripQuotes_regexp" boring="true">
+                <s:stringconstant>"</s:stringconstant>
+              </s:processor>
+              <s:processor name="FilterNonQuotes">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+              </s:processor>
+              <s:processor name="FilterQuotes">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+              </s:processor>
+              <s:processor name="StripQuotes">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+              </s:processor>
+              <s:processor name="filter_nonQuotes_regexp" boring="true">
+                <s:stringconstant>[^"]+</s:stringconstant>
+              </s:processor>
+              <s:processor name="Flatten_StripQuotes_list">
+                <s:local>
+                  org.embl.ebi.escience.scuflworkers.java.FlattenList
+                  <s:extensions>
+                    <s:flattenlist s:depth="2" />
+                  </s:extensions>
+                </s:local>
+              </s:processor>
+              <s:processor name="Join">
+                <s:description>Changed iteration strategy!</s:description>
+                <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetUnion</s:local>
+                <s:iterationstrategy>
+                  <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+                    <i:iterator name="list2" />
+                    <i:iterator name="list1" />
+                  </i:dot>
+                </s:iterationstrategy>
+              </s:processor>
+              <s:processor name="Flatten_SplitQuotes_list">
+                <s:local>
+                  org.embl.ebi.escience.scuflworkers.java.FlattenList
+                  <s:extensions>
+                    <s:flattenlist s:depth="2" />
+                  </s:extensions>
+                </s:local>
+              </s:processor>
+              <s:processor name="SplitQuotes">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+              </s:processor>
+              <s:processor name="SplitOnANDOR">
+                <s:defaults>
+                  <s:default name="string">s1 s2 s3 AND s4 s5 OR "s6 s7" s8 s9 AND s10 OR "s11" "s12 s13" s14 s15 "s16"</s:default>
+                </s:defaults>
+                <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+              </s:processor>
+              <s:processor name="cleanStrippedQuotes">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+              </s:processor>
+              <s:link source="FilterNonQuotes:filteredlist" sink="Join:list2" />
+              <s:link source="FilterQuotes:filteredlist" sink="StripQuotes:string" />
+              <s:link source="Flatten_SplitQuotes_list:outputlist" sink="FilterNonQuotes:stringlist" />
+              <s:link source="Flatten_SplitQuotes_list:outputlist" sink="FilterQuotes:stringlist" />
+              <s:link source="Flatten_StripQuotes_list:outputlist" sink="cleanStrippedQuotes:stringlist" />
+              <s:link source="SplitOnANDOR:split" sink="SplitQuotes:string" />
+              <s:link source="SplitQuotes:split" sink="Flatten_SplitQuotes_list:inputlist" />
+              <s:link source="StripQuotes:split" sink="Flatten_StripQuotes_list:inputlist" />
+              <s:link source="cleanStrippedQuotes_regexp:value" sink="cleanStrippedQuotes:regex" />
+              <s:link source="filterQuotes_regexp:value" sink="FilterQuotes:regex" />
+              <s:link source="filter_nonQuotes_regexp:value" sink="FilterNonQuotes:regex" />
+              <s:link source="queryString" sink="SplitOnANDOR:string" />
+              <s:link source="Join:union" sink="queryList" />
+              <s:link source="cleanStrippedQuotes:filteredlist" sink="Join:list1" />
+              <s:link source="quotes_regexp:value" sink="SplitQuotes:regex" />
+              <s:link source="splitANDOR_regexp:value" sink="SplitOnANDOR:regex" />
+              <s:link source="stripQuotes_regexp:value" sink="StripQuotes:regex" />
+              <s:source name="queryString">
+                <s:metadata>
+                  <s:description>Queries that contain search terms, search phrases between double quotes, possibly connected by AND or OR. Behaviour undetermined when other characters such as +, -, or brackets are used.</s:description>
+                </s:metadata>
+              </s:source>
+              <s:sink name="queryList" />
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="ListFindAndReplace">
+          <s:beanshell>
+            <s:scriptvalue>import java.util.regex.*;
+
+String replaced_input=input;
+String findstring;
+
+Iterator find_iterator = findstringlist.iterator();
+Iterator replace_iterator = replacestringlist.iterator();
+while (find_iterator.hasNext() &amp;&amp; replace_iterator.hasNext())
+{
+	findstring = ((String) find_iterator.next());
+	
+	Pattern p = Pattern.compile("[\"]"+findstring+"[\"]");
+	Matcher m = p.matcher(replaced_input);
+
+	replaced_input = (String) m.replaceAll("("+((String) replace_iterator.next())+")");
+}
+
+output = replaced_input;</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">input</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="l('text/plain')">findstringlist</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="l('text/plain')">replacestringlist</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">output</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+          <s:mergemode input="input" mode="merge" />
+          <s:iterationstrategy>
+            <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+              <i:iterator name="input" />
+              <i:iterator name="findstringlist" />
+              <i:iterator name="replacestringlist" />
+            </i:dot>
+          </s:iterationstrategy>
+        </s:processor>
+        <s:link source="SplitQuery:queryList" sink="getSynsets:term" />
+        <s:link source="getSynsets:getSynsetsReturn" sink="Flatten_list:inputlist" />
+        <s:link source="query_term" sink="SplitQuery:queryString" />
+        <s:link source="Flatten_list:outputlist" sink="Concat_synonyms:synonymlist" />
+        <s:link source="SplitQuery:queryList" sink="Concat_synonyms:query_term" />
+        <s:link source="query_term" sink="ListFindAndReplace:input" />
+        <s:link source="Concat_synonyms:new_query" sink="ListFindAndReplace:replacestringlist" />
+        <s:link source="SplitQuery:queryList" sink="ListFindAndReplace:findstringlist" />
+        <s:link source="ListFindAndReplace:output" sink="new_query" />
+        <s:source name="query_term">
+          <s:metadata>
+            <s:description>Query term without quotes, only synonyms of proteins, enzymes and genes will be returned. Boolean queries will be processed, but the input boolean logic will be lost.
+E.g. 'EZH2'</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="new_query" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Concatenate">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:link source="Lucene_year_priorities:value" sink="Prioritise_lucene_query:priority_string" />
+  <s:link source="query_string" sink="Prioritise_lucene_query:query_string" />
+  <s:link source="ProteinQueryToSynomyms:new_query" sink="Concatenate:string1" />
+  <s:link source="query_string" sink="ProteinQueryToSynomyms:query_term" />
+  <s:link source="Concatenate:output" sink="extended_lucene_query" />
+  <s:link source="Prioritise_lucene_query:lucene_query" sink="Concatenate:string2" />
+  <s:source name="query_string">
+    <s:metadata>
+      <s:description>Lucene query string</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="extended_lucene_query">
+    <s:metadata>
+      <s:description>Lucene query based on the input query with the addition of:
+1. A Lucene string to give recent years higher priority (in decreasing order from 2009 down to 2002)
+2. A mesh organism term to limit subsequent searches</s:description>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

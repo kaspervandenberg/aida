@@ -1,0 +1,17 @@
+opencyc:OrganismClassificationType
+	opencyc:BiologicalTaxon
+		opencyc:BiologicalClass
+		opencyc:BiologicalDivision
+		opencyc:BiologicalFamily
+		opencyc:BiologicalGenus
+		opencyc:BiologicalKingdom
+		opencyc:BiologicalOrder
+		opencyc:BiologicalPhylum
+		opencyc:BiologicalSpecies
+		opencyc:BiologicalSubclass
+		opencyc:BiologicalSubfamily
+		opencyc:BiologicalSubkingdom
+		opencyc:BiologicalSuborder
+		opencyc:BiologicalSubphylum
+		opencyc:BiologicalSubspecies
+	opencyc:OrganismTypeByComplexity

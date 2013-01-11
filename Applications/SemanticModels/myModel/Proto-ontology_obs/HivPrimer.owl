@@ -1,0 +1,332 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:aa="http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#"
+    xmlns="http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Mutation">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mutation/substitution</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#SpecificAminoAcid"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:ID="mutationByAminoAcid"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="mutationAtPostition"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MutatedGenome">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="Reference_genome"/>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:ID="MutatedProtein"/>
+            </owl:someValuesFrom>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="encodesProtein"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="NRTI">
+    <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >NRTI</abbreviation>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="inhibitsEnzyme"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Reverse_transcriptase"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Drug"/>
+    </rdfs:subClassOf>
+    <full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Nucleoside reverse transcriptase inhibitor</full_name>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Nucleoside reverse transcriptase inhibitor</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Reverse_transcriptase">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Enzyme"/>
+    </rdfs:subClassOf>
+    <full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Reverse transcriptase</full_name>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Reverse transcriptase</rdfs:label>
+    <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >RT</abbreviation>
+  </owl:Class>
+  <owl:Class rdf:ID="nNRTI">
+    <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >nNRTI</abbreviation>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Reverse_transcriptase"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#inhibitsEnzyme"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Drug"/>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Non nucleoside reverse transcriptase inhibitor</rdfs:label>
+    <full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Non nucleoside reverse transcriptase inhibitor</full_name>
+  </owl:Class>
+  <owl:Class rdf:about="#Drug">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Drug class</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Enzyme">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Enzyme</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Protein"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Protein">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="proteinFromGenome"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Reference_genome"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Protein</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="PI">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Protease inhibitor</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#Drug"/>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Protease"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#inhibitsEnzyme"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Protease inhibitor</full_name>
+    <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PI</abbreviation>
+  </owl:Class>
+  <owl:Class rdf:about="#MutatedProtein">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Protein"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="proteinHasMutation"/>
+            </owl:onProperty>
+            <owl:someValuesFrom rdf:resource="#Mutation"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Protease">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Protease</rdfs:label>
+    <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PR</abbreviation>
+    <rdfs:subClassOf rdf:resource="#Enzyme"/>
+    <full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Protease</full_name>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="#encodesProtein">
+    <rdfs:range rdf:resource="#Protein"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >encodes</rdfs:label>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#proteinFromGenome"/>
+    </owl:inverseOf>
+    <rdfs:domain rdf:resource="#Reference_genome"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Genome encodes some protein</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="mutationInGenome">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >mutation in genome</rdfs:label>
+    <rdfs:range rdf:resource="#Reference_genome"/>
+    <rdfs:domain rdf:resource="#Mutation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#proteinHasMutation">
+    <rdfs:domain rdf:resource="#Protein"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >has mutation</rdfs:label>
+    <rdfs:range rdf:resource="#Mutation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#proteinFromGenome">
+    <rdfs:domain rdf:resource="#Protein"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Genome in which a protein is encoded</rdfs:comment>
+    <owl:inverseOf rdf:resource="#encodesProtein"/>
+    <rdfs:range rdf:resource="#Reference_genome"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >from genome</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#inhibitsEnzyme">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >inihibits</rdfs:label>
+    <rdfs:domain rdf:resource="#Drug"/>
+    <rdfs:range rdf:resource="#Enzyme"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:about="#mutationAtPostition">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:FunctionalProperty rdf:ID="mutationOfAminoAcid">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >amino acid that was replaced by the substituted amino acid</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >replaced amino acid</rdfs:label>
+    <rdfs:domain rdf:resource="#Mutation"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#SpecificAminoAcid"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="mutationOfProtein">
+    <rdfs:domain rdf:resource="#Mutation"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >mutation of protein</rdfs:label>
+    <rdfs:range rdf:resource="#Protein"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="#mutationByAminoAcid">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >substituted amino acid</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >amino acid that substituted the replaced amino acid</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#SpecificAminoAcid"/>
+    <rdfs:domain rdf:resource="#Mutation"/>
+  </owl:FunctionalProperty>
+  <Reference_genome rdf:ID="NL4-3_wt">
+    <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >NL4-3 wt</abbreviation>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Commonly used NL4-3 wild type reference genome of HIV-1</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >NL4-3 wt</rdfs:label>
+    <full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >NL4-3 wild type of HIV-1 genome</full_name>
+  </Reference_genome>
+  <Protease rdf:ID="HIV_PR">
+    <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >HIV PR</abbreviation>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >HIV PR</rdfs:label>
+    <full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >HIV protease</full_name>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Instance of HIV protease</rdfs:comment>
+  </Protease>
+  <owl:AnnotationProperty rdf:ID="full_name">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:AnnotationProperty>
+  <owl:DataRange>
+    <owl:oneOf rdf:parseType="Resource">
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >D</rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >F</rdf:first>
+            <rdf:rest rdf:parseType="Resource">
+              <rdf:rest rdf:parseType="Resource">
+                <rdf:rest rdf:parseType="Resource">
+                  <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >I</rdf:first>
+                  <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                </rdf:rest>
+                <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >H</rdf:first>
+              </rdf:rest>
+              <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >G</rdf:first>
+            </rdf:rest>
+          </rdf:rest>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >E</rdf:first>
+        </rdf:rest>
+      </rdf:rest>
+      <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+      >C</rdf:first>
+    </owl:oneOf>
+  </owl:DataRange>
+  <PI rdf:ID="ATV">
+    <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ATV</abbreviation>
+    <full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >atazanavir</full_name>
+  </PI>
+  <NRTI rdf:ID="ABC">
+    <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ABV</abbreviation>
+    <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ABC</abbreviation>
+    <full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >abacavir</full_name>
+  </NRTI>
+  <Reverse_transcriptase rdf:ID="HIV_RT">
+    <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >HIV RT</abbreviation>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Instance of HIV reverse transcriptase</rdfs:comment>
+    <full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >HIV reverse transcriptase</full_name>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >HIV RT</rdfs:label>
+  </Reverse_transcriptase>
+  <PI rdf:ID="APV">
+    <full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >amprenavir</full_name>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >APV</rdfs:label>
+    <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >AMP</abbreviation>
+    <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >APV</abbreviation>
+  </PI>
+  <owl:AnnotationProperty rdf:ID="abbreviation">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:AnnotationProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.2, Build 355)  http://protege.stanford.edu -->

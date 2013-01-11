@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.ant.freeform</type>
+    <configuration>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <name>Lucene 2.1.0</name>
+        </general-data>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
+            <!-- Do not use Project Properties customizer when editing this file manually. -->
+            <name>Lucene 2.1.0</name>
+            <properties/>
+            <folders>
+                <source-folder>
+                    <label>Lucene 2.1.0</label>
+                    <location>.</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>src/java</label>
+                    <type>java</type>
+                    <location>src/java</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>contrib/analyzers/src/java</label>
+                    <type>java</type>
+                    <location>contrib/analyzers/src/java</location>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+            </folders>
+            <ide-actions>
+                <action name="build">
+                    <target>compile</target>
+                </action>
+                <action name="clean">
+                    <target>clean</target>
+                </action>
+                <action name="javadoc">
+                    <target>javadocs</target>
+                </action>
+                <action name="test">
+                    <target>test</target>
+                </action>
+                <action name="rebuild">
+                    <target>clean</target>
+                    <target>compile</target>
+                </action>
+            </ide-actions>
+            <export>
+                <type>folder</type>
+                <location>build/classes/java</location>
+                <build-target>compile</build-target>
+            </export>
+            <view>
+                <items>
+                    <source-folder style="packages">
+                        <label>src/java</label>
+                        <location>src/java</location>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>contrib/analyzers/src/java</label>
+                        <location>contrib/analyzers/src/java</location>
+                    </source-folder>
+                    <source-file>
+                        <location>build.xml</location>
+                    </source-file>
+                </items>
+                <context-menu>
+                    <ide-action name="build"/>
+                    <ide-action name="rebuild"/>
+                    <ide-action name="clean"/>
+                    <ide-action name="javadoc"/>
+                    <ide-action name="test"/>
+                </context-menu>
+            </view>
+            <subprojects/>
+        </general-data>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/2">
+            <compilation-unit>
+                <package-root>src/java</package-root>
+                <classpath mode="compile">../lingpipe-3.4.0/lib/junit-3.8.1.jar</classpath>
+                <built-to>build/classes/java</built-to>
+                <javadoc-built-to>build/docs/api</javadoc-built-to>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>contrib/analyzers/src/java</package-root>
+                <classpath mode="compile">build/classes/java</classpath>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+        </java-data>
+    </configuration>
+</project>

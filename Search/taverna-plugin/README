@@ -1,0 +1,61 @@
+AIDA Taverna Plugin for Taverna Workbench 2.0
+=============================================
+
+Screencast 
+----------
+http://wongiseng.homelinux.org/repository/aida-plugin-2.0.html
+
+Requirements
+------------
+Maven to build the plug in. Get all the sources and do:
+
+   mvn install
+
+Installation
+------------
+
+Download and install [Taverna Workbench 2.0]
+
+        http://www.mygrid.org.uk/tools/taverna/taverna-2-0/download-taverna-2-0
+
+Modify Taverna's plugins/plugins.xml to include the following plugin description :
+
+        <plugin>
+                <name>AID Taverna</name>
+                <description> AIDA Plugin 0.2.0.  </description>
+                <identifier>org.vle.aid.taverna</identifier>
+                <version>0.2.0</version>
+                <provider>wongiseng.homelinux.org</provider>
+                <repositories>
+                        <repository> LOCAL_MAVEN_REPOSITORY </repository>
+                        <repository> http://repo1.maven.org/maven2 </repository>
+                </repositories>
+                <profile>
+                        <artifact groupId="org.vle.aid.taverna" artifactId="aid-plugin" version="0.2.0" />
+                </profile>
+                <compatibility>
+                    <application>
+                        <version>2.0</version>
+                    </application>
+               </compatibility>
+        </plugin>
+
+Change LOCAL_MAVEN_REPOSITORY into where you setup your maven repository, for example :
+     file:///home/wongiseng/.m2/repository
+
+Libraries
+=========
+
+- All third party libraries used is described in pom.xml mostly from public maven repository, except for cobra 
+lobobrowser, which is not available in public maven  repository.  It originally contain two jar, cobra.jar and js.jar 
+now it is merge as one artifact cobra.jar.
+
+- Using json library from json.org, can't find it on any public maven repository so I downloaded the code and included 
+in the src. Not sure if this is how it should be done.
+
+- If somebody could tell me how to include these two library properly I'd be glad to hear.
+
+Licence
+--------
+Not sure, I am open to suggestion
+

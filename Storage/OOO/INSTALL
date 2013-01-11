@@ -1,0 +1,98 @@
+Short Installation
+====================
+
+- Make sure you have Tomcat, Axis and Sesame
+- Make sure that you have a Sesame repository, username, and password set up.
+- Download and unpack sources. This should create a directory called OOO.
+- Set CATALINA_HOME and CATALINA_BASE
+- Change to the OOO directory. (The root of the OOO source tree.)
+- ant && touch $CATALINA_BASE/webapps/axis/WEB-INF/web.xml && touch $CATALINA_BASE/webapps/axis/WEB-INF/web.xml
+
+IMPORTANT IMPORTANT IMPORTANT
+=============================
+- If you use a different port for Tomcat than 8080, change build.xml manually to reflect this
+=============================
+IMPORTANT IMPORTANT IMPORTANT
+
+
+Long Installation
+====================
+
+Install Tomcat. (tested with Tomcat 5.5.x)
+- download Tomcat from http://tomcat.apache.org/
+- perhaps add the folling line to bin/catalina.sh around line 240 to have more memory available to Tomcat.
+
+JAVA_OPTS="$JAVA_OPTS -Xmx1024m -Xms512m"
+
+- perhaps add an echo statement somewhere too.
+- consider installing what's called the Apache Tomcat Native library for your system.
+
+IMPORTANT IMPORTANT IMPORTANT
+=============================
+- set the environment variables CATALINA_HOME and CATALINA_BASE to the location where you installed Tomcat
+=============================
+IMPORTANT IMPORTANT IMPORTANT
+
+Install Axis in Tomcat. (tested with axis 1.2 - 1.4)
+- download Axis from http://ws.apache.org/axis/
+- copy the webapps/axis directory Tomcat's webapps directory
+- download activation.jar from http://java.sun.com/products/javabeans/jaf/downloads/index.html
+- copy activation.jar to the webapps/axis/WEB-INF/lib directory of Tomcat
+
+Install Sesame in Tomcat. (tested with Sesame 1.2.x, definately does not work with version 2)
+- download Sesame from http://openrdf.org
+- create a directory called sesame in Tomcat's webapps directory.
+- use jar -xvf sesame.war to unzip the war file in Sesame's lib directory to this newly created directory.
+- go to sesame/WEB-INF and adapt system.conf.example to create the repositories and users you need and save it as system.conf
+- copy the jar files from Sesame's lib directory to Axis' WEB-INF/lib directory
+- Set up a repository in Sesame (edit system.conf) and a user that can access it with a password. Follow the Sesame install documentation to accomplish this.
+
+
+Installing from the CVS source
+==============================
+
+Currently we are moving the source from CVS on gforge.vl-e.nl to SVN on science.uva.nl. This documentation is deprecated.
+
+Check out OOO or download a nightly CVS snapshot at https://gforge.vl-e.nl/scm/?group_id=15
+(You probably already did this if you're reading this.)
+
+IMPORTANT IMPORTANT IMPORTANT
+=============================
+- make sure that you have an environment variable called PWD that is set to the current working directory
+  This should be the case in all Unix-like systems (such as Linux and MacOS X). I don't know about Windows.
+=============================
+IMPORTANT IMPORTANT IMPORTANT
+
+Start Tomcat.
+
+Run ant: "ant"
+
+
+Installing from the Web Archives (.war files)
+=============================================
+
+You might want to do this if you have the SVN source on one machine and want to copy the installation to another system.
+
+Copy OOO.war to Tomcat's webapps directory.
+- Tomcat will automatically expand it if it's running.
+- If that does not happen
+        - create a directory called OOO in the webapps directory
+        - change to it
+        - run jar -xvf ../OOO.war
+- Install the Java classes into Axis like this: cp -r WEB-INF/classes/* ../axis/WEB-INF/classes
+- touch ../axis/WEB-INF/web.xml or restart Tomcat.
+
+
+Updating from the SVN source
+============================
+
+Update the OOO source.
+
+Run ant: "ant"
+
+If Tomcat is running:
+- touch $CATALINA_HOME/webapps/OOO/WEB-INF/web.xml
+- touch $CATALINA_HOME/webapps/axis/WEB-INF/web.xml
+
+Otherwise start Tomcat.
+

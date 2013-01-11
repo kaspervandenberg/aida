@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:c0a963bc-2343-4d31-aa8c-304bfe3a6289" author="Marco Roos (workflow), Sophia Katrenko (extraction service), Martijn Schuemie (validation service)" title="ExtractProteinProteinInteractionsFromText_HomoSapiens">Workflow to extract protein protein interactions from text, followed by filtering protein names known as human protein names. The protein protein interaction service takes the output in 'IOB' format from applyCRF, which annotates proteins as such in text.</s:workflowdescription>
+  <s:processor name="IOB_output_from_NER_example" boring="true">
+    <s:stringconstant>We	O have	O identified	O a	O transcriptional	O repressor,	O Nrg1,	O in	O a	O genetic	O screen	O designed	O to	O reveal	O negative	O factors	O involved	O in	O the	O expression	O of	O STA1,	B-PROTEIN which	O encodes	O a	O glucoamylase.	O The	O NRG1	B-PROTEIN gene	I-PROTEIN encodes	O a	O 25-kDa	O C2H2	B-PROTEIN zinc	I-PROTEIN finger	I-PROTEIN protein	I-PROTEIN which	O specifically	O binds	O to	O two	O regions	O in	O the	O upstream	O activation	O sequence	O of	O the	O STA1	B-PROTEIN gene,	O as	O judged	O by	O gel	O retardation	O and	O DNase	B-PROTEIN I	I-PROTEIN footprinting	O analyses.	O Disruption	O of	O the	O NRG1	B-PROTEIN gene	I-PROTEIN causes	O a	O fivefold	O increase	O in	O the	O level	O of	O the	O STA1	B-PROTEIN transcript	O in	O the	O presence	O of	O glucose.	O</s:stringconstant>
+  </s:processor>
+  <s:processor name="split_interaction_regexp" boring="true">
+    <s:stringconstant>(.+)\s+(.+)</s:stringconstant>
+  </s:processor>
+  <s:processor name="Filter_protein1">
+    <s:defaults>
+      <s:default name="group">1</s:default>
+    </s:defaults>
+    <s:local>org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList</s:local>
+  </s:processor>
+  <s:processor name="FlattenUniprotlist1">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="FlattenUniProtlist2">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="FlattenProteinlist1">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="FlattenProteinlist2">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="split_interactions_regexp" boring="true">
+    <s:stringconstant>(\r\n)|(\n)</s:stringconstant>
+  </s:processor>
+  <s:processor name="example_interaction_doc">
+    <s:beanshell>
+      <s:scriptvalue>interaction_doc = "P300 TP53\r\nIRF3 CITED1\r\nCITED1 STAT5A\r\nTP73 P300\r\nP300 ZAC1\r\nP300 mSRC-1\r\nSigK T4\r\nGerE ykvP\r\nSpoIIE sigma(F)\r\nrsfA sigma(F)\r\nsigma(K) cwlH\r\nsigma(K) gerE\r\ncwlH gerE\r\nphrC sigmaH\r\nphrC CSF\r\nsigmaH CSF\r\nyfhS E_sigma_E\r\nsigmaK Spo0A\r\nsigmaK sigE\r\nSpo0A sigE\r\nGerE sigK\r\nGerE sigmaK\r\nsigK sigmaK\r\nsigmaK gerE\r\nsigmaK GerE\r\nsigmaK sigmaK\r\ngerE GerE\r\ngerE sigmaK\r\nGerE sigmaK\r\nGerE cotD\r\nGerE sigmaK\r\nGerE GerE\r\nGerE cotD\r\ncotD sigmaK\r\ncotD GerE\r\ncotD cotD\r\nsigmaK GerE\r\nsigmaK cotD\r\nGerE cotD\r\n";</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">interaction_doc</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Filter_protein2">
+    <s:defaults>
+      <s:default name="group">2</s:default>
+    </s:defaults>
+    <s:local>org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList</s:local>
+  </s:processor>
+  <s:processor name="split_interactionlist">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+  </s:processor>
+  <s:processor name="FilterHumanProteinPairs">
+    <s:description>This workflow filters protein_molecule-labeled term pairs from two input strings(list). The result is a pair of tagged lists of proteins. It uses a UniProt service by Martijn Schuemie (BioSemantics group Rotterdam) that know about human proteins.</s:description>
+    <s:workflow retrydelay="10" retrybackoff="10.0">
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="Marco Roos (AID)" title="FilterHumanProteinsPairsByUniprot">This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:workflowdescription>
+        <s:processor name="UniProtOrNot1">
+          <s:beanshell>
+            <s:scriptvalue>if (uniprotIDlist.isEmpty() ) {
+	uniprotID_or_False = "False";
+} else {
+	uniprotID_or_False = (String) uniprotIDlist.iterator().next().toString();
+}</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="l('text/plain')">uniprotIDlist</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="l('text/plain')">uniprotID_or_False</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="Filter_protein1">
+          <s:defaults>
+            <s:default name="regex">.+</s:default>
+          </s:defaults>
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="UniProtOrNot2">
+          <s:beanshell>
+            <s:scriptvalue>if (uniprotIDlist.isEmpty() ) {
+	uniprotID_or_False = "False";
+} else {
+	uniprotID_or_False = (String) uniprotIDlist.iterator().next().toString();
+}</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="l('text/plain')">uniprotIDlist</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="l('text/plain')">uniprotID_or_False</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="Filter_protein2">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="Filter_uniprot1">
+          <s:defaults>
+            <s:default name="regex">.+</s:default>
+          </s:defaults>
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="Filter_uniprot2">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="filter_regexp" boring="true">
+          <s:stringconstant>.+</s:stringconstant>
+        </s:processor>
+        <s:processor name="FilterTrueProteinPairsByUniProtID">
+          <s:beanshell>
+            <s:scriptvalue>if (uniprot1 != "False" &amp;&amp; uniprot2 != "False") {
+	true_protein1=protein1;
+	true_uniprot1=uniprot1;
+	true_protein2=protein2;
+	true_uniprot2=uniprot2;
+}</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">protein1</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">uniprot1</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">protein2</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">uniprot2</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">true_protein1</s:beanshelloutput>
+              <s:beanshelloutput s:syntactictype="'text/plain'">true_uniprot1</s:beanshelloutput>
+              <s:beanshelloutput s:syntactictype="'text/plain'">true_protein2</s:beanshelloutput>
+              <s:beanshelloutput s:syntactictype="'text/plain'">true_uniprot2</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+          <s:iterationstrategy>
+            <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+              <i:iterator name="uniprot2" />
+              <i:iterator name="protein2" />
+              <i:iterator name="uniprot1" />
+              <i:iterator name="protein1" />
+            </i:dot>
+          </s:iterationstrategy>
+        </s:processor>
+        <s:processor name="getUniprotID2">
+          <s:arbitrarywsdl>
+            <s:wsdl>http://bubbles.biosemantics.org:8180/axis/services/SynsetServer/SynsetServer.jws?wsdl</s:wsdl>
+            <s:operation>getUniprotID</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:processor name="getUniprotID1">
+          <s:arbitrarywsdl retrydelay="1">
+            <s:wsdl>http://bubbles.biosemantics.org:8180/axis/services/SynsetServer/SynsetServer.jws?wsdl</s:wsdl>
+            <s:operation>getUniprotID</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:link source="candidate1" sink="getUniprotID1:term" />
+        <s:link source="candidate2" sink="getUniprotID2:term" />
+        <s:link source="UniProtOrNot1:uniprotID_or_False" sink="FilterTrueProteinPairsByUniProtID:uniprot1" />
+        <s:link source="UniProtOrNot2:uniprotID_or_False" sink="FilterTrueProteinPairsByUniProtID:uniprot2" />
+        <s:link source="candidate1" sink="FilterTrueProteinPairsByUniProtID:protein1" />
+        <s:link source="candidate2" sink="FilterTrueProteinPairsByUniProtID:protein2" />
+        <s:link source="FilterTrueProteinPairsByUniProtID:true_protein1" sink="Filter_protein1:stringlist" />
+        <s:link source="FilterTrueProteinPairsByUniProtID:true_protein2" sink="Filter_protein2:stringlist" />
+        <s:link source="FilterTrueProteinPairsByUniProtID:true_uniprot1" sink="Filter_uniprot1:stringlist" />
+        <s:link source="FilterTrueProteinPairsByUniProtID:true_uniprot2" sink="Filter_uniprot2:stringlist" />
+        <s:link source="Filter_protein1:filteredlist" sink="protein_molecule1" />
+        <s:link source="Filter_uniprot1:filteredlist" sink="uniprotID1" />
+        <s:link source="filter_regexp:value" sink="Filter_protein1:regex" />
+        <s:link source="filter_regexp:value" sink="Filter_protein2:regex" />
+        <s:link source="filter_regexp:value" sink="Filter_uniprot1:regex" />
+        <s:link source="filter_regexp:value" sink="Filter_uniprot2:regex" />
+        <s:link source="getUniprotID1:getUniprotIDReturn" sink="UniProtOrNot1:uniprotIDlist" />
+        <s:link source="getUniprotID2:getUniprotIDReturn" sink="UniProtOrNot2:uniprotIDlist" />
+        <s:link source="Filter_protein2:filteredlist" sink="protein_molecule2" />
+        <s:link source="Filter_uniprot2:filteredlist" sink="uniprotID2" />
+        <s:source name="candidate1" />
+        <s:source name="candidate2" />
+        <s:sink name="protein_molecule1" />
+        <s:sink name="uniprotID1" />
+        <s:sink name="protein_molecule2" />
+        <s:sink name="uniprotID2" />
+      </s:scufl>
+    </s:workflow>
+    <s:iterationstrategy>
+      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="candidate2" />
+        <i:iterator name="candidate1" />
+      </i:dot>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:processor name="ExtractProteinProteinInteractions">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:92999907-004f-4129-af37-2715c8dd6224" author="" title="Untitled workflow #178" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:link source="FilterHumanProteinPairs:protein_molecule1" sink="FlattenProteinlist1:inputlist" />
+  <s:link source="FilterHumanProteinPairs:protein_molecule2" sink="FlattenProteinlist2:inputlist" />
+  <s:link source="FilterHumanProteinPairs:uniprotID1" sink="FlattenUniprotlist1:inputlist" />
+  <s:link source="FilterHumanProteinPairs:uniprotID2" sink="FlattenUniProtlist2:inputlist" />
+  <s:link source="Filter_protein1:filteredlist" sink="FilterHumanProteinPairs:candidate1" />
+  <s:link source="Filter_protein2:filteredlist" sink="FilterHumanProteinPairs:candidate2" />
+  <s:link source="example_interaction_doc:interaction_doc" sink="split_interactionlist:string" />
+  <s:link source="split_interaction_regexp:value" sink="Filter_protein1:regex" />
+  <s:link source="split_interaction_regexp:value" sink="Filter_protein2:regex" />
+  <s:link source="split_interactionlist:split" sink="Filter_protein1:stringlist" />
+  <s:link source="split_interactionlist:split" sink="Filter_protein2:stringlist" />
+  <s:link source="split_interactions_regexp:value" sink="split_interactionlist:regex" />
+  <s:link source="FlattenProteinlist1:outputlist" sink="protein1" />
+  <s:link source="FlattenProteinlist2:outputlist" sink="protein2" />
+  <s:link source="FlattenUniProtlist2:outputlist" sink="uniprot_id2" />
+  <s:link source="FlattenUniprotlist1:outputlist" sink="uniprot_id1" />
+  <s:source name="input_text">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+      <s:description>Plain text to extract proteins from.
+e.g.
+We have identified a transcriptional repressor, Nrg1, in a genetic screen designed to reveal negative factors involved in the expression of STA1, which encodes a glucoamylase. The NRG1 gene encodes a 25-kDa C2H2 zinc finger protein which specifically binds to two regions in the upstream activation sequence of the STA1 gene, as judged by gel retardation and DNase I footprinting analyses. Disruption of the NRG1 gene causes a fivefold increase in the level of the STA1 transcript in the presence of glucose.</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="protein1">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="protein2">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="uniprot_id1">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="uniprot_id2">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

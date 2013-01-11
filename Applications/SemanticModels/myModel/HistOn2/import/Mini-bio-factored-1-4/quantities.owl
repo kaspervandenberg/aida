@@ -1,0 +1,303 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:rfp="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns="http://www.co-ode.org/ontologies/basic-bio/quantities-and-units.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://www.co-ode.org/ontologies/basic-bio/quantities-and-units.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This is a basic starter kit for quantities and units.  
+
+Almost certainly, quantitative reasoning should be built into the environment rather than represented in the ontology.  This provides sufficient for a demonstration, but is not what we would recommend except that tools do not yet support a better solution.
+
+It is arguable whether they should be in refining properties, ontheir own, or a relation.  As other values generally go under Refining properties, it seems more convenient for engineering/navigation purposes to put them their.  However, they don't obey the general rules in that, in practicall terms, there are an indefinite number of dimensions.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Energy_unit">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Mass_unit"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Volume_unit"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Length_unit"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Unit"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Area_unit"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Concentration_unit"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Area_unit">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Concentration_unit"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Mass_unit"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Length_unit"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Volume_unit"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Energy_unit"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Unit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Quantity">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:ID="has_unit"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Unit"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Refining_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A very simple quantity ontology.  
+
+Note that because has_unit is functional, an existential restriction to the type of unit is correct and no universal is needed.  All quantities must have some unit. 
+
+Almost certainly, quantitative reasoning should be built into the environment rather than represented in the ontology.  This provides sufficient for a demonstration, but is not what we would recommend except that tools do not yet support a better solution.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Volume_quantity">
+    <rdfs:subClassOf rdf:resource="#Quantity"/>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Mass_quantity"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Area_quantity"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Length_quantity"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Volume_unit"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#has_unit"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Concentration_quantity"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Energy_quantity"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Unit">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Refining_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Units for this is a very simple quantity ontology.  
+
+Almost certainly, quantitative reasoning should be built into the environment rather than represented in the ontology.  This provides sufficient for a demonstration, but is not what we would recommend except that tools do not yet support a better solution.
+
+NB, the actual units should be represented as individuals.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#Concentration_unit">
+    <owl:disjointWith rdf:resource="#Energy_unit"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Mass_unit"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Obviously not primitive, but this is a simple ontology.  Should be built into the environment properly.</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Volume_unit"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Area_unit"/>
+    <rdfs:subClassOf rdf:resource="#Unit"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Length_unit"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Length_unit">
+    <owl:disjointWith rdf:resource="#Energy_unit"/>
+    <owl:disjointWith rdf:resource="#Concentration_unit"/>
+    <owl:disjointWith rdf:resource="#Area_unit"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Mass_unit"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#Unit"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Volume_unit"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Length_quantity">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Mass_quantity"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#Quantity"/>
+    <owl:disjointWith rdf:resource="#Volume_quantity"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Concentration_quantity"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#has_unit"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Length_unit"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Area_quantity"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Energy_quantity"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Mass_unit">
+    <owl:disjointWith rdf:resource="#Area_unit"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Volume_unit"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Concentration_unit"/>
+    <owl:disjointWith rdf:resource="#Energy_unit"/>
+    <owl:disjointWith rdf:resource="#Length_unit"/>
+    <rdfs:subClassOf rdf:resource="#Unit"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Energy_quantity">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Mass_quantity"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Concentration_quantity"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Length_quantity"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Energy_unit"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#has_unit"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Volume_quantity"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Area_quantity"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#Quantity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Area_quantity">
+    <owl:disjointWith rdf:resource="#Energy_quantity"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#has_unit"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Area_unit"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Mass_quantity"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Volume_quantity"/>
+    <owl:disjointWith rdf:resource="#Length_quantity"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Concentration_quantity"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="#Quantity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Concentration_quantity">
+    <owl:disjointWith rdf:resource="#Energy_quantity"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#has_unit"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Concentration_unit"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Length_quantity"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Mass_quantity"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Volume_quantity"/>
+    <rdfs:subClassOf rdf:resource="#Quantity"/>
+    <owl:disjointWith rdf:resource="#Area_quantity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Volume_unit">
+    <owl:disjointWith rdf:resource="#Energy_unit"/>
+    <owl:disjointWith rdf:resource="#Area_unit"/>
+    <rdfs:subClassOf rdf:resource="#Unit"/>
+    <owl:disjointWith rdf:resource="#Length_unit"/>
+    <owl:disjointWith rdf:resource="#Mass_unit"/>
+    <owl:disjointWith rdf:resource="#Concentration_unit"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Mass_quantity">
+    <owl:disjointWith rdf:resource="#Length_quantity"/>
+    <owl:disjointWith rdf:resource="#Energy_quantity"/>
+    <owl:disjointWith rdf:resource="#Concentration_quantity"/>
+    <owl:disjointWith rdf:resource="#Area_quantity"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#has_unit"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Mass_unit"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Volume_quantity"/>
+    <rdfs:subClassOf rdf:resource="#Quantity"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="has_quantity">
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#Proportion"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#refining_property"/>
+    <rdfs:range rdf:resource="#Quantity"/>
+  </owl:ObjectProperty>
+  <owl:FunctionalProperty rdf:about="#has_unit">
+    <rdfs:domain rdf:resource="#Quantity"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#refining_property"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Links Quantities to their unit</rdfs:comment>
+    <rdfs:range rdf:resource="#Unit"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="has_magnitude">
+    <rdfs:domain rdf:resource="#Quantity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Links quantities to their magnitude.   
+
+In OWL with current XML datatyhpes, this requires a range of 'float', since we have no generic number.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+  </owl:FunctionalProperty>
+  <Energy_unit rdf:ID="joule"/>
+  <Area_unit rdf:ID="cm_squared"/>
+  <Concentration_unit rdf:ID="moles_per_litre"/>
+  <Length_unit rdf:ID="cm"/>
+  <Concentration_unit rdf:ID="mg_per_cent"/>
+  <Mass_unit rdf:ID="kg"/>
+  <Volume_unit rdf:ID="litre"/>
+  <Concentration_unit rdf:ID="mg_per_L"/>
+  <Volume_unit rdf:ID="ml"/>
+  <Mass_unit rdf:ID="mg"/>
+  <Area_unit rdf:ID="mm_squared"/>
+  <Length_unit rdf:ID="mm"/>
+  <Mass_unit rdf:ID="gram"/>
+  <Concentration_unit rdf:ID="per_cent_by_volume"/>
+  <Length_unit rdf:ID="metre"/>
+  <Energy_unit rdf:ID="kcal"/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 304)  http://protege.stanford.edu -->

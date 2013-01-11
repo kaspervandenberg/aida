@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:edis="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#"
+    xmlns:dsc="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl"/>
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="DiscoveredDisease">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Discovered disease</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#discoveredThroughProcedure"/>
+            <owl:someValuesFrom rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#EntityDiscoveryProcedure"/>
+          </owl:Restriction>
+          <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Disease"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Discovered disease</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Article">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Document-&gt;Publication-&gt;Article (see http://ontoware.org/frs/download.php/354/swrc_updated_v0.7.1.owl)</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Journal article</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="DiscoveredProtein">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Protein"/>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#discoveredThroughProcedure"/>
+            <owl:someValuesFrom rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#EntityDiscoveryProcedure"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <rdf:Property rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#associatedWithEnzyme"/>
+  <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Prostate_cancer">
+    <edis:associatedWithEnzyme rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Breast_cancer">
+    <edis:associatedWithEnzyme rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Wilms_tumor">
+    <edis:associatedWithEnzyme rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Colorectal_cancer">
+    <edis:associatedWithEnzyme rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Hepatocellular_carcinoma">
+    <edis:associatedWithEnzyme rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Melanoma">
+    <edis:associatedWithEnzyme rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Bladder_cancer">
+    <edis:associatedWithEnzyme rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Cell_cycle_defects">
+    <edis:associatedWithEnzyme rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Barretts_esophagus">
+    <edis:associatedWithEnzyme rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Myeloma_Lymphoma">
+    <edis:associatedWithEnzyme rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3, Build 395)  http://protege.stanford.edu -->

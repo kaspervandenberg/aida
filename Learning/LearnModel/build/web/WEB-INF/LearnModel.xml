@@ -1,0 +1,10 @@
+<Context path="/LearnModel">
+  <Logger className="org.apache.catalina.logger.FileLogger" prefix="LearnModel." suffix=".log" timestamp="true"/>
+    <Valve className="org.apache.catalina.valves.AccessLogValve"
+	    prefix="LearnModel_access_log." suffix=".txt"
+		pattern="%t %a %m %U%q %{query}s %T"/>
+    <Valve className="org.apache.catalina.valves.AccessLogValve"
+	    prefix="LearnModel_query_log." suffix=".txt"
+		pattern="%t %a %U %{query}s"/>
+									   
+</Context>

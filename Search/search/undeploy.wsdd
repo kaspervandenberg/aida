@@ -1,0 +1,24 @@
+<undeployment xmlns="http://xml.apache.org/axis/wsdd/"
+              xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+    <service 
+                name="synonym" />
+    <service 
+                name="tokenize" />
+    <service 
+                name="spellCheck" />
+    <service 
+                name="getIndexes" />
+    <service 
+                name="SearcherWS" />
+    <service 
+                name="getFields" />
+    <service 
+                name="getTermVector" />
+    <service 
+                name="getWordnetSynWS" />
+    <service 
+                name="getOnlineAcronymsWS" />
+    <service 
+                name="termFinderWS" />
+
+</undeployment>

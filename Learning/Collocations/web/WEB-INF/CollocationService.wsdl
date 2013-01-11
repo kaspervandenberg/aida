@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="ns:katrenko.ws" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="ns:katrenko.ws" xmlns:intf="ns:katrenko.ws" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.2.1
+Built on Jun 14, 2005 (09:15:57 EDT)-->
+
+   <wsdl:message name="find_phrasesRequest">
+
+      <wsdl:part name="data_train" type="xsd:string"/>
+
+      <wsdl:part name="data_test" type="xsd:string"/>
+
+      <wsdl:part name="ngram_length" type="xsd:int"/>
+
+      <wsdl:part name="ngram" type="xsd:int"/>
+
+      <wsdl:part name="min" type="xsd:int"/>
+
+      <wsdl:part name="max" type="xsd:int"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="find_phrasesResponse">
+
+      <wsdl:part name="find_phrasesReturn" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="CollocationService">
+
+      <wsdl:operation name="find_phrases" parameterOrder="data_train data_test ngram_length ngram min max">
+
+         <wsdl:input message="impl:find_phrasesRequest" name="find_phrasesRequest"/>
+
+         <wsdl:output message="impl:find_phrasesResponse" name="find_phrasesResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="CollocationServiceSoapBinding" type="impl:CollocationService">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="find_phrases">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="find_phrasesRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="ns:katrenko.ws" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="find_phrasesResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="ns:katrenko.ws" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="CollocationServiceService">
+
+      <wsdl:port binding="impl:CollocationServiceSoapBinding" name="CollocationService">
+
+         <wsdlsoap:address location="http://localhost:8084/CollocationsTomcat/services/CollocationService"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

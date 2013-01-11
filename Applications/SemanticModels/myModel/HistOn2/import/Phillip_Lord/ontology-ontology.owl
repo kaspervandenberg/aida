@@ -1,0 +1,897 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+    xmlns="http://www.owl-ontologies.com/unnamed.owl#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xml:base="http://www.owl-ontologies.com/unnamed.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Schema">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Purpose"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Human">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Animal"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Animal">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Organism"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Fungus"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Virus"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Bacteria"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Plant"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Purpose">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Domain"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Organism"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Tools"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Expressivity"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Organisation"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Ontology"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="NamedOntology">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Ontology"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Ontology">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Expressivity"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tools"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Purpose"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Organism"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Organisation"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Domain"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="DAGEdit">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Editor"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="edits"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="#Ontology"/>
+              <owl:Restriction>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:ID="hasExpressivity"/>
+                </owl:onProperty>
+                <owl:someValuesFrom>
+                  <owl:Class rdf:ID="DAG"/>
+                </owl:someValuesFrom>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="DAGOntology">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Ontology"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+            </owl:onProperty>
+            <owl:someValuesFrom>
+              <owl:Class rdf:about="#DAG"/>
+            </owl:someValuesFrom>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Thesaurus">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Expressivity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="ArabidopsisGrossAnatomy">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="hasDomain"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Anatomy"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="hasOrganisation"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="OpenBiologicalOntologies"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#DAGOntology"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Arabidopsis">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Plant"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Bioinformatics">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Domain"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Editor">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Tools"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Virus">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Fungus"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Plant"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Bacteria"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Organism"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Animal"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Searching">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Tools"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Microarray">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Biology"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="MedicalSubjectHeadings">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="TermList"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasDomain"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:ID="Medicine"/>
+              <owl:Class rdf:about="#Biology"/>
+              <owl:Class rdf:about="#Bioinformatics"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#NamedOntology"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OntologyOntology">
+    <rdfs:subClassOf rdf:resource="#NamedOntology"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="OWL"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="DieaseOntology">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#DAG"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasDomain"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Disease"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#DAGOntology"/>
+  </owl:Class>
+  <owl:Class rdf:ID="UnifiedMedicalLanguageSystem">
+    <rdfs:subClassOf rdf:resource="#NamedOntology"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasDomain"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Medicine"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#DAG">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Expressivity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="ChEBI">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Chemistry"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasDomain"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#DAG"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#DAGOntology"/>
+  </owl:Class>
+  <owl:Class rdf:ID="GKBEditor">
+    <rdfs:subClassOf rdf:resource="#Editor"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="#edits"/>
+        <owl:someValuesFrom rdf:resource="#Ontology"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="GeneOntology">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#DAG"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#DAGOntology"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasDomain"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="GeneProduct"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#OpenBiologicalOntologies"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasOrganisation"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Alignment">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Tools"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Annotation">
+    <rdfs:subClassOf rdf:resource="#Purpose"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Fungus">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Organism"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Bacteria"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Plant"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Animal"/>
+    <owl:disjointWith rdf:resource="#Virus"/>
+  </owl:Class>
+  <owl:Class rdf:about="#GeneProduct">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Biology"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="GOMiner">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Tools"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="SchemaReconciliation">
+    <rdfs:subClassOf rdf:resource="#Purpose"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Plant">
+    <owl:disjointWith rdf:resource="#Fungus"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Bacteria"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Virus"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Organism"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Animal"/>
+  </owl:Class>
+  <owl:Class rdf:ID="NCIThesarus">
+    <rdfs:subClassOf rdf:resource="#NamedOntology"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Bacteria">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Organism"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Plant"/>
+    <owl:disjointWith rdf:resource="#Animal"/>
+    <owl:disjointWith rdf:resource="#Fungus"/>
+    <owl:disjointWith rdf:resource="#Virus"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLOntology">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Ontology"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+            </owl:onProperty>
+            <owl:someValuesFrom>
+              <owl:Class rdf:about="#OWL"/>
+            </owl:someValuesFrom>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Organisation">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Domain"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Tools"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Organism"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Ontology"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Expressivity"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Purpose"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SequenceOntology">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#DAG"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasDomain"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Sequence"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#DAGOntology"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#OpenBiologicalOntologies"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasOrganisation"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="BioPAX">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#OWL"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#OWLOntology"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="InformationExchange"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="hasPurpose"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Biology">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Domain"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="AnnotationOntology">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Ontology"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasPurpose"/>
+            </owl:onProperty>
+            <owl:someValuesFrom rdf:resource="#Annotation"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Tools">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Domain"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Purpose"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Organism"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Organisation"/>
+    <owl:disjointWith rdf:resource="#Ontology"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Expressivity"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Chemistry">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Domain"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Cancer">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Disease"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="LinSimilarity">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="SemanticSimilarity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#OpenBiologicalOntologies">
+    <rdfs:subClassOf rdf:resource="#Organisation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MinimalInformationAboutAMicroArrayExperiment">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Annotation"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasPurpose"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#TermList"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Microarray"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasDomain"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#NamedOntology"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Protege">
+    <rdfs:subClassOf rdf:resource="#Editor"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="#Ontology"/>
+              <owl:Restriction>
+                <owl:onProperty>
+                  <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+                </owl:onProperty>
+                <owl:someValuesFrom>
+                  <owl:Class rdf:about="#OWL"/>
+                </owl:someValuesFrom>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+        <owl:onProperty rdf:resource="#edits"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="PhenotypeAndTraitOntology">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasPurpose"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Annotation"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#DAGOntology"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#DAG"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="SOFGAnatomyEntryList">
+    <rdfs:subClassOf rdf:resource="#NamedOntology"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#TermList"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasDomain"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#Anatomy"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Disease">
+    <rdfs:subClassOf rdf:resource="#Biology"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MyGridServiceOntology">
+    <rdfs:subClassOf rdf:resource="#OWLOntology"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="Discovery"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasPurpose"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Bioinformatics"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasDomain"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasOrganisation"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="MyGridProject"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#OWL"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Expressivity">
+    <owl:disjointWith rdf:resource="#Tools"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Domain"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Organisation"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Organism"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Purpose"/>
+    <owl:disjointWith rdf:resource="#Ontology"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Anatomy">
+    <rdfs:subClassOf rdf:resource="#Biology"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Sequence">
+    <rdfs:subClassOf rdf:resource="#Biology"/>
+  </owl:Class>
+  <owl:Class rdf:ID="DataTypes">
+    <rdfs:subClassOf rdf:resource="#Bioinformatics"/>
+  </owl:Class>
+  <owl:Class rdf:about="#MyGridProject">
+    <rdfs:subClassOf rdf:resource="#Organisation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ResnikSimilarity">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#SemanticSimilarity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Discovery">
+    <rdfs:subClassOf rdf:resource="#Purpose"/>
+  </owl:Class>
+  <owl:Class rdf:ID="JiangSimilarity">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#SemanticSimilarity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Algorithm">
+    <rdfs:subClassOf rdf:resource="#Tools"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Medicine">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Domain"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Organism">
+    <owl:disjointWith rdf:resource="#Tools"/>
+    <owl:disjointWith rdf:resource="#Purpose"/>
+    <owl:disjointWith rdf:resource="#Ontology"/>
+    <owl:disjointWith rdf:resource="#Organisation"/>
+    <owl:disjointWith rdf:resource="#Expressivity"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Domain"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#InformationExchange">
+    <rdfs:subClassOf rdf:resource="#Purpose"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MGEDOntology">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#OWL"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#OWLOntology"/>
+  </owl:Class>
+  <owl:Class rdf:ID="FoundationalModelOfAnatomy">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Anatomy"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasDomain"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#NamedOntology"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Development">
+    <rdfs:subClassOf rdf:resource="#Biology"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MobySObjectOntology">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Schema"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasPurpose"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#DAG"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#DAGOntology"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasDomain"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#DataTypes"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#TermList">
+    <rdfs:subClassOf rdf:resource="#Expressivity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#SemanticSimilarity">
+    <rdfs:subClassOf rdf:resource="#Algorithm"/>
+  </owl:Class>
+  <owl:Class rdf:ID="GeneOntologySemanticSimilaritySearchTool">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="implements"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="#ResnikSimilarity"/>
+              <owl:Class rdf:about="#LinSimilarity"/>
+              <owl:Class rdf:about="#JiangSimilarity"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Searching"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OBOOntology">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Ontology"/>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="#OpenBiologicalOntologies"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasOrganisation"/>
+            </owl:onProperty>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+            </owl:onProperty>
+            <owl:someValuesFrom rdf:resource="#DAG"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="eVoc">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasPurpose"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Annotation"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasDomain"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Microarray"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#NamedOntology"/>
+  </owl:Class>
+  <owl:Class rdf:ID="TAMBISOntology">
+    <rdfs:subClassOf rdf:resource="#OWLOntology"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasExpressivity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="#OWL"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasPurpose"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#SchemaReconciliation"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Domain">
+    <owl:disjointWith rdf:resource="#Purpose"/>
+    <owl:disjointWith rdf:resource="#Ontology"/>
+    <owl:disjointWith rdf:resource="#Organisation"/>
+    <owl:disjointWith rdf:resource="#Tools"/>
+    <owl:disjointWith rdf:resource="#Organism"/>
+    <owl:disjointWith rdf:resource="#Expressivity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#OWL">
+    <rdfs:subClassOf rdf:resource="#Expressivity"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="#hasOrganisation">
+    <rdfs:range rdf:resource="#Organisation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#hasExpressivity">
+    <rdfs:range rdf:resource="#Expressivity"/>
+    <rdfs:domain rdf:resource="#Ontology"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#hasPurpose">
+    <rdfs:range rdf:resource="#Purpose"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#hasDomain">
+    <rdfs:range rdf:resource="#Domain"/>
+    <rdfs:domain rdf:resource="#Ontology"/>
+  </owl:ObjectProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 1.3, Build 188)  http://protege.stanford.edu -->

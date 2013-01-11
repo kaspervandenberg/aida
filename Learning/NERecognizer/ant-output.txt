@@ -1,0 +1,83 @@
+Buildfile: build.xml
+
+-pre-init:
+
+-init-private:
+
+-init-user:
+
+-init-project:
+
+-init-macrodef-property:
+
+-do-ear-init:
+
+-do-init:
+
+-post-init:
+
+-init-check:
+
+-init-macrodef-javac:
+
+-init-macrodef-junit:
+
+-init-macrodef-java:
+
+-init-macrodef-nbjpda:
+
+-init-macrodef-debug:
+
+init:
+
+deps-module-jar:
+
+deps-ear-jar:
+
+deps-jar:
+
+-pre-pre-compile:
+
+-pre-compile:
+
+-copy-manifest:
+
+library-inclusion-in-archive:
+
+library-inclusion-in-manifest:
+
+-do-compile:
+    [javac] Compiling 1 source file to /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERecognizer/build/web/WEB-INF/classes
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERecognizer/src/java/katrenko/ws/NERServlet.java:72: warning: unmappable character for encoding UTF8
+    [javac]            out.println("<TEXTAREA name=\"data\" cols=\"60\" rows=\"16\">LVIV [Lviv] , Rus. Lvov, Pol. Lw�w, Ger. Lemberg, city (1989 pop. 791,000), capital of Lviv region, W Ukraine, at the watershed of the Western Bug and Dniester rivers and in the northern foothills of the Carpathian Mts. The chief city of W Ukraine, Lviv is a major rail and highway junction and an industrial and commercial center. Machine building, food processing, and the manufacture of chemicals and pharmaceuticals, motor vehicles, and textiles are the leading industries. Lviv is also an educational and cultural center, with a famous university (est. 1661) and several institutes of the Ukrainian Academy of Sciences. Landmarks include a 16th-century palace and two 14th-century cathedrals. Founded c.1256 by Prince Daniel of Halych, the city was named for his son Lev and developed as a great commercial center on the trade route from Vienna to Kiev.</TEXTAREA><br/>");
+    [javac]                                                                                                         ^
+    [javac] 1 warning
+     [copy] Copying 1 file to /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERecognizer/build/web/WEB-INF/classes
+
+-post-compile:
+
+compile:
+
+-pre-dist:
+
+compile-jsps:
+
+-do-dist-with-manifest:
+      [jar] Building jar: /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERecognizer/dist/NERecognizerService.war
+
+-do-dist-without-manifest:
+
+do-dist:
+
+-post-dist:
+
+dist:
+
+install:
+     [copy] Copying 1 file to /home/aida/tomcat-dev/webapps
+     [copy] Copying 2 files to /home/aida/tomcat-dev/webapps/axis/WEB-INF/classes
+[axis-admin] Processing file /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERecognizer/deploy.wsdd
+[axis-admin] <Admin>Done processing</Admin>
+
+BUILD SUCCESSFUL
+Total time: 6 seconds

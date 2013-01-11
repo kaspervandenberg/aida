@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="Marco Roos (AID)" title="FilterHumanProteinsPairsByUniprot">This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:workflowdescription>
+  <s:processor name="Filter_uniprot1">
+    <s:defaults>
+      <s:default name="regex">.+</s:default>
+    </s:defaults>
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+  </s:processor>
+  <s:processor name="Filter_protein1">
+    <s:defaults>
+      <s:default name="regex">.+</s:default>
+    </s:defaults>
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+  </s:processor>
+  <s:processor name="getUniprotID1">
+    <s:arbitrarywsdl retrydelay="1">
+      <s:wsdl>http://bubbles.biosemantics.org:8180/axis/services/SynsetServer/SynsetServer.jws?wsdl</s:wsdl>
+      <s:operation>getUniprotID</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="UniProtOrNot1">
+    <s:beanshell>
+      <s:scriptvalue>if (uniprotIDlist.isEmpty() ) {
+	uniprotID_or_False = "False";
+} else {
+	uniprotID_or_False = (String) uniprotIDlist.iterator().next().toString();
+}</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">uniprotIDlist</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">uniprotID_or_False</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="getUniprotID2">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://bubbles.biosemantics.org:8180/axis/services/SynsetServer/SynsetServer.jws?wsdl</s:wsdl>
+      <s:operation>getUniprotID</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="UniProtOrNot2">
+    <s:beanshell>
+      <s:scriptvalue>if (uniprotIDlist.isEmpty() ) {
+	uniprotID_or_False = "False";
+} else {
+	uniprotID_or_False = (String) uniprotIDlist.iterator().next().toString();
+}</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">uniprotIDlist</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">uniprotID_or_False</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Filter_protein2">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+  </s:processor>
+  <s:processor name="Filter_uniprot2">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+  </s:processor>
+  <s:processor name="filter_regexp" boring="true">
+    <s:stringconstant>.+</s:stringconstant>
+  </s:processor>
+  <s:processor name="FilterTrueProteinPairsByUniProtID">
+    <s:beanshell>
+      <s:scriptvalue>if (uniprot1 != "False" &amp;&amp; uniprot2 != "False") {
+	true_protein1=protein1;
+	true_uniprot1=uniprot1;
+	true_protein2=protein2;
+	true_uniprot2=uniprot2;
+}</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">protein1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">uniprot1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">protein2</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">uniprot2</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">true_protein1</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="'text/plain'">true_uniprot1</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="'text/plain'">true_protein2</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="'text/plain'">true_uniprot2</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+    <s:iterationstrategy>
+      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="protein1" />
+        <i:iterator name="uniprot1" />
+        <i:iterator name="protein2" />
+        <i:iterator name="uniprot2" />
+      </i:dot>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:link source="candidate1" sink="getUniprotID1:term" />
+  <s:link source="candidate2" sink="getUniprotID2:term" />
+  <s:link source="UniProtOrNot1:uniprotID_or_False" sink="FilterTrueProteinPairsByUniProtID:uniprot1" />
+  <s:link source="UniProtOrNot2:uniprotID_or_False" sink="FilterTrueProteinPairsByUniProtID:uniprot2" />
+  <s:link source="candidate1" sink="FilterTrueProteinPairsByUniProtID:protein1" />
+  <s:link source="candidate2" sink="FilterTrueProteinPairsByUniProtID:protein2" />
+  <s:link source="FilterTrueProteinPairsByUniProtID:true_protein1" sink="Filter_protein1:stringlist" />
+  <s:link source="FilterTrueProteinPairsByUniProtID:true_protein2" sink="Filter_protein2:stringlist" />
+  <s:link source="FilterTrueProteinPairsByUniProtID:true_uniprot1" sink="Filter_uniprot1:stringlist" />
+  <s:link source="FilterTrueProteinPairsByUniProtID:true_uniprot2" sink="Filter_uniprot2:stringlist" />
+  <s:link source="Filter_protein2:filteredlist" sink="protein_molecule2" />
+  <s:link source="Filter_uniprot2:filteredlist" sink="uniprotID2" />
+  <s:link source="filter_regexp:value" sink="Filter_protein1:regex" />
+  <s:link source="filter_regexp:value" sink="Filter_protein2:regex" />
+  <s:link source="filter_regexp:value" sink="Filter_uniprot1:regex" />
+  <s:link source="filter_regexp:value" sink="Filter_uniprot2:regex" />
+  <s:link source="getUniprotID2:getUniprotIDReturn" sink="UniProtOrNot2:uniprotIDlist" />
+  <s:link source="Filter_protein1:filteredlist" sink="protein_molecule1" />
+  <s:link source="Filter_uniprot1:filteredlist" sink="uniprotID1" />
+  <s:link source="getUniprotID1:getUniprotIDReturn" sink="UniProtOrNot1:uniprotIDlist" />
+  <s:source name="candidate1" />
+  <s:source name="candidate2" />
+  <s:sink name="protein_molecule1" />
+  <s:sink name="uniprotID1" />
+  <s:sink name="protein_molecule2" />
+  <s:sink name="uniprotID2" />
+</s:scufl>
+

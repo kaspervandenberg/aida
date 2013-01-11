@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:618ac202-acf6-4695-bdc6-ca0078be3649" author="Marco Roos (AID)" title="Demo_DiseaseDiscovery_byHumanUniprot_scaffold">This workflow finds disease relevant to the query string via the following steps:
+1. A user query: a list of terms or boolean query - look at the Apache Lucene project for all details. E.g.: (EZH2 OR "Enhancer of Zeste" +(mutation chromatin) -clinical); consider adding 'ProteinSynonymsToQuery' in front of the input if your query is a protein.
+2. Retrieve documents: finds 'maximumNumberOfHits' relevant documents (abstract+title) based on query (the AIDA service inside is based on Apache's Lucene)
+3. Discover proteins: extract proteins discovered in the set of relevant abstracts with a 'named entity recognizer' trained on genomic terms using a Bayesian approach; the AIDA service inside is based on LingPipe. This subworkflow also 'filters' false positives from the discovered protein by requiring a discovery has a valid UniProt ID. Martijn Schuemie's service to do that contains only human UniProt IDs, which is why this workflow only works for human proteins.
+4. Link proteins to disease contained in the OMIM disease database (with a service from Japan that interrogates OMIM)
+
+Workflow by Marco Roos (AID = Adaptive Information Disclosure, University of Amsterdam; http://adaptivedisclosure.org)
+
+Text mining services by Sophia Katrenko and Edgar Meij (AID), and Martijn Schuemie (BioSemantics, Erasmus University Rotterdam).
+OMIM service from the Center for Information Biology and DNA Data Bank of Japan, National Institute of Genetics, director Hideaki Sugawara (see http://xml.nig.ac.jp)
+
+Changes to our original BioAID_DiseaseDiscovery workflow:
+   * Use of Martijn Schuemie's synsets service to
+       * provide uniprot ids to discovered proteins
+       * filter false positive discoveries, only proteins with a uniprot id go through; this introduces some false negatives (e.g. discovered proteins with a name shorter than 3 characters)
+       * solve a major issue with the original workflow where some false positives could contribute disproportionately to the number of discovered diseases
+   * Counting of results in various ways.</s:workflowdescription>
+  <s:processor name="Document_index" boring="true">
+    <s:stringconstant>MedLine_new</s:stringconstant>
+  </s:processor>
+  <s:processor name="search_field" boring="true">
+    <s:stringconstant>content</s:stringconstant>
+  </s:processor>
+  <s:processor name="CountDiseasesPerProtein">
+    <s:beanshell>
+      <s:scriptvalue>count = list.size();</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">list</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">count</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="CountDiseases">
+    <s:beanshell>
+      <s:scriptvalue>count = list.size();</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">list</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">count</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="CountProteins">
+    <s:beanshell>
+      <s:scriptvalue>count = list.size();</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">list</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">count</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="CountDiseases:count" sink="disease_count" />
+  <s:link source="CountDiseasesPerProtein:count" sink="disease_count_per_protein" />
+  <s:link source="CountProteins:count" sink="protein_count" />
+  <s:source name="query_string">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+      <s:description>Query for retrieving document from an indexed corpus. It is assumed the query will be used for a search service based on Lucene. In short that means the query should be string of terms with logical operators or +/- signs to denote if terms are wanted or unwanted. Documents that comply with this query will be used to discover entities in.
+If you have a single protein as query, consider adding the 'ProteinSynonymsToQuery' workflow in front of this input.</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="maxNumberOfDocsToRetrieve">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+      <s:description>This limits the amount of relevant documents retrieved from our medline index. A maximum of 10 is good for testing, up to a 100 works well for us (takes some time), much above 100 you may find Taverna 1 choking on its memory/data handling limitations.</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="relevant_documents" />
+  <s:sink name="discovered_proteins">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/rdf</s:mimeType>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="discovered_diseases" />
+  <s:sink name="diseases_per_protein" />
+  <s:sink name="protein_count" />
+  <s:sink name="disease_count_per_protein" />
+  <s:sink name="discovered_uniprot_ids" />
+  <s:sink name="disease_count" />
+</s:scufl>
+

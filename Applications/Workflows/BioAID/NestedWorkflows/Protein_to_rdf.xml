@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:a7c6b8a8-5d6f-4b2e-8c0a-7c5b54666742" author="" title="Protein_to_rdf" />
+  <s:processor name="ProteinRDFdoc">
+    <s:defaults>
+      <s:default name="alt_full_name" />
+      <s:default name="alt_abbreviation" />
+      <s:default name="alt_short_name" />
+    </s:defaults>
+    <s:beanshell>
+      <s:scriptvalue>/*
+Variables (all a Plain Text):
+protein_id
+full_name
+abbreviation
+short_name
+alt_full_name
+alt_abbreviation
+alt_short_name
+
+RDFformat
+rdf_document
+data_URI
+*/
+
+// http://rdf.adaptivedisclosure.org/~marco/BioAID/Preliminary/Workflows/BeanshellScrtips/ProteinRDFdoc.java
+// D://Marco/adaptivedisclosure.org/public_html/BioAID/Preliminary/Workflows/BeanshellScrtips/ProteinRDFdoc.java
+
+// Comment: a lot of URIs (namespaces of ontology elements) are hard-coded here; I would like to find ways to make it less so
+// 		perhaps by asking a user to select the right elements from a list which may have been compiled from a search in the ontology on keyword or label value
+
+// Notation
+String RDFformat = "rdfxml";
+
+//data or base URI
+data_URI = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl";
+
+//Concepts
+String protCon = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#Protein";
+
+//Properties
+// String hasDiscStatProp = "disc:discoveredThroughProcedure";
+// String assocproteinProp = "edis:associatedWith";
+String abbrevProp = "edis:abbreviation";
+String fullnameProp = "edis:full_name";
+String shortnameProp = "edis:short_name";
+
+//Individuals
+String proteinInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#" + protein_id;
+// String discoveryInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#" + workflowURI;
+
+// String proteinInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#" + associatedProtein;
+
+//Relations (rdfxml):
+String rdf_doc;
+String oftypestring = " rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\"";
+
+//header
+rdf_doc = "&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;\n";
+rdf_doc = rdf_doc + "&lt;rdf:RDF\n	xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n	xmlns:edis=\"http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#\"\n	xmlns:disc=\"http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#\"\n	xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"&gt;\n";
+
+//body
+rdf_doc = rdf_doc + "&lt;rdf:Description rdf:about=\"" + proteinInd + "\"&gt;\n";
+rdf_doc = rdf_doc + "	&lt;rdf:type rdf:resource=\"" + protCon + "\"/&gt;\n";
+rdf_doc = rdf_doc + "	&lt;rdfs:label " + oftypestring + "&gt;" + short_name + "&lt;/rdfs:label&gt;\n";
+// rdf_doc = rdf_doc + "	&lt;" + hasDiscStatProp + " rdf:resource=\"" + discoveryInd + "\"/&gt;\n";
+// rdf_doc = rdf_doc + "	&lt;" + assocproteinProp + " rdf:resource=\"" + proteinInd + "\"/&gt;\n";
+if (abbreviation.length()&gt;0) 
+	{ rdf_doc = rdf_doc + "	&lt;" + abbrevProp + oftypestring + "&gt;" + abbreviation + "&lt;/" + abbrevProp + "&gt;\n"; }
+if (full_name.length()&gt;0) 
+	{ rdf_doc = rdf_doc + "	&lt;" + fullnameProp + oftypestring + "&gt;" + full_name + "&lt;/" + fullnameProp + "&gt;\n"; }
+if (short_name.length()&gt;0) 
+	{ rdf_doc = rdf_doc + "	&lt;" + shortnameProp + oftypestring + "&gt;" + short_name + "&lt;/" + shortnameProp + "&gt;\n"; }
+if (alt_abbreviation.length()&gt;0) 
+	{ rdf_doc = rdf_doc + "	&lt;" + abbrevProp + oftypestring + "&gt;" + alt_abbreviation + "&lt;/" + abbrevProp + "&gt;\n"; }
+if (alt_full_name.length()&gt;0) 
+	{ rdf_doc = rdf_doc + "	&lt;" + fullnameProp + oftypestring + "&gt;" + alt_full_name + "&lt;/" + fullnameProp + "&gt;\n"; }
+if (alt_short_name.length()&gt;0) 
+	{ rdf_doc = rdf_doc + "	&lt;" + shortnameProp + oftypestring + "&gt;" + alt_short_name + "&lt;/" + shortnameProp + "&gt;\n"; }
+
+//footer
+rdf_doc = rdf_doc + "&lt;/rdf:Description&gt;\n&lt;/rdf:RDF&gt;\n";
+	
+rdf_document = rdf_doc;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">full_name</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">abbreviation</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">short_name</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">alt_full_name</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">alt_abbreviation</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">alt_short_name</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">protein_id</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">RDFformat</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="'text/plain'">rdf_document</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="'text/plain'">data_URI</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+    <s:iterationstrategy>
+      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="workflowURI" />
+        <i:iterator name="associatedEnzyme" />
+        <i:iterator name="disease_id" />
+        <i:iterator name="full_name" />
+        <i:iterator name="abbreviation" />
+        <i:iterator name="short_name" />
+        <i:iterator name="alt_full_name" />
+        <i:iterator name="alt_abbreviation" />
+        <i:iterator name="alt_short_name" />
+        <i:iterator name="enriched_ontologyURI" />
+        <i:iterator name="rdf_header" />
+        <i:iterator name="rdf_footer" />
+      </i:dot>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:processor name="AddToBioRepository">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:1f4a075e-9b2b-419c-a22d-4d9dd71925e5" author="" title="AddRDF_to_AIDA_biorepository" />
+        <s:processor name="addRdf">
+          <s:arbitrarywsdl>
+            <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/RepositoryWS?wsdl</s:wsdl>
+            <s:operation>addRdf</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:processor name="AIDA_bio_repository">
+          <s:workflow>
+            <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/UtilityWorkflows/AIDA_rdf_bio_repository_MR1_demo.xml</s:xscufllocation>
+          </s:workflow>
+        </s:processor>
+        <s:link source="AIDA_bio_repository:password" sink="addRdf:password" />
+        <s:link source="AIDA_bio_repository:repository" sink="addRdf:repository" />
+        <s:link source="AIDA_bio_repository:username" sink="addRdf:username" />
+        <s:link source="data" sink="addRdf:data" />
+        <s:link source="data_uri" sink="addRdf:data_uri" />
+        <s:link source="rdf_format" sink="addRdf:rdf_format" />
+        <s:link source="AIDA_bio_repository:server_url" sink="addRdf:server_url" />
+        <s:source name="rdf_format" />
+        <s:source name="data" />
+        <s:source name="data_uri" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:link source="abbreviation" sink="ProteinRDFdoc:abbreviation" />
+  <s:link source="alt_abbreviation" sink="ProteinRDFdoc:alt_abbreviation" />
+  <s:link source="alt_full_name" sink="ProteinRDFdoc:alt_full_name" />
+  <s:link source="alt_short_name" sink="ProteinRDFdoc:alt_short_name" />
+  <s:link source="full_name" sink="ProteinRDFdoc:full_name" />
+  <s:link source="short_name" sink="ProteinRDFdoc:short_name" />
+  <s:link source="ProteinRDFdoc:RDFformat" sink="AddToBioRepository:rdf_format" />
+  <s:link source="ProteinRDFdoc:data_URI" sink="AddToBioRepository:data_uri" />
+  <s:link source="ProteinRDFdoc:rdf_document" sink="AddToBioRepository:data" />
+  <s:link source="proteinID" sink="ProteinRDFdoc:protein_id" />
+  <s:link source="ProteinRDFdoc:rdf_document" sink="proteinRDFdoc" />
+  <s:source name="short_name">
+    <s:metadata>
+      <s:description>Example: APNEA</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="full_name">
+    <s:metadata>
+      <s:description>Example: APNEA, OBSTRUCTIVE SLEEP</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="abbreviation">
+    <s:metadata>
+      <s:description>Example: APNEA</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="alt_short_name">
+    <s:metadata>
+      <s:description>If none exists define this input with nothing (zero length string)</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="alt_full_name">
+    <s:metadata>
+      <s:description>If none exists define this input with nothing (zero length string)</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="alt_abbreviation">
+    <s:metadata>
+      <s:description>If none exists define this input with nothing (zero length string)</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="proteinID">
+    <s:metadata>
+      <s:description>For instance an OMIM id or the abbreviation of the disease.</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="proteinRDFdoc" />
+</s:scufl>
+

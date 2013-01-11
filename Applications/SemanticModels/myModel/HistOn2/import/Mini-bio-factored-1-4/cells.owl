@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:rfp="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#"
+    xmlns="http://www.co-ode.org/ontologies/basic-bio/cells.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:rlp="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:tbio="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:bva="http://www.co-ode.org/ontologies/basic-bio/basic-vertebrate-gross-anatomy.owl#"
+  xml:base="http://www.co-ode.org/ontologies/basic-bio/cells.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/basic-vertebrate-gross-anatomy.owl"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A placeholder ontology with enough cells to demonstrate the basic location and the use of collectives in body-substance</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Red_blood_cell">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Blood_cell"/>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Erythrocyte</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Prokaryote_cell">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Cell"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Eukaryote_cell">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Cell"/>
+  </owl:Class>
+  <owl:Class rdf:ID="White_blood_cell">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This simple placeholder ontology stops here at White_blood_cell/Leukocyte.  
+
+Sufficient to support demonstration.  To be extended later.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Leukocyte</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Blood_cell"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Blood_cell">
+    <rdfs:subClassOf rdf:resource="#Eukaryote_cell"/>
+  </owl:Class>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 304)  http://protege.stanford.edu -->

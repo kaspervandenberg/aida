@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://rdf.adaptivedisclosure.org/BioAID/DiscoveredDiseases.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:dsc="http://rdf.adaptivedisclosure.nl/BioAID/DiscoveredEntities.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:swrc-07="http://swrc.ontoware.org/ontology-07#"
+    xmlns:edis="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#"
+  xml:base="http://rdf.adaptivedisclosure.org/BioAID/DiscoveredDiseases.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl"/>
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.nl/BioAID/DiscoveredEntities.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="DiscoveredDisease">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://rdf.adaptivedisclosure.nl/BioAID/DiscoveredEntities.owl#EntityDiscoveryStatus"/>
+            <owl:onProperty rdf:resource="http://rdf.adaptivedisclosure.nl/BioAID/DiscoveredEntities.owl#has_discovery_status"/>
+          </owl:Restriction>
+          <rdf:Description rdf:about="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#Disease"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >discovered disease</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Discovered disease</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Article"/>
+  <DiscoveredDisease rdf:ID="ALPHA-THALASSEMIA_MYELODYSPLASIA_SYNDROME">
+    <dsc:has_discovery_status>
+      <dsc:TextMiningDiscovery rdf:ID="BioAID_DiseaseDiscoveryWorkflow.xml">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Text mining discovery from BioAID workflow BioAID_DiseaseDiscoveryWorkflow.xml</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >BioAID_DiseaseDiscoveryWorkflow.xml discovery</rdfs:label>
+      </dsc:TextMiningDiscovery>
+    </dsc:has_discovery_status>
+    <edis:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ATMDS</edis:abbreviation>
+    <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ALPHA-THALASSEMIA MYELODYSPLASIA SYNDROME</edis:full_name>
+    <edis:associatedWithEnzyme>
+      <rdf:Description rdf:about="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2">
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="DIABETES_MELLITUS_NONINSULIN-DEPENDENT">
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >DIABETES MELLITUS, NONINSULIN-DEPENDENT</edis:full_name>
+            <edis:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >NIDDM</edis:abbreviation>
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >NONINSULIN-DEPENDENT DIABETES MELLITUS</rdfs:label>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="PRADER-WILLI_SYNDROME">
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+            <edis:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >PWS</edis:abbreviation>
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >PRADER-WILLI SYNDROME</edis:full_name>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="FACIOSCAPULOHUMERAL_MUSCULAR_DYSTROPHY_1A">
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >FACIOSCAPULOHUMERAL MUSCULAR DYSTROPHY 1A</edis:full_name>
+            <edis:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >FSHMD1A</edis:abbreviation>
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >FACIOSCAPULOHUMERAL MUSCULAR DYSTROPHY 1A</rdfs:label>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="HYPERLIPIDEMIA_FAMILIAL_COMBINED">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >FAMILIAL COMBINED HYPERLIPIDEMIA</rdfs:label>
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >HYPERLIPIDEMIA, FAMILIAL COMBINED</edis:full_name>
+            <edis:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >FCHL</edis:abbreviation>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="MUSCULAR_DYSTROPHY_DUCHENNE_TYPE">
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >MUSCULAR DYSTROPHY, DUCHENNE TYPE</edis:full_name>
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+            <edis:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >DMD</edis:abbreviation>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >MUSCULAR DYSTROPHY, DUCHENNE TYPE</rdfs:label>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+        <edis:associatedWithDisease rdf:resource="#ALPHA-THALASSEMIA_MYELODYSPLASIA_SYNDROME"/>
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="CORONARY_ARTERY_DISEASE_AUTOSOMAL_DOMINANT_2">
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+            <edis:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >ADCAD2</edis:abbreviation>
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >CORONARY ARTERY DISEASE, AUTOSOMAL DOMINANT 2</edis:full_name>
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="HYPOMAGNESEMIA_HYPERTENSION_AND_HYPERCHOLESTEROLEMIA_MITOCHONDRIAL">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >HYPOMAGNESEMIA, HYPERTENSION, AND MITOCHONDRIAL HYPERCHOLESTEROLEMIA</rdfs:label>
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >HYPOMAGNESEMIA, HYPERTENSION, AND HYPERCHOLESTEROLEMIA, MITOCHONDRIAL</edis:full_name>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="POLYCYSTIC_OVARY_SYNDROME_1">
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >POLYCYSTIC OVARY SYNDROME 1</rdfs:label>
+            <edis:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >PCOS1</edis:abbreviation>
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >POLYCYSTIC OVARY SYNDROME 1</edis:full_name>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="SC_PHOCOMELIA_SYNDROME">
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >SC PHOCOMELIA SYNDROME</rdfs:label>
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >SC PHOCOMELIA SYNDROME</edis:full_name>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="SPINAL_AND_BULBAR_MUSCULAR_ATROPHY_X-LINKED_1">
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+            <edis:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >SMAX1</edis:abbreviation>
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >SPINAL AND BULBAR MUSCULAR ATROPHY, X-LINKED 1</edis:full_name>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >SPINAL AND BULBAR MUSCULAR ATROPHY, X-LINKED 1</rdfs:label>
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="HYPERTRIGLYCERIDEMIA_FAMILIAL">
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >HYPERTRIGLYCERIDEMIA, FAMILIAL</edis:full_name>
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+            <edis:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >SMAX1</edis:abbreviation>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >FAMILIAL HYPERTRIGLYCERIDEMIA</rdfs:label>
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="APNEA">
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >APNEA, OBSTRUCTIVE SLEEP</edis:full_name>
+            <edis:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >APNEA</edis:abbreviation>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >APNEA</rdfs:label>
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="MEDULLOBLASTOMA">
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >MEDULLO BLASTOMA</edis:full_name>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >MEDULLOBLASTOMA</rdfs:label>
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+        <edis:associatedWithDisease>
+          <DiscoveredDisease rdf:ID="OBESITY">
+            <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+            <edis:full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >OBESITY</edis:full_name>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >OBESITY</rdfs:label>
+            <dsc:has_discovery_status rdf:resource="#BioAID_DiseaseDiscoveryWorkflow.xml"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            ></rdfs:comment>
+          </DiscoveredDisease>
+        </edis:associatedWithDisease>
+      </rdf:Description>
+    </edis:associatedWithEnzyme>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ALPHA-THALASSEMIA MYELODYSPLASIA SYNDROME</rdfs:label>
+  </DiscoveredDisease>
+  <rdf:Description rdf:about="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#Barretts_esophagus">
+    <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#Cell_cycle_defects">
+    <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#Prostate_cancer">
+    <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <Article rdf:ID="test_article">
+    <PMID rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >test_article_ID</PMID>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >test_article</rdfs:label>
+  </Article>
+  <rdf:Description rdf:about="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#Bladder_cancer">
+    <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#Melanoma">
+    <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#Breast_cancer">
+    <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#Wilms_tumor">
+    <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <owl:AnnotationProperty rdf:ID="PMID">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PubMedID</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:AnnotationProperty>
+  <rdf:Description rdf:about="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#Myeloma_Lymphoma">
+    <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#Hepatocellular_carcinoma">
+    <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#Colorectal_cancer">
+    <edis:associatedWithEnzyme rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#EZH2"/>
+  </rdf:Description>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3, Build 395)  http://protege.stanford.edu -->

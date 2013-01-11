@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:adc868f1-ea08-4ac6-830c-7648f9894dde" author="" title="Test_RelationExtraction_on_ws" />
+  <s:processor name="LearnedModelHTTP" boring="true">
+    <s:stringconstant>http%3A//rdf.adaptivedisclosure.org/~marco/BioAID/Public/AIDASampleInput/RelationLearningExtraction/mym5</s:stringconstant>
+  </s:processor>
+  <s:processor name="test_data_relation_extractionHTTP" boring="true">
+    <s:stringconstant>http%3A//rdf.adaptivedisclosure.org/~marco/BioAID/Public/AIDASampleInput/RelationLearningExtraction/test.data</s:stringconstant>
+  </s:processor>
+  <s:processor name="LearnedModelLocal" boring="true">
+    <s:stringconstant>/home/aida/public_html/learning_data/relations/models/biorelation.model</s:stringconstant>
+  </s:processor>
+  <s:processor name="annotateInput_ws">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/RelationExtractor?wsdl</s:wsdl>
+      <s:operation>annotateInput</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="annotateInput_aida">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:9999/axis/services/RelationExtractor?wsdl</s:wsdl>
+      <s:operation>annotateInput</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="test_data_relation_extractionLocal" boring="true">
+    <s:stringconstant>/home/aida/test.data</s:stringconstant>
+  </s:processor>
+  <s:processor name="EZH2_testdata" boring="true">
+    <s:stringconstant>/home/aida/public_html/learning_data/named_entities/sample_output/EZH2_IOB_testdata.txt</s:stringconstant>
+  </s:processor>
+  <s:link source="EZH2_testdata:value" sink="annotateInput_aida:inputData" />
+  <s:link source="EZH2_testdata:value" sink="annotateInput_ws:inputData" />
+  <s:link source="LearnedModelLocal:value" sink="annotateInput_aida:modelFile" />
+  <s:link source="LearnedModelLocal:value" sink="annotateInput_ws:modelFile" />
+  <s:link source="annotateInput_aida:annotateInputReturn" sink="output_aida" />
+  <s:link source="annotateInput_ws:annotateInputReturn" sink="output_ws" />
+  <s:sink name="output_ws" />
+  <s:sink name="output_aida" />
+</s:scufl>
+

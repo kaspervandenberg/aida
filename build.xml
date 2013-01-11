@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="AIDA" default="default" basedir=".">
+
+  <property name="javadoc.link" value="http://java.sun.com/j2se/1.4/docs/api/"/>
+  <property name="javadoc.dir" value="System/Javadoc"/>
+
+  <path id="javadoc.classpath">
+    <path refid="${javac.classpath}"/>
+
+  </path>
+
+  <target name="default" depends="javadoc" />
+
+  <target name="zip" >
+    <zip destfile="../AIDA.zip"
+      basedir="../"
+      includes="AIDA/**/*"
+      excludes="AIDA/Drafts/**/*"
+    />
+  </target>
+
+  <target name="init-javadoc">
+    <available property="javadoc.prop" file="javadoc.properties" />
+    <fail message="Run javadoc.sh first." unless="javadoc.prop"/>
+  </target>
+
+  <target name="javadoc" depends="init-javadoc" if="javadoc.prop">
+
+    <property file="javadoc.properties"/>
+
+    <mkdir dir="System/Javadoc"/>
+
+    <do-javadoc destdir="${javadoc.dir}" title="AIDA toolkit">
+      <sources>
+        <packageset dir="Search/search/src"/>
+        <packageset dir="Search/Indexer/src"/>
+        <packageset dir="Storage/Services/src"/>
+        <packageset dir="Learning/Collocations/src/java"/>
+        <packageset dir="Learning/LearnModel/src/java"/>
+        <packageset dir="Learning/RelationLearning/src/java"/>
+        <packageset dir="Learning/NERecognizer/src/java">
+          <exclude name="katrenko/**/*.model"/>
+        </packageset>
+        <packageset dir="Learning/NERcrf/src/java"/>
+        <packageset dir="Learning/TestModel/src/java"/>
+
+
+        <group title="AID Packages" packages="org*"/>
+        <group title="Machiel's Packages" packages="indexer*"/>
+        <group title="Sophia's Packages" packages="katrenko*"/>
+
+      </sources>
+      </do-javadoc>
+
+  </target>
+
+  <macrodef name="do-javadoc">
+    <element name="sources" optional="yes"/>
+    <attribute name="destdir"/>
+    <attribute name="title" default="${Name} ${version} API"/>
+    <sequential>
+      <javadoc
+              destdir="@{destdir}"
+              access="protected"
+              author="true"
+              version="true"
+              use="true"
+              source="1.5"
+              link="${javadoc.link}"
+              windowtitle="AIDA"
+              doctitle="@{title}"
+              bottom="Copyright &amp;copy; 2007 AID group.  All Rights Reserved."
+              classpath="${javac.classpath}"
+      >
+
+        <tag name="todo" description="To Do: "/>
+        <link offline="true" packagelistLoc="${javadoc.dir}"/>
+
+
+        <sources />
+      </javadoc>
+    </sequential>
+  </macrodef>
+</project>

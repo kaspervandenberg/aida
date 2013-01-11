@@ -1,0 +1,83 @@
+Buildfile: build.xml
+
+-pre-init:
+
+-init-private:
+
+-init-user:
+
+-init-project:
+
+-init-macrodef-property:
+
+-do-ear-init:
+
+-do-init:
+
+-post-init:
+
+-init-check:
+
+-init-macrodef-javac:
+
+-init-macrodef-junit:
+
+-init-macrodef-java:
+
+-init-macrodef-nbjpda:
+
+-init-macrodef-debug:
+
+-init-macrodef-copy-ear-war:
+
+init:
+
+deps-module-jar:
+
+deps-ear-jar:
+
+deps-jar:
+
+-pre-pre-compile:
+
+-pre-compile:
+
+-copy-manifest:
+
+-copy-webdir:
+
+library-inclusion-in-archive:
+
+library-inclusion-in-manifest:
+
+-do-compile:
+    [javac] Compiling 1 source file to /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/TestModel/build/web/WEB-INF/classes
+     [copy] Copying 1 file to /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/TestModel/build/web/WEB-INF/classes
+
+-post-compile:
+
+compile:
+
+-pre-dist:
+
+compile-jsps:
+
+-do-dist-with-manifest:
+      [jar] Building jar: /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/TestModel/dist/TestModel.war
+
+-do-dist-without-manifest:
+
+do-dist:
+
+-post-dist:
+
+dist:
+
+install:
+     [copy] Copying 1 file to /home/aida/tomcat-dev/webapps
+     [copy] Copying 2 files to /home/aida/tomcat-dev/webapps/axis/WEB-INF/classes
+[axis-admin] Processing file /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/TestModel/deploy.wsdd
+[axis-admin] <Admin>Done processing</Admin>
+
+BUILD SUCCESSFUL
+Total time: 4 seconds

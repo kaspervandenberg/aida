@@ -1,0 +1,19 @@
+<plugin>
+	<name>My Local Worker</name>
+	<description><!-- add a description here --></description>
+	<identifier>org.vle.aid</identifier>
+	<version>0.1</version>
+	<provider>org.vle.aid</provider>
+	<repositories>
+		<repository>
+			<!-- add the url to the repository you have deployed your plugin to here, e.g. http://www.mygrid.org.uk/maven/repository -->
+		</repository>
+	</repositories>
+	<profile>
+		<artifact groupId="org.vle.aid" artifactId="indexer-plugin"
+			version="0.1" />
+	</profile>
+	<taverna>
+		<version>1.6.0</version>
+	</taverna>
+</plugin>

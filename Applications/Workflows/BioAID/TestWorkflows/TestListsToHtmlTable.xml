@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:a53d5571-7a13-4040-9f2f-dca36b321c16" author="" title="ListConcatenationTest" />
+  <s:processor name="CreateList1">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.*;
+
+List newlist = new ArrayList();
+for (int i=1; i&lt;4; i++) {
+	newlist.add((String) (Integer.toString(i)));
+}
+outlist=newlist;</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">outlist</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="CreateList2">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.*;
+
+List newlist = new ArrayList();
+for (int i=0; i&lt;3; i++) {
+	newlist.add((String) Character.toString((char) ('a'+(char) i)));
+}
+outlist=newlist;</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">outlist</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="CreateList3">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.*;
+
+List newlist = new ArrayList();
+for (int i=0; i&lt;3; i++) {
+	newlist.add((String) Character.toString((char) ('A'+(char) i)));
+}
+outlist=newlist;</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">outlist</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="ConcatenateLists">
+    <s:beanshell>
+      <s:scriptvalue>/*
+variables
+item1
+item2
+item3
+*/
+import java.util.*;
+
+List tmpList = new ArrayList();
+
+tmpList.add(item1);
+tmpList.add(item2);
+tmpList.add(item3);
+
+outlist=tmpList;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">item1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">item2</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">item3</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">outlist</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+    <s:iterationstrategy>
+      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="item1" />
+        <i:iterator name="item2" />
+        <i:iterator name="item3" />
+      </i:dot>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:processor name="html_top" boring="true">
+    <s:stringconstant>&lt;html&gt;&amp;#10;&lt;head&gt;&amp;#10;&lt;title&gt;Results of text mining workflow&lt;/title&gt;&amp;#10;&lt;/head&gt;&amp;#10;&lt;body&gt;&amp;#10;&lt;table summary='this table gives the results of the text mining workflow'&gt;&amp;#10;&lt;caption&gt;&lt;em&gt;Results of text mining workflow&lt;/em&gt;&lt;/caption&gt;&amp;#10;&lt;tr&gt;&amp;#10;&lt;th&gt;Query&lt;br/&gt;protein&lt;/th&gt;&amp;#10;&lt;th&gt;Associated&lt;br/&gt;with&lt;/th&gt;&amp;#10;&lt;th&gt;Published in&lt;br/&gt;&lt;small&gt;(PubMed reference)&lt;/small&gt;&lt;/th&gt;&amp;#10;&lt;/tr&gt;&amp;#10;</s:stringconstant>
+  </s:processor>
+  <s:processor name="html_bottom" boring="true">
+    <s:stringconstant>&lt;/body&gt;&amp;#10;&lt;/html&gt;&amp;#10;</s:stringconstant>
+  </s:processor>
+  <s:processor name="htmlize_table">
+    <s:beanshell>
+      <s:scriptvalue>/* beanshell script to compile lists of text mining results into a table */
+/* 
+variables:
+structuredList //  list of (query protein, discovered protein, publication) lists
+
+String html_top=(String) String("&lt;html&gt;&amp;#10;&lt;head&gt;&amp;#10;&lt;title&gt;Results of text mining workflow&lt;/title&gt;&amp;#10;&lt;/head&gt;&amp;#10;&lt;body&gt;&amp;#10;&lt;table summary='this table gives the results of the text mining workflow'&gt;&amp;#10;&lt;caption&gt;&lt;em&gt;Results of text mining workflow&lt;/em&gt;&lt;/caption&gt;&amp;#10;&lt;tr&gt;&amp;#10;&lt;th&gt;Query&lt;br/&gt;protein&lt;/th&gt;&amp;#10;&lt;th&gt;Associated&lt;br/&gt;with&lt;/th&gt;&amp;#10;&lt;th&gt;Published in&lt;br/&gt;&lt;small&gt;(PubMed reference)&lt;/small&gt;&lt;/th&gt;&amp;#10;&lt;/tr&gt;&amp;#10;");
+*/
+
+String qry;
+String prot;
+String pub;
+
+String prev_qry="";
+String prev_prot="";
+String prev_pub="";
+
+String tablebody="";
+
+Iterator item_iterator;
+Iterator iterator = structuredList.iterator();
+while ( iterator.hasNext() ) 
+{
+	item_iterator = iterator.next().iterator();
+	qry=(String) item_iterator.next().toString();
+	prot=(String) item_iterator.next().toString();
+	pub=(String) item_iterator.next().toString();
+	
+	if (qry.equals(prev_qry)) { qry=""; } else { prev_qry=qry; }
+	if (prot.equals(prev_prot)) { prot=""; } else { prev_prot = prot; }
+	if (pub.equals(prev_pub)) { pub=""; } else {prev_pub = pub; }
+	
+	tablebody=tablebody+"&lt;tr&gt;&amp;#10;&lt;td align='center'&gt;"+qry+"&lt;/td&gt;&amp;#10;&lt;td align='center'&gt;"+prot+"&lt;/td&gt;&lt;td align='center' &gt;&lt;a href='"+pub+"'&gt;"+pub+"&lt;/a&gt;&lt;/td&gt;&amp;#10;&lt;/tr&gt;&amp;#10;";
+}
+html_table_body=tablebody;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l(l('text/plain'))">structuredList</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/html'">html_table_body</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Concatenate_add_top">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:processor name="Concatenate_add_bottom">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:link source="ConcatenateLists:outlist" sink="htmlize_table:structuredList" />
+  <s:link source="CreateList1:outlist" sink="ConcatenateLists:item1" />
+  <s:link source="CreateList2:outlist" sink="ConcatenateLists:item2" />
+  <s:link source="CreateList3:outlist" sink="ConcatenateLists:item3" />
+  <s:link source="html_top:value" sink="Concatenate_add_top:string1" />
+  <s:link source="ConcatenateLists:outlist" sink="concatenatedList" />
+  <s:link source="Concatenate_add_bottom:output" sink="html" />
+  <s:link source="Concatenate_add_top:output" sink="Concatenate_add_bottom:string1" />
+  <s:link source="html_bottom:value" sink="Concatenate_add_bottom:string2" />
+  <s:link source="htmlize_table:html_table_body" sink="Concatenate_add_top:string2" />
+  <s:link source="CreateList1:outlist" sink="outlist" />
+  <s:link source="CreateList2:outlist" sink="outlist2" />
+  <s:link source="CreateList3:outlist" sink="outlist3" />
+  <s:sink name="outlist" />
+  <s:sink name="outlist2" />
+  <s:sink name="outlist3" />
+  <s:sink name="concatenatedList" />
+  <s:sink name="html">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/html</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

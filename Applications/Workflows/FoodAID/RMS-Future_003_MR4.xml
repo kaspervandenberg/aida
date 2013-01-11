@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:6a0bac79-7df2-487d-96a7-4faac64c2fd5" author="Marco Roos (AID)" title="RMS_query_expansion">This workflow returns synonyms, related terms, narrower terms, and broader terms of terms from a user query.</s:workflowdescription>
+  <s:processor name="RemoveStopWords">
+    <s:defaults>
+      <s:default name="StringListToRemove">"de"</s:default>
+    </s:defaults>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:71fa35dd-543d-4523-a5f1-1366dc457bac" author="" title="RemoveStopwords" />
+        <s:processor name="String_list_difference">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetDifference</s:local>
+        </s:processor>
+        <s:processor name="String_list_intersection">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetIntersection</s:local>
+        </s:processor>
+        <s:link source="StringListToRemove" sink="String_list_intersection:list1" />
+        <s:link source="inputStringList" sink="String_list_intersection:list2" />
+        <s:link source="String_list_intersection:intersection" sink="String_list_difference:list2" />
+        <s:link source="inputStringList" sink="String_list_difference:list1" />
+        <s:link source="String_list_difference:difference" sink="cleanedStringList" />
+        <s:source name="StringListToRemove" />
+        <s:source name="inputStringList" />
+        <s:sink name="cleanedStringList" />
+      </s:scufl>
+    </s:workflow>
+    <s:iterationstrategy>
+      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="StringListToRemove" />
+        <i:iterator name="inputStringList" />
+      </i:dot>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:processor name="SplitQueryIntoSeparateWords">
+    <s:description>Splits and input query string into its parts. Works for queries that contain search terms, search phrases between double quotes, connected by AND or OR. Behaviour undetermined when other characters such as +, -, or brackets are used. Should work now for well formed patterns with bracketed substrings separated by AND/OR/AND NOT/OR NOT, e.g. (Topic1) AND NOT (Topic2), but not extensively tested.</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="Marco Roos" title="Split_query_string_MR3">Splits and input query string into its parts. Works for queries that contain search terms, search phrases between double quotes, connected by AND or OR. Behaviour undetermined when other characters such as +, -, or brackets are used. Should work now for well formed patterns with bracketed substrings separated by AND/OR/AND NOT/OR NOT, e.g. (Topic1) AND NOT (Topic2), but not extensively tested.</s:workflowdescription>
+        <s:processor name="FilterNonQuotes">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="SplitQuotes">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+        </s:processor>
+        <s:processor name="cleanStrippedQuotes">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="SplitOnANDOR">
+          <s:defaults>
+            <s:default name="string">s1 s2 s3 AND s4 s5 OR "s6 s7" s8 s9 AND s10 OR "s11" "s12 s13" s14 s15 "s16"</s:default>
+          </s:defaults>
+          <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+        </s:processor>
+        <s:processor name="quotes_regexp" boring="true">
+          <s:stringconstant>((?&lt;=") (?="))</s:stringconstant>
+        </s:processor>
+        <s:processor name="filter_nonQuotes_regexp" boring="true">
+          <s:stringconstant>[^"]+</s:stringconstant>
+        </s:processor>
+        <s:processor name="stripQuotes_regexp" boring="true">
+          <s:stringconstant>"</s:stringconstant>
+        </s:processor>
+        <s:processor name="cleanStrippedQuotes_regexp" boring="true">
+          <s:stringconstant>\w.*</s:stringconstant>
+        </s:processor>
+        <s:processor name="filterQuotes_regexp" boring="true">
+          <s:stringconstant>".+"</s:stringconstant>
+        </s:processor>
+        <s:processor name="splitANDOR_regexp" boring="true">
+          <s:stringconstant>( +AND +NOT +)|( +OR +NOT +)|( +AND +)|( +OR +)|\(|\)</s:stringconstant>
+        </s:processor>
+        <s:processor name="FilterQuotes">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="StripQuotes">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+        </s:processor>
+        <s:processor name="Flatten_SplitQuotes_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Flatten_StripQuotes_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Join">
+          <s:description>Changed iteration strategy!</s:description>
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetUnion</s:local>
+          <s:iterationstrategy>
+            <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+              <i:iterator name="list2" />
+              <i:iterator name="list1" />
+            </i:dot>
+          </s:iterationstrategy>
+        </s:processor>
+        <s:link source="FilterNonQuotes:filteredlist" sink="Join:list2" />
+        <s:link source="FilterQuotes:filteredlist" sink="StripQuotes:string" />
+        <s:link source="Flatten_SplitQuotes_list:outputlist" sink="FilterNonQuotes:stringlist" />
+        <s:link source="Flatten_SplitQuotes_list:outputlist" sink="FilterQuotes:stringlist" />
+        <s:link source="Flatten_StripQuotes_list:outputlist" sink="cleanStrippedQuotes:stringlist" />
+        <s:link source="SplitOnANDOR:split" sink="SplitQuotes:string" />
+        <s:link source="SplitQuotes:split" sink="Flatten_SplitQuotes_list:inputlist" />
+        <s:link source="StripQuotes:split" sink="Flatten_StripQuotes_list:inputlist" />
+        <s:link source="cleanStrippedQuotes_regexp:value" sink="cleanStrippedQuotes:regex" />
+        <s:link source="filterQuotes_regexp:value" sink="FilterQuotes:regex" />
+        <s:link source="filter_nonQuotes_regexp:value" sink="FilterNonQuotes:regex" />
+        <s:link source="queryString" sink="SplitOnANDOR:string" />
+        <s:link source="Join:union" sink="queryList" />
+        <s:link source="cleanStrippedQuotes:filteredlist" sink="Join:list1" />
+        <s:link source="quotes_regexp:value" sink="SplitQuotes:regex" />
+        <s:link source="splitANDOR_regexp:value" sink="SplitOnANDOR:regex" />
+        <s:link source="stripQuotes_regexp:value" sink="StripQuotes:regex" />
+        <s:source name="queryString">
+          <s:metadata>
+            <s:description>Queries that contain search terms, search phrases between double quotes, possibly connected by AND or OR. Behaviour undetermined when other characters such as +, -, or brackets are used.</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="queryList" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="getWordnetSynonyms">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/getWordnetSynWS?wsdl</s:wsdl>
+      <s:operation>getWordnetSynonyms</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getConceptsFromOntology">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:5fe737bb-2f1c-4af7-b725-1d5a63f5a599" author="" title="Lookup_Query_in_Ontology" />
+        <s:processor name="getRelatedTerms">
+          <s:defaults>
+            <s:default name="username">RMS</s:default>
+            <s:default name="password">RMS</s:default>
+          </s:defaults>
+          <s:arbitrarywsdl>
+            <s:wsdl>http://aida.science.uva.nl:8888/axis/services/ThesaurusRepositoryWS?wsdl</s:wsdl>
+            <s:operation>getRelatedTerms</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:processor name="getNarrowerTerms">
+          <s:defaults>
+            <s:default name="username">RMS</s:default>
+            <s:default name="password">RMS</s:default>
+          </s:defaults>
+          <s:arbitrarywsdl>
+            <s:wsdl>http://aida.science.uva.nl:8888/axis/services/ThesaurusRepositoryWS?wsdl</s:wsdl>
+            <s:operation>getNarrowerTerms</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:processor name="getBroaderTerms">
+          <s:defaults>
+            <s:default name="username">RMS</s:default>
+            <s:default name="password">RMS</s:default>
+          </s:defaults>
+          <s:arbitrarywsdl>
+            <s:wsdl>http://aida.science.uva.nl:8888/axis/services/ThesaurusRepositoryWS?wsdl</s:wsdl>
+            <s:operation>getBroaderTerms</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:processor name="AIDA_food_ontology">
+          <s:workflow>
+            <s:xscufllocation>
+			http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/UtilityWorkflows/AIDA_rdf_food_repository_MR2.xml</s:xscufllocation>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="getTermUri">
+          <s:arbitrarywsdl>
+            <s:wsdl>http://aida.science.uva.nl:8888/axis/services/ThesaurusRepositoryWS?wsdl</s:wsdl>
+            <s:operation>getTermUri</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:processor name="SplitURIandLabel">
+          <s:workflow>
+            <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/UtilityWorkflows/SplitPairs_MR1.xml</s:xscufllocation>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="SplitRelatedLabels">
+          <s:workflow>
+            <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/UtilityWorkflows/SplitPairs_MR1.xml</s:xscufllocation>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="SplitNarrowerLabels">
+          <s:workflow>
+            <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/UtilityWorkflows/SplitPairs_MR1.xml</s:xscufllocation>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="SplitBroaderLabels">
+          <s:workflow>
+            <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/UtilityWorkflows/SplitPairs_MR1.xml</s:xscufllocation>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="Flatten_related_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Flatten_narrower_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Flatten_broader_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:link source="AIDA_food_ontology:password" sink="getBroaderTerms:password" />
+        <s:link source="AIDA_food_ontology:password" sink="getNarrowerTerms:password" />
+        <s:link source="AIDA_food_ontology:password" sink="getRelatedTerms:password" />
+        <s:link source="AIDA_food_ontology:password" sink="getTermUri:password" />
+        <s:link source="AIDA_food_ontology:repository" sink="getBroaderTerms:repository" />
+        <s:link source="AIDA_food_ontology:repository" sink="getNarrowerTerms:repository" />
+        <s:link source="AIDA_food_ontology:repository" sink="getRelatedTerms:repository" />
+        <s:link source="AIDA_food_ontology:repository" sink="getTermUri:repository" />
+        <s:link source="AIDA_food_ontology:server_url" sink="getBroaderTerms:server_url" />
+        <s:link source="AIDA_food_ontology:server_url" sink="getNarrowerTerms:server_url" />
+        <s:link source="AIDA_food_ontology:server_url" sink="getRelatedTerms:server_url" />
+        <s:link source="AIDA_food_ontology:server_url" sink="getTermUri:server_url" />
+        <s:link source="AIDA_food_ontology:username" sink="getBroaderTerms:username" />
+        <s:link source="AIDA_food_ontology:username" sink="getNarrowerTerms:username" />
+        <s:link source="AIDA_food_ontology:username" sink="getRelatedTerms:username" />
+        <s:link source="AIDA_food_ontology:username" sink="getTermUri:username" />
+        <s:link source="Flatten_broader_list:outputlist" sink="BroaderTerms" />
+        <s:link source="Flatten_narrower_list:outputlist" sink="NarrowerTerms" />
+        <s:link source="Flatten_related_list:outputlist" sink="RelatedTerms" />
+        <s:link source="SplitBroaderLabels:list_of_seconds" sink="Flatten_broader_list:inputlist" />
+        <s:link source="SplitNarrowerLabels:list_of_seconds" sink="Flatten_narrower_list:inputlist" />
+        <s:link source="SplitRelatedLabels:list_of_seconds" sink="Flatten_related_list:inputlist" />
+        <s:link source="SplitURIandLabel:list_of_firsts" sink="getBroaderTerms:term" />
+        <s:link source="SplitURIandLabel:list_of_firsts" sink="getNarrowerTerms:term" />
+        <s:link source="SplitURIandLabel:list_of_firsts" sink="getRelatedTerms:term" />
+        <s:link source="getBroaderTerms:getBroaderTermsReturn" sink="SplitBroaderLabels:list_of_pairs" />
+        <s:link source="getNarrowerTerms:getNarrowerTermsReturn" sink="SplitNarrowerLabels:list_of_pairs" />
+        <s:link source="getTermUri:getTermUriReturn" sink="SplitURIandLabel:list_of_pairs" />
+        <s:link source="query" sink="getTermUri:term" />
+        <s:link source="getRelatedTerms:getRelatedTermsReturn" sink="SplitRelatedLabels:list_of_pairs" />
+        <s:source name="query" />
+        <s:sink name="BroaderTerms">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/plain</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+        <s:sink name="NarrowerTerms">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/plain</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+        <s:sink name="RelatedTerms">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/plain</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:link source="user_query" sink="SplitQueryIntoSeparateWords:queryString" />
+  <s:link source="RemoveStopWords:cleanedStringList" sink="getConceptsFromOntology:query" />
+  <s:link source="RemoveStopWords:cleanedStringList" sink="getWordnetSynonyms:term" />
+  <s:link source="SplitQueryIntoSeparateWords:queryList" sink="RemoveStopWords:inputStringList" />
+  <s:link source="SplitQueryIntoSeparateWords:queryList" sink="Userdefined Terms" />
+  <s:link source="getConceptsFromOntology:BroaderTerms" sink="Broader Terms" />
+  <s:link source="getConceptsFromOntology:NarrowerTerms" sink="Narrower Terms" />
+  <s:link source="getConceptsFromOntology:RelatedTerms" sink="Related Terms" />
+  <s:link source="getWordnetSynonyms:getWordnetSynonymsReturn" sink="Synonyms" />
+  <s:source name="user_query" />
+  <s:sink name="Userdefined Terms" />
+  <s:sink name="Broader Terms" />
+  <s:sink name="Narrower Terms" />
+  <s:sink name="Related Terms" />
+  <s:sink name="Synonyms" />
+</s:scufl>
+

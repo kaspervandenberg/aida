@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:cells="http://www.co-ode.org/ontologies/basic-bio/cells.owl#"
+    xmlns:rfp="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#"
+    xmlns:bsb="http://www.co-ode.org/ontologies/basic-bio/basic-substances.owl#"
+    xmlns:qty="http://www.co-ode.org/ontologies/basic-bio/quantities-and-units.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:bva="http://www.co-ode.org/ontologies/basic-bio/basic-vertebrate-gross-anatomy.owl#"
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:rlp="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns="http://www.co-ode.org/ontologies/basic-bio/basic-body-substances.owl#"
+    xmlns:tbio="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#"
+  xml:base="http://www.co-ode.org/ontologies/basic-bio/basic-body-substances.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/quantities-and-units.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/basic-vertebrate-gross-anatomy.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/basic-substances.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/cells.owl"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Demonstration ontology showing use of collectives and proportions.
+
+Imports:  Basic-vertebrate-anatomy, quantities</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="probe_Blood_with_40_percent_rbcs">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#is_of_ingredient"/>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Collective"/>
+              <owl:Restriction>
+                <owl:allValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/cells.owl#Red_blood_cell"/>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_grain"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/quantities-and-units.owl#has_quantity">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Links quantitative things to the quantity in question.  The domain will need to be progressively widenned  For now just Proportions.</rdfs:comment>
+          </rdf:Description>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/quantities-and-units.owl#Concentration_quantity"/>
+              <owl:Restriction>
+                <owl:hasValue rdf:resource="http://www.co-ode.org/ontologies/basic-bio/quantities-and-units.owl#per_cent_by_volume"/>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/quantities-and-units.owl#has_unit"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:valuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#Proportion"/>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_proportion"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/basic-vertebrate-gross-anatomy.owl#Blood">
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >1</owl:cardinality>
+            <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_ingredient"/>
+            <owl:valuesFrom>
+              <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                  <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Collective"/>
+                  <owl:Restriction>
+                    <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_grain"/>
+                    <owl:allValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/cells.owl#Red_blood_cell"/>
+                  </owl:Restriction>
+                </owl:intersectionOf>
+              </owl:Class>
+            </owl:valuesFrom>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >1</owl:cardinality>
+            <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_proportion"/>
+            <owl:valuesFrom>
+              <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                  <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#Proportion"/>
+                  <owl:Restriction>
+                    <owl:someValuesFrom>
+                      <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Collective"/>
+                          <owl:Restriction>
+                            <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_grain"/>
+                            <owl:allValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/cells.owl#Red_blood_cell"/>
+                          </owl:Restriction>
+                        </owl:intersectionOf>
+                      </owl:Class>
+                    </owl:someValuesFrom>
+                    <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#is_of_ingredient"/>
+                  </owl:Restriction>
+                </owl:intersectionOf>
+              </owl:Class>
+            </owl:valuesFrom>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+        <vt:additional-comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >This module contains a demonstration of simple ingredient for red cells and water in for blood both as a a simple ingredient and as a proportion with proportions.  The two should actually classify together.  If one wanted to test it with a probe, the proportions version would classify as subsumed by the simple ingredient version.  One could put a spescific concentration quantity on blood as shown in the example to demonstrate how to do it. 
+
+
+
+Note that these restrictions are in the module 'body_substance'  ('bds:' ) rather than basic vertebrate anatomy.  We may want to move them later. However, this also illustrates the point that restrictions can be added in other modules.  Marking of the source of individual restrictions will be easier in OWL 1.1
+
+Note also that this statement is not strictly true - or might not be.  There is some question whether all blood must contain red blood cells, although if we allow empty collectives it is, strictly speaking, unfalsifiable in a realist framework though testable in a contivist or informalitionalist framework.</vt:additional-comment>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_ingredient"/>
+            <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/basic-substances.owl#Water"/>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+      </rdf:Description>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A demonstration class to show how to create the class of blood with 40% RBCs by volume - except that actuallyt entering the has_magnitude 40 causes a reasoning error.  The variant ontology basic-body-substances-xx contains the theoretically correct ontology but will not classify.
+
+Note that these definitions are best viewed with the Manchester Syntax Editor.  Note also that they could be shortened by judicious definition and naming of classes.  They are given here in the fully expanded form for illusration.</rdfs:comment>
+  </owl:Class>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 304)  http://protege.stanford.edu -->

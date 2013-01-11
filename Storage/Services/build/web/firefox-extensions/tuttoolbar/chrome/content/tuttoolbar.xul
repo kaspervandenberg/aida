@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://tuttoolbar/skin/tuttoolbar.css" type="text/css"?>
+
+<overlay id="TutTB-Overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+         
+    <script type="application/x-javascript"
+            src="chrome://tuttoolbar/content/tuttoolbar.js" />
+            
+    <toolbox id="navigator-toolbox">
+    
+        <toolbar id="TutTB-Toolbar" toolbarname="Tutorial Toolbar" accesskey="T"
+                 class="chromeclass-toolbar" context="toolbar-context-menu" 
+                 hidden="false" persist="hidden">
+                 
+            <toolbaritem flex="0">
+                <toolbarbutton id="TutTB-MainMenu" type="menu"
+                               tooltiptext="Tutorial Toolbar Main Menu">
+                    <menupopup>
+                        <menuitem label="Google Home Page" accesskey="G"
+                                  tooltiptext="Navigate to Google"
+                                  oncommand="TutTB_LoadURL('http://www.google.com/')" />
+                        
+                        <menuseparator />
+                        
+                        <menuitem label="Born Geek Website" accesskey="B"
+                                  tooltiptext="Navigate to Born Geek"
+                                  oncommand="TutTB_LoadURL('http://www.borngeek.com/')" />
+                    </menupopup>
+                </toolbarbutton>
+            </toolbaritem>
+            
+            <toolbaritem id="TutTB-SearchTerms-TBItem" persist="width">
+                <menulist id="TutTB-SearchTerms" editable="true" flex="1"
+                          minwidth="100" width="250"
+                          onkeypress="TutTB_KeyHandler(event);">
+                    <menupopup id="TutTB-SearchTermsMenu" onpopupshowing="TutTB_Populate()" />
+                </menulist>
+            </toolbaritem>
+            
+            <splitter id="TutTB-ResizeSplitter" state="open" collapse="none"
+                      resizebefore="closest" resizeafter="farthest"
+                      tooltiptext="Resize the Search Box">
+                <vbox id="TutTB-ResizeBar" />
+            </splitter>
+            
+            <toolbaritem flex="0">
+            
+                <toolbarbutton id="TutTB-Combined-Button" label="Search"
+                               type="menu-button" tooltiptext="Combined Search"
+                               oncommand="TutTB_Search(event, 'web')">
+                    <menupopup>
+                        <menuitem id="TutTB-Combined-Web" label="Web Search"
+                                  class="menuitem-iconic" tooltiptext="Search the Web"
+                                  oncommand="TutTB_Search(event, 'web'); event.preventBubble();" />
+                    
+                        <menuitem id="TutTB-Combined-Image" label="Image Search"
+                                  class="menuitem-iconic" tooltiptext="Search Images"
+                                  oncommand="TutTB_Search(event, 'image'); event.preventBubble();" />
+                    </menupopup>
+                </toolbarbutton>
+                
+                <toolbarseparator />
+                
+                <toolbarbutton id="TutTB-Web-Button" tooltiptext="Search the Web"
+                               label="Web Search" oncommand="TutTB_Search(event, 'web')" />
+            </toolbaritem>
+            
+            <toolbarspring />
+
+        </toolbar>
+    </toolbox>
+</overlay>
+

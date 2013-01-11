@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:2f7ccbca-d8b3-49f0-b5f8-377a47391d1d" author="" title="Test_search" />
+  <s:processor name="search">
+    <s:defaults>
+      <s:default name="index">MedLine_new</s:default>
+      <s:default name="maxHits">25</s:default>
+      <s:default name="defaultField">content</s:default>
+    </s:defaults>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:9999/axis/services/SearcherWS?wsdl</s:wsdl>
+      <s:operation>search</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="query" sink="search:queryString" />
+  <s:link source="search:searchReturn" sink="relevant_documents" />
+  <s:source name="query" />
+  <s:sink name="relevant_documents" />
+</s:scufl>
+

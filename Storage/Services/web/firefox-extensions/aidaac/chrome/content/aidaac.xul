@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?> 
+<?xml-stylesheet href="chrome://aidaac/skin/aidaac.css" type="text/css"?>
+
+
+
+<overlay id="aidaac-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <script type="application/x-javascript" src="chrome://aidaac/content/aidaac.js" /> 
+
+    <popupset>
+        <popup id="aidaac-restrict-popup">
+            <vbox>
+                <hbox>
+                    <menulist id="aidaac-property" editable="true" flex="1" minwidth="100" width="250" onkeypress="propertyKeyhandler(event);">
+                        <menupopup id="aidaac-property-menu" onpopupshowing="propertySuggestions('aidaac-property');" />
+                    </menulist>
+                    <menulist id="aidaac-concept" editable="true" flex="1" minwidth="100" width="250" onkeypress="conceptKeyhandler(event);">
+                        <menupopup id="aidaac-concept-menu" onpopupshowing="conceptSuggestions('aidaac-concept');" />
+                    </menulist>
+                    <button label="-" />                    
+                    <button label="+"/>
+                </hbox>
+                <hbox>
+                    <menulist id="aidaac-property2" editable="true" flex="1" minwidth="100" width="250" onkeypress="propertyKeyhandler(event);">
+                        <menupopup id="aidaac-property-menu2" onpopupshowing="propertySuggestions('aidaac-property2');" />
+                    </menulist>
+                    <menulist id="aidaac-concept2" editable="true" flex="1" minwidth="100" width="250" onkeypress="conceptKeyhandler(event);">
+                        <menupopup id="aidaac-concept-menu2" onpopupshowing="conceptSuggestions('aidaac-concept2');" />
+                    </menulist>
+                    <button label="-" />
+                    <button label="+"/>
+                </hbox>
+            </vbox>
+        </popup>
+    </popupset>
+
+
+    <toolbox id="navigator-toolbox">
+        <toolbar id="aidaac-toolbar" toolbarname="AIDA Annotation Client" accesskey="A" class="chromeclass-toolbar" context="toolbar-context-menu" hidden="false" persist="hidden">
+
+            <toolbaritem id="aidaac-about-item">
+                <toolbarbutton id="aidaac-about-button" type="menu" label="IDA ac" tooltiptext="About the AIDA Annotation Client" 
+                    image="chrome://aidaac/skin/icon.png">
+                    <menupopup>
+                        <menuitem label="About" accesskey="A"
+                                  tooltiptext="About the AIDA Annotation Client"
+                                  oncommand='window.openDialog("chrome://aidaac/content/about.xul","aidaacAbout","modal,centerscreen,chrome,resizable=no");event.preventBubble();' />
+                        <menuitem label="Options" accesskey="O"
+                                  tooltiptext="Configure the AIDA Annotation Client"
+                                  oncommand='window.openDialog("chrome://aidaac/content/options.xul");' />
+                    </menupopup>
+                </toolbarbutton>
+            </toolbaritem>            
+
+            <toolbaritem id="aidaac-restrict-item">
+                <toolbarbutton id="aidaac-restrict-button" label="Restrictions" tooltiptext="Place restrictions on the meta-data search" 
+                    image="chrome://aidaac/skin/tag2.png" popup="aidaac-restrict-popup">
+                </toolbarbutton>
+            </toolbaritem>            
+
+<!-- -->
+            <toolbaritem id="aidaac-property-item">
+                <menulist id="aidaac-property" editable="true" flex="1" minwidth="100" width="250" onkeypress="propertyKeyhandler(event);">
+                    <menupopup id="aidaac-property-menu" onpopupshowing="propertySuggestions();" />
+                </menulist>
+            </toolbaritem>
+            <splitter id="aidaac-property-splitter" state="open" collapse="none"
+                      resizebefore="closest" resizeafter="farthest"
+                      tooltiptext="Resize the Property entry box">
+                <vbox id="aidaac-property-resizebar" />
+            </splitter>
+
+            <toolbaritem id="aidaac-concept-item">              
+                <menulist id="aidaac-concept" editable="true" flex="1" minwidth="100" width="250" onkeypress="conceptKeyhandler(event);">
+                    <menupopup id="aidaac-concept-menu" onpopupshowing="conceptSuggestions();" />
+                </menulist>
+            </toolbaritem>                        
+<!-- -->
+
+            <splitter id="aidaac-concept-splitter" state="open" collapse="none"
+                      resizebefore="closest" resizeafter="farthest"
+                      tooltiptext="Resize the Concept entry box">
+                <vbox id="aidaac-concept-resizebar" />
+            </splitter>
+
+            <toolbaritem id="aidaac-annotate-item">
+                <toolbarbutton id="aidaac-annotate-button" label="Annotate" tooltiptext="Store the current annotation of this document." oncommand="storeAnnotation();" image="chrome://aidaac/skin/tag.png" />
+            </toolbaritem>            
+            <toolbaritem id="aidaac-explore-item">
+                <toolbarbutton id="aidaac-explore-button" label="Explore" tooltiptext="Explore the current annotation." oncommand="exploreAnnotation(0);" image="chrome://aidaac/skin/tag2.png" />
+            </toolbaritem>            
+
+            <toolbarseparator/>
+                
+            <toolbaritem id="aidaac-load-document-item">              
+                <menulist id="aidaac-load-document" editable="true" flex="1" minwidth="100" width="250" onkeypress="loadDocumentKeyhandler(event);">
+                    <menupopup id="aidaac-load-document-menu" onpopupshowing="loadDocumentSuggestions();" />
+                </menulist>
+            </toolbaritem>
+            <splitter id="aidaac-load-document-splitter" state="open" collapse="none"
+                      resizebefore="closest" resizeafter="farthest"
+                      tooltiptext="Resize the Load Document entry box">
+                <vbox id="aidaac-load-document-resizebar" />
+            </splitter>
+
+            <toolbaritem id="aidaac-find-documents-item">
+                <toolbarbutton id="aidaac-find-documents-button" label="Search" tooltiptext="Find documents that match the current annotation." oncommand="findDocumentSuggestions();" image="chrome://aidaac/skin/search.png" />
+            </toolbaritem>
+
+            <toolbarspring />
+        </toolbar>
+    </toolbox>
+</overlay> 

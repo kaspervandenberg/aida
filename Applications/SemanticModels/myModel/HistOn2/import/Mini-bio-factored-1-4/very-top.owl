@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://www.co-ode.org/ontologies/basic-bio/very-top.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Self_standing_entity">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Domain_entity"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Self-standing entities are things and processes etc that exist in their own right. To a first approximation they are the the things that would be classes rather than attributes in a UML diagram.  
+
+At the level of the domain ontology, primitive Self-Standing Entities form disjoint trees: i.e. each primitive has exactly one primitive parent, and all primtiive children of a given primitive are disjoint.  However, the children do not form an exhaustive list of all possibilities because it is rarely possible to list all possible kinds of real things.    Self standing entities also include 'roles' which behave in some ways like quality partitions but are not exhaustive. 
+
+Opposite: Refining entities
+
+Examples: organs, organisms, metabolic processes, etc.
+
+Anti-examples: tall, severe, very, left_laterality, etc. 
+
+See"Modularisation of domain ontologies implemented in description logics and related formalisms including OWL" Modularisation of domain ontologies implemented in description logics and related formalisms including OWL."
+URL: http://www.cs.man.ac.uk/%7Erector/papers/rector-modularisation-kcap-2003-distrib.pdf</rdfs:comment>
+    <web-reference rdf:resource="http://www.cs.man.ac.uk/mig/people/rector/"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Domain_entity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >All entities that are part of the domain.  
+
+Domain_enttiy is separated to allow various 'kluge' and debugging classes to be created under other headings.  It also avoids the alternative semantics for owl:Thing in owl:DL and owl:Full</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Refining_entity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Entities which are dependent modifiers - roughly speaking value types and values. 
+
+Primitive refining entities form trees of partitions. Each subtree of primitive refining entities forms a disjoint exhaustive partition of its parent.   Conceptually, in the language of DOLCE each value partition represents a "quality space" which is partitioned into segments by the individual values or "quale".  
+
+See Semantic Web Best Practice note referenced below</rdfs:comment>
+    <web-reference rdf:resource="http://www.w3.org/TR/swbp-specified-values/"/>
+    <rdfs:subClassOf rdf:resource="#Domain_entity"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="relational_property">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="inverse_relational_property"/>
+    </owl:inverseOf>
+    <rdfs:range rdf:resource="#Self_standing_entity"/>
+    <rdfs:domain rdf:resource="#Self_standing_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The parent property for linking self standing entities.   Roughly equivalent to UML asssociations. 
+
+All relational properties have inverses.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#inverse_relational_property">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The inverse of relational property.  
+
+Care must be taken in maintaining the property hierarchy that relational_proeprty and inverse_relational_property are used consistently.
+
+Comments and explanations on all proeprties are given under relational_property.</rdfs:comment>
+    <rdfs:domain rdf:resource="#Self_standing_entity"/>
+    <rdfs:range rdf:resource="#Self_standing_entity"/>
+    <owl:inverseOf rdf:resource="#relational_property"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="refining_property">
+    <rdfs:domain rdf:resource="#Domain_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The parent property for linking self-standing entities to refining entities.  Very roughly equivalent to UML attributes.  Example has_laterality, has_topology, etc.   Also has_state and has_value.
+
+Domain is Domain_entity because refining properties can themselves be refined.</rdfs:comment>
+    <rdfs:range rdf:resource="#Refining_entity"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="additional_comment_2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+  </owl:DatatypeProperty>
+  <owl:AnnotationProperty rdf:ID="web-reference">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:AnnotationProperty>
+  <owl:AnnotationProperty rdf:ID="additional-comment">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:AnnotationProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 331)  http://protege.stanford.edu -->

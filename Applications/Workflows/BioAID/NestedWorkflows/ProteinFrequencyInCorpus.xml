@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:abc3350b-e618-4fdd-8317-cbf5c298804d" author="" title="ProteinFrequencyInCorpus" />
+  <s:processor name="XPath_From_Text">
+    <s:local>net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker</s:local>
+  </s:processor>
+  <s:processor name="ExtractCountXpath" boring="true">
+    <s:stringconstant>./aid:result/@total</s:stringconstant>
+  </s:processor>
+  <s:processor name="Flatten_list">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="PoiAndDpQuery">
+    <s:beanshell>
+      <s:scriptvalue>poi_and_dp_query = "(" + poi_query + ") AND (" + dp_query + ")";</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">poi_query</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">dp_query</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">poi_and_dp_query</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="DocumentsIndex" boring="true">
+    <s:stringconstant>MedLine</s:stringconstant>
+  </s:processor>
+  <s:processor name="AIDA_search">
+    <s:defaults>
+      <s:default name="maxHits">1</s:default>
+      <s:default name="defaultField">content</s:default>
+    </s:defaults>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:9999/axis/services/SearcherWS?wsdl</s:wsdl>
+      <s:operation>search</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="AIDA_search:searchReturn" sink="XPath_From_Text:xml-text" />
+  <s:link source="DocumentsIndex:value" sink="AIDA_search:index" />
+  <s:link source="ExtractCountXpath:value" sink="XPath_From_Text:xpath" />
+  <s:link source="XPath_From_Text:nodelist" sink="Flatten_list:inputlist" />
+  <s:link source="discovered_protein" sink="PoiAndDpQuery:dp_query" />
+  <s:link source="protein_of_interest" sink="PoiAndDpQuery:poi_query" />
+  <s:link source="Flatten_list:outputlist" sink="poidp_count_in_corpus" />
+  <s:link source="PoiAndDpQuery:poi_and_dp_query" sink="AIDA_search:queryString" />
+  <s:link source="PoiAndDpQuery:poi_and_dp_query" sink="poi_and_dp_query" />
+  <s:source name="protein_of_interest" />
+  <s:source name="discovered_protein" />
+  <s:sink name="poidp_count_in_corpus" />
+  <s:sink name="poi_and_dp_query" />
+</s:scufl>
+

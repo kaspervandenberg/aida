@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:b4c1a118-6a38-40b5-99e9-febbd3c85f2b" author="Marco Roos (AID)" title="BioAID_Discover_proteins_from_text_plus_synonyms">This workflow discovers proteins from plain text and adds synonyms using Martijn Schuemie's proteins synonym service. Proteins are discovered with the AIDA 'Named Entity Recognize' web service by Sophia Katrenko (service based on LingPipe), from which output it filters out proteins. The Named Recognizer services uses the pre-learned genomics model, named 'MedLine', to find genomics concepts in plain text.</s:workflowdescription>
+  <s:processor name="prelearned_genomics_model" boring="true">
+    <s:stringconstant>MedLine</s:stringconstant>
+  </s:processor>
+  <s:processor name="Extract_proteins">
+    <s:description>This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="Marco Roos (AID)" title="Extract_proteins">This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:workflowdescription>
+        <s:processor name="filter_protein_molecule_regexp" boring="true">
+          <s:stringconstant>&lt;protein_molecule&gt;\w*&lt;/protein_molecule&gt;</s:stringconstant>
+        </s:processor>
+        <s:processor name="SplitOn_protein_molecule">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+        </s:processor>
+        <s:processor name="Filter_protein_molecules">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="Remove_duplicate_strings">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates</s:local>
+        </s:processor>
+        <s:processor name="splitOn_protein_molecule_regexp" boring="true">
+          <s:stringconstant>(?=&lt;protein_molecule&gt;)|(?&lt;=&lt;/protein_molecule&gt;)</s:stringconstant>
+        </s:processor>
+        <s:link source="input_string" sink="SplitOn_protein_molecule:string" />
+        <s:link source="Filter_protein_molecules:filteredlist" sink="Remove_duplicate_strings:stringlist" />
+        <s:link source="Remove_duplicate_strings:strippedlist" sink="protein_molecule_list" />
+        <s:link source="SplitOn_protein_molecule:split" sink="Filter_protein_molecules:stringlist" />
+        <s:link source="filter_protein_molecule_regexp:value" sink="Filter_protein_molecules:regex" />
+        <s:link source="splitOn_protein_molecule_regexp:value" sink="SplitOn_protein_molecule:regex" />
+        <s:source name="input_string" />
+        <s:sink name="protein_molecule_list">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Discover_entities">
+    <s:description>This workflow contains the 'Named Entity Recognize' web service from the AIDA toolbox, created by Sophia Katrenko. It can be used to discover entities of a certain type (determined by 'learned_model') in documents provided in a lucene output format.</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:e7ae8f2a-428f-4afd-93eb-52ccb89273e1" author="Marco Roos (AID)" title="Discover_entities">This workflow contains the 'Named Entity Recognize' web service from the AIDA toolbox, created by Sophia Katrenko. It can be used to discover entities of a certain type (determined by 'learned_model') in documents provided in a lucene output format.
+
+Known issues:
+The output of NErecognize contains concepts with / characters, breaking the xml. For post-processing its results it is better to use string manipulation than xml manipulations.
+The output is per document, which means entities will  be redundant if they occur in more than one document.</s:workflowdescription>
+        <s:processor name="Default_input_type" boring="true">
+          <s:description>'lucene' for lucene's XML output (NER done on 'content' field only)
+'text' for plain text</s:description>
+          <s:stringconstant>text</s:stringconstant>
+        </s:processor>
+        <s:processor name="Default_output_type" boring="true">
+          <s:stringconstant>NElist</s:stringconstant>
+        </s:processor>
+        <s:processor name="NErecognize">
+          <s:arbitrarywsdl>
+            <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/NERecognizerService?wsdl</s:wsdl>
+            <s:operation>NErecognize</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:link source="learned_model" sink="NErecognize:r_type" />
+        <s:link source="Default_input_type:value" sink="NErecognize:input_type" />
+        <s:link source="Default_output_type:value" sink="NErecognize:output_type" />
+        <s:link source="text" sink="NErecognize:input_data" />
+        <s:link source="NErecognize:NErecognizeReturn" sink="discovered_entities" />
+        <s:source name="learned_model">
+          <s:metadata>
+            <s:description>Model to discover a set of specific concepts; e.g. the prelearned model named 'MedLine' will make the service discover genomics concepts.</s:description>
+          </s:metadata>
+        </s:source>
+        <s:source name="text">
+          <s:metadata>
+            <s:description>plain text, example:
+Polycomb-group (PcG) proteins form multimeric protein complexes, which are involved in maintaining the transcriptional repressive state of genes over successive cell generations. Components of PcG complexes and their mutual interactions have been identified and analysed through extensive genetic and biochemical analyses. Molecular mechanisms underlying PcG-mediated repression of gene activity, however, have remained largely unknown. Previously we reported the existence of two distinct human PcG protein complexes. The EED/EZH protein complex contains the embryonic ectoderm development (EED) and enhancer of zeste 2 (EZH2; refs 9,10) PcG proteins. The HPC/HPH PcG complex contains the human polycomb 2 (HPC2; ref. 11), human polyhomeotic (HPH), BMI1 (ref. 13 ) and RING1 (refs 14, 15) proteins. Here we show that EED (refs 4, 5, 6, 7, 8) interacts, both in vitro and in vivo, with histone deacetylase (HDAC) proteins. This interaction is highly specific because the HDAC proteins do not interact with other vertebrate PcG proteins. We further find that histone deacetylation activity co-immunoprecipitates with the EED protein. Finally, the histone deacetylase inhibitor trichostatin A (ref. 17) relieves transcriptional repression mediated by EED, but not by HPC2, a human homologue of polycomb. Our data indicate that PcG-mediated repression of gene activity involves histone deacetylation. This mechanistic link between two distinct, global gene repression systems is accomplished through the interaction of HDAC proteins with a particular PcG protein, EED.</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="discovered_entities">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/rdf</s:mimeType>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+            <s:description>Entities discoverd in documents provided in lucene output format.</s:description>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Remove_duplicate_strings">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates</s:local>
+  </s:processor>
+  <s:processor name="getSynsets">
+    <s:description>Service by Martijn Schuemie (Erasmus University Rotterdam, The Netherlands)</s:description>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:8888/axis/SynsetServer.jws?wsdl</s:wsdl>
+      <s:operation>getSynsets</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Flatten_list">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="remove_xml">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.regex.*;
+Pattern pattern = Pattern.compile("&lt;/?[\\w\\d-]+&gt;");
+Matcher matcher = pattern.matcher(tagged_term);
+String term= matcher.replaceAll("");</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/xml'">tagged_term</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">term</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="Discover_entities:discovered_entities" sink="Extract_proteins:input_string" />
+  <s:link source="Extract_proteins:protein_molecule_list" sink="discovered_proteins_xml" />
+  <s:link source="Extract_proteins:protein_molecule_list" sink="remove_xml:tagged_term" />
+  <s:link source="Flatten_list:outputlist" sink="Remove_duplicate_strings:stringlist" />
+  <s:link source="prelearned_genomics_model:value" sink="Discover_entities:learned_model" />
+  <s:link source="text" sink="Discover_entities:text" />
+  <s:link source="getSynsets:getSynsetsReturn" sink="Flatten_list:inputlist" />
+  <s:link source="remove_xml:term" sink="getSynsets:term" />
+  <s:link source="Remove_duplicate_strings:strippedlist" sink="discovered_proteins_synonyms" />
+  <s:source name="text">
+    <s:metadata>
+      <s:description>plain text, example:
+Polycomb-group (PcG) proteins form multimeric protein complexes, which are involved in maintaining the transcriptional repressive state of genes over successive cell generations. Components of PcG complexes and their mutual interactions have been identified and analysed through extensive genetic and biochemical analyses. Molecular mechanisms underlying PcG-mediated repression of gene activity, however, have remained largely unknown. Previously we reported the existence of two distinct human PcG protein complexes. The EED/EZH protein complex contains the embryonic ectoderm development (EED) and enhancer of zeste 2 (EZH2; refs 9,10) PcG proteins. The HPC/HPH PcG complex contains the human polycomb 2 (HPC2; ref. 11), human polyhomeotic (HPH), BMI1 (ref. 13 ) and RING1 (refs 14, 15) proteins. Here we show that EED (refs 4, 5, 6, 7, 8) interacts, both in vitro and in vivo, with histone deacetylase (HDAC) proteins. This interaction is highly specific because the HDAC proteins do not interact with other vertebrate PcG proteins. We further find that histone deacetylation activity co-immunoprecipitates with the EED protein. Finally, the histone deacetylase inhibitor trichostatin A (ref. 17) relieves transcriptional repression mediated by EED, but not by HPC2, a human homologue of polycomb. Our data indicate that PcG-mediated repression of gene activity involves histone deacetylation. This mechanistic link between two distinct, global gene repression systems is accomplished through the interaction of HDAC proteins with a particular PcG protein, EED.</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="discovered_proteins_synonyms" />
+  <s:sink name="discovered_proteins_xml">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

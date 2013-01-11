@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<prefwindow id="aidaac-prefs"
+            title="AIDA Annotation Client Options"
+            xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+            buttons="accept,cancel">
+
+    <preferences>
+            <preference id="pref-servlet-select" name="aidaac.servlet.select" type="string"/>
+            <preference id="pref-servlet-addrdfstatement" name="aidaac.servlet.addrdfstatement" type="string"/>
+            <preference id="pref-servlet-addrdf" name="aidaac.servlet.addrdf" type="string"/>
+            <preference id="pref-kb-server-url" name="aidaac.kb.server.url" type="string"/>
+            <preference id="pref-kb-repository" name="aidaac.kb.repository" type="string"/>
+            <preference id="pref-kb-username" name="aidaac.kb.username" type="string"/>
+            <preference id="pref-kb-password" name="aidaac.kb.password" type="string"/>
+            <preference id="pref-kb-namespace-default" name="aidaac.kb.namespace.default" type="string"/>
+            <preference id="pref-kb-namespace-abbreviations" name="aidaac.kb.namespace.abbreviations" type="string"/>
+    </preferences>
+
+
+    <prefpane id="aidaac-servlet-pane" label="AIDA Annotation Client settings">
+
+            <vbox>
+                <hbox align="right">
+                        <label control="servlet_select" value="Select-Query Servlet URL: "/>
+                        <textbox preference="pref-servlet-select" id="servlet-select" size="64" />
+                </hbox>
+                <hbox align="right">
+                        <label control="servlet_addrdf" value="Add RDF Snippet Servlet URL: "/>
+                        <textbox preference="pref-servlet-addrdf" id="servlet-addrdf" size="64" />
+                </hbox>
+                <hbox align="right">
+                        <label control="kb_server_url" value="Server URL: "/>
+                        <textbox preference="pref-kb-server-url" id="kb-server-url" size="64" />
+                </hbox>
+                <hbox align="right">
+                        <label control="kb_repository" value="Repository name: "/>
+                        <textbox preference="pref-kb-repository" id="kb-repository" size="64" />
+                </hbox>
+                <hbox align="right">
+                        <label control="kb_username" value="Username: "/>
+                        <textbox preference="pref-kb-username" id="kb-username" size="64" />
+                </hbox>
+                <hbox align="right">
+                        <label control="kb_password" value="Password: "/>
+                        <textbox preference="pref-kb-password" id="kb-password" type="password" size="64" />
+                </hbox>
+                <hbox align="right">
+                        <label control="kb_namespace_default" value="AIDA Default Namespace: "/>
+                        <textbox preference="pref-kb-namespace-default" id="kb-namespace-default" size="64" />
+                </hbox>
+                <hbox align="right">
+                        <label control="kb_namespace_abbreviations" value="Namespace abbrev.: "/>
+                        <textbox preference="pref-kb-namespace-abbreviations" id="kb-namespace-abbreviations" cols="64" rows="4" multiline="true" />
+                </hbox>
+            </vbox>
+    </prefpane>
+
+</prefwindow>

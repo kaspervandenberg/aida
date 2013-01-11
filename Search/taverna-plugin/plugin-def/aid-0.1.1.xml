@@ -1,0 +1,18 @@
+<plugin>
+	<name>AID Taverna</name>
+	<description>AIDA Plugin for Taverna
+	</description>
+	<identifier>org.vle.aid.taverna</identifier>
+	<version>0.1.1</version>
+	<provider>wongiseng.homelinux.org</provider>
+	<repositories>
+		<repository> http://wongiseng.homelinux.org/repository </repository>
+		<repository> http://repo1.maven.org/maven2 </repository>
+	</repositories>
+	<profile>
+		<artifact groupId="org.vle.aid.taverna" artifactId="aid-plugin" version="0.1.1" />
+	</profile>
+	<taverna>
+		<version>1.7.1</version>
+	</taverna>
+</plugin>

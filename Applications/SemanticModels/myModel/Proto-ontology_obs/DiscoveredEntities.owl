@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://rdf.adaptivedisclosure.nl/BioAID/DiscoveredEntities.owl#"
+  xml:base="http://rdf.adaptivedisclosure.nl/BioAID/DiscoveredEntities.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="HumanCuratedDiscovery">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="EntityDiscoveryStatus"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#EntityDiscoveryStatus">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Discovery status value partition</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="TextMiningDiscoveredEntity">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="DiscoveredEntity"/>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="TextMiningDiscovery"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:ID="has_discovery_status"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="HumanCuratedDiscoveredEntity">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#DiscoveredEntity"/>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#has_discovery_status"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#HumanCuratedDiscovery"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#TextMiningDiscovery">
+    <rdfs:subClassOf rdf:resource="#EntityDiscoveryStatus"/>
+  </owl:Class>
+  <owl:Class rdf:about="#DiscoveredEntity">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#has_discovery_status"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#EntityDiscoveryStatus"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="HumanCuratedTextMiningDiscovery">
+    <owl:equivalentClass rdf:resource="#HumanCuratedDiscovery"/>
+    <rdfs:subClassOf rdf:resource="#TextMiningDiscovery"/>
+  </owl:Class>
+  <owl:FunctionalProperty rdf:about="#has_discovery_status">
+    <rdfs:range rdf:resource="#EntityDiscoveryStatus"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >discovery status of an entity (how it was discovered)</rdfs:comment>
+  </owl:FunctionalProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.2, Build 355)  http://protege.stanford.edu -->

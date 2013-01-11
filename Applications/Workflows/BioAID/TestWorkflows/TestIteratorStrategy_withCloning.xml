@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:15427033-6d05-4185-acc9-8d66f5d88a72" author="Marco Roos (AID)" title="TestIteratorStrategy_withCloning">This workflow implements a strategy for this problem:
+&gt; I would like to perform an iteration including a dot product between
+&gt;     a list and a list of lists; example:
+&gt;     Input:
+&gt;
+&gt;         [1]			(1)
+&gt;         [A,B,C]		(2)
+&gt;         [[a,b],[c,d],[e,f]]		(3)
+&gt;
+&gt;     Desired output:
+&gt;
+&gt;         [1Aa, 1Ab, 1Bc, 1Bd, 1Ce, 1Cf]
+
+In this implementation a java beanshell is used to clone the items in list 2 as many times per item as there are items in the sublists of list 3. The iteration strategy for Clone is set to a dot product.
+Thus a count on list 2 produces: [2,2,2]
+Clone with input: [2,2,2] . [A,B,C] produces [[A,A],[B,B],[C,C]] (note the dot product) (4)
+Then concatenation of (1)*((4).(3)) produces: [[1Aa,1Ab],[1Bc,1Bd],[1Ce,1Cf]]</s:workflowdescription>
+  <s:processor name="create_capitalList">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.*;
+
+List newlist = new ArrayList();
+
+for (int i=0; i&lt;3; i++) {
+	newlist.add((String) (Character.toString((char) ('A'+(char) i))+"."));
+}
+
+capitallist=newlist;</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">capitallist</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="String_Constant" boring="true">
+    <s:stringconstant>1.</s:stringconstant>
+  </s:processor>
+  <s:processor name="create_ListOfLists">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.*;
+
+List newListOfLists = new ArrayList();
+
+int k=0;
+for (int j=0; j&lt;3; j++) {
+	List newlist = new ArrayList();
+
+	for (int i=0; i&lt;2; i++) {
+		newlist.add((String) (Character.toString((char) ('a' + k))));
+		k++;
+	}
+	newListOfLists.add((List) newlist);
+}
+outlist=newListOfLists;</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">outlist</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Count2">
+    <s:workflow>
+      <s:xscufllocation>file:/D:/Marco/adaptivedisclosure.org/public_html/BioAID/Preliminary/Workflows/UtilityWorkflows/CountListElements.xml</s:xscufllocation>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Count1">
+    <s:workflow>
+      <s:xscufllocation>file:/D:/Marco/adaptivedisclosure.org/public_html/BioAID/Preliminary/Workflows/UtilityWorkflows/CountListElements.xml</s:xscufllocation>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Concatenate">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:1c2b5081-98c5-4e7a-8445-ef2553d16086" author="" title="Concatenate" />
+        <s:processor name="Concatenate_two_strings1">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:processor name="Concatenate_two_strings2">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:link source="input1" sink="Concatenate_two_strings1:string1" />
+        <s:link source="input2" sink="Concatenate_two_strings1:string2" />
+        <s:link source="Concatenate_two_strings1:output" sink="Concatenate_two_strings2:string1" />
+        <s:link source="input3" sink="Concatenate_two_strings2:string2" />
+        <s:link source="Concatenate_two_strings2:output" sink="concatenated_string" />
+        <s:source name="input1" />
+        <s:source name="input2" />
+        <s:source name="input3" />
+        <s:sink name="concatenated_string" />
+      </s:scufl>
+    </s:workflow>
+    <s:iterationstrategy>
+      <i:cross xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:dot>
+          <i:iterator name="input2" />
+          <i:iterator name="input3" />
+        </i:dot>
+        <i:iterator name="input1" />
+      </i:cross>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:processor name="Clone">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:ee6fce91-2abe-4998-9721-3270aeb0d0b2" author="Marco Roos (AID)" title="CloneItemsInList">Utility workflow that clones an item copy_number times. You can use this to work around standard iteration strategies, e.g. in combination with the CountListItems workflow.
+
+Workflow examples: TestIterationStrategy_withClones. For an alternative approach see TestIterationStrategy_withNesting.
+
+Example I/O:
+
+input: A
+copy_number: 3
+result: [A,A,A]
+
+input: [A,B,C]
+copy_number: 3
+result: [[A,A,A][B,B,B][C,C,C]]
+
+input: [A,B,C]
+copy_number: [3,2]
+result: [[[A,A,A],[A,A]][[B,B,B],[B,B]],[[C,C,C],[C,C]]]
+
+input: [A,B,C]
+copy_number: [3,2,1]
+iteration strategy: dot product
+result: [[A,A,A],[B,B],[C]]</s:workflowdescription>
+        <s:processor name="Clone">
+          <s:beanshell>
+            <s:scriptvalue>import java.util.*;
+
+List newlist = new ArrayList();
+
+for (int i=0; i&lt;((int) Integer.parseInt(copy_number.toString())); i++) {
+	newlist.add(input);
+}
+
+clones=newlist;</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">copy_number</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">input</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">clones</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:link source="copy_number" sink="Clone:copy_number" />
+        <s:link source="input" sink="Clone:input" />
+        <s:link source="Clone:clones" sink="clones" />
+        <s:source name="copy_number" />
+        <s:source name="input" />
+        <s:sink name="clones" />
+      </s:scufl>
+    </s:workflow>
+    <s:iterationstrategy>
+      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="copy_number" />
+        <i:iterator name="input" />
+      </i:dot>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:link source="Clone:clones" sink="Concatenate:input2" />
+  <s:link source="Concatenate:concatenated_string" sink="Count2:xml_list" />
+  <s:link source="Concatenate:concatenated_string" sink="concatenated" />
+  <s:link source="Count1:count" sink="Clone:copy_number" />
+  <s:link source="String_Constant:value" sink="Concatenate:input1" />
+  <s:link source="create_ListOfLists:outlist" sink="Concatenate:input3" />
+  <s:link source="create_capitalList:capitallist" sink="Clone:input" />
+  <s:link source="Count1:count" sink="count_letterlist" />
+  <s:link source="Count2:count" sink="count_concatenated" />
+  <s:link source="create_ListOfLists:outlist" sink="Count1:xml_list" />
+  <s:link source="create_ListOfLists:outlist" sink="letter_list" />
+  <s:link source="create_capitalList:capitallist" sink="capital_list" />
+  <s:sink name="letter_list" />
+  <s:sink name="concatenated" />
+  <s:sink name="capital_list" />
+  <s:sink name="count_concatenated" />
+  <s:sink name="count_letterlist" />
+</s:scufl>
+

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:fc2eb918-3780-423b-95cd-9df799b23b4f" author="" title="TestURL_REST" />
+  <s:processor name="TestURL">
+    <s:beanshell>
+      <s:scriptvalue>import java.lang.Object;</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist />
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+</s:scufl>
+

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns="http://www.co-ode.org/ontologies/basic-bio/basic-substances.owl#"
+    xmlns:rlp="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://www.co-ode.org/ontologies/basic-bio/basic-substances.owl">
+  <owl:Ontology rdf:about="">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Some basic physical substances and related notions.
+
+This version is just a placeholder with enough to allow us to define water.  Phase should be added later as a quality.</rdfs:comment>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Compound_substance">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Amount_of_matter"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Water">
+    <rdfs:subClassOf rdf:resource="#Compound_substance"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Amount_of_matter">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Amount_of_matter_or_energy"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >From here on we shall drop the "Amount of..." prefix.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Element_substance">
+    <rdfs:subClassOf rdf:resource="#Amount_of_matter"/>
+  </owl:Class>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 304)  http://protege.stanford.edu -->

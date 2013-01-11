@@ -1,0 +1,233 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/Publication.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/Publication.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Corpus">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >(Sub)set of documents, e.g. medline or a subset, restriction 'at least one article' not set; too often not useful in practice</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >corpus</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="Article"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="contains_document"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Article">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Article or publication</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Article</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Publication</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:minCardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="document_id"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="DocumentSearch">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >search</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:DatatypeProperty rdf:ID="boolean_search_query"/>
+            </owl:onProperty>
+            <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >1</owl:minCardinality>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="search_on"/>
+            </owl:onProperty>
+            <owl:allValuesFrom rdf:resource="#Corpus"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Search for particular documents</rdfs:comment>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="mentions">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="mentioned_in"/>
+    </owl:inverseOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >something (e.g. an article) mentions (contains) something</rdfs:comment>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >TODO: should come from higher level ontology (not specific for articles)</owl:versionInfo>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >mentions</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="contained_in_corpus">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >contained in</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >contained in corpus</rdfs:comment>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#contains_document"/>
+    </owl:inverseOf>
+    <rdfs:domain rdf:resource="#Article"/>
+    <rdfs:range rdf:resource="#Corpus"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#search_on">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >search_on</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >a search on a corpus</rdfs:comment>
+    <rdfs:domain rdf:resource="#DocumentSearch"/>
+    <rdfs:range rdf:resource="#Corpus"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#contains_document">
+    <owl:inverseOf rdf:resource="#contained_in_corpus"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >contains</rdfs:label>
+    <rdfs:range rdf:resource="#Article"/>
+    <rdfs:domain rdf:resource="#Corpus"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >contains document</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#mentioned_in">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >mentioned in</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >something mentioned ('published') in some article</rdfs:comment>
+    <owl:inverseOf rdf:resource="#mentions"/>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >TODO: should come from higher level ontology (not specific for articles)</owl:versionInfo>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="document_URL">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Universal Resource Location of a document</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >URL</rdfs:label>
+    <rdfs:subPropertyOf>
+      <owl:DatatypeProperty rdf:ID="document_ref"/>
+    </rdfs:subPropertyOf>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="#document_id">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >identifyer</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Document identifier</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="#document_ref">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >reference</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Document reference</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="#boolean_search_query">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >boolean search query</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >query</rdfs:label>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="boolean_search_query_lucene">
+    <rdfs:subPropertyOf rdf:resource="#boolean_search_query"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >query</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >boolean search query cf lucene format</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="corpus_name">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#Corpus"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >name of corpus</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >name</rdfs:label>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="boolean_search_query_pubmed">
+    <rdfs:subPropertyOf rdf:resource="#boolean_search_query"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >boolean search query cf pubmed format</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >query</rdfs:label>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="pubmed_URL">
+    <rdfs:subPropertyOf rdf:resource="#document_URL"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PubMed URL</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >URL to entrez pubmed</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="pubmed_id">
+    <rdfs:subPropertyOf rdf:resource="#document_id"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PMID</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PubMed identifyer</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:SymmetricProperty rdf:ID="semantically_related_with">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >relationship with</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >semantic relation between two things, e.g. PKB/Akt and p27 in 'PKB/Akt Phosphorylates p27'</rdfs:comment>
+    <owl:inverseOf rdf:resource="#semantically_related_with"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:subPropertyOf>
+      <owl:SymmetricProperty rdf:ID="colocated_with"/>
+    </rdfs:subPropertyOf>
+  </owl:SymmetricProperty>
+  <owl:SymmetricProperty rdf:about="#colocated_with">
+    <owl:inverseOf rdf:resource="#colocated_with"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >relationship between two things that are colocated in a unit (of text). This relationship is not transitive because we consider the colocation between things (terms), not between instances of the things. Things are considered colocated if there exists a colocation between instances of the things in at least one unit (of text).</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:SymmetricProperty>
+  <Article rdf:ID="ExampleInstance_Article">
+    <contained_in_corpus>
+      <Corpus rdf:ID="ExampleInstance_Corpus">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Example Instance of Corpus</rdfs:label>
+        <corpus_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >example corpus</corpus_name>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Example instance of corpus</rdfs:comment>
+        <contains_document rdf:resource="#ExampleInstance_Article"/>
+      </Corpus>
+    </contained_in_corpus>
+    <pubmed_id rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >17306846</pubmed_id>
+    <pubmed_URL rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http&amp;#58;//www.ncbi.nlm.nih.gov/sites/entrez?cmd=Retrieve&amp;amp;db=PubMed&amp;amp;list_uids=17306846</pubmed_URL>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Example Instance Article</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Example Instance Article</rdfs:comment>
+  </Article>
+  <DocumentSearch rdf:ID="ExampleInstance_DocumentSearch">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Example Instance of Document Search</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Example Instance of Document Search</rdfs:comment>
+    <boolean_search_query rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >"example search query"</boolean_search_query>
+    <search_on rdf:resource="#ExampleInstance_Corpus"/>
+  </DocumentSearch>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3, Build 395)  http://protege.stanford.edu -->

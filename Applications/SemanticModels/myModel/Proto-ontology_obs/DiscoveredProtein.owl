@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:prot="http://integrativebioinformatics.nl/Ontology/HistOn2/SemanticModels/Protein.owl#"
+    xmlns="http://rdf.adaptivedisclosure.org/BioAID/DiscoveredProtein.owl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:aid="http://rdf.adaptivedisclosure.nl/BioAID/DiscoveredEntities.owl#"
+  xml:base="http://rdf.adaptivedisclosure.org/BioAID/DiscoveredProtein.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.nl/BioAID/DiscoveredEntities.owl"/>
+    <owl:imports rdf:resource="http://integrativebioinformatics.nl/Ontology/HistOn2/SemanticModels/Protein.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="DiscoveredProtein">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >discovered protein</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://integrativebioinformatics.nl/Ontology/HistOn2/SemanticModels/Protein.owl#Protein_molecule"/>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://rdf.adaptivedisclosure.nl/BioAID/DiscoveredEntities.owl#DiscoveredEntity"/>
+            <owl:onProperty rdf:resource="http://rdf.adaptivedisclosure.nl/BioAID/DiscoveredEntities.owl#has_discovery_status"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <DiscoveredProtein rdf:ID="mMRS">
+    <aid:has_discovery_status>
+      <aid:TextMiningDiscovery rdf:ID="BioAID_workflow_MR8_p53">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >BioAID workflow MR8 discovery</rdfs:label>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Entity discovered by BioAID workflow MR8</rdfs:comment>
+      </aid:TextMiningDiscovery>
+    </aid:has_discovery_status>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >mMRS</rdfs:label>
+  </DiscoveredProtein>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.2, Build 355)  http://protege.stanford.edu -->

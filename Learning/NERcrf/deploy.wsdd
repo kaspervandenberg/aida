@@ -1,0 +1,11 @@
+<deployment xmlns="http://xml.apache.org/axis/wsdd/"
+            xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+    <service name="CRFtrain" provider="java:RPC" style="rpc" use="encoded">
+        <parameter name="className" value="katrenko.ws.trainCRF"/>
+        <parameter name="allowedMethods" value="*"/>
+    </service>
+    <service name="CRFapply" provider="java:RPC" style="rpc" use="encoded">
+        <parameter name="className" value="katrenko.ws.applyCRF"/>
+        <parameter name="allowedMethods" value="*"/>
+    </service>
+</deployment>

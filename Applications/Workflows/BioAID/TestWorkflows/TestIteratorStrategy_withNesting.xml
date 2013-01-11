@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:15427033-6d05-4185-acc9-8d66f5d88a72" author="Marco Roos (AID)" title="TestIteratorStrategy_withNesting">Implementation of the iteration workaround by Tom Oin conform the Q&amp;A below. The nested workflow 'NestedProcessor' is called that to conform to Tom's explanation. For an alternative solution using a java beanshell to clone list items see 'TestIteratorStrategy_withCloning. 
+
+This workflow implements the following Q&amp;A:
+Marco Roos wrote:
+&gt; Dear Taverna user,
+&gt;
+&gt; Issue 1: Complex iteration
+&gt;
+&gt;     I would like to perform an iteration including a dot product between
+&gt;     a list and a list of lists; example:
+&gt;     Input:
+&gt;
+&gt;         [1]
+&gt;         [A,B,C]
+&gt;         [[a,b],[c,d],[e,f]]
+&gt;
+&gt;     Desired output:
+&gt;
+&gt;         [1Aa, 1Ab, 1Bc, 1Bd, 1Ce, 1Cf]
+&gt;
+&gt;     Is this possible? If so, how can I achieve this?
+
+Yes, but not directly. This is actually the reason for the new T2 feature called 'staged iteration'. The issue is that assuming you iterate down to single items (which appears to be the case) you want to go half way with a dot product and then use a cross product. As the iteration strategies always (in the current code) drill down to the final thing you're asking for you can't do this, at least you can't do it without a trick...
+
+So... the trick :
+
+First off the [1] is a red herring, that's the easy bit! it doesn't matter where you put that in as it'll always be added onto every single job.
+
+So you now have a list and a list of lists, you want to combine item 'n' in the first list with all the items of list 'n' in the second. Firstly you'll need a nested workflow into which you put your processor, the trick being that you also put in an 'echo list' operation. Connect the echo list output to the input of your processor being fed needing the list of lists and the echo list input to a workflow input. Connect the other input (the list) of your processor to a workflow input. The workflow inputs will have type of 'single item' and 'list' as the workflow inputs copy the types of the inputs they're connected to.
+
+It should be obvious that if you give this nested workflow the inputs 'A' and [a,b] it'll iterate and give you [f(A*a),f(A*b]. Also note that now the nested workflow mismatches by the same level on both inputs - it has one input with a single item type which you'll feed it a list and another of a list where you feed it a list of lists. This means you can set a dot iteration strategy over the nested workflow with the cross product (default) iteration strategy over the processor within it.
+
+This nested workflow will now produce the result you want; it will be called three times with :
+
+[A*[a,b], B*[c,d], C*[e,f]]
+
+Each one of these then creates a cross product iteration within the nested workflow, so the output is :
+
+[f(A*a),f(A*b)],[f(B*c),f(B*d)],[f(C*e),f(C*f)]]
+
+Passing the output through a list flatten operation then gives you (leaving out the 'F(x)' and replacing with 'x') :
+
+[Aa,Ab,Bc,Bd,Ce,Cf] which is what I believe you wanted? :) Adding the [1] bit in is easy from there!
+
+We actually did this exact thing some time ago for Paul, he had a structure he was viewing as two lists of directories where the lists were the same length but the directories could have any number of items in, he wanted a comparison between every item in directory 'n' from list 1 and every item in directory 'n' from list 2.
+
+Hope that helps, if you were wondering why we have a superficially pointless 'echo list' local worker now you know :)
+
+Tom</s:workflowdescription>
+  <s:processor name="String_Constant" boring="true">
+    <s:stringconstant>1.</s:stringconstant>
+  </s:processor>
+  <s:processor name="create_letterListOfLists">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.*;
+
+List newListOfLists = new ArrayList();
+
+int k=0;
+for (int j=0; j&lt;3; j++) {
+	List newlist = new ArrayList();
+
+	for (int i=0; i&lt;2; i++) {
+		newlist.add((String) (Character.toString((char) ('a' + k))));
+		k++;
+	}
+	newListOfLists.add((List) newlist);
+}
+outlist=newListOfLists;</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">outlist</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="create_capitalList">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.*;
+
+List newlist = new ArrayList();
+
+for (int i=0; i&lt;3; i++) {
+	newlist.add((String) (Character.toString((char) ('A'+(char) i))+"."));
+}
+
+capitallist=newlist;</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">capitallist</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Count1">
+    <s:workflow>
+      <s:xscufllocation>file:/D:/Marco/adaptivedisclosure.org/public_html/BioAID/Preliminary/Workflows/UtilityWorkflows/CountListElements.xml</s:xscufllocation>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Count2">
+    <s:workflow>
+      <s:xscufllocation>file:/D:/Marco/adaptivedisclosure.org/public_html/BioAID/Preliminary/Workflows/UtilityWorkflows/CountListElements.xml</s:xscufllocation>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Concatenate">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:1c2b5081-98c5-4e7a-8445-ef2553d16086" author="" title="Concatenate" />
+        <s:processor name="Echo_list3">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.EchoList</s:local>
+        </s:processor>
+        <s:processor name="NestedProcessor">
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:1c2b5081-98c5-4e7a-8445-ef2553d16086" author="" title="Concatenate" />
+              <s:processor name="Concatenate_two_strings2">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+              </s:processor>
+              <s:processor name="Concatenate_two_strings1">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+              </s:processor>
+              <s:link source="input1" sink="Concatenate_two_strings1:string1" />
+              <s:link source="input2" sink="Concatenate_two_strings1:string2" />
+              <s:link source="Concatenate_two_strings1:output" sink="Concatenate_two_strings2:string1" />
+              <s:link source="input3" sink="Concatenate_two_strings2:string2" />
+              <s:link source="Concatenate_two_strings2:output" sink="concatenated_string" />
+              <s:source name="input1" />
+              <s:source name="input2" />
+              <s:source name="input3" />
+              <s:sink name="concatenated_string" />
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:link source="input1" sink="NestedProcessor:input1" />
+        <s:link source="input2" sink="NestedProcessor:input2" />
+        <s:link source="input3" sink="Echo_list3:inputlist" />
+        <s:link source="Echo_list3:outputlist" sink="NestedProcessor:input3" />
+        <s:link source="NestedProcessor:concatenated_string" sink="concatenated_string" />
+        <s:source name="input1" />
+        <s:source name="input2" />
+        <s:source name="input3" />
+        <s:sink name="concatenated_string" />
+      </s:scufl>
+    </s:workflow>
+    <s:iterationstrategy>
+      <i:cross xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="input1" />
+        <i:dot>
+          <i:iterator name="input3" />
+          <i:iterator name="input2" />
+        </i:dot>
+      </i:cross>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:link source="Concatenate:concatenated_string" sink="Count2:xml_list" />
+  <s:link source="String_Constant:value" sink="Concatenate:input1" />
+  <s:link source="create_capitalList:capitallist" sink="Concatenate:input2" />
+  <s:link source="Concatenate:concatenated_string" sink="concatenated" />
+  <s:link source="Count2:count" sink="count_concatenated" />
+  <s:link source="create_capitalList:capitallist" sink="capital_list" />
+  <s:link source="create_letterListOfLists:outlist" sink="Concatenate:input3" />
+  <s:link source="create_letterListOfLists:outlist" sink="Count1:xml_list" />
+  <s:link source="Count1:count" sink="count_letterlist" />
+  <s:link source="create_letterListOfLists:outlist" sink="letter_list" />
+  <s:sink name="letter_list" />
+  <s:sink name="concatenated" />
+  <s:sink name="capital_list" />
+  <s:sink name="count_concatenated" />
+  <s:sink name="count_letterlist" />
+</s:scufl>
+

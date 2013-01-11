@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:4aac3b74-9b23-4f06-a2bd-d44c73f09915" author="" title="TestConstructQuery" />
+</s:scufl>
+

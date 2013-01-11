@@ -1,0 +1,871 @@
+PMID- 8647462
+TI  - pLEF, a novel vector for expression of glutathione S-transferase fusion
+      proteins in mammalian cells.
+AB  - An expression vector, pLEF, has been used to produce the intracellular
+      domain (IC) of the human CD95 (Fas/APO-1) apoptosis receptor as a
+      glutathione S-transferase (GST) fusion protein in murine L929 fibroblasts.
+      GST::CD95IC was affinity-purified in a single step using
+      glutathione-Sepharose. Purification of GST::CD95IC from 32P-labelled L929
+      cells and cleavage with thrombin revealed that CD95IC was phosphorylated
+      in vivo when produced as a GST fusion protein. Therefore, pLEF may
+      facilitate the mapping of in vivo-modified sites of eukaryotic proteins.
+FAU - Rudert, F
+AU  - Rudert F
+FAU - Visser, E
+AU  - Visser E
+FAU - Gradl, G
+AU  - Gradl G
+FAU - Grandison, P
+AU  - Grandison P
+FAU - Shemshedini, L
+AU  - Shemshedini L
+FAU - Wang, Y
+AU  - Wang Y
+FAU - Grierson, A
+AU  - Grierson A
+FAU - Watson, J
+AU  - Watson J
+MH  - Amino Acid Sequence
+MH  - Animals
+MH  - Antigens, CD95/chemistry/*genetics/isolation & purification
+MH  - Base Sequence
+MH  - Cell Line
+MH  - DNA
+MH  - Gene Expression/*genetics
+MH  - Genetic Vectors/*genetics
+MH  - Glutathione Transferase/*genetics
+MH  - Human
+MH  - Mammals
+MH  - Mice
+MH  - Molecular Sequence Data
+MH  - Recombinant Fusion Proteins/genetics/isolation & purification
+MH  - Thrombin/metabolism
+SO  - Gene 1996 Mar 9;169(2):281-2.
+
+PMID- 8932386
+TI  - Drosophila ribosomal protein PO contains apurinic/apyrimidinic
+      endonuclease activity.
+AB  - Drosophila ribosomal protein PO was overexpressed in Escherichia coli to
+      allow for its purification, biochemical characterization and to generate
+      polyclonal antibodies for Western analysis. Biochemical tests were
+      originally performed to see if overexpressed PO contained DNase activity
+      similar to that recently reported for the apurinic/apyrimidinic (AP) lyase
+      activity associated with Drosophila ribosomal protein S3. The
+      overexpressed ribosomal protein was subsequently found to act on AP DNA,
+      producing scissions that were in this case 5' of a baseless site instead
+      of 3', as has been observed for S3. As a means of confirming that the
+      source of AP endonuclease activity was in fact due to PO, glutathione
+      S-transferase (GST) fusions containing a Factor Xa cleavage site between
+      GST and PO were constructed, overexpressed in an E.coli strain defective
+      for the major 5'-acting AP endonucleases and the fusions purified using
+      glutathione-agarose affinity column chromatography. Isolated fractions
+      containing purified GST-PO fusion proteins were subsequently found to have
+      authentic AP endonuclease activity. Moreover, glutathione-agarose was able
+      to deplete AP endonuclease activity from GST-PO fusion protein
+      preparations, whereas the resin was ineffective in lowering DNA repair
+      activity for PO that had been liberated from the fusion construct by
+      Factor Xa cleavage. These results suggested that PO was a multifunctional
+      protein with possible roles in DNA repair beyond its known participation
+      in protein translation. In support of this notion, tests were performed
+      that show that GST-PO, but not GST, was able to rescue an E.coli mutant
+      lacking the major 5'-acting AP endonucleases from sensitivity to an
+      alkylating agent. We furthermore show that GST-PO can be located in both
+      the nucleus and ribosomes. Its nuclear location can be further traced to
+      the nuclear matrix, thus placing PO in a subcellular location where it
+      could act as a DNA repair protein. Other roles beyond DNA repair seem
+      possible, however, since GST-PO also exhibited significant nuclease
+      activity for both single- and double-stranded DNA.
+FAU - Yacoub, A
+AU  - Yacoub A
+FAU - Kelley, M R
+AU  - Kelley MR
+FAU - Deutsch, W A
+AU  - Deutsch WA
+MH  - Animals
+MH  - Antibodies/immunology
+MH  - Blotting, Western
+MH  - DNA/metabolism
+MH  - DNA-(Apurinic or Apyrimidinic Site) Lyase
+MH  - Deoxyribonuclease IV (Phage T4-Induced)
+MH  - *Drosophila Proteins
+MH  - Drosophila melanogaster
+MH  - Escherichia coli
+MH  - Glutathione Transferase/genetics/metabolism
+MH  - Insect Hormones/genetics/immunology/*metabolism
+MH  - Lyases/genetics/*metabolism
+MH  - Mutation
+MH  - Nuclear Matrix/metabolism
+MH  - Recombinant Fusion Proteins/metabolism
+MH  - Ribosomal Proteins/genetics/*metabolism
+MH  - Support, Non-U.S. Gov't
+MH  - Support, U.S. Gov't, P.H.S.
+SO  - Nucleic Acids Res 1996 Nov 1;24(21):4298-303.
+
+PMID- 9504423
+TI  - Expression of a synthetic gene for initiation factor 4E-binding protein 1
+      in Escherichia coli and its interaction with eIF-4E and eIF-4E x m7GTP
+      complex.
+AB  - An artificial gene coding for the human initiation factor (eIF) 4E-binding
+      protein 1 (4E-BP1) was chemically synthesized and cloned. Although the
+      expression of the 4E-BP1 gene alone has not yet been accomplished, the
+      gene was expressed in Escherichia coli [BL21(DE3)] as a fusion gene with
+      the glutathione-S-transferase (GST) gene using a prokaryotic gene fusion
+      vector (pGEX-4T-2), which contains a gene sequence coding the cleavage
+      site for a specific protease, alpha-thrombin. The fusion gene product was
+      purified to homogeneity by glutathione Sepharose-4B affinity column
+      chromatography. It was shown by m7GTP- and glutathione-affinity
+      chromatography that the binding ability of 4E-BP1 to eIF-4E is nearly the
+      same as that to the eIF-4E x m7GTP complex, implying different binding
+      sites of eIF-4E and its nonallosteric obligation for 4E-BP1 and mRNA cap
+      structure. In contrast with the binding of eIF-4E to the mRNA cap
+      structure, where some functional amino acids play an important role in the
+      binding, the binding to 4E-BP1 was suggested to occur via multiple
+      nonspecific interactions.
+FAU - Nishi, N
+AU  - Nishi N
+FAU - Morino, S
+AU  - Morino S
+FAU - Tomoo, K
+AU  - Tomoo K
+FAU - Youtani, T
+AU  - Youtani T
+FAU - Ishida, T
+AU  - Ishida T
+MH  - Amino Acid Sequence
+MH  - Base Sequence
+MH  - *Carrier Proteins
+MH  - Cloning, Molecular
+MH  - DNA, Recombinant
+MH  - Escherichia coli
+MH  - Eukaryotic Initiation Factor-4E
+MH  - Gene Expression
+MH  - *Genes, Synthetic
+MH  - Molecular Sequence Data
+MH  - Mutation
+MH  - Peptide Initiation Factors/*metabolism
+MH  - Phosphoproteins/*genetics/metabolism
+MH  - Protein Binding
+MH  - RNA Cap Analogs/metabolism
+MH  - Recombinant Fusion Proteins/genetics/isolation & purification/metabolism
+MH  - Support, Non-U.S. Gov't
+SO  - J Biochem (Tokyo) 1998 Jan;123(1):157-61.
+
+PMID- 12030435
+TI  - Anti-SLA seropositive autoimmune hepatitis sera recognize distinct
+      subunits of glutathione S-transferase: high prevalence of the Ya
+      autoantigen.
+AB  - We have recently reported that anti-SLA seropositive autoimmune hepatitis
+      (AIH) patients develop autoantibodies against glutathione S-transferase
+      (GST). GSTs are multifunctional enzymes mediating hepatic detoxification
+      of cytotoxic and genotoxic compounds and are also involved in biliary
+      secretion. We have observed varying reactivity of individual AIH sera
+      towards several GST isoenzymes. Since the GST subunits have very similar
+      molar masses and therefore are not satisfactorily resolved by
+      one-dimensional gel electrophoresis, we have performed their fractionation
+      by reverse-phase high performance liquid chromatography (HPLC) to better
+      separate the individual GST isoenzymes. 4 individual GST subunits were
+      isolated as judged by electrophoretic analysis of the 4 distinct peaks.
+      The identity of isolated proteins was unequivocally determined by protein
+      sequencing. Isolated subtypes were loaded on 15% SDS gels and blotted.
+      Immunoblotting was performed with eleven anti-SLA positive sera that
+      displayed differential reactivity with total GSTs. Fractionation of the
+      GSTs by HPLC did not impair their ability to react with specific
+      autoantibodies. Interestingly, the majority of GST-positive AIH sera
+      reacted with one or two GST subtypes, only two sera recognized 3 subunits.
+      Ya was most prevalent autoantigen. Autoantibodies against Yb2 were
+      detected solely in one serum. This pattern of reactivity indicates that
+      individual patients' sera discriminate between GST subunits despite their
+      sequence homology. It is well known that the GST variants differ within
+      their amino-terminal part while the residual moiety is highly conserved.
+      It would suggest that autoantibodies recognize distinct epitopes located
+      within amino-terminus of individual GST variants.
+FAU - Wesierska-Gadek, Jozefa
+AU  - Wesierska-Gadek J
+FAU - Lindner, Herbert
+AU  - Lindner H
+FAU - Hitchman, Eva
+AU  - Hitchman E
+FAU - Sarg, Bettina
+AU  - Sarg B
+FAU - Penner, Edward
+AU  - Penner E
+MH  - Animals
+MH  - *Autoantibodies
+MH  - Autoantigens/*immunology
+MH  - Chromatography, Affinity
+MH  - Chromatography, High Pressure Liquid
+MH  - Electrophoresis, Polyacrylamide Gel
+MH  - Glutathione Transferase/*immunology
+MH  - Hepatitis, Autoimmune/enzymology/*immunology
+MH  - Human
+MH  - Isoenzymes/immunology
+MH  - Rats
+MH  - Support, Non-U.S. Gov't
+SO  - Cell Mol Biol (Noisy-le-grand) 2002 May;48(3):301-7.
+
+PMID- 12241552
+TI  - A new method for the preparation of human parathyroid hormone 1-34
+      peptides.
+AB  - An engineered Escherichia coli strain, BL21 (DE3)/pGEX-4T-human
+      parathyroid hormone (hPTH) (1-34), was constructed by oligonucleotide
+      annealing and PCR amplification of the target gene, and then by ligating
+      it with the pGEX-4T-3 vector and transferring into the BL21 host. The
+      soluble glutathione S-transferase (GST) fusion protein GST-hPTH (1-34),
+      expressed from BL21 (DE3)/pGEX-4T-hPTH (1-34), was harvested after
+      fermentation and purification by affinity chromatography. Following double
+      cleavage by thrombin and prolyl endopeptidase, about 0.6 g/l intact hPTH
+      (1-34) was harvested. The product was checked by HPLC MS and N-terminal
+      sequence analysis. The purified recombinant hPTH (1-34) stimulates
+      adenylate cyclase in rabbit renal cortical cell membranes to exactly the
+      same extent as synthetic hPTH standards, indicating that the recombinant
+      product has full biological activity.
+FAU - Xiu, Zhaoyang
+AU  - Xiu Z
+FAU - Li, Min
+AU  - Li M
+FAU - Zhou, Suijing
+AU  - Zhou S
+FAU - Dou, Hong
+AU  - Dou H
+FAU - Zhou, Heyue
+AU  - Zhou H
+FAU - Chen, Changqing
+AU  - Chen C
+MH  - Adenylate Cyclase/biosynthesis
+MH  - Animals
+MH  - Cell Line
+MH  - Comparative Study
+MH  - Directed Molecular Evolution/*methods
+MH  - Enzyme Activation
+MH  - Escherichia coli/classification/*genetics/*metabolism
+MH  - Human
+MH  - Kidney Cortex/drug effects/enzymology
+MH  - Rabbits
+MH  - Recombinant Fusion Proteins/isolation & purification/*metabolism
+MH  - Sensitivity and Specificity
+MH  - Species Specificity
+MH  - Teriparatide/*isolation & purification/*metabolism/pharmacology
+SO  - Biotechnol Appl Biochem 2002 Oct;36(Pt 2):111-7.
+
+PMID- 12706072
+TI  - Processing of Norwalk virus nonstructural proteins by a 3C-like cysteine
+      proteinase.
+AB  - Expression of Norwalk virus nonstructural polyprotein precursor in vitro
+      resulted in rapid cotranslational cleavage at specific sites. The cleavage
+      products were similar to those previously identified for Southampton
+      virus, a highly related virus. We inactivated the virally encoded
+      proteinase responsible for cleavage of the nonstructural polyprotein by
+      mutation of the putative catalytic cysteine residue, which resulted in
+      production of full-length polyprotein precursor. NV proteinase was
+      expressed in Escherichia coli as a glutathione S-transferase fusion and
+      purified by GST-affinity chromatography. Activity of the purified
+      proteinase was demonstrated by incubation with the full-length precursor
+      protein. trans cleavage of the nonstructural protein precursor resulted in
+      cleavage products similar to those observed during cotranslational
+      cleavage, however, at lesser efficiency. NV proteinase displayed
+      sensitivities to cysteine and serine protease inhibitors similar to
+      poliovirus 3C proteinase, suggesting that NV proteinase is a member of the
+      viral cysteine proteinase family. We propose that the proteinase may play
+      a regulatory role in viral replication.
+FAU - Blakeney, Susan J
+AU  - Blakeney SJ
+FAU - Cahill, Adriana
+AU  - Cahill A
+FAU - Reilly, Patricia A
+AU  - Reilly PA
+MH  - Cysteine Endopeptidases/*metabolism
+MH  - Kinetics
+MH  - Norwalk virus/*physiology
+MH  - Protease Inhibitors/pharmacology
+MH  - Viral Nonstructural Proteins/*metabolism
+MH  - Viral Proteins/*metabolism
+MH  - Virus Replication
+SO  - Virology 2003 Apr 10;308(2):216-24.
+
+PMID- 7827501
+TI  - A fast method for obtaining highly pure recombinant herpes simplex virus
+      type 1 thymidine kinase.
+AB  - Recombinant Herpes Simplex Virus Type 1 thymidine kinase (TK) was isolated
+      in a fast and gentle two-step procedure from Escherichia coli as a
+      thrombin cleavable fusion protein. The TK was expressed as an inducible
+      glutathione S-acetyl transferase fusion protein and purified in a first
+      step by glutathione affinity chromatography. Proteolytic cleavage of the
+      column bound TK with thrombin led to a truncated enzyme, resulting from
+      two new and hitherto unknown cleavage sites, determined by N-terminal
+      sequencing. In a second step, the TK was further purified from the
+      cleavage products by ATP affinity chromatography, yielding homogeneously
+      pure TK as shown by SDS-PAGE and mass spectrometry. Both the fusion
+      protein and the purified enzyme show enzymatic activity with the same Km
+      value of 0.2 microM for the natural substrate thymidine. Determination of
+      the native molecular weight indicated that the pure enzyme and the fusion
+      protein are biologically active as homodimers. Therefore the recombinant
+      enzyme has the same biochemical characteristics as the viral TK, expressed
+      in infected cells.
+FAU - Fetzer, J
+AU  - Fetzer J
+FAU - Michael, M
+AU  - Michael M
+FAU - Bohner, T
+AU  - Bohner T
+FAU - Hofbauer, R
+AU  - Hofbauer R
+FAU - Folkers, G
+AU  - Folkers G
+MH  - Amino Acid Sequence
+MH  - Base Sequence
+MH  - Chromatography, Affinity
+MH  - Chromatography, Agarose
+MH  - Escherichia coli/genetics
+MH  - Genetic Vectors
+MH  - Glutathione Transferase/biosynthesis/genetics/isolation & purification
+MH  - Herpesvirus 1, Human/*enzymology/genetics
+MH  - Molecular Sequence Data
+MH  - Phosphorylation
+MH  - Recombinant Fusion Proteins/biosynthesis/isolation &
+      purification/metabolism
+MH  - Support, Non-U.S. Gov't
+MH  - Thrombin/metabolism
+MH  - Thymidine/metabolism
+MH  - Thymidine Kinase/biosynthesis/genetics/*isolation & purification
+SO  - Protein Expr Purif 1994 Oct;5(5):432-41.
+
+PMID- 10631683
+TI  - The use of recombinant fusion proteases in the affinity purification of
+      recombinant proteins.
+AB  - In the affinity purification of recombinant fusion proteins, the
+      rate-limiting step is usually the efficient proteolytic cleavage and
+      removal of the affinity tail and the protease from the purified
+      recombinant protein. We have developed a rapid, convenient, and efficient
+      method of affinity purification that can overcome this limitation. In one
+      example of the method, the protease 3C from a picornavirus (3Cpro), which
+      cleaves specific sequences containing a minimum of 6-7 amino acids, has
+      been expressed as a fusion with glutathione S-transferase. The resultant
+      recombinant "fusion protease" cleaves fusion proteins bearing (from the
+      amino-terminus) the same affinity tail as the fusion protease, a 3Cpro
+      cleavage recognition site, and the recombinant protein of interest. The
+      recombinant protein is purified in a single chromatographic step, which
+      removes both the affinity tail and the fusion protease. The advantages
+      over existing methods include much improved specificity of proteolytic
+      cleavage, complete removal of the protease and the affinity tail in one
+      step, and the option of adding any desired amount of fusion protease to
+      ensure efficient cleavage. The potential flexibility of the method is
+      shown by the use of various affinity tails and alternative fusion
+      proteases.
+FAU - Leong, L E
+AU  - Leong LE
+MH  - Chromatography, Affinity/*methods
+MH  - Cloning, Molecular/methods
+MH  - Cysteine Endopeptidases/chemistry/genetics/metabolism
+MH  - DNA Primers
+MH  - Endopeptidases/*chemistry/genetics/metabolism
+MH  - Glutathione Transferase/chemistry/genetics/metabolism
+MH  - Polymerase Chain Reaction
+MH  - Recombinant Fusion Proteins/*chemistry/metabolism
+MH  - Recombinant Proteins/*isolation & purification
+MH  - *Viral Proteins
+SO  - Mol Biotechnol 1999 Oct;12(3):269-74.
+
+PMID- 10705956
+TI  - Cloning and expression of rat glucocorticoid-receptor DNA-binding domain.
+AB  - The inability to obtain sufficient quantities of purified glucocorticoid
+      receptor (GR) causes difficulties in studying in vitro the interactions of
+      GR with other proteins which contribute to the transcriptional activation
+      of chromatin. Thus, we overexpressed the DNA-binding domains (DBD) of GR
+      in E. coli using glutathione S-transferase (GST)-fusion protein expression
+      vector. The DBD-GST protein (about 57 kDa), recovered in the soluble
+      fraction, was purified by glutathione-agarose column. However, during the
+      chromatography, more than 90% of the DBD-GST protein was cleaved into
+      three species with molecular sizes of about 40, 35 and 30 kDa. The 40 kDa
+      and 35 kDa proteins were immunostained with the anti-GR antibody, and the
+      30 kDa protein was stained with anti-GST antibody. Among these proteins,
+      only the 57 kDa DBD-GST protein bound to the GRE-agarose. These data
+      indicate that the properly folded 57 kDa protein has a DNA binding
+      function and is resistant to intrinsic cleavage of the protein.
+FAU - Okamoto, K
+AU  - Okamoto K
+FAU - Shibata, K
+AU  - Shibata K
+FAU - Isohashi, F
+AU  - Isohashi F
+MH  - Animals
+MH  - Binding Sites
+MH  - *Cloning, Molecular
+MH  - DNA/*metabolism
+MH  - Escherichia coli/genetics
+MH  - Glutathione Transferase/genetics
+MH  - Rats
+MH  - Receptors, Glucocorticoid/chemistry/*genetics/metabolism
+MH  - Recombinant Fusion Proteins
+SO  - Biofactors 2000;11(1-2):39-41.
+
+PMID- 10807041
+TI  - Effect of lead concentration on the level of glutathione, glutathione
+      S-transferase, reductase and peroxidase in human blood.
+AB  - Incubation of human whole blood for 24 h at 37 degrees C in the presence
+      of 100-400 microg/dl lead chloride or lead acetate caused a
+      concentration-dependent decrease in the level of reduced glutathione up to
+      40%. Similarly, the activities of glutathione reductase, glutathione
+      peroxidase and glutathione S-transferase were decreased up to 25%, 50%,
+      and 19%, respectively. Moreover, 100 microg/dl lead chloride or lead
+      acetate slowed the process of glutathione regeneration, and delayed the
+      time for complete regeneration from 20 to 40 min. When glutathione
+      S-transferase was purified by affinity chromatography on Sepharose-linked
+      glutathione, incubated with lead chloride or lead acetate, a
+      concentration-dependent inhibition of the enzymatic activity was observed
+      reaching 50% inhibition at a lead salt concentration of 6000 microg/dl.
+FAU - Hunaiti, A A
+AU  - Hunaiti AA
+FAU - Soud, M
+AU  - Soud M
+MH  - Chromatography, Affinity
+MH  - Erythrocytes/*drug effects
+MH  - Glutathione/*metabolism
+MH  - Glutathione Peroxidase/*metabolism
+MH  - Glutathione Reductase/*metabolism
+MH  - Glutathione Transferase/*metabolism
+MH  - Hemolysis/drug effects
+MH  - Human
+MH  - In Vitro
+MH  - Lead/*pharmacology
+MH  - Male
+MH  - Organometallic Compounds/*pharmacology
+SO  - Sci Total Environ 2000 Mar 29;248(1):45-50.
+
+PMID- 10832634
+TI  - Era GTPase of Escherichia coli: binding to 16S rRNA and modulation of
+      GTPase activity by RNA and carbohydrates.
+AB  - Era, an essential GTPase, appears to play an important role in the
+      regulation of the cell cycle and protein synthesis of bacteria and
+      mycoplasmas. In this study, native Era, His-tagged Era (His-Era) and
+      glutathione S-transferase (GST)-fusion Era (GST-Era) proteins from
+      Escherichia coli were expressed and purified. It was shown that the
+      GST-Era and His-Era proteins purified by 1-step affinity column
+      chromatographic methods were associated with RNA and exhibited a higher
+      GTPase activity. However, the native Era protein purified by a 3-step
+      column chromatographic method had a much lower GTPase activity and was not
+      associated with RNA which had been removed during purification. Purified
+      GST-Era protein was shown to be present as a high- and a
+      low-molecular-mass forms. The high-molecular-mass form of GST-Era was
+      associated with RNA and exhibited a much higher GTPase activity. Removal
+      of the RNA associated with GST-Era resulted in a significant reduction in
+      the GTPase activity. The RNA associated with GST-Era was shown to be
+      primarily 16S rRNA. A purified native Era protein preparation, when mixed
+      with total cellular RNA, was found to bind to some of the RNA. The native
+      Era protein isolated directly from the cells of a wild-type E. coli strain
+      was also present as a high-molecular-mass form complexed with RNA and
+      RNase treatment converted the high-molecular-mass form into a 32 kDa
+      low-molecular-mass form, a monomer of Era. Furthermore, a C-terminally
+      truncated Era protein, when expressed in E. coli, did not bind RNA.
+      Finally, the GTPase activity of the Era protein free of RNA, but not the
+      Era protein associated with the RNA, was stimulated by acetate and
+      3-phosphoglycerate. These carbohydrates, however, failed to activate the
+      GTPase activity of the C-terminally truncated Era protein. Thus, the
+      results of this study establish that the C-terminus of Era is essential
+      for the RNA-binding activity and that the RNA and carbohydrates modulate
+      the GTPase activity of Era possibly through a similar mechanism.
+FAU - Meier, T I
+AU  - Meier TI
+FAU - Peery, R B
+AU  - Peery RB
+FAU - McAllister, K A
+AU  - McAllister KA
+FAU - Zhao, G
+AU  - Zhao G
+MH  - Acetates/pharmacology
+MH  - Bacterial Proteins/chemistry/genetics/*metabolism
+MH  - Blotting, Western
+MH  - Carbohydrates/pharmacology
+MH  - Chromatography, Affinity
+MH  - Chromatography, Gel
+MH  - Chromatography, Ion Exchange
+MH  - Comparative Study
+MH  - Electrophoresis, Polyacrylamide Gel
+MH  - Escherichia coli/genetics/*metabolism
+MH  - GTP-Binding Proteins/chemistry/genetics/*metabolism
+MH  - Glutathione Transferase/chemistry/isolation & purification/*metabolism
+MH  - Glyceric Acids/pharmacology
+MH  - Molecular Weight
+MH  - Polymerase Chain Reaction
+MH  - Protein Binding
+MH  - RNA, Bacterial/analysis/metabolism/pharmacology
+MH  - RNA, Ribosomal, 16S/analysis/*metabolism/pharmacology
+MH  - Recombinant Proteins/metabolism
+SO  - Microbiology 2000 May;146 ( Pt 5):1071-83.
+
+PMID- 11035961
+TI  - One-step purification of the recombinant catalytic subunit of pyruvate
+      dehydrogenase phosphatase.
+AB  - A facile one-step affinity chromatographic purification of the recombinant
+      catalytic subunit (PDPc) of bovine pyruvate dehydrogenase phosphatase
+      (PDP) to near homogeneity is described. PDPc binds in the presence of
+      Ca(2+) to the inner lipoyl domain (L2) of the dihydrolipoamide
+      acetyltransferase component (E2) of the mammalian pyruvate dehydrogenase
+      complex. The affinity column consists of a glutathione S-transferase
+      (GST)-L2 fusion protein bound to glutathione-Sepharose 4B beads. An
+      extract of transformed Escherichia coli cells containing 50 mM Tris buffer
+      (pH 7.5), 2 mM CaCl(2), 5 mM MgCl(2,) 150 mM NaCl, 0.5 mM dithiothreitol,
+      1% Triton X-100, and l M urea was passed through the affinity column, and
+      the column was washed extensively with this buffer mixture. PDPc was
+      eluted with 50 mM Tris buffer (pH 7.5) containing 5 mM MgCl(2), 0.5 mM
+      dithiothreitol, and 1 mM EGTA. Approximately 22 mg of highly purified PDPc
+      was obtained from 10 g (wet weight) of transformed cells. The preparation
+      contained a small amount of a "nicked" form of PDPc. The cleavage is
+      between Arg-394 and Arg-395.
+FAU - Soo Choi, W
+AU  - Soo Choi W
+FAU - Yan, J
+AU  - Yan J
+FAU - McCarthy, D B
+AU  - McCarthy DB
+FAU - Hee Park, S
+AU  - Hee Park S
+FAU - Reed, L J
+AU  - Reed LJ
+MH  - Animals
+MH  - Catalysis
+MH  - Cattle
+MH  - Chromatography, Affinity
+MH  - Electrophoresis, Polyacrylamide Gel
+MH  - Escherichia coli/genetics
+MH  - Pyruvate Dehydrogenase (Lipoamide)-Phosphatase/genetics/*isolation &
+      purification/metabolism
+MH  - Recombinant Proteins/genetics/isolation & purification/metabolism
+MH  - Spectrometry, Mass, Matrix-Assisted Laser Desorption-Ionization
+MH  - Support, U.S. Gov't, P.H.S.
+SO  - Protein Expr Purif 2000 Oct;20(1):128-31.
+
+PMID- 11142348
+TI  - Glutathione S-transferase, similar to sigma class, from skin secretions of
+      Xenopus laevis.
+AB  - Using glutathione affinity chromatography followed by isoelectrofocusing,
+      we purified from the skin secretion of Xenopus laevis an isoenzyme of
+      glutathione S-transferase with an apparent subunit molecular mass of 22.5
+      kDa and an isoelectric point at pH 5.1. Its N-terminal amino acid sequence
+      was highly similar to that of the sigma class glutathione S-transferase,
+      which previously was demonstrated to have a glutathione-dependent
+      prostaglandin D2 synthase activity. Immunohistochemistry analysis revealed
+      that the isoenzyme was located in the cytoplasm of granular gland cells.
+FAU - Pennelli, A
+AU  - Pennelli A
+FAU - Ortolano, S
+AU  - Ortolano S
+FAU - Miele, R
+AU  - Miele R
+FAU - Renda, T
+AU  - Renda T
+FAU - Sacchetta, P
+AU  - Sacchetta P
+FAU - Di Ilio, C
+AU  - Di Ilio C
+FAU - Simmaco, M
+AU  - Simmaco M
+MH  - Amino Acid Sequence
+MH  - Animals
+MH  - Glutathione Transferase/chemistry/classification/genetics/*secretion
+MH  - Immunohistochemistry
+MH  - Isoelectric Point
+MH  - Isoenzymes/chemistry/classification/genetics/secretion
+MH  - Molecular Sequence Data
+MH  - Molecular Weight
+MH  - Skin/cytology/*enzymology
+MH  - Support, Non-U.S. Gov't
+MH  - Xenopus laevis/anatomy & histology/*physiology
+SO  - IUBMB Life 2000 Sep;50(3):203-7.
+
+PMID- 11857676
+TI  - Glutathione S-transferase isoenzymes in the two-spot ladybird, Adalia
+      bipunctata (Coleoptera: Coccinellidae).
+AB  - Isoenzymes of glutathione S-transferase (GST) in adult Adalia bipunctata,
+      an aphidophagous predator, were studied. Cytosolic GST activity was
+      studied in each beetle developmental stage. The highest activities towards
+      both 1-chloro-2,4-dinitrobenzene (CDNB) and 2,4-dinitro-1-iodobenzene
+      (DNIB) occurred in adults. The enzyme distribution was investigated in
+      adults. While most of the enzymatic activity was found in the abdomen
+      (40-50 and 34-63% respectively) using several concentrations of both CDNB
+      and DNIB, significant differences were observed for the head and the
+      thorax depending on the substrate. Activities were more abundant in the
+      thorax with DNIB (37-47%) compared to the 13-19% obtained with CDNB. Some
+      GST activity was also detected in the elytra. GSTs were purified by
+      epoxy-activated Sepharose 6B affinity chromatography and applied to an
+      HPLC column to determine the native molecular weight (69 kDa). Three
+      isoenzymes were separated by chromatofocusing at pH ranges 7-4. Three
+      bands with molecular mass from 23 to 26 kDa were visualised on SDS-PAGE.
+      Their isoelectric points were 6.66, 6.36, and 6.21. The substrate
+      specificities and the kinetic parameters (Vm and Km) of the isoenzymes
+      showed large differences depending on the isoenzyme. Arch.
+FAU - Francis, Frederic
+AU  - Francis F
+FAU - Haubruge, Eric
+AU  - Haubruge E
+FAU - Dierickx, Paul
+AU  - Dierickx P
+MH  - Animals
+MH  - Beetles/*enzymology
+MH  - Dinitrochlorobenzene/metabolism
+MH  - Glutathione Transferase/isolation & purification/*metabolism
+MH  - Hydrogen-Ion Concentration
+MH  - Isoenzymes/isolation & purification/metabolism
+MH  - Kinetics
+MH  - Substrate Specificity
+SO  - Arch Insect Biochem Physiol 2002 Mar;49(3):158-66.
+
+PMID- 11879788
+TI  - Comparative study of the purification and characterization of the
+      cytosolic glutathione S-transferases from two salmonid species: Atlantic
+      salmon (Salmo salar) and brown trout (Salmo trutta).
+AB  - In the present report, an efficient method for isolating multiple
+      cytosolic forms of glutathione S-transferases from liver and kidney
+      cytosolic samples of two salmonid species (brown trout and Atlantic
+      salmon) is described, and some of the multiple properties of these enzymes
+      are presented. Glutathione S-transferases were partially purified by
+      low-pressure affinity chromatography on a column with glutathione coupled
+      to agarose, which retained an average of 89.47% of the total activity. The
+      GST activity was appropriated towards CDNB and ETHA as substrates. The
+      application of an HPLC system associated to elestrospray ionization mass
+      spectrometry allowed the identification of five GST cytosolic isoforms,
+      corresponding to subunits with M(r) between 23,700 and 26,900 Da being the
+      main form, with retention time of 17 min, a pi-class-related GST
+      isoenzyme.
+FAU - Novoa-Valinas, M C
+AU  - Novoa-Valinas MC
+FAU - Perez-Lopez, M
+AU  - Perez-Lopez M
+FAU - Melgar, M J
+AU  - Melgar MJ
+MH  - Animals
+MH  - Chromatography, Affinity
+MH  - Chromatography, Agarose
+MH  - Chromatography, High Pressure Liquid
+MH  - Comparative Study
+MH  - Cytosol/enzymology
+MH  - Glutathione Transferase/*chemistry/isolation & purification
+MH  - Isoenzymes/*chemistry/isolation & purification
+MH  - Kidney/enzymology
+MH  - Liver/enzymology
+MH  - Molecular Weight
+MH  - Salmon/*metabolism
+MH  - Spectrometry, Mass, Electrospray Ionization
+MH  - Support, Non-U.S. Gov't
+MH  - Trout/*metabolism
+SO  - Comp Biochem Physiol C Toxicol Pharmacol 2002 Feb;131(2):207-13.
+
+PMID- 12073343
+TI  - Purification of glutathione S-transferase fusion proteins from yeast.
+FAU - Rodal, Avital A
+AU  - Rodal AA
+FAU - Duncan, Mara
+AU  - Duncan M
+FAU - Drubin, David
+AU  - Drubin D
+MH  - Chromatography, Affinity
+MH  - Chromatography, Ion Exchange
+MH  - Electrophoresis, Polyacrylamide Gel
+MH  - Glutathione Transferase/*genetics/isolation & purification
+MH  - Recombinant Fusion Proteins/*isolation & purification
+MH  - Yeasts/*enzymology
+SO  - Methods Enzymol 2002;351:168-72.
+
+PMID- 12199715
+TI  - Purification and partial characterization of seven glutathione
+      S-transferase isoforms from the clam Ruditapes decussatus.
+AB  - This paper deals with the purification and the partial characterization of
+      glutathione S-transferase (GST) isoforms from the clam Ruditapes
+      decussatus. For the first step of purification, two affinity columns,
+      reduced glutathione (GSH)-agarose and S-hexyl GSH-agarose, were mounted in
+      series. Four affinity fractions were thus recovered. Further purification
+      was performed using anion exchange chromatography. Seven fractions, which
+      present a GST activity with 1-chloro-2,4-dinitrobenzene (CDNB) as
+      substrate, were collected and analyzed by RP-HPLC. Seven distinct GST
+      isoforms were purified, six of them were homodimers, the last one was a
+      heterodimer consisting of the subunits 3 and 6. Kinetic parameters were
+      studied. Results showed that isoforms have distinct affinity and Vmax for
+      GSH and CDNB as substrates. The catalytic activity of the heterodimer
+      isoform appeared to be a combination of the ability of each subunit. The
+      immunological properties of each purified isoform were investigated using
+      three antisera anti-pi, anti-mu and anti-alpha mammalian GST classes.
+      Three isoforms (3-3, 6-6 and 3-6) seem to be closely related to the
+      pi-class GST. Both isoforms 1-1 and 2-2 cross-reacted with antisera to pi
+      and alpha classes and the isoform 5-5 cross-reacted with the antisera to
+      mu and pi classes. Subunit 4 was recognized by the three antisera used,
+      and its N-terminal amino acid analysis showed high identity (53%) with a
+      conserved sequence of an alpha/m micro /pi GST from Fasciola hepatica.
+FAU - Hoarau, Pascal
+AU  - Hoarau P
+FAU - Garello, Ginette
+AU  - Garello G
+FAU - Gnassia-Barelli, Mauricette
+AU  - Gnassia-Barelli M
+FAU - Romeo, Michele
+AU  - Romeo M
+FAU - Girard, Jean-Pierre
+AU  - Girard JP
+MH  - Animals
+MH  - Blotting, Western
+MH  - Chromatography, Affinity
+MH  - Chromatography, High Pressure Liquid
+MH  - Clams/*enzymology
+MH  - Comparative Study
+MH  - Dinitrochlorobenzene/metabolism
+MH  - Glutathione/chemistry
+MH  - Glutathione Transferase/*isolation & purification/metabolism
+MH  - Isoenzymes/isolation & purification/metabolism
+MH  - Kinetics
+MH  - Molecular Sequence Data
+MH  - Peptide Fragments/chemistry
+MH  - Sequence Homology
+MH  - Substrate Specificity
+MH  - Support, Non-U.S. Gov't
+SO  - Eur J Biochem 2002 Sep;269(17):4359-66.
+
+PMID- 7883193
+TI  - Overproduction, purification and structural characterization of the
+      functional N-terminal DNA-binding domain of the fru repressor from
+      Escherichia coli K-12.
+AB  - A DNA fragment encoding the DNA-binding domain (amino acids 1-60) of the
+      Escherichia coli fru transcriptional regulator was cloned into the pGEX-KT
+      vector and expressed in frame with the fused gene encoding glutathione
+      S-transferase. The fusion protein was purified to homogeneity by affinity
+      chromatography on immobilized glutathione, and then cleaved with thrombin.
+      After separation by a cation-exchange chromatography step, the DNA-binding
+      domain exhibited proper folding, as shown by proton NMR analysis.
+      Furthermore, it showed specific interaction with the operator region of
+      the ace operon, as checked by gel retardation and DNA
+      methylation-protection experiments.
+FAU - Scarabel, M
+AU  - Scarabel M
+FAU - Penin, F
+AU  - Penin F
+FAU - Bonod-Bidaud, C
+AU  - Bonod-Bidaud C
+FAU - Negre, D
+AU  - Negre D
+FAU - Cozzone, A J
+AU  - Cozzone AJ
+FAU - Cortay, J C
+AU  - Cortay JC
+MH  - Amino Acid Sequence
+MH  - Animals
+MH  - Bacterial Proteins/*biosynthesis/chemistry/genetics/isolation &
+      purification
+MH  - Base Sequence
+MH  - Chromatography, Affinity
+MH  - Cloning, Molecular
+MH  - DNA, Bacterial/genetics
+MH  - Escherichia coli/*genetics
+MH  - Glutathione/metabolism
+MH  - Glutathione Transferase/genetics
+MH  - Magnetic Resonance Spectroscopy
+MH  - Molecular Sequence Data
+MH  - Peptide Fragments/*biosynthesis/chemistry/genetics/isolation &
+      purification
+MH  - Protein Folding
+MH  - Protein Structure, Tertiary
+MH  - Protozoan Proteins/genetics
+MH  - Recombinant Fusion Proteins/*biosynthesis/chemistry/isolation &
+      purification
+MH  - Repressor Proteins/*biosynthesis/chemistry/genetics/isolation &
+      purification
+MH  - Schistosoma japonicum/genetics
+MH  - Trypsin/metabolism
+SO  - Gene 1995 Feb 3;153(1):9-15.
+
+PMID- 7797568
+TI  - A testicular protein important for fertility has glutathione S-transferase
+      activity and is localized extracellularly in the seminiferous tubules.
+AB  - A 24-kDa protein isolated by preparative gel electrophoresis from rat
+      testes was reported by us as an active immunogen in rats. Anti-24-kDa
+      antibodies inhibited murine sperm-oocyte binding in vitro. Here, we show
+      similarity at the NH2 terminus shared by this protein purified on Sephadex
+      G-75 followed by anion exchange high performance liquid chromatography
+      with glutathione S-transferase (GST)-mu subunits. This protein purified by
+      glutathione affinity chromatography also demonstrated similarity to GST-mu
+      NH2 terminus in a 30-amino-acid overlap. Both proteins showed activity
+      toward the GST substrate 1-chloro-2,4-dinitrobenzene (Km of 33 microM and
+      50 microM) which was inhibited by 17 beta-estradiol 3-sulfate. Antisera
+      against both proteins recognized liver GST-mu on Western blots and sperm
+      acrosome of multiple species immunocytochemically. Both antisera
+      significantly inhibited in vitro fertilization of goat oocytes by sperm
+      preincubated with them while anti-liver GST sera did not. GST activity was
+      localized on rat sperm, seminiferous tubular fluid, and Sertoli cells.
+      Seminiferous tubular fluid 24-kDa protein shared similarity to the NH2
+      terminus of GST-mu subunits in a 20-amino-acid overlap. Time-dependent
+      accumulation of GST was detected in the spent culture medium of
+      seminiferous tubules from rats of different ages suggesting secretion.
+FAU - Aravinda, S
+AU  - Aravinda S
+FAU - Gopalakrishnan, B
+AU  - Gopalakrishnan B
+FAU - Dey, C S
+AU  - Dey CS
+FAU - Totey, S M
+AU  - Totey SM
+FAU - Pawshe, C H
+AU  - Pawshe CH
+FAU - Salunke, D
+AU  - Salunke D
+FAU - Kaur, K
+AU  - Kaur K
+FAU - Shaha, C
+AU  - Shaha C
+MH  - Amino Acid Sequence
+MH  - Animals
+MH  - Female
+MH  - *Fertility
+MH  - Glutathione Transferase/*analysis/isolation & purification/physiology
+MH  - Male
+MH  - Molecular Sequence Data
+MH  - Molecular Weight
+MH  - Rats
+MH  - Rats, Wistar
+MH  - Seminiferous Tubules/*enzymology
+MH  - Sertoli Cells/enzymology
+MH  - Sperm-Ovum Interactions
+MH  - Spermatozoa/enzymology
+MH  - Support, Non-U.S. Gov't
+MH  - Support, U.S. Gov't, Non-P.H.S.
+SO  - J Biol Chem 1995 Jun 30;270(26):15675-85.
+
+PMID- 7650008
+TI  - The precursor of pea ferredoxin-NADP+ reductase synthesized in Escherichia
+      coli contains bound FAD and is transported into chloroplasts.
+AB  - The precursor of the chloroplast flavoprotein ferredoxin-NADP+ reductase
+      from pea was expressed in Escherichia coli as a carboxyl-terminal fusion
+      to glutathione S-transferase. The fused protein was soluble, and the
+      precursor could be purified in a few steps involving affinity
+      chromatography on glutathione-agarose, cleavage of the transferase portion
+      by protease Xa, and ion exchange chromatography on DEAE-cellulose. The
+      purified prereductase contained bound FAD but displayed marginally low
+      levels of activity. Removal of the transit peptide by limited proteolysis
+      rendered a functional protease-resistant core exhibiting enzymatic
+      activity. The FAD-containing precursor expressed in E. coli was readily
+      transported into isolated pea chloroplasts and was processed to the mature
+      size, both inside the plastid and by incubation with stromal extracts in a
+      plastid-free reaction. Import was dependent on the presence of ATP and was
+      stimulated severalfold by the addition of plant leaf extracts.
+FAU - Serra, E C
+AU  - Serra EC
+FAU - Krapp, A R
+AU  - Krapp AR
+FAU - Ottado, J
+AU  - Ottado J
+FAU - Feldman, M F
+AU  - Feldman MF
+FAU - Ceccarelli, E A
+AU  - Ceccarelli EA
+FAU - Carrillo, N
+AU  - Carrillo N
+MH  - Base Sequence
+MH  - Biological Transport, Active
+MH  - Chloroplasts/enzymology
+MH  - DNA, Complementary/genetics
+MH  - DNA, Plant/genetics
+MH  - Enzyme Precursors/chemistry/genetics/*metabolism
+MH  - Escherichia coli/genetics
+MH  - Ferredoxin-NADP Reductase/chemistry/genetics/*metabolism
+MH  - Flavin-Adenine Dinucleotide/chemistry
+MH  - Genetic Vectors
+MH  - Molecular Sequence Data
+MH  - Peas/*enzymology/genetics
+MH  - Recombinant Fusion Proteins/chemistry/genetics/metabolism
+MH  - Support, Non-U.S. Gov't
+SO  - J Biol Chem 1995 Aug 25;270(34):19930-5. 

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<project name="similarity" default="default">
+
+  <description>
+    Custom Similarities
+  </description>
+
+  <import file="../contrib-build.xml"/>
+</project>

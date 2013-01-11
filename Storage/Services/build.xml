@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<project name="Services" default="default" basedir=".">
+  <description>Builds, tests, and runs the project Services.</description>
+
+  <target name="-pre-init">
+
+    <!-- These three statements each look for a build.properties file in different locations -->
+    <property file="${user.home}/${ant.project.name}-build.properties"/>
+    <property file="${user.home}/build.properties"/>
+    <property file="build.properties"/>
+
+    <property environment="env"/>
+    <property name="catalina.home" value="${env.CATALINA_HOME}"/>
+    <property name="catalina.base" value="${env.CATALINA_BASE}"/>
+    <property name="services.path" value="${env.PWD}"/>
+
+    <available file="${services.path}/web/WEB-INF/web.xml" type="file" property="services.path-valid"/>
+    <fail unless="services.path-valid" message="Environment variable PWD does not point to the root of the Services source tree. You are probably running ant from another directory than the Services directory or compiling on a non-Unix system. (In which case you should contact me, wrvhage@few.vu.nl)"/>
+    
+    <property name="lib.directory"             value="ext"/>
+    <property name="lib.sesame.directory"      value="ext/openrdf-sesame-2.2.1/lib"/>
+    
+  </target>
+
+  <import file="nbproject/build-impl.xml"/>
+  <!--
+
+    There exist several targets which are by default empty and which can be
+    used for execution of your tasks. These targets are usually executed
+    before and after some main targets. They are:
+
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-compile-single:       called before javac compilation of single file
+      -post-compile-single:      called after javac compilation of single file
+      -pre-compile-test:         called before javac compilation of JUnit tests
+      -post-compile-test:        called after javac compilation of JUnit tests
+      -pre-compile-test-single:  called before javac compilation of single JUnit test
+      -post-compile-test-single: called after javac compilation of single JUunit test
+      -pre-dist:                 called before jar building
+      -post-dist:                called after jar building
+      -post-clean:               called after cleaning build products
+
+    Example of pluging an obfuscator after the compilation could look like
+
+        <target name="post-compile">
+            <obfuscate>
+                <fileset dir="${build.classes.dir}"/>
+            </obfuscate>
+        </target>
+
+    For list of available properties check the imported
+    nbproject/build-impl.xml file.
+
+
+    Other way how to customize the build is by overriding existing main targets.
+    The target of interest are:
+
+      init-macrodef-javac:    defines macro for javac compilation
+      init-macrodef-junit:   defines macro for junit execution
+      init-macrodef-debug:    defines macro for class debugging
+      do-dist:                jar archive building
+      run:                    execution of project
+      javadoc-build:          javadoc generation
+
+    Example of overriding the target for project execution could look like
+
+        <target name="run" depends="<PROJNAME>-impl.jar">
+            <exec dir="bin" executable="launcher.exe">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
+
+    Notice that overridden target depends on jar target and not only on
+    compile target as regular run target does. Again, for list of available
+    properties which you can use check the target you are overriding in
+    nbproject/build-impl.xml file.
+
+    -->
+
+<target name="-init-taskdefs"/>
+
+    <target name="-post-init">
+        <!-- defining task which will be used to deploy and undeploy the web service -->
+        <path id="axis.classpath">
+            <fileset dir="${catalina.base}/webapps/axis/WEB-INF/lib">
+                <include name="**/*.jar" />
+            </fileset>
+        </path>
+
+        <taskdef resource="axis-tasks.properties" classpathref="axis.classpath" />
+
+        <copy todir="${catalina.base}/webapps/${ant.project.name}/WEB-INF">
+          <fileset dir="${conf.dir}"/>
+        </copy>
+    </target>
+
+    <target name="-pre-dist">
+        <copy todir="${build.web.dir}/WEB-INF">
+          <fileset dir="${conf.dir}"/>
+        </copy>
+    </target>
+    <!--target name="library-inclusion-in-manifest" depends="init" if="dist.ear.dir">
+        <basename property="included.lib.file.jericho-html-2.3.jar" file="${file.reference.jericho-html-2.3.jar}"/>
+        <copy-ear-war file="${file.reference.jericho-html-2.3.jar}" propname="included.lib.file.reference.jericho-html-2.3.jar.X"/>
+        <basename property="included.lib.file.mail.jar" file="${file.reference.mail.jar}"/>
+        <copy-ear-war file="${file.reference.mail.jar}" propname="included.lib.file.reference.mail.jar.X"/>
+        <basename property="included.lib.file.activation.jar" file="${file.reference.activation.jar}"/>
+        <copy-ear-war file="${file.reference.activation.jar}" propname="included.lib.file.reference.activation.jar.X"/>
+        <basename property="included.lib.file.reference.antlr-2.7.5.jar" file="${file.reference.antlr-2.7.5.jar}"/>
+        <copy-ear-war file="${file.reference.antlr-2.7.5.jar}" propname="included.lib.file.reference.antlr-2.7.5.jar.X"/>
+        <basename property="included.lib.file.reference.arq.jar" file="${file.reference.arq.jar}"/>
+        <copy-ear-war file="${file.reference.arq.jar}" propname="included.lib.file.reference.arq.jar.X"/>
+        <basename property="included.lib.file.reference.commons-lang-2.2.jar" file="${file.reference.commons-lang-2.2.jar}"/>
+        <copy-ear-war file="${file.reference.commons-lang-2.2.jar}" propname="included.lib.file.reference.commons-lang-2.2.jar.X"/>
+        <basename property="included.lib.file.reference.commons-configuration-1.2.jar" file="${file.reference.commons-configuration-1.2.jar}"/>
+        <copy-ear-war file="${file.reference.commons-configuration-1.2.jar}" propname="included.lib.file.reference.commons-configuration-1.2.jar.X"/>
+        <basename property="included.lib.file.reference.commons-collections-3.2.jar" file="${file.reference.commons-collections-3.2.jar}"/>
+        <copy-ear-war file="${file.reference.commons-collections-3.2.jar}" propname="included.lib.file.reference.commons-collections-3.2.jar.X"/>
+        <basename property="included.lib.file.reference.commons-discovery-0.2.jar" file="${file.reference.commons-discovery-0.2.jar}"/>
+        <copy-ear-war file="${file.reference.commons-discovery-0.2.jar}" propname="included.lib.file.reference.commons-discovery-0.2.jar.X"/>
+        <basename property="included.lib.file.reference.commons-logging.jar" file="${file.reference.commons-logging.jar}"/>
+        <copy-ear-war file="${file.reference.commons-logging.jar}" propname="included.lib.file.reference.commons-logging.jar.X"/>
+        <basename property="included.lib.file.reference.concurrent.jar" file="${file.reference.concurrent.jar}"/>
+        <copy-ear-war file="${file.reference.concurrent.jar}" propname="included.lib.file.reference.concurrent.jar.X"/>
+        <basename property="included.lib.file.reference.jakarta-oro-2.0.8.jar" file="${file.reference.jakarta-oro-2.0.8.jar}"/>
+        <copy-ear-war file="${file.reference.jakarta-oro-2.0.8.jar}" propname="included.lib.file.reference.jakarta-oro-2.0.8.jar.X"/>
+        <basename property="included.lib.file.reference.jaxrpc.jar" file="${file.reference.jaxrpc.jar}"/>
+        <copy-ear-war file="${file.reference.jaxrpc.jar}" propname="included.lib.file.reference.jaxrpc.jar.X"/>
+        <basename property="included.lib.file.reference.jena.jar" file="${file.reference.jena.jar}"/>
+        <copy-ear-war file="${file.reference.jena.jar}" propname="included.lib.file.reference.jena.jar.X"/>
+        <basename property="included.lib.file.reference.jenatest.jar" file="${file.reference.jenatest.jar}"/>
+        <copy-ear-war file="${file.reference.jenatest.jar}" propname="included.lib.file.reference.jenatest.jar.X"/>
+        <basename property="included.lib.file.reference.junit.jar" file="${file.reference.junit.jar}"/>
+        <copy-ear-war file="${file.reference.junit.jar}" propname="included.lib.file.reference.junit.jar.X"/>
+        <basename property="included.lib.file.reference.mysql-connector-java-3.1.12-bin.jar" file="${file.reference.mysql-connector-java-3.1.12-bin.jar}"/>
+        <copy-ear-war file="${file.reference.mysql-connector-java-3.1.12-bin.jar}" propname="included.lib.file.reference.mysql-connector-java-3.1.12-bin.jar.X"/>
+        <basename property="included.lib.file.reference.saaj.jar" file="${file.reference.saaj.jar}"/>
+        <copy-ear-war file="${file.reference.saaj.jar}" propname="included.lib.file.reference.saaj.jar.X"/>
+        <basename property="included.lib.file.reference.stax-1.1.1-dev.jar" file="${file.reference.stax-1.1.1-dev.jar}"/>
+        <copy-ear-war file="${file.reference.stax-1.1.1-dev.jar}" propname="included.lib.file.reference.stax-1.1.1-dev.jar.X"/>
+        <basename property="included.lib.file.reference.stax-api-1.0.jar" file="${file.reference.stax-api-1.0.jar}"/>
+        <copy-ear-war file="${file.reference.stax-api-1.0.jar}" propname="included.lib.file.reference.stax-api-1.0.jar.X"/>
+        <basename property="included.lib.file.reference.wsdl4j-1.5.1.jar" file="${file.reference.wsdl4j-1.5.1.jar}"/>
+        <copy-ear-war file="${file.reference.wsdl4j-1.5.1.jar}" propname="included.lib.file.reference.wsdl4j-1.5.1.jar.X"/>
+        <basename property="included.lib.file.reference.xercesImpl.jar" file="${file.reference.xercesImpl.jar}"/>
+        <copy-ear-war file="${file.reference.xercesImpl.jar}" propname="included.lib.file.reference.xercesImpl.jar.X"/>
+        <basename property="included.lib.file.reference.xml-apis.jar" file="${file.reference.xml-apis.jar}"/>
+        <copy-ear-war file="${file.reference.xml-apis.jar}" propname="included.lib.file.reference.xml-apis.jar.X"/>
+        <basename property="included.lib.file.reference.jopenid-1.07.jar" file="${file.reference.jopenid-1.07.jar}"/>
+        <copy-ear-war file="${file.reference.jopenid-1.07.jar}" propname="included.lib.file.reference.jopenid-1.07.jar.X"/>
+		<basename property="included.lib.file.reference.json_simple-1.1.jar" file="${file.reference.json_simple-1.1.jar}"/>
+        <copy-ear-war file="${file.reference.json_simple-1.1.jar}" propname="included.lib.file.reference.json_simple-1.1.jar.X"/>
+        <mkdir dir="${build.web.dir}/META-INF"/>
+        <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update">
+            <attribute name="Class-Path" value="${included.lib.file.reference.jericho-html-2.3.jar} ${included.lib.file.reference.mail.jar} ${included.lib.file.reference.activation.jar} ${included.lib.file.reference.antlr-2.7.5.jar} ${included.lib.file.reference.arq.jar} ${included.lib.file.reference.commons-configuration-1.2.jar} ${included.lib.file.reference.commons-collections-3.2.jar} ${included.lib.file.reference.commons-lang-2.2.jar} ${included.lib.file.reference.commons-discovery-0.2.jar} ${included.lib.file.reference.commons-logging.jar} ${included.lib.file.reference.concurrent.jar} ${included.lib.file.reference.jakarta-oro-2.0.8.jar} ${included.lib.file.reference.jaxrpc.jar} ${included.lib.file.reference.jena.jar} ${included.lib.file.reference.jenatest.jar} ${included.lib.file.reference.junit.jar} ${included.lib.file.reference.log4j-1.2.12.jar} ${included.lib.file.reference.mysql-connector-java-3.1.12-bin.jar} ${included.lib.file.reference.saaj.jar} ${included.lib.file.reference.stax-1.1.1-dev.jar} ${included.lib.file.reference.stax-api-1.0.jar} ${included.lib.file.reference.wsdl4j-1.5.1.jar} ${included.lib.file.reference.xercesImpl.jar} ${included.lib.file.reference.xml-apis.jar} ${included.lib.file.reference.openrdf-model.jar} ${included.lib.file.reference.openrdf-util.jar} ${included.lib.file.reference.rio.jar} ${included.lib.file.reference.sesame.jar} ${included.lib.file.reference.jopenid-1.07.jar} ${included.lib.file.reference.json_simple-1.1.jar}"/>
+        </manifest>
+        <delete dir="${dist.ear.dir}/temp"/>
+    </target-->
+    <target name="library-inclusion-in-archive" depends="init" unless="dist.ear.dir">
+    
+        <!-- copy the required libs -->
+        <copy todir="${build.web.dir}/WEB-INF/lib">
+          <fileset dir="${lib.sesame.directory}"/>
+        </copy>
+         <copy todir="${build.web.dir}/WEB-INF/lib">
+           <fileset dir="${lib.directory}"/> 
+        </copy>
+        
+        <!-- copy the required libs into axis-->
+        <copy todir="${catalina.home}/webapps/axis/WEB-INF/lib">
+          <fileset dir="${lib.sesame.directory}"/>
+          <fileset dir="${lib.directory}">
+            <filename name="*.jar"/>
+            <not>
+              <filename name="sesame.jar"/>
+            </not>
+            <not>
+              <filename name="openrdf-model.jar"/>
+            </not>
+            <not>
+              <filename name="axis.jar"/>
+            </not>
+            <not>
+              <filename name="jaxrpc.jar"/>
+            </not>
+            <not>
+              <filename name="servlet-api.jar"/>
+            </not>
+            <not>
+              <filename name="standard.jar"/>
+            </not>
+          </fileset>
+        </copy>
+        
+    </target>
+    <target name="-post-compile">
+      <echo>build.classes.dir: ${build.classes.dir}, catalina.base(/webapps/axis/WEB-INF/classes) ${catalina.base}, host.name ${host.name}</echo>
+        <!-- copy the required files in AXIS -->
+        <copy todir="${catalina.base}/webapps/axis/WEB-INF/classes">
+            <fileset dir="${build.classes.dir}"/>
+        </copy>
+        <!-- copy the web directory to Tomcat -->
+        <copy todir="${catalina.base}/webapps/${ant.project.name}">
+            <fileset dir="${build.web.dir}"/>
+        </copy>
+        <!-- deploy the web sevice -->
+        <axis-admin port="${manager.port}" hostname="${host.name}"
+            failonerror="true" servletpath="/axis/services/AdminService"
+            debug="true" xmlfile="deploy.wsdd" />
+        <touch file="${catalina.base}/webapps/axis/WEB-INF/web.xml"/>
+        <touch file="${catalina.base}/webapps/${ant.project.name}/WEB-INF/web.xml"/>
+
+    </target>
+
+    <!-- no -pre-clean target, unfortunately -->
+    <target name="-post-clean">
+        <!-- undeploy the web sevice -->
+        <axis-admin port="${manager.port}" hostname="${host.name}"
+            failonerror="true" servletpath="/axis/services/AdminService"
+            debug="true" xmlfile="undeploy.wsdd" />
+        <!-- remove the web content -->
+        <delete includeEmptyDirs="true">
+          <fileset dir="${catalina.base}/webapps/${ant.project.name}">
+            <!--present targetdir="${build.web.dir}"/-->
+          </fileset>
+        </delete>
+        <!-- delete all files from AXIS which also exist in build/ folder -->
+        <delete includeEmptyDirs="true">
+            <fileset dir="${catalina.base}/webapps/axis/WEB-INF/classes">
+                <present targetdir="${build.classes.dir}" />
+            </fileset>
+        </delete>
+
+        <!-- do the normal cleaning of dist/ and build/ directories-->
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+    
+</project>

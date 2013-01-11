@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:f642ee66-0236-4222-820b-e45b4f33b923" author="Marco Roos (workfllow), Willem R. van Hage (services)" title="AddScoreToSemanticModel">Add Likelihood Score  to Semantic model with Sesame service cf example Score:
+
+N-Triples examples:
+&lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl#ExampleInstance_DiscoveredEnzyme&gt; &lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#hasLikelihoodScore&gt; "1.0"^^&lt;http://www.w3.org/2001/XMLSchema#float&gt; .
+
+&lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl#ExampleInstance_DiscoveredProtein&gt; &lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#hasLikelihoodScore&gt; "2.0"^^&lt;http://www.w3.org/2001/XMLSchema#float&gt; .
+
+Turtle:
+&lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl#ExampleInstance_DiscoveredEnzyme&gt; 	dsc:hasLikelihoodScore "1.0"^^&lt;http://www.w3.org/2001/XMLSchema#float&gt; .</s:workflowdescription>
+  <s:source name="score" />
+  <s:source name="protein_instance" />
+</s:scufl>
+

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:dd1e2961-a1ca-4902-9bfb-2b776a4399ee" author="Marco Roos (AID)" title="Retrieve_bio_documents">This workflow retrieves relevant documents, based on a query optimized by adding a string to the original query that will rank the search output according to the most recent years. The added string adds years with priorities (most recent is highest); it starts at 2007.</s:workflowdescription>
+  <s:processor name="Retrieve">
+    <s:description>This workflow applies the search web service from the AIDA toolbox.
+
+Comments:
+This search service is based on lucene defaults; it may be necessary to optimize the querystring to adopt the behaviour to what is most relevant in a particular domain (e.g. for medline prioritizing based on publication date is useful). Lucene favours shorter sentences, which may be bad for subsequent information extraction.</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:858efe24-26c0-4090-be46-c9a5b4f21cad" author="Marco Roos" title="Retrieve_documents_MR1">This workflow applies the search web service from the AIDA toolbox.
+
+Comments:
+This search service is based on lucene defaults; it may be necessary to optimize the querystring to adopt the behaviour to what is most relevant in a particular domain (e.g. for medline prioritizing based on publication date is useful). Lucene favours shorter sentences, which may be bad for subsequent information extraction.</s:workflowdescription>
+        <s:processor name="search">
+          <s:arbitrarywsdl>
+            <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/SearcherWS?wsdl</s:wsdl>
+            <s:operation>search</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:link source="document_index" sink="search:index" />
+        <s:link source="maxHits" sink="search:maxHits" />
+        <s:link source="queryString" sink="search:queryString" />
+        <s:link source="search_field" sink="search:defaultField" />
+        <s:link source="search:searchReturn" sink="relevant_documents" />
+        <s:source name="queryString" />
+        <s:source name="document_index" />
+        <s:source name="search_field" />
+        <s:source name="maxHits" />
+        <s:sink name="relevant_documents">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Biooptimize_query">
+    <s:description>This workflow does four things:
+1. it retrieves documents relevant for the query string
+2. it discovers entities in those documents, these are considered relevant entities
+3. it filters proteins from those entities (on the tag protein_molecule)
+4. it removes all terms from the list produced by 3 (query terms temporarily considered proteins)
+
+ToDo
+* Replace step 4 by the following procedure:
+  1. remove the query terms from the output of NER (probably by a regexp matching on what is inside the tag, possibly case-insensitive)
+  2. remove tag_as_protein_molecule (obsolete)
+* Add synonym service/workflow
+
+Note that Remove_inputquery has an alternative iteration strategy (dot product instead of cross product). Idem for 'Join' in 'SplitQuery'.</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:3d2eebb7-0b04-4979-9aa9-3d39b1464216" author="Marco Roos" title="Lucene_bioquery_optimizer_MR1">This workflow does four things:
+1. it retrieves documents relevant for the query string
+2. it discovers entities in those documents, these are considered relevant entities
+3. it filters proteins from those entities (on the tag protein_molecule)
+4. it removes all terms from the list produced by 3 (query terms temporarily considered proteins)
+
+ToDo
+* Replace step 4 by the following procedure:
+  1. remove the query terms from the output of NER (probably by a regexp matching on what is inside the tag, possibly case-insensitive)
+  2. remove tag_as_protein_molecule (obsolete)
+* Add synonym service/workflow
+
+Note that Remove_inputquery has an alternative iteration strategy (dot product instead of cross product). Idem for 'Join' in 'SplitQuery'.</s:workflowdescription>
+        <s:processor name="Lucene_year_priorities" boring="true">
+          <s:stringconstant>year:(2007^10 2006^9 2005^8 2004^7 2004^6 2003^5 2002^4 2001^3 2000^2 1999^1)</s:stringconstant>
+        </s:processor>
+        <s:processor name="Prioritise_lucene_query">
+          <s:beanshell>
+            <s:scriptvalue>StringBuffer temp=new StringBuffer();
+temp.append("+(");
+temp.append(query_string);
+temp.append(") +");
+temp.append(priority_string);
+String lucene_query = temp.toString();</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">query_string</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">priority_string</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">lucene_query</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:link source="Lucene_year_priorities:value" sink="Prioritise_lucene_query:priority_string" />
+        <s:link source="query_string" sink="Prioritise_lucene_query:query_string" />
+        <s:link source="Prioritise_lucene_query:lucene_query" sink="optimized_lucene_query" />
+        <s:source name="query_string">
+          <s:metadata>
+            <s:description>Lucene query string</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="optimized_lucene_query" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:link source="query_string" sink="Biooptimize_query:query_string" />
+  <s:link source="Biooptimize_query:optimized_lucene_query" sink="Retrieve:queryString" />
+  <s:link source="document_index" sink="Retrieve:document_index" />
+  <s:link source="maxHits" sink="Retrieve:maxHits" />
+  <s:link source="search_field" sink="Retrieve:search_field" />
+  <s:link source="Retrieve:relevant_documents" sink="relevant_documents" />
+  <s:source name="query_string">
+    <s:metadata>
+      <s:description>e.g. EZH2</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="document_index">
+    <s:metadata>
+      <s:description>e.g. MedLine_new</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="search_field">
+    <s:metadata>
+      <s:description>e.g. content</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="maxHits">
+    <s:metadata>
+      <s:description>e.g. 100</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="relevant_documents">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

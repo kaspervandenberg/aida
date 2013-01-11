@@ -1,0 +1,224 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rfp="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://www.co-ode.org/ontologies/basic-bio/sequences.owl#"
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:rlp="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:meta="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#"
+    xmlns:tbio="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#"
+    xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xml:base="http://www.co-ode.org/ontologies/basic-bio/sequences.owl">
+  <owl:Ontology rdf:about="">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Adds the necessary mechanisms for representing sequences as lists to top bio\
+
+Imports top-bio.</rdfs:comment>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Nucleic_acid_base_residue_symbol">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Symbol"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="DNA_molecule">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological_Macromolecule"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Thymine_symbol">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Thymine_residue"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Pattern for symbols.  A symbol must be fore something of the given class.  Any symbol for the given class is in this symbol class.  And nothing in the symbol class can be for anything else.  However, finding something which is trivially or nontrivially just a symbol of things in this class is not a sufficient condition or part of a sufficient condition.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Nucleic_acid_base_residue_symbol"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#is_for"/>
+            </owl:onProperty>
+            <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Thymine_residue"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Guanine_symbol">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Guanine_residue"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Pattern for symbols.  A symbol must be fore something of the given class.  Any symbol for the given class is in this symbol class.  And nothing in the symbol class can be for anything else.  However, finding something which is trivially or nontrivially just a symbol of things in this class is not a sufficient condition or part of a sufficient condition.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Nucleic_acid_base_residue_symbol"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#is_for"/>
+            </owl:onProperty>
+            <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Guanine_residue"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Nucleic_acid_sequence">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A sequence whose contents are only DNA Base Residues
+
+NB: A Better notation for OWL Lists is badly needed.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_list"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#OWLList"/>
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#hasContents"/>
+                <owl:allValuesFrom rdf:resource="#Nucleic_acid_base_residue_symbol"/>
+              </owl:Restriction>
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#hasRest"/>
+                <owl:allValuesFrom>
+                  <owl:Class>
+                    <owl:intersectionOf rdf:parseType="Collection">
+                      <rdf:Description rdf:about="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#OWLList"/>
+                      <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#hasContents"/>
+                        <owl:allValuesFrom rdf:resource="#Nucleic_acid_base_residue_symbol"/>
+                      </owl:Restriction>
+                    </owl:intersectionOf>
+                  </owl:Class>
+                </owl:allValuesFrom>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Sequence"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Cytosine_symbol">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Pattern for symbols.  A symbol must be fore something of the given class.  Any symbol for the given class is in this symbol class.  And nothing in the symbol class can be for anything else.  However, finding something which is trivially or nontrivially just a symbol of things in this class is not a sufficient condition or part of a sufficient condition.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Nucleic_acid_base_residue_symbol"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#is_for"/>
+            </owl:onProperty>
+            <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Cytosine_residue"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Cytosine_residue"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_for"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Sequence">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#OWLList"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#has_list"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The sequence of a biological molecule or similar.  Uses lists of the actual target rather than other patterns. This is not strictly correct but much more compact.  We may have to revise it in due course.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Natural_pattern"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Symbol">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Natural_pattern"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The simple representations or symbol.  The symbol name is what it symbolises with a suffix _symbol.   Symbols are linked to what they are a symbol for by the property 'is_for' which is a subpropertyh of "is_abstracted_from".  The only significance is brevity. The actual symbols should be added as annotation properties.
+
+NB Symbol is the wrong module and should be moved to a more generalmodule, but for now we'll leave it with sequence and other such things.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Adenine_symbol">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Pattern for symbols.  A symbol must be fore something of the given class.  Any symbol for the given class is in this symbol class.  And nothing in the symbol class can be for anything else.  However, finding something which is trivially or nontrivially just a symbol of things in this class is not a sufficient condition or part of a sufficient condition.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_for"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Adenine_residue"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Nucleic_acid_base_residue_symbol"/>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Adenine_residue"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#is_for"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="has_symbol">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_for"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#inverse_relational_property"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_list">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_list_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#relational_property"/>
+    <rdfs:domain rdf:resource="#Sequence"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Badly labelled, but no better label for now.
+
+Links a Sequence wrapper with the list that specifies the the sequence itself.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_list_of">
+    <owl:inverseOf rdf:resource="#has_list"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#inverse_relational_property"/>
+    <rdfs:range rdf:resource="#Sequence"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_for">
+    <owl:inverseOf rdf:resource="#has_symbol"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#relational_property"/>
+  </owl:ObjectProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 304)  http://protege.stanford.edu -->

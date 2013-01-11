@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<dialog id="restrictions" title="AIDA Annotation Client - Restrictions"
+   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+   buttons="extra1,extra2,accept"
+   buttonlabelaccept="Close"
+   buttonlabelextra1="Search"
+   buttonlabelextra2="Annotate"
+   ondialogaccept="return true;"
+   ondialogextra1="return search();"
+   ondialogextra2="return annotate();">
+    
+
+
+    <script type="application/x-javascript" src="chrome://aidaac/content/aidaac.js" /> 
+    <script type="application/x-javascript">
+        function search() {
+            alert("search");
+        }
+        function annotate() {
+            alert("annotate");
+        }
+    </script>
+
+    <vbox>
+        <hbox>
+            <menulist id="aidaac-property" editable="true" flex="1" minwidth="100" width="250" onkeypress="propertyKeyhandler(event);">
+                <menupopup id="aidaac-property-menu" onpopupshowing="propertySuggestions('aidaac-property');" />
+            </menulist>
+            <menulist id="aidaac-concept" editable="true" flex="1" minwidth="100" width="250" onkeypress="conceptKeyhandler(event);">
+                <menupopup id="aidaac-concept-menu" onpopupshowing="conceptSuggestions('aidaac-concept');" />
+            </menulist>
+            <button label="-" />                    
+            <button label="+"/>
+        </hbox>
+        <hbox>
+            <menulist id="aidaac-property2" editable="true" flex="1" minwidth="100" width="250" onkeypress="propertyKeyhandler(event);">
+                <menupopup id="aidaac-property-menu2" onpopupshowing="propertySuggestions('aidaac-property2');" />
+            </menulist>
+            <menulist id="aidaac-concept2" editable="true" flex="1" minwidth="100" width="250" onkeypress="conceptKeyhandler(event);">
+                <menupopup id="aidaac-concept-menu2" onpopupshowing="conceptSuggestions('aidaac-concept2');" />
+            </menulist>
+            <button label="-" />
+            <button label="+"/>
+        </hbox>
+    </vbox>
+</dialog>

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:cells="http://www.co-ode.org/ontologies/basic-bio/cells.owl#"
+    xmlns:rfp="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#"
+    xmlns:bsb="http://www.co-ode.org/ontologies/basic-bio/basic-substances.owl#"
+    xmlns:qty="http://www.co-ode.org/ontologies/basic-bio/quantities-and-units.owl#"
+    xmlns:nml="http://www.co-ode.org/ontologies/basic-bio/normality.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:bva="http://www.co-ode.org/ontologies/basic-bio/basic-vertebrate-gross-anatomy.owl#"
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:seq="http://www.co-ode.org/ontologies/basic-bio/sequences.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:rlp="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:bbs="http://www.co-ode.org/ontologies/basic-bio/basic-body-substances.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:tbio="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#"
+    xmlns:meta="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#"
+    xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+    xmlns="http://www.co-ode.org/ontologies/basic-bio/test-boot-all.owl#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xml:base="http://www.co-ode.org/ontologies/basic-bio/test-boot-all.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/normality.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/basic-body-substances.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/basic-vertebrate-gross-anatomy.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/sequences.owl"/>
+  </owl:Ontology>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 304)  http://protege.stanford.edu -->

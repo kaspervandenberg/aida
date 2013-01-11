@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE overlay >
+<overlay id="stockwatcher2-overlay"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<script type="application/x-javascript"
+  src="chrome://stockwatcher2/content/stockwatcher2.js"/>
+
+<!-- Firefox -->
+<statusbar id="status-bar">
+	<statusbarpanel id="stockwatcher2"
+		label="Loading..."
+		context="stockmenu"
+		onclick="StockWatcher.refreshInformation()"
+	/>
+</statusbar>
+
+<popupset id="mainPopupSet">
+	<popup id="stockmenu" position="after_start">
+		<menuitem label="Refresh Now"  default="true"
+				oncommand="StockWatcher.refreshInformation()"/>
+		<menuseparator/>
+		<menuitem label="Apple (AAPL)" oncommand="StockWatcher.watchStock('AAPL')"/>
+		<menuitem label="Google (GOOG)" oncommand="StockWatcher.watchStock('GOOG')"/>
+		<menuitem label="Microsoft (MSFT)" oncommand="StockWatcher.watchStock('MSFT')"/>
+		<menuitem label="Yahoo! (YHOO)" oncommand="StockWatcher.watchStock('YHOO')"/>
+	</popup>
+</popupset>
+
+</overlay>

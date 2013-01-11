@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<set>
+1 abstract, 1 sentence
+<article>
+<abstract>
+<sentence>These findings should be useful for <cons lex="therapeutic_strategies" sem="G#other_name">therapeutic strategies</cons> and the development of <cons lex="immunosuppressants" sem="G#other_name">immunosuppressants</cons> targeting the <cons lex="CD28_costimulatory_pathway" sem="G#other_name"><cons lex="CD28" sem="G#protein_molecule">CD28</cons> costimulatory pathway</cons>.</sentence>
+</abstract>
+</article>
+</set>

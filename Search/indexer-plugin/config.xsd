@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : config.xsd
+    Created on : February 28, 2006, 9:58 AM
+    Author     : mgjansen
+    Description:
+        Purpose of XML Schema document follows.
+-->
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:aid="http://aid.org/"
+            targetNamespace="http://aid.org/"
+            xmlns="http://aid.org/"
+            elementFormDefault="qualified">
+
+   
+    <xsd:element name="config" type="aid:configType"/>
+    
+    <xsd:complexType name="configType">
+     <xsd:sequence>
+     <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <xsd:element name="IndexOverwrite"  type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+     <xsd:element name="IndexAnalyzer"  type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <xsd:element name="DataPath"  type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <xsd:element name="SRBused"  type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+     <xsd:element name="MergeFactor"  type="xsd:integer" minOccurs="0" maxOccurs="1"/>
+     <xsd:element name="MaxBufferedDocs"  type="xsd:integer" minOccurs="0" maxOccurs="1"/>
+    <xsd:element name="DocType"  type="aid:docType" minOccurs="0" maxOccurs="unbounded"/>        
+</xsd:sequence>
+<xsd:attribute name="Creator" type="xsd:string"/>
+<xsd:attribute name="MetaData" type="xsd:string"/>
+</xsd:complexType>
+
+<xsd:complexType name="docType">
+    <xsd:sequence>
+        <xsd:element name="FileExtension" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+        <xsd:element name="DocTypeAnalyzer" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="Field" type="aid:FieldType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="FileType" type="xsd:string"/>
+    
+</xsd:complexType>   
+
+<xsd:complexType name="FieldType">
+    <xsd:sequence>
+        <xsd:element name="Index" type="aid:indexType" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="Store" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="Termvector" type="aid:vectorType" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="FieldAnalyzer" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <xsd:element name="Description" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+           </xsd:sequence>
+    <xsd:attribute name="Name" type="xsd:string"/>
+    
+</xsd:complexType> 
+
+  
+ <xsd:simpleType name="indexType">
+  <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="NO"/>
+      <xsd:enumeration value="NO_NORMS"/>
+      <xsd:enumeration value="TOKENIZED"/>
+      <xsd:enumeration value="UNTOKENIZED"/>
+      </xsd:restriction>
+ </xsd:simpleType>
+ 
+ <xsd:simpleType name="vectorType">
+  <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="NO"/>
+      <xsd:enumeration value="YES"/>
+      <xsd:enumeration value="WITH_OFFSETS"/>
+      <xsd:enumeration value="WITH_POSITIONS"/>
+      <xsd:enumeration value="WITH_POSITIONS_OFFSETS"/>
+      </xsd:restriction>
+ </xsd:simpleType>
+ 
+</xsd:schema>

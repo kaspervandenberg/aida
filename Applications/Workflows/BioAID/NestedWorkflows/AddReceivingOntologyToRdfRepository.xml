@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:f6e82dc1-e59e-455f-bc2c-022ff58c67e6" author="" title="AddReceivingOntologyToRdfRepository" />
+  <s:processor name="AIDA_rdf_configuration">
+    <s:description>The role of this 'workflow' is to provide defaults for the AIDA rdf repository, especially for bio and food application in the VL-e project. Add this workflow to your workflow as a nested workflow. Open it and the beanshell in it to switch defaults (e.g. from bio to food).
+
+YOUR DATA IS NOT SAFE IN OUR AIDA REPOSITORY!
+
+In principle, we can delete all data without notice, but let us know if you would like to be informed of any changes to the repository. We advocate installing your own Sesame server, for which these defaults provide examples. To download sesame go to http://www.openrdf.org
+
+Meer voorbeeld van Willem:
+
+username:
+testuser
+
+password:
+opensesame
+
+rdf_format:
+rdfxml
+turtle
+n3
+
+query_language:
+serql
+rql
+
+subject: (eerste positie in een triple, altijd een URI)
+http://adaptivedisclosure.org/2007/03/watskeburt#Melanoma
+
+predicate: (tweede positie in een triple, altijd een URI)
+http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+http://www.w3.org/2000/01/rdf-schema#label
+
+object: (derde positie in een triple, een URI, of een literal, soms met type of taal)
+http://adaptivedisclosure.org/2007/03/watskeburt#Disease
+Melanoma
+"Melanoma"@en
+"10"^^&lt;http://www.w3.org/2001/XMLSchema#integer&gt;
+
+context: (gebruik deze nog maar niet, ik schrijf later wel documentatie)
+
+data_uri: (de URL van het file waar de RDF uit komt)
+file:///home/roos/bla/bla/disease_and_enzymes.rdf
+
+data: (afhankelijk van het rdf_format RDF in XML of Turtle, o.i.d.)
+&lt;rdf:RDF ...&gt; ... &lt;/rdf:RDF&gt;
+
+query: (afhankelijk van de query_language een SeRQL query, o.i.d.)
+select distinct S from {S} rdfs:label {O} where O like "simsala*"
+
+read_write: (of je alle repositories, of alleen die waar je read en/of write permissies op hebt wilt zien, je kunt ook niets meegeven)
+r
+rw
+w</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:6a0bac79-7df2-487d-96a7-4faac64c2fd5" author="Marco Roos (AID)" title="AIDA_rdf_repository">The role of this 'workflow' is to provide defaults for the AIDA rdf repository, especially for bio and food application in the VL-e project. Add this workflow to your workflow as a nested workflow. Open it and the beanshell in it to switch defaults (e.g. from bio to food).
+
+YOUR DATA IS NOT SAFE IN OUR AIDA REPOSITORY!
+
+In principle, we can delete all data without notice, but let us know if you would like to be informed of any changes to the repository. We advocate installing your own Sesame server, for which these defaults provide examples. To download sesame go to http://www.openrdf.org
+
+Meer voorbeeld van Willem:
+
+username:
+testuser
+
+password:
+opensesame
+
+rdf_format:
+rdfxml
+turtle
+n3
+
+query_language:
+serql
+rql
+
+subject: (eerste positie in een triple, altijd een URI)
+http://adaptivedisclosure.org/2007/03/watskeburt#Melanoma
+
+predicate: (tweede positie in een triple, altijd een URI)
+http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+http://www.w3.org/2000/01/rdf-schema#label
+
+object: (derde positie in een triple, een URI, of een literal, soms met type of taal)
+http://adaptivedisclosure.org/2007/03/watskeburt#Disease
+Melanoma
+"Melanoma"@en
+"10"^^&lt;http://www.w3.org/2001/XMLSchema#integer&gt;
+
+context: (gebruik deze nog maar niet, ik schrijf later wel documentatie)
+
+data_uri: (de URL van het file waar de RDF uit komt)
+file:///home/roos/bla/bla/disease_and_enzymes.rdf
+
+data: (afhankelijk van het rdf_format RDF in XML of Turtle, o.i.d.)
+&lt;rdf:RDF ...&gt; ... &lt;/rdf:RDF&gt;
+
+query: (afhankelijk van de query_language een SeRQL query, o.i.d.)
+select distinct S from {S} rdfs:label {O} where O like "simsala*"
+
+read_write: (of je alle repositories, of alleen die waar je read en/of write permissies op hebt wilt zien, je kunt ook niets meegeven)
+r
+rw
+w</s:workflowdescription>
+        <s:processor name="AIDA_rdf_repository_cfg">
+          <s:beanshell>
+            <s:scriptvalue>String aid_user = "aid";
+String aid_password = "aidademo";
+String bio_repository = "mem-rdf-db-bio-demo";
+String bio_user = "bioaid_demo";
+String bio_password = aid_password;
+String food_repository = "mem-rdf-db-food-demo";
+String food_user = "foodaid_demo";
+String food_password = aid_password;
+
+String server_url = "http://ws.adaptivedisclosure.org/sesame";
+String repository = bio_repository;
+String username = bio_user;
+String password = bio_password;
+String rdf_format = "rdfxml"; // 'rdfxml' or 'turtle' or 'n3'
+String query_language = "serql"; // 'serql' or 'rql'
+String read_write = "rw"; // 'rw' or 'r' or 'w'</s:scriptvalue>
+            <s:beanshellinputlist />
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">repository</s:beanshelloutput>
+              <s:beanshelloutput s:syntactictype="'text/plain'">username</s:beanshelloutput>
+              <s:beanshelloutput s:syntactictype="'text/plain'">password</s:beanshelloutput>
+              <s:beanshelloutput s:syntactictype="'text/plain'">rdf_format</s:beanshelloutput>
+              <s:beanshelloutput s:syntactictype="'text/plain'">query_language</s:beanshelloutput>
+              <s:beanshelloutput s:syntactictype="'text/plain'">server_url</s:beanshelloutput>
+              <s:beanshelloutput s:syntactictype="'text/plain'">read_write</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:link source="AIDA_rdf_repository_cfg:password" sink="password" />
+        <s:link source="AIDA_rdf_repository_cfg:query_language" sink="query_language" />
+        <s:link source="AIDA_rdf_repository_cfg:rdf_format" sink="rdf_format" />
+        <s:link source="AIDA_rdf_repository_cfg:read_write" sink="read_write" />
+        <s:link source="AIDA_rdf_repository_cfg:repository" sink="repository" />
+        <s:link source="AIDA_rdf_repository_cfg:server_url" sink="server_url" />
+        <s:link source="AIDA_rdf_repository_cfg:username" sink="username" />
+        <s:sink name="server_url" />
+        <s:sink name="repository" />
+        <s:sink name="username" />
+        <s:sink name="rdf_format" />
+        <s:sink name="query_language" />
+        <s:sink name="password" />
+        <s:sink name="read_write" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="addRdfFile">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/RepositoryWS?wsdl</s:wsdl>
+      <s:operation>addRdfFile</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="AIDA_rdf_configuration:password" sink="addRdfFile:password" />
+  <s:link source="AIDA_rdf_configuration:rdf_format" sink="addRdfFile:rdf_format" />
+  <s:link source="AIDA_rdf_configuration:repository" sink="addRdfFile:repository" />
+  <s:link source="AIDA_rdf_configuration:server_url" sink="addRdfFile:server_url" />
+  <s:link source="AIDA_rdf_configuration:username" sink="addRdfFile:username" />
+  <s:link source="receiving_ontologyURI" sink="addRdfFile:data_uri" />
+  <s:source name="receiving_ontologyURI" />
+</s:scufl>
+

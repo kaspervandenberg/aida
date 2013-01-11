@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:b9ba0616-631a-4619-8632-755cd8c7fba7" author="" title="SimpleFindAndReplace" />
+  <s:processor name="SimpleFindAndReplace">
+    <s:defaults>
+      <s:default name="input">Marco</s:default>
+      <s:default name="findstring">Marco</s:default>
+      <s:default name="replacestring">Simone</s:default>
+    </s:defaults>
+    <s:beanshell>
+      <s:scriptvalue>import java.util.regex.*;
+
+Pattern p = Pattern.compile(findstring);
+Matcher m = p.matcher(input);
+
+output = (String) m.replaceAll(replacestring);</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">input</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">findstring</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">replacestring</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">output</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="input" sink="SimpleFindAndReplace:input" />
+  <s:link source="SimpleFindAndReplace:output" sink="output" />
+  <s:source name="input" />
+  <s:sink name="output" />
+</s:scufl>
+

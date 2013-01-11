@@ -1,0 +1,26 @@
+The Biocreative I model used in a client was trained on the Biocreative I data set
+and achieved the following results (B. Settles, ABNER toolkit):
+
+recall precision  f-score
+65.9%   74.5%	  69.9%
+
+we also trained CRF on the Biocreative II data set ourselves and achieved the following results (supervised learning): precision around 80% and F-score around 75%.
+
+To run a client on aida, please type
+
+http://aida.science.uva.nl:9999/NERcrf/applyCRF
+
+otherwise, it can be invoked by
+
+String ret = new String();
+call.setTargetEndpointAddress(endpoint + "CRFapply");
+ 	                call.setOperationName("apply");
+ 	                ret = (String) call.invoke( new Object[] { test[0], model[0], outputMode[0], "1"} );
+
+test[0] - test data (text)
+model[0] - model (if set to "1", BioCreative I model is used)
+outputMode[0] - "1" (IOB format)
+		"2" (SGML format)
+		"3" (a list of entities)
+		"4" (ABNER format)
+a last parameter (tokenization) should be set to "1" to activate tokenization

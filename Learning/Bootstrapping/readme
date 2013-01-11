@@ -1,0 +1,19 @@
+To run bootstrapping and Hearst patterns scripts use
+the format explained in perldoc. To get more details, type
+
+perldoc ./bootstrapping.pl
+perldoc ./hearst_patterns_fiad.pl
+
+or
+
+./bootstrapping.pl -h
+./hearst_patterns_fiad.pl -h
+
+The scripts are modified in such a way that a data set in plain *txt is used as input (rather than the output from Indri/Lemur).
+
+To run a toy example included here, type
+
+./hearst_patterns_fiad.pl -t protein -p myhearst.txt -w stop_words.txt -d mycorpus -n 20 -o myseeds > myseeds.log
+./bootstrapping_final.pl -m 3 -n myseeds -d mycorpus -k 5 -p mypatterns > mypatterns.log 
+
+Tested under Perl v5.8.5 built for i686-linux

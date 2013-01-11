@@ -1,0 +1,13 @@
+import java.util.*;
+
+List newListOfLists = new ArrayList();
+
+for (int j=0; j<3; j++) {
+	List newlist = new ArrayList();
+
+	for (int i=0; i<3; i++) {
+		newlist.add((String) (Character.toString((char) ('a'+(char) j))+"."+Character.toString((char) ('a'+(char) i))));
+	}
+	newListOfLists.add((List) newlist);
+}
+outlist=newListOfLists;

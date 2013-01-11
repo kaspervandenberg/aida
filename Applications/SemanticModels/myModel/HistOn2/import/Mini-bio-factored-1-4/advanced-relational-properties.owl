@@ -1,0 +1,573 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl">
+  <owl:Ontology rdf:about="">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Either this module or basic-relational-properties.owl must be included with any ontology attempting to import and use the basic-biology ontology and in particular the basic-bio/Top-self-standing.owl
+
+This ontology contains a reasonably complete set of properties linking the top self_standing properties as described in Rector, A "Granularity, Scale and Collectivity..." Journal of Biomedical Informatics (in press). (Internal Report available from http://www.cs.man.ac.uk/~rector/Collectivity/).  
+
+This model also implements the  notion of "clinical part" as described in various presentations.  Combining the two versions has resulted in a few minor changes to the property hierarchy from that published in the Collectivity paper. 
+
+This module imports: top-self-standing.owl
+		imports very-top.owl</rdfs:comment>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Proportion">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The reified relation between an ingredient and a mixture.
+
+Resides in rlp namespace because it is closely related to relations.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Relationship"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="is_physical_location_of">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="is_localisation_of"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_physical_location"/>
+    </owl:inverseOf>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Physical_entity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_in_group">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has_member"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_in_group_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_pattern">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_pattern_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#inverse_relational_property"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Pattern"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_physical_location">
+    <rdfs:subPropertyOf>
+      <owl:TransitiveProperty rdf:ID="has_localisation"/>
+    </rdfs:subPropertyOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Physical location.  In this ontology physical locations are physical entities rather than spatio or spatio-temporal extents.  No constraints are placed on what can be located, byut physical locations are is, by definitions, to physical things.
+
+Question: Does the space occupied by the subject overlap with the space occupied by the object?
+
+OBO relation: has_location
+
+"has_physical_location" is underspecified.  Normally it is used only in queries/definitions.  Concrete statements should use either "is_spatial_part_of" or "is_contained_in". 
+
+Following the OBO relations paper, physical location is treated as the disjunction of spatial-parthood and containment.  (NB - this is a "pseudo-disjunction" only.  The full force of the disjunction cannot be captured in OWL because it does not support disjunctions between properties.)
+
+ Descriptions (necessary restrictions) normally use one of the two subproperties is_spatial_part_of or is_contained_in. 
+
+OBO relation - has_location</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Physical_entity"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+    <owl:inverseOf rdf:resource="#is_physical_location_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_means">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_means_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has_participant"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_proportion">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Relation between a substance and the proportion that relates it to a mixture.
+
+e.g. Water is_proportion (Proportion of Water in Blood)
+
+Note tha the inverse is "is_of_ingredient".  The odd naming is to accommodate the reification of Proportions. 
+
+Also beware that the subproperty relation is over strong.  The correct relation is propagates_via, but is not supported in current OWL.  The result is that both the Proportion and the thing it is a Proportion of show up in the ingredient list, e.g. Proportion of Water and Water.  This can be dealt with by a suitable query but is awkward.</rdfs:comment>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="is_ingredient_of"/>
+    </rdfs:subPropertyOf>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Needed as domain for has_portion, has_ingredient, etc.</rdfs:comment>
+      </rdf:Description>
+    </rdfs:range>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_of_ingredient"/>
+    </owl:inverseOf>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_constituent">
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_constituent_of"/>
+    </owl:inverseOf>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Discrete_continuant_entity"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has_gross_part"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_localisation_of">
+    <owl:inverseOf>
+      <owl:TransitiveProperty rdf:about="#has_localisation"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#inverse_relational_property"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="contains">
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Material_entity"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Cavity"/>
+    <rdfs:subPropertyOf rdf:resource="#is_physical_location_of"/>
+    <owl:inverseOf>
+      <owl:TransitiveProperty rdf:ID="is_contained_in"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_generic_part">
+    <rdfs:subPropertyOf rdf:resource="#is_localisation_of"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_generic_part_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_spatial_part">
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Continuant_entity"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Continuant_entity"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_spatial_part_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#is_physical_location_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_manifestation_of">
+    <rdfs:subPropertyOf rdf:resource="#has_pattern"/>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Oeuvre"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Physical_entity"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_manifestation"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_abstracted_from">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_abstraction"/>
+    </owl:inverseOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Relation between a natural pattern and a physical entity.</rdfs:comment>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Natural_pattern"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_pattern_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_locus_of">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_locus"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#is_localisation_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_ingredient">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has_gross_part"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_ingredient_of"/>
+    </owl:inverseOf>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_defined_by">
+    <rdfs:subPropertyOf>
+      <owl:TransitiveProperty rdf:ID="is_determinate_part_of"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="defines"/>
+    </owl:inverseOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Non-material entities - holes, corners, folds, anatomical lines, etc - are defined by material entities.</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Material_entity"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Non_material_entity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_spatial_part_of">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Spatial partonomy.  
+
+OBO is_part_of initially.  FMA Structural parts.
+
+Question: Is X physically connected to and 
+                developed in common with Y?  
+                Do all Xs begin as parts of some Y?
+
+NB: Unlike the OBO relations paper, we take here intitial parthood as conforming more to biological aintuitions than permanent parthood. All fingers begin as parts of some hand; all nuclei begin as part of such cell, etc.</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Continuant_entity"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Continuant_entity"/>
+    <rdfs:subPropertyOf rdf:resource="#has_physical_location"/>
+    <owl:inverseOf rdf:resource="#has_spatial_part"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_quality_of">
+    <owl:inverseOf>
+      <owl:InverseFunctionalProperty rdf:ID="has_quality"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:TransitiveProperty rdf:about="#has_localisation"/>
+    </rdfs:subPropertyOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >the link between a quality and the entity in which it inheres.
+
+It may seem odd to see this under localisation, but in the very broad sense, a problem with a quality of a thing is a problem of the thing itself.
+
+OBO Relations: NA</rdfs:comment>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Quality"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_acted_on_by">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="is_participant_in"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="acts_on"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_participant_in">
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#inverse_relational_property"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#has_participant"/>
+    </owl:inverseOf>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Occurrent_entity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_functional_part_of">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="is_clinical_part_of"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_functional_part"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#defines">
+    <owl:inverseOf rdf:resource="#is_defined_by"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has_determinate_part"/>
+    </rdfs:subPropertyOf>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Non_material_entity"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Material_entity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_portion_of">
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_portion"/>
+    </owl:inverseOf>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Links two mass-continuants.  
+
+Example: "The water in the bay is a portion of the water in the lake"
+
+Do not confuse with "Proportion", which is a reified property indicating the relative amounts of ingredients in a mixture.</rdfs:comment>
+    <rdfs:subPropertyOf>
+      <owl:TransitiveProperty rdf:ID="is_gross_part_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_clinical_part">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_clinical_part_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#has_generic_part"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_ingredient_of">
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The relation between a mixture and one of its ingredients, e.g. the water is ingredient of blood, etc. 
+
+Note that there is a slight variation from the published paper in that ingredients are treated as gross parts rather than determinate parts.  Experience suggests that determinate parthood is more conveniently restricted to discrete entities. This fits much better with the name.   Gross parthood provides an extra step and includes ingredients but excludes granular parts.</rdfs:comment>
+    <owl:inverseOf rdf:resource="#has_ingredient"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+    <rdfs:subPropertyOf>
+      <owl:TransitiveProperty rdf:about="#is_gross_part_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_member">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_member_of"/>
+    </owl:inverseOf>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Composed_entity"/>
+    <rdfs:subPropertyOf rdf:resource="#has_generic_part"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_generic_part_of">
+    <rdfs:subPropertyOf>
+      <owl:TransitiveProperty rdf:about="#has_localisation"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="#has_generic_part"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_clinical_part_of">
+    <rdfs:subPropertyOf rdf:resource="#is_generic_part_of"/>
+    <owl:inverseOf rdf:resource="#has_clinical_part"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_pattern_of">
+    <owl:inverseOf rdf:resource="#has_pattern"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Pattern"/>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#relational_property"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Generic relationship  between phenomena and patterns.  Normally of phsyical enttiies, but but can have patterns of organisations etc.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_of_ingredient">
+    <owl:inverseOf rdf:resource="#is_proportion"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+    <rdfs:subPropertyOf rdf:resource="#has_ingredient"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >See comment on inverse: "is_proportion"</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_actor">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The active agent in a process: 
+
+For example the river in erosion; the lungs in respiration, etc.</rdfs:comment>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_actor_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has_participant"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has_grain">
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Discrete_continuant_entity"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="is_grain_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#has_member"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Collective"/>
+    <rdfs:subPropertyOf rdf:resource="#has_spatial_part"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_gross_part">
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Continuant_entity"/>
+    <rdfs:subPropertyOf rdf:resource="#has_spatial_part"/>
+    <owl:inverseOf>
+      <owl:TransitiveProperty rdf:about="#is_gross_part_of"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#has_clinical_part"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_in_group_of">
+    <owl:inverseOf rdf:resource="#has_in_group"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#is_member_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_member_of">
+    <owl:inverseOf rdf:resource="#has_member"/>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Composed_entity"/>
+    <rdfs:subPropertyOf rdf:resource="#is_generic_part_of"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The top property linking complexes to their members.  This allows member to be used in various different ways.  Subproperties should be used for specific cases, e.g. is_grain_of for collectives</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_manifestation">
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Oeuvre"/>
+    <owl:inverseOf rdf:resource="#is_manifestation_of"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The relationship betgween an oeuvre and a physical entity.  A copy of a book is_manifestation_of the Book_oeuvre</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Physical_entity"/>
+    <rdfs:subPropertyOf rdf:resource="#is_pattern_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_determinate_part">
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Physical_object"/>
+    <rdfs:subPropertyOf rdf:resource="#has_gross_part"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Physical_object"/>
+    <owl:inverseOf>
+      <owl:TransitiveProperty rdf:about="#is_determinate_part_of"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_functional_part">
+    <owl:inverseOf rdf:resource="#is_functional_part_of"/>
+    <rdfs:subPropertyOf rdf:resource="#has_clinical_part"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_outcome_of">
+    <rdfs:subPropertyOf rdf:resource="#is_acted_on_by"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_outcome"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_outcome">
+    <owl:inverseOf rdf:resource="#is_outcome_of"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Outcomes are allowed to be either occurrents or continuants.  
+
+A strict reading of process might be that all processes result in a change and that the change should be detailed.  This 'simple' ontology deliberately elides the change for several reasons.
+
+a)  It makes it easier to deal with cyclicle and steady state occurrents.
+
+b) Because many processes, especially pathological processes are most easily thought of as having a specific outcome - e.g. the upregulating of gene activity, a lesion as the outcome of a process, etc. 
+
+c) A more detailed account requires multiple variables and/or role value maps and so is beyond the expressive power of DLs and OWL.  Work arounds are both awkward and difficult to fit into more extensive structures.</rdfs:comment>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#acts_on"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_participant">
+    <owl:inverseOf rdf:resource="#is_participant_in"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Top property linking Occurrents and Continuants - in general, although participants can be either continuants or other occurrents. 
+
+Subproperties include acts_on, has_actor, has_means, etc.</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#relational_property"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Occurrent_entity"/>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="of_mixture">
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_proportion"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="#is_ingredient_of"/>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_proportion">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >See 'of_mixture'.
+
+Note odd naming to accommodate reification of Proportions</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="#has_ingredient"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+    <owl:inverseOf rdf:resource="#of_mixture"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_abstraction">
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Natural_pattern"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+    <rdfs:subPropertyOf rdf:resource="#has_pattern"/>
+    <owl:inverseOf rdf:resource="#is_abstracted_from"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_locus">
+    <rdfs:subPropertyOf>
+      <owl:TransitiveProperty rdf:about="#has_localisation"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="#is_locus_of"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The relation between "diseases" - whether processes or lesions - and their locus.  (roughly GALEN's has_location)
+
+There is an extensive meta-model around the use of has_locus that cannot be expressed in OWL.  In general the domain should be restricted to things that are abnormal or pathological, but this is deliberately not enforced to defer on the meaning of pathological.
+
+Most uses will be in adapted SEP triple form, e.g.
+has_locus SOME (X OR is_clinical_part_of SOME X)</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_grain_of">
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Collective"/>
+    <rdfs:subPropertyOf rdf:resource="#is_member_of"/>
+    <owl:inverseOf rdf:resource="#has_grain"/>
+    <rdfs:subPropertyOf rdf:resource="#is_spatial_part_of"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Discrete_continuant_entity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#acts_on">
+    <owl:inverseOf rdf:resource="#is_acted_on_by"/>
+    <rdfs:subPropertyOf rdf:resource="#has_participant"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The object of the action.  The word "Object" is not used because of numerous homonyms and potential confusion.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_actor_of">
+    <owl:inverseOf rdf:resource="#has_actor"/>
+    <rdfs:subPropertyOf rdf:resource="#is_participant_in"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_portion">
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+    <rdfs:subPropertyOf rdf:resource="#has_gross_part"/>
+    <owl:inverseOf rdf:resource="#is_portion_of"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_means_of">
+    <owl:inverseOf rdf:resource="#has_means"/>
+    <rdfs:subPropertyOf rdf:resource="#is_participant_in"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_constituent_of">
+    <owl:inverseOf rdf:resource="#has_constituent"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_continuant_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Relation between Mass and Discrete entities.  A generalisation of the use in DOLCE</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Discrete_continuant_entity"/>
+    <rdfs:subPropertyOf>
+      <owl:TransitiveProperty rdf:about="#is_gross_part_of"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:TransitiveProperty rdf:about="#is_determinate_part_of">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >All the deteriminate parts as opposed to constituents.  They come into types: 'distinct parts' that have 'natural' demarcations, e.g. the bones of the inner ear, the cusps of the valve, etc. - and subdivisions - regions, possibly defined by relation to something else.
+
+Question: Are there a fixed ('determinate') number of
+                of parts of this kind? 
+                Can you say that X is made of Y? If so, it is NOT a
+                determinate part.
+Examples</rdfs:comment>
+    <owl:inverseOf rdf:resource="#has_determinate_part"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Physical_object"/>
+    <rdfs:subPropertyOf>
+      <owl:TransitiveProperty rdf:about="#is_gross_part_of"/>
+    </rdfs:subPropertyOf>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Physical_object"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:TransitiveProperty>
+  <owl:TransitiveProperty rdf:about="#is_contained_in">
+    <owl:inverseOf rdf:resource="#contains"/>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Cavity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Physical containment.  
+
+Is it co-located with but not a part of?
+
+OBO relations: is_contained_in.
+
+Examples. Brain is contained in the cranial cavity 
+                 which is part of the skull.
+                 Nucleus is contained in the cavity defined by the cell
+                 membrane.
+                 Bone marrow is contained in the cavity of the bone.
+                 Foreign body is contained in the stomach.
+
+Anti-examples:  The cusp of a cardiac valve is part of the valve, not
+                  contained in it.
+                  The nephron is part of the kidney, not contained in it. 
+
+In this version must be between a material entity and a cavity.  Bridging properties could be implemented once it is possible to add superclasses to an imported ontology.  
+
+{{Also done this way in this version bwecause otherwise we would have to be able to define hollow entity at this point which would require changing the import tree.  - may be worth changing}}</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Material_entity"/>
+    <rdfs:subPropertyOf rdf:resource="#has_physical_location"/>
+  </owl:TransitiveProperty>
+  <owl:TransitiveProperty rdf:about="#is_gross_part_of">
+    <owl:inverseOf rdf:resource="#has_gross_part"/>
+    <rdfs:subPropertyOf rdf:resource="#is_spatial_part_of"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Continuant_entity"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Continuant_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Parts within the a given level of collectivity.  The parts we expect to see in a part explosion.   
+
+Question: Does removing one gross part diminish or damage
+                the whole? If yes, then gross part.  If no, then granular 
+                part. 
+ Examples: Fingers-hand; skin-finger; water blood.             
+
+This forumulation differs slightly from that in Collectivity, in that it excludes "is_ingredient_of".   This prevents even the collectives of liver cells showing up as parts of the body.  A parts explosion stops at "Liver Tissue".  Otherwise all the potential constituents of liver tissue end up in the parts explosion.</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="#is_clinical_part_of"/>
+  </owl:TransitiveProperty>
+  <owl:TransitiveProperty rdf:about="#has_localisation">
+    <owl:inverseOf rdf:resource="#is_localisation_of"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#relational_property"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The most general notion of localisation, not necessarily physical, including pathological localisation, conceptual localisation etc. 
+
+Roughly GALEN's locative_property</rdfs:comment>
+  </owl:TransitiveProperty>
+  <owl:InverseFunctionalProperty rdf:about="#has_quality">
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+    <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Quality"/>
+    <rdfs:subPropertyOf rdf:resource="#is_localisation_of"/>
+    <owl:inverseOf rdf:resource="#is_quality_of"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:InverseFunctionalProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 331)  http://protege.stanford.edu -->

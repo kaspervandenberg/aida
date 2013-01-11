@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:3d2eebb7-0b04-4979-9aa9-3d39b1464216" author="Marco Roos" title="Lucene_bioquery_optimizer_MR1">This workflow does four things:
+1. it retrieves documents relevant for the query string
+2. it discovers entities in those documents, these are considered relevant entities
+3. it filters proteins from those entities (on the tag protein_molecule)
+4. it removes all terms from the list produced by 3 (query terms temporarily considered proteins)
+
+ToDo
+* Replace step 4 by the following procedure:
+  1. remove the query terms from the output of NER (probably by a regexp matching on what is inside the tag, possibly case-insensitive)
+  2. remove tag_as_protein_molecule (obsolete)
+* Add synonym service/workflow
+
+Note that Remove_inputquery has an alternative iteration strategy (dot product instead of cross product). Idem for 'Join' in 'SplitQuery'.</s:workflowdescription>
+  <s:processor name="Lucene_year_priorities" boring="true">
+    <s:stringconstant>year:(2007^10 2006^9 2005^8 2004^7 2004^6 2003^5 2002^4 2001^3 2000^2 1999^1)</s:stringconstant>
+  </s:processor>
+  <s:processor name="Prioritise_lucene_query">
+    <s:beanshell>
+      <s:scriptvalue>StringBuffer temp=new StringBuffer();
+temp.append("+(");
+temp.append(query_string);
+temp.append(") +");
+temp.append(priority_string);
+String lucene_query = temp.toString();</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">query_string</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">priority_string</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">lucene_query</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="Lucene_year_priorities:value" sink="Prioritise_lucene_query:priority_string" />
+  <s:link source="query_string" sink="Prioritise_lucene_query:query_string" />
+  <s:link source="Prioritise_lucene_query:lucene_query" sink="optimized_lucene_query" />
+  <s:source name="query_string">
+    <s:metadata>
+      <s:description>Lucene query string</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="optimized_lucene_query" />
+</s:scufl>
+

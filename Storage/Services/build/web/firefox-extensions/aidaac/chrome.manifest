@@ -1,0 +1,6 @@
+#content aidaac jar:chrome/aidaac.jar!/content/
+#overlay chrome://browser/content/browser.xul chrome://aidaac/content/aidaac.xul
+#skin aidaac classic/1.0 jar:chrome/aidaac.jar!/skin/
+content aidaac chrome/content/
+overlay chrome://browser/content/browser.xul chrome://aidaac/content/aidaac.xul
+skin aidaac classic/1.0 chrome/skin/

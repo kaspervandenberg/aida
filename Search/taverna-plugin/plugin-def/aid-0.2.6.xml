@@ -1,0 +1,21 @@
+<plugin>
+	<name>AID Taverna</name>
+	<description> AIDA Plugin 0.2.6 (for Taverna 2.1-SNAPSHOT)  Please restart Taverna 2.1 after installation 
+	</description>
+	<identifier>org.vle.aid.taverna</identifier>
+	<version>0.2.6</version>
+	<provider>pc-vlab22.science.uva.nl</provider>
+	<repositories>
+		<repository> http://pc-vlab22.science.uva.nl:8080/repository </repository>
+		<repository> http://repo1.maven.org/maven2 </repository>
+	</repositories>
+	<profile>
+		<artifact groupId="org.vle.aid.taverna" artifactId="aid-plugin" version="0.2.6" />
+	</profile>
+        <compatibility>
+            <application>
+                <version>2.1-SNAPSHOT</version>
+            </application>
+       </compatibility>
+ 
+</plugin>

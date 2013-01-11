@@ -1,0 +1,11 @@
+.?forceReadOnly=false
+file:/Users/alanrector/Documents/Ontologies/Mini-bio-factored-1-4/?forceReadOnly=false&Recursive=false
+[Dublin Core DL Redirect]
+http://www.co-ode.org/ontologies/basic-bio/normality.owl
+http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl
+http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl
+http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl
+http://www.co-ode.org/ontologies/basic-bio/very-top.owl
+http://www.co-ode.org/ontologies/basic-bio/basic-vertebrate-gross-anatomy.owl
+http://www.co-ode.org/ontologies/basic-bio/top-bio.owl
+http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl

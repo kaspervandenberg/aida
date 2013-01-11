@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:b572e16c-266f-45f7-8bb8-a63015a161a3" author="" title="Test_jws_ListOperations" />
+  <s:processor name="SkipListLevel">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:9999/axis/DiscoveredProteins_html.jws?wsdl</s:wsdl>
+      <s:operation>SkipListLevel</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="ArrayOfStringsToListOfLists">
+    <s:defaults>
+      <s:default name="sublistsize">5</s:default>
+    </s:defaults>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:9999/axis/DiscoveredProteins_html.jws?wsdl</s:wsdl>
+      <s:operation>ArrayOfStringsToListOfLists</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="nestedList" sink="ArrayOfStringsToListOfLists:arrayOfStrings" />
+  <s:link source="nestedList" sink="SkipListLevel:listOfNestedLists" />
+  <s:link source="ArrayOfStringsToListOfLists:ArrayOfStringsToListOfListsReturn" sink="listOfLists" />
+  <s:link source="SkipListLevel:SkipListLevelReturn" sink="test_out" />
+  <s:source name="nestedList" />
+  <s:sink name="test_out" />
+  <s:sink name="listOfLists" />
+</s:scufl>
+

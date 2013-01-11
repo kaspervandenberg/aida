@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The basic structure of the high level refining entities and associated properties. 
+
+Imports: very top
+               top-self-standing
+               additional-top-self-standing
+
+Imported by: Any domain ontology and normal-abnormal</rdfs:comment>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Quality_partition">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Refining_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Equivalent to a "value type" or "value partition".  The term "Quality partition" is chosen to fit with DOLCE's vocabulary in which the regions of a quality space are known as "quale".  They represent characteristics that are 'accidental' or 'contingent' rather than 'intrinsic'. 
+
+Quality partitions are usually linked to the quality which reifies the relation with the entity modified by the property "has_quality", but there may be additional properties such as "has_trend", "has_relative_level", etc.
+
+The individual partitions usually are named with the suffix "_value" or "_quale".  The parent space partitioned is usualy named with the suffix "_value_partition" or "_quale_partition".  Even though this slightly blurs the meta level and the first order level it is provides clarity for developers. 
+
+Opposite: Instrinsic_characteristic
+
+Examples: Height_value, Weight_value, Colour_value, etc. 
+
+See SWBP note on value partition - web reference under Refining_entity</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Intrinsic_characteristic">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Refining_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Characteristics that are permanently present and cannot be modified or treated as states.  Examples include topology, such as left|right_laterality, first_position|...nth_position, etc. 
+
+Opposite: Modifier
+
+Question: Can it ever change? If not, then intrinsic.
+                 Is there anything to say about the relationship of the characteristic and\
+                 the thing characterised? If so, a quale or quality partition. 
+
+The main importance of the distinction between intrinsic characteristics and quality partitions is that the relation between the entity refined and the refining entity is not reified, i.e. therre is no "Quality" ("Feature" in GALEN)</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Selector">
+    <rdfs:subClassOf rdf:resource="#Intrinsic_characteristic"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="Modifier_property">
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#refining_property"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The property linking Qualities to their values.</rdfs:comment>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Domain_entity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="intrinsic_property">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >the links between (usually) self-standing entities and intrinsic characteristics</rdfs:comment>
+    <rdfs:range rdf:resource="#Intrinsic_characteristic"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#refining_property"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="selector_property">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Properties which select from sets of anatomical or similar things, e.g. has_laterality, has_numeric_position, etc.</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="#intrinsic_property"/>
+  </owl:ObjectProperty>
+  <owl:FunctionalProperty rdf:ID="has_value">
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#Quality"/>
+    <rdfs:subPropertyOf rdf:resource="#Modifier_property"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#Quality_partition"/>
+  </owl:FunctionalProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 331)  http://protege.stanford.edu -->

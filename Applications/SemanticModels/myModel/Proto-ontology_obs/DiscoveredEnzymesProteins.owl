@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns="http://rdf.adaptivedisclosure.nl/BioAID/DiscoveredEnzymesDiseases.owl#"
+    xmlns:edis="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://rdf.adaptivedisclosure.nl/BioAID/DiscoveredEnzymesDiseases.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="TextMiningDiscoveredEntity">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="DiscoveredEntity"/>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="TextMiningDiscovery"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:ID="has_discovery_status"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="EntityDiscoveryStatus">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Discovery status value partition</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#DiscoveredEntity">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#EntityDiscoveryStatus"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#has_discovery_status"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#TextMiningDiscovery">
+    <rdfs:subClassOf rdf:resource="#EntityDiscoveryStatus"/>
+  </owl:Class>
+  <owl:Class rdf:ID="HumanCuratedDiscoveredEntity">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="HumanCuratedDiscovery"/>
+        </owl:someValuesFrom>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#has_discovery_status"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf rdf:resource="#DiscoveredEntity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="DiscoveredProtein">
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#has_discovery_status"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#EntityDiscoveryStatus"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+    <rdfs:subClassOf rdf:resource="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EnzymeDisease.owl#Protein"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Discovered protein</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Discovered protein</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#HumanCuratedDiscovery">
+    <rdfs:subClassOf rdf:resource="#EntityDiscoveryStatus"/>
+  </owl:Class>
+  <owl:Class rdf:ID="HumanCuratedTextMiningDiscovery">
+    <owl:equivalentClass rdf:resource="#HumanCuratedDiscovery"/>
+    <rdfs:subClassOf rdf:resource="#TextMiningDiscovery"/>
+  </owl:Class>
+  <owl:FunctionalProperty rdf:about="#has_discovery_status">
+    <rdfs:range rdf:resource="#EntityDiscoveryStatus"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >discovery status of an entity (how it was discovered)</rdfs:comment>
+  </owl:FunctionalProperty>
+  <DiscoveredProtein rdf:ID="BMI">
+    <has_discovery_status>
+      <TextMiningDiscovery rdf:ID="BioAID_Discovery_Workflow_MR4"/>
+    </has_discovery_status>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >BMI</rdfs:label>
+  </DiscoveredProtein>
+  <DiscoveredProtein rdf:ID="Mib">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mib</rdfs:label>
+  </DiscoveredProtein>
+  <DiscoveredProtein rdf:ID="Vav">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Vav</rdfs:label>
+  </DiscoveredProtein>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.2, Build 355)  http://protege.stanford.edu -->

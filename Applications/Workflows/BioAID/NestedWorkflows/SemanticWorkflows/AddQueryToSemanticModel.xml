@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:2ca45a93-0d4d-4e5c-b305-240df4ae1d18" author="Marco Roos (workflow), Willem R. van Hage (service)" title="AddQueryToSemanticModel">Add Query to Semantic model with Sesame service cf example Biological Query:
+
+mybio:ExampleInstance_BiologicalQuery a mybio:BiologicalDocumentSearch ;
+	mybio:partially_represents mybio:ExampleInstance_BiologicalModel ;
+	rdfs:comment "Example Instance Biological Query"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	rdfs:label "Example Instance Biological Query"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	pub:boolean_search_query_lucene "ExampleBiologicalQuery"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	pub:search_on pub:ExampleInstance_Corpus .
+
+mybio:ExampleInstance_BiologicalModel a mybio:BiologicalModel ;
+	rdfs:label "Example instance Biological Model"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	rdfs:comment "Example instance Biological Model"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	mybio:partially_represented_by mybio:ExampleInstance_Enzyme , mybio:ExampleInstance_BiologicalQuery , mybio:ExampleInstance_Disease .</s:workflowdescription>
+  <s:link source="query" sink="query_instance" />
+  <s:source name="query" />
+  <s:sink name="query_instance" />
+</s:scufl>
+

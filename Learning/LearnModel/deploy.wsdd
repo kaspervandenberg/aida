@@ -1,0 +1,7 @@
+<deployment xmlns="http://xml.apache.org/axis/wsdd/"
+            xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+    <service name="LearnModel" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="className" value="katrenko.ws.LearnModel"/>
+      <parameter name="allowedMethods" value="*"/>
+    </service>
+</deployment>

@@ -1,0 +1,469 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:rfp="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:rlp="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xml:base="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Top biological notions including the notion of biological itself.
+
+Imports advanced_relational_properties
+             refining_properties</rdfs:comment>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Biological">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Things that are 'actively' biological:
+
+Examples: Organisms, limbs, oragnelles, cells
+
+Anti examples: Leather,</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Of_biological_origin"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Biological_status_value_partition">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#Intrinsic_characteristic"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The value partition that indicatges whether something is biological or not
+
+Corresponding property: has_bio_status</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Biological_small_molecule">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Biological_object"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Body">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Cell_part"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Organ"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Cell"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Organ_part"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Body as a whole.  The rleation between "Body" and "Organism" is awkward.  For most purposes it is more convenient to use "organism".  Kept separate here to defer ontological commitment.
+
+See comment on "Organism"
+
+FMA Definition:  "Anatomical structure, which is the maximal aggregate manifestation of an individual member of the species Homo sapiens; it is completely surrounded by skin. Examples: There is only one human body."</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Body_part"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Organism"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="gross_anat_structure"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Organ_part">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#gross_anat_structure"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cell_part"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Organism"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >"Cardinal organ part" in FMA:
+FMA Definition:
+
+"Anatomical structure, which consists of two or more types of tissues that form a defined structural aggregate in an organ. Examples: osteon, cortical bone, neck of femur, bronchopulmonary segment, left lobe of liver, anterior right side of heart, interventricular branch of left coronary artery, right atrium, mitral valve, head of pancreas."</rdfs:comment>
+    <owl:disjointWith rdf:resource="#Body"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Body_part"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Organ"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cell"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="Biological_Macromolecule">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >DNA, RNA, Proteins, etc.  Macromolecules generally have sequences of some sort, although I am not sure that's necessary. 
+
+FMA Definition:
+"Anatomical structure which consists of an ordered aggregates of any of the following molecules: nucleotides, amino acids, fatty acids and sugars. Examples: collagen, DNA, neurotransmitter, troponin."
+
+There are of course non-biological macro-molecules such as platic polymers.  For now, in a bio  ontology, we will leave this disambiguation to namespaces</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Biological_object"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Biological_discrete_physical_continuant">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Discrete_Physical_continuant"/>
+          <owl:Class rdf:ID="Biological_entity"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A Close analogue to the FMA Anatomical Structure, although it covers whole organisms and a few other things.
+
+The classification of biological objects is follows the FMA "Anatomical structure" wherever possible.  However, there are biological objects which don't fit the definition of Anatomical structure and vice versa.  
+
+In particular sets etc. are aggregations in this ontology rather than objects, although we explicitly do not make sets and objects disjoint, so that there is no conflict in ontological commitments.
+
+See http://fme.biostr.washington.edu:8089/FME/index.html
+(Requires cookie enabled browser)</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Body_part_subdivision">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#gross_anat_structure"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Of_biological_origin">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Non_biological"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Indicates biological origin but not necessarily currently to be treated as a biological entity, e.g. wood, leather, etc.
+
+Opposite: Non biological</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#Biological_status_value_partition"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Biological_entity">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="#Biological"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="has_bio_status"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A convenient top level category for those things that are biological.  
+
+Originally represented as a primitive, but after repeated queries, has been converted to a defined class because the distinction is considered less fundamental than the three primary dichotomies plus "Comples".</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#Non_biological">
+    <rdfs:subClassOf rdf:resource="#Biological_status_value_partition"/>
+    <owl:disjointWith rdf:resource="#Of_biological_origin"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Things of no biological basis, 
+
+Examples: Things made of metals, minerals, air, etc. Includes prostheses that are made of non-biological material.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Organ_division">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Lobes, angles, cortexes etc.
+
+This is difficult to name.  FMA alrfeady uses "Subdivision" which is the GALEN term. Therefore we are stuck with division.  The other possible term such as "Generic Part" ends up with saying that the "Right middle lobe of the lung" is a "Generic anatomic part", which is a most unfortunate labelling.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#Organ_part"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Body_part">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Organ"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Organism"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#gross_anat_structure"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Organ_part"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cell"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cell_part"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Body part explicitly in the sense of the FMA - now renamed "Cardinal Body Part in FMA" 
+
+FMA Definition: "Anatomical structure, which has as its parts a maximal set of diverse subclasses of organ and organ part spatially associated with either the skull, the vertebral column or a complete set of bones of the appendicular skeleton; it is partially surrounded by skin and forms a distinct morphological subdivision of the body; together all principal body parts constitute the entire body. Examples: Head, neck, trunk, and the limbs."
+See http://fme.biostr.washington.edu:8089/FME/index.html</rdfs:comment>
+    <owl:disjointWith rdf:resource="#Body"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Biological_physical_process">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Biological_entity"/>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Physical_entity"/>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Occurrent_entity"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Physiologic processes, both normal and abnormal, physiologic and pathologic.
+No distinction is made here between discrete and mass.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#Organ">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cell"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cell_part"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Body_part"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#gross_anat_structure"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Body"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Organism"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Organ_part"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FMA Definitinon: 
+"Anatomical structure, which consists of the maximal set of organ parts so connected to one another that together they constitute a unit of macroscopic anatomy, structurally distinct from other such units. Examples: femur, biceps, liver, heart, skin, tracheobronchial tree, ovary."
+
+Note that the FMA definiton of "Organ" is controversial, and the list of "organs" not agreed by all.  In general this makes little difference, but it does affect the 'view' mechanism and motivate notions such as "clinically part of". The classic controversy is the Pericardium, which is a separate organ from the heart in the FMA and developmentally but considered part of it functionally for many clinical purposes.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#Organism">
+    <owl:disjointWith rdf:resource="#Body_part"/>
+    <owl:disjointWith rdf:resource="#Organ"/>
+    <owl:disjointWith rdf:resource="#Organ_part"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cell"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Not an FMA entity.
+
+Whole organisms as opposed to their bodies.  There is a strong case for identifying Organism with Body, but this is left open at this stage.  As it stands the ontology is compatible either with the view that the body is part of the organism or that the body is the organism.
+
+In many variants of this ontology we shall use Organism where FMA uses Body
+FMA Definition:
+"Anatomical structure, which is the maximal aggregate manifestation of an individual member of the species Homo sapiens; it is completely surrounded by skin. Examples: There is only one human body."
+
+In other variants of this ontology we shall use "Organism" essentially as a marker for Human, Mouse, Fly, etc. and Body as the structure.</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cell_part"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Biological_object"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Body"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Adenine_residue">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Cytosine_residue"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Nucleic_acid_base_residue"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Guanine_residue"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Thymine_residue"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Cytosine_residue">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Guanine_residue"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Adenine_residue"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Thymine_residue"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Nucleic_acid_base_residue"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Thymine_residue">
+    <owl:disjointWith rdf:resource="#Adenine_residue"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Nucleic_acid_base_residue"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Guanine_residue"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Cytosine_residue"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Organelle">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Cell_part"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Biological_object">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Biological_entity"/>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Physical_object"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A physical object that is biological
+
+The classification of biological objects is follows the FMA "Anatomical structure" wherever possible.  However, there are biological objects which don't fit the definition of Anatomical structure and vice versa.  
+
+In particular sets etc. are aggregations in this ontology rather than objects, although we explicitly do not make sets and objects disjoint, so that there is no conflict in ontological commitments.
+
+See http://fme.biostr.washington.edu:8089/FME/index.html
+(Requires cookie enabled browser)</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Amount_of_Tissue">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Amount_of_biological_matter_or_energy"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Epithelium, connective tissue etc.  
+
+The status of tissue is controversial, also of extended tissues that behave as mass entities such as "skin'.  FMA classifies tissues as "Anatomical Structures" and "Skin" as an organ.  This does not work in this ontology because we want to talk of the "Skin of the Finger" etc. and have it obey the general rule that "The skin of a part is a part of the skin of the whole". 
+
+FMA Definition: 
+"Anatomical structure, which consists of similarly specialized cells and intercellular matrix, aggregated according to genetically determined spatial relationships. Examples: epithelium, muscle tissue, connective tissue, neural tissue, lymphoid tissue."
+
+Tissue and biological substance not made mutually disjoint at this point because of arguments about whether blood etc. is a tissue, a substance, or both.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Biological_cavity">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="Biologic_discrete_nonmaterial_entity"/>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Cavity"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Guanine_residue">
+    <owl:disjointWith rdf:resource="#Adenine_residue"/>
+    <owl:disjointWith rdf:resource="#Cytosine_residue"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Nucleic_acid_base_residue"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="#Thymine_residue"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Biologic_discrete_nonmaterial_entity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >biological cavities, lines, landmarks, etc.  No obvious common name for this entity which is part of the natural closure resulting from the ontological structure.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Biological_entity"/>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Discrete_non_material_entity"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Non_biological_entity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Everything that is neither biological nor of bviological origin: 
+
+Examples: Rocks, things made of metal, water, automobiles, prostheses, etc.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="#has_bio_status"/>
+            </owl:onProperty>
+            <owl:someValuesFrom rdf:resource="#Non_biological"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#gross_anat_structure">
+    <rdfs:subClassOf rdf:resource="#Biological_object"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Cell">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Cell_part"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Organ_part"/>
+    <owl:disjointWith rdf:resource="#Body_part"/>
+    <owl:disjointWith rdf:resource="#Organism"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FMA definition:
+
+'Anatomical structure that consists of a cell compartment surrounded by a plasma membrane; together with other cells and intercellular matrix, it constitutes tissues. Examples: lymphocyte, fibroblast, erythrocyte, neuron."</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#Biological_object"/>
+    <owl:disjointWith rdf:resource="#Body"/>
+    <owl:disjointWith rdf:resource="#Organ"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Cell_part">
+    <rdfs:subClassOf rdf:resource="#Biological_object"/>
+    <owl:disjointWith rdf:resource="#Organ_part"/>
+    <owl:disjointWith rdf:resource="#Organism"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FMA Definition:
+"Anatomical structure which has as its parts the whole or part of the plasma membrane or the protoplasm; together with other cell parts, it constitutes a cell. Examples: cell body, plasma membrane, cytoplasm, cell nucleus, mitochondrion."</rdfs:comment>
+    <owl:disjointWith rdf:resource="#Body_part"/>
+    <owl:disjointWith rdf:resource="#Cell"/>
+    <owl:disjointWith rdf:resource="#Body"/>
+    <owl:disjointWith rdf:resource="#Organ"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Amount_of_Biological_substance">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >FMA: "Body Substance" - a more general notion is appropriate for a more general ontology.
+FMA Definition:
+"Material anatomical entity in a gaseous, liquid, semisolid or solid state, with or without the admixture of cells and biological macromolecules; produced by anatomical structures or derived from inhaled and ingested substances that have been modified by anatomical structures as they pass through the body. Examples: saliva, semen, cerebrospinal fluid, inhaled air, urine, feces, blood, plasma, lymph."
+
+Tissue and biological substance not made mutually disjoint at this point because of arguments about whether blood etc. is a tissue, a substance, or both.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Amount_of_biological_matter_or_energy"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Nucleic_acid_base_residue">
+    <rdfs:subClassOf rdf:resource="#Biological_small_molecule"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Amount_of_biological_matter_or_energy">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >DOLCE: Amount_of_mattter generalised to include energy and then specialised to biology
+
+Tissues and biological substances.  
+
+This definition is controversial.  The status of "Tissues" has been a topic of debate for some time.  However, in this ontology, the notion of constituent parts does not work unless we make tissue a mass entity.
+
+The "Amount_of_" prefix becomes cumbersom and will be omitted below this point.  It is also easily confused with the Portion or Quantity.  However, any instance of any mass entity is implicitly of an amount of that entity.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Biological_entity"/>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Material_entity"/>
+          <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Mass_entity"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Organ_component">
+    <rdfs:subClassOf rdf:resource="#Organ_part"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="#has_bio_status">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#intrinsic_property"/>
+    <rdfs:range rdf:resource="#Biological_status_value_partition"/>
+  </owl:ObjectProperty>
+  <rdf:Description rdf:about="http://www.co-ode.org/ontologies/basic-bio/sequences.owl#is_for">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Links a symbol to the thing it is a symbol for.  Actually a bit of a cluge, since the symbol is for any member of the class rather than some member of the class.</rdfs:comment>
+  </rdf:Description>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 331)  http://protege.stanford.edu -->

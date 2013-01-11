@@ -1,0 +1,125 @@
+body {
+  margin-left : auto;
+  margin-right : auto;
+  background-color : #000000;
+  background-position : center;
+  background-repeat : repeat-y;
+  margin : 15px 0 15px 0;
+  padding : 0;
+  text-align : left;
+  font-family: tahoma;
+  font-size: 10px;
+  
+}
+
+h3{font-size: 1em;}
+
+#topTable {
+  width : 710px;
+  margin : 15px 0 15px 0;
+  margin-left : auto;
+  margin-right : auto;
+}
+
+#fHits {
+  margin : 15px 0 15px 0;
+  margin-left : auto;
+  margin-right : auto;
+}
+
+#content{
+  font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+  line-height: 1.4em;
+  font-size: 11px;
+  
+}
+
+#sidebar a{border: none;}
+#sidebar div{
+  /*background: #F3F3F3 no-repeat 2px 2px;*/
+}
+
+#sidebar h3{margin: 0;padding-left: 10px;padding-top: 5px;}
+#sidebar ul{list-style: none;margin: 0 0 10px 0;padding: 0 10px;}
+#sidebar ul li{margin: 0;padding: 0;position: relative; height: 18px;}
+#sidebar ul li .add2netvibes{position: absolute; top: 0; right: 0px;}
+#sidebar ul.modules-list li{padding: 2px 0; border-top: 1px solid #E9E9E9;}
+#sidebar ul.modules-list li.first{border-top: none;}
+#sidebar p{padding: 0 10px;}
+#sidebar div#sidebar-login, #sidebar div#sidebar-netvibes{background: transparent;}
+#sidebar div#search{
+  position: relative;
+  width: 600px;
+  margin-left : auto;
+  margin-right : auto;
+}
+
+#sidebar div#res{
+  position: relative;
+  width: 600px;
+  margin-left : auto;
+  margin-right : auto;
+}
+
+#indexSelect, #fieldSelect{
+  font-family: Tahoma, Verdana, Arial, Helvetica, "Bitstream Vera Sans", sans-serif;
+  font-size: 1em;
+  border: 1px solid #CCC;
+  background: #FFF;
+  margin : 0 2px 0 2px;
+}
+
+#search {
+  background: url(/search/images/left-top-corner-box.jpg) top left no-repeat;
+  padding: 2px 2px;
+}
+
+#search fieldset{
+  border: 0;padding: 0 10px 10px 10px;
+  padding-top: 2px;
+}
+
+#search option{
+  background:#FFF;
+}
+#search #q{
+  width: 520px;
+  padding: 2px 2px 2px 19px;
+  background: #fff url(/search/images/search.png) no-repeat left center;
+  border: 1px solid #CCC;
+}
+
+#search .submit{
+  width: 30px;
+}
+
+#topTable {
+  border: 0;
+  margin : -5px 0 0 0;
+  padding: 0 10px 10px 10px;
+  padding-top: 2px;
+  width: 600px;
+}
+
+#res {
+  background: url(/search/images/left-top-corner-box.jpg) top left no-repeat;
+  padding: 2px 2px;
+  margin-top : 30px;
+}
+
+.popup {
+  color: #9F141A;
+  /*TEXT-DECORATION: none*/
+}
+
+#logo {
+  position:fixed;
+/*  padding-right: 1em;*/
+  right:0;
+  bottom:0;
+  z-index:1;
+  background-color:transparent;
+  /*background: url(/search/images/logo.png) bottom left no-repeat;*/
+  width:162px;
+  height:90px;
+}

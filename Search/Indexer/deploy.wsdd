@@ -1,0 +1,58 @@
+<deployment xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <service name="IndexWS" provider="java:RPC">
+    <documentation>Service for indexing things. An example configfile can be found here: http://staff.science.uva.nl/~emeij/indexconfig.xml</documentation>
+    <parameter name="className" value="indexer.Indexer"/>
+    <parameter name="allowedMethods" value="indexFromSRB,indexFromRemote,addToIndex,addToIndexWithConfig,streamContent,indexWithTCP,indexWithSOAP,indexWithSwA"/>
+    <operation name="indexFromRemote">
+      <documentation>Use this method to add a single document to an index. Config holds the configfile contents, </documentation>
+      <parameter name="config" type="tns:string"/>
+      <parameter name="data" type="tns:string"/>
+      <parameter name="extension" type="tns:string"/>
+    </operation>
+    <operation name="indexFromSRB">
+      <documentation>Use this method to index a folder that is stored on SRB</documentation>
+      <parameter name="userName" type="tns:string"/>
+      <parameter name="password" type="tns:string"/>
+      <parameter name="fromPath" type="tns:string"/>
+    </operation>
+    <operation name="addToIndex">
+      <documentation>Use this method to add a single file to a named index using a default config</documentation>
+      <parameter name="filedata" type="tns:string"/>
+      <parameter name="filename" type="tns:string"/>
+      <parameter name="indexName" type="tns:string"/>
+    </operation>
+    <operation name="addToIndexWithConfig">
+      <documentation>Use this method to add a single file to a named index using a specified config. The indexName in the argument will override that in the configfile</documentation>
+      <parameter name="filedata" type="tns:string"/>
+      <parameter name="filename" type="tns:string"/>
+      <parameter name="indexName" type="tns:string"/>
+      <parameter name="config" type="tns:string"/>
+    </operation>
+    <operation name="streamContent">
+	    <documentation>Extracts content from a PDF file, and strams it in the service listening at endPoint. The argument method takes values 100:SWA, 200:SOAP, 500:TCP</documentation>
+	    <parameter name="streamingConfig" type="tns:string"/>
+	    <parameter name="indexConfig" type="tns:string"/>
+	    <parameter name="dir" type="tns:string"/>
+	    <parameter name="endPoint" type="tns:string"/>
+	    <parameter name="method" type="tns:int"/>
+	    <parameter name="generateContent" type="tns:boolean"/>
+    </operation>
+    <operation name="indexWithTCP">
+	    <documentation>Index file(s) from a TCP stream into an index on the server using settings included in the beginning of the stream</documentation>
+	    <parameter name="streamingConfig" type="tns:string"/>
+	    <parameter name="extension" type="tns:string"/>
+    </operation>
+    <operation name="indexWithSOAP">
+	    <documentation>Index file(s) from a SOAP message. You may call this method with an existing file name in the index, if you want to append content</documentation>
+	    <parameter name="streamingConfig" type="tns:string"/>
+	    <parameter name="content" type="tns:string"/>
+	    <parameter name="fileName" type="tns:string"/>
+    </operation>
+    <operation name="indexWithSwA">
+	    <documentation>Index file(s) from a SOAP message. You may call this method with an existing file name in the index, if you want to append content</documentation>
+	    <parameter name="indexConfig" type="tns:string"/>
+    </operation>
+  </service>
+</deployment>

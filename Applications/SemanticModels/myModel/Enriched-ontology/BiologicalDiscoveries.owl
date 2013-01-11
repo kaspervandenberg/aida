@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:mybio="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/BiologicalModel.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:pub="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/Publication.owl#"
+    xmlns:dsc="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#"
+    xmlns="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/BiologicalModel.owl"/>
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="DiscoveredProtein">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Discovered protein</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/BiologicalModel.owl#Protein"/>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#discoveredThroughProcedure"/>
+            <owl:someValuesFrom rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#EntityDiscoveryProcedure"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="DiscoveredEnzyme">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#discoveredThroughProcedure"/>
+            <owl:someValuesFrom rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#EntityDiscoveryProcedure"/>
+          </owl:Restriction>
+          <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/BiologicalModel.owl#Enzyme"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Discovered enzyme</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="DiscoveredArticle">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >discovered article</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >discovered article</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/Publication.owl#Article"/>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#discoveredThroughProcedure"/>
+            <owl:someValuesFrom rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#EntityDiscoveryProcedure"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="DiscoveredDisease">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#EntityDiscoveryProcedure"/>
+            <owl:onProperty rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#discoveredThroughProcedure"/>
+          </owl:Restriction>
+          <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/BiologicalModel.owl#Disease"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <DiscoveredEnzyme rdf:ID="ExampleInstance_DiscoveredEnzyme">
+    <dsc:hasLikelihoodScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >1.0</dsc:hasLikelihoodScore>
+    <mybio:iHop_sentence_url rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http&amp;#58;//www.ihop-net.org/UniPub/iHOP/gismo/86265.html?ORGANISM_ID=1</mybio:iHop_sentence_url>
+    <mybio:entrez_uniprot_url rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http&amp;#58;//www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&amp;val=P08319</mybio:entrez_uniprot_url>
+    <mybio:associated_with>
+      <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/BiologicalModel.owl#ExampleInstance_Enzyme">
+        <mybio:associated_with rdf:resource="#ExampleInstance_DiscoveredEnzyme"/>
+        <pub:colocated_with rdf:resource="#ExampleInstance_DiscoveredEnzyme"/>
+        <pub:semantically_related_with>
+          <DiscoveredProtein rdf:ID="ExampleInstance_DiscoveredProtein">
+            <mybio:iHop_sentence_url rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >http&amp;#58;//www.ihop-net.org/UniPub/iHOP/gismo/88981.html?ORGANISM_ID=1</mybio:iHop_sentence_url>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Example Instance Discovered Protein</rdfs:label>
+            <pub:semantically_related_with rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/BiologicalModel.owl#ExampleInstance_Enzyme"/>
+            <dsc:hasLikelihoodScore rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >2.0</dsc:hasLikelihoodScore>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Example Instance Discovered Protein</rdfs:comment>
+            <mybio:protein_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >ExampleDiscoveredProtein</mybio:protein_name>
+            <mybio:uniprot_id rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Q6IT96</mybio:uniprot_id>
+            <mybio:expacy_uniprot_url rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >http&amp;#58;//expasy.org/uniprot/Q6IT96</mybio:expacy_uniprot_url>
+            <mybio:iHop_search_url rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >http&amp;#58;//www.ihop-net.org/UniPub/iHOP/?field=UNIPROT__AC&amp;ncbi_tax_id=9606&amp;organism_syn=&amp;search=Q6IT96</mybio:iHop_search_url>
+            <mybio:directly_associated_with rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/BiologicalModel.owl#ExampleInstance_Enzyme"/>
+            <dsc:discoveredThroughProcedure>
+              <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#ExampleInstance_TextMiningDiscoveryWorkflow">
+                <dsc:discovered_entity rdf:resource="#ExampleInstance_DiscoveredProtein"/>
+              </rdf:Description>
+            </dsc:discoveredThroughProcedure>
+            <mybio:entrez_uniprot_url rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >http&amp;#58;//www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&amp;val=Q6IT96</mybio:entrez_uniprot_url>
+          </DiscoveredProtein>
+        </pub:semantically_related_with>
+        <mybio:directly_associated_with rdf:resource="#ExampleInstance_DiscoveredProtein"/>
+      </rdf:Description>
+    </mybio:associated_with>
+    <mybio:protein_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ExampleDiscoveredEnzyme</mybio:protein_name>
+    <pub:colocated_with rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/BiologicalModel.owl#ExampleInstance_Enzyme"/>
+    <mybio:uniprot_id rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >P08319</mybio:uniprot_id>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Example Instance Discovered Enzyme</rdfs:comment>
+    <dsc:discoveredThroughProcedure rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#ExampleInstance_TextMiningDiscoveryWorkflow"/>
+    <mybio:iHop_search_url rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http&amp;#58;//www.ihop-net.org/UniPub/iHOP/?field=UNIPROT__AC&amp;ncbi_tax_id=9606&amp;organism_syn=&amp;search=P08319</mybio:iHop_search_url>
+    <mybio:expacy_uniprot_url rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http&amp;#58;//expasy.org/uniprot/P08319</mybio:expacy_uniprot_url>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Example Instance Discovered Enzyme</rdfs:label>
+  </DiscoveredEnzyme>
+  <DiscoveredDisease rdf:ID="ExampleInstance_DiscoveredDisease"/>
+  <DiscoveredArticle rdf:ID="ExampleInstance_DiscoveredArticle">
+    <pub:contained_in_corpus>
+      <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/Publication.owl#ExampleInstance_Corpus">
+        <pub:contains_document rdf:resource="#ExampleInstance_DiscoveredArticle"/>
+      </rdf:Description>
+    </pub:contained_in_corpus>
+    <pub:pubmed_URL rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >http&amp;#58;//www.ncbi.nlm.nih.gov/sites/entrez?cmd=Retrieve&amp;amp;db=PubMed&amp;amp;list_uids=18377425</pub:pubmed_URL>
+    <pub:pubmed_id rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >18377425</pub:pubmed_id>
+    <dsc:discoveredThroughProcedure rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#ExampleInstance_TextMiningDiscoveryWorkflow"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Example Instance Discovered Article</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Example Instance Discovered Article</rdfs:label>
+  </DiscoveredArticle>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3, Build 395)  http://protege.stanford.edu -->

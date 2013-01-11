@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:ee6fce91-2abe-4998-9721-3270aeb0d0b2" author="Marco Roos (AID)" title="CloneItemsInList">Utility workflow that clones an item copy_number times. You can use this to work around standard iteration strategies, e.g. in combination with the CountListItems workflow.
+
+Workflow examples: TestIterationStrategy_withClones. For an alternative approach see TestIterationStrategy_withNesting.
+
+Example I/O:
+
+input: A
+copy_number: 3
+result: [A,A,A]
+
+input: [A,B,C]
+copy_number: 3
+result: [[A,A,A][B,B,B][C,C,C]]
+
+input: [A,B,C]
+copy_number: [3,2]
+result: [[[A,A,A],[A,A]][[B,B,B],[B,B]],[[C,C,C],[C,C]]]
+
+input: [A,B,C]
+copy_number: [3,2,1]
+iteration strategy: dot product
+result: [[A,A,A],[B,B],[C]]</s:workflowdescription>
+  <s:processor name="Clone">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.*;
+
+List newlist = new ArrayList();
+
+for (int i=0; i&lt;((int) Integer.parseInt(copy_number.toString())); i++) {
+	newlist.add(input);
+}
+
+clones=newlist;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">copy_number</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">input</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">clones</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="copy_number" sink="Clone:copy_number" />
+  <s:link source="input" sink="Clone:input" />
+  <s:link source="Clone:clones" sink="clones" />
+  <s:source name="copy_number" />
+  <s:source name="input" />
+  <s:sink name="clones" />
+</s:scufl>
+

@@ -1,0 +1,199 @@
+Buildfile: build.xml
+
+-pre-init:
+     [echo] INDEXDIR:           '/home/aida/indexes'
+     [echo] manager.port:       '80'
+     [echo] manager.url:        'http://localhost/manager'
+     [echo] axis.admin-service: 'http://localhost:80/axis/services/AdminService'
+     [echo] catalina.home:      '/home/aida/tomcat-dev'
+
+-init-private:
+
+-init-user:
+
+-init-project:
+
+-init-macrodef-property:
+
+-do-ear-init:
+
+-do-init:
+
+-post-init:
+     [copy] Copying 9 files to /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Search/search/web/WEB-INF/src
+
+-init-check:
+
+-init-macrodef-javac:
+
+-init-macrodef-junit:
+
+-init-macrodef-java:
+
+-init-macrodef-nbjpda:
+
+-init-debug-args:
+
+-init-macrodef-debug:
+
+-init-macrodef-copy-ear-war:
+
+init:
+
+remove:
+[axis-admin] Processing file /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Search/search/undeploy.wsdd
+[axis-admin] <Admin>Done processing</Admin>
+
+-pre-init:
+     [echo] INDEXDIR:           '/home/aida/indexes'
+     [echo] manager.port:       '80'
+     [echo] manager.url:        'http://localhost/manager'
+     [echo] axis.admin-service: 'http://localhost:80/axis/services/AdminService'
+     [echo] catalina.home:      '/home/aida/tomcat-dev'
+
+-init-private:
+
+-init-user:
+
+-init-project:
+
+-init-macrodef-property:
+
+-do-ear-init:
+
+-do-init:
+
+-post-init:
+
+-init-check:
+
+-init-macrodef-javac:
+
+-init-macrodef-junit:
+
+-init-macrodef-java:
+
+-init-macrodef-nbjpda:
+
+-init-debug-args:
+
+-init-macrodef-debug:
+
+-init-macrodef-copy-ear-war:
+
+init:
+
+deps-clean:
+
+do-clean:
+   [delete] Deleting directory /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Search/search/build
+   [delete] Deleting directory /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Search/search/dist
+
+check-clean:
+
+-post-clean:
+
+clean:
+
+-pre-init:
+     [echo] INDEXDIR:           '/home/aida/indexes'
+     [echo] manager.port:       '80'
+     [echo] manager.url:        'http://localhost/manager'
+     [echo] axis.admin-service: 'http://localhost:80/axis/services/AdminService'
+     [echo] catalina.home:      '/home/aida/tomcat-dev'
+
+-init-private:
+
+-init-user:
+
+-init-project:
+
+-init-macrodef-property:
+
+-do-ear-init:
+
+-do-init:
+
+-post-init:
+     [copy] Copying 38 files to /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Search/search/web/WEB-INF/src
+
+-init-check:
+
+-init-macrodef-javac:
+
+-init-macrodef-junit:
+
+-init-macrodef-java:
+
+-init-macrodef-nbjpda:
+
+-init-debug-args:
+
+-init-macrodef-debug:
+
+-init-macrodef-copy-ear-war:
+
+init:
+
+deps-module-jar:
+
+deps-ear-jar:
+
+deps-jar:
+
+-pre-pre-compile:
+    [mkdir] Created dir: /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Search/search/build/web/WEB-INF/classes
+
+replace:
+
+-pre-compile:
+
+-copy-manifest:
+
+-copy-persistence-xml:
+
+-copy-webdir:
+     [copy] Copying 769 files to /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Search/search/build/web
+
+library-inclusion-in-archive:
+
+library-inclusion-in-manifest:
+
+-do-ws-compile:
+
+-do-compile:
+    [javac] Compiling 38 source files to /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Search/search/build/web/WEB-INF/classes
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+     [copy] Copying 38 files to /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Search/search/build/web/WEB-INF/classes
+
+-post-compile:
+
+compile:
+
+-pre-dist:
+
+compile-jsps:
+
+-do-dist-with-manifest:
+
+-do-dist-without-manifest:
+    [mkdir] Created dir: /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Search/search/dist
+      [jar] Building jar: /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Search/search/dist/search.war
+
+do-dist:
+
+-post-dist:
+
+dist:
+
+install:
+     [copy] Copying 1 file to /home/aida/tomcat-dev/webapps
+     [copy] Copying 80 files to /home/aida/tomcat-dev/webapps/axis/WEB-INF/classes
+[axis-admin] Processing file /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Search/search/deploy.wsdd
+[axis-admin] <Admin>Done processing</Admin>
+     [copy] Copying 1 file to /home/aida/indexes
+     [copy] Copying 3 files to /home/aida/indexes/wordnet/lucene-wordnet-index
+
+BUILD SUCCESSFUL
+Total time: 14 seconds

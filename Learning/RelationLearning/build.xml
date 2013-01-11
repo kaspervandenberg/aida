@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<project name="RelationLearning" default="default" basedir=".">
+    <description>Builds, tests, and runs the project RelationLearning.</description>
+    <import file="nbproject/build-impl.xml"/>
+    
+    <property file="${user.home}/${ant.project.name}-build.properties"/>
+    <property file="${user.home}/build.properties"/>
+    <property file="build.properties"/> 
+      
+    <!-- Earlier properties will override these settings: -->
+    <property name="manager.username"   value="katrenko"/>
+    <property name="manager.password"   value="pass1"/>
+    <property name="manager.port"       value="8080"/>
+    <property name="manager.url"        value="http://localhost:${manager.port}/manager"/>
+    <property name="axis.admin-service"	value="http://localhost:${manager.port}/axis/services/AdminService"/>    
+    <property name="app.name"           value="${ant.project.name}"/>
+    <property name="app.path"           value="/${app.name}"/>  
+    <property name="catalina.home"      value="/home/sophijka/Tomcat/apache-tomcat-5.5.20"/>
+    <property name="lib.directory"      value="${basedir}/web/WEB-INF/lib"/>
+     
+      <property environment="env"/>    
+ 
+	<path id="cmdLine.classpath">
+		<pathelement location="${basedir}/build/web/WEB-INF/classes/"/>
+	   	<fileset dir="${lib.directory}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+    
+    <!--path id="axis.classpath">
+                      <fileset dir="/home/sophijka/Tomcat/apache-tomcat-5.5.20/webapps/axis/WEB-INF/lib">
+                      <include name="**/*.jar" />
+                      </fileset>
+		     
+    </path-->
+   <!--pathelement location="/home/sophijka/.ant/lib/axis-ant.jar"/-->
+    
+ <!-- Configure the custom Ant tasks for the Manager application -->
+  
+  <taskdef name="deploy"    classname="org.apache.catalina.ant.DeployTask"/>
+  <!--taskdef name="install"   classname="org.apache.catalina.ant.InstallTask"/-->
+  <taskdef name="list"      classname="org.apache.catalina.ant.ListTask"/>
+  <taskdef name="reload"    classname="org.apache.catalina.ant.ReloadTask"/>
+  <taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
+
+    <!-- Override wacky NetBeans target -->
+    <target name="run-deploy" depends="init,compile,compile-jsps,-do-compile-single-jsp,dist" 
+        description="Reload application on servlet container">
+
+        <!-- Reloading Tomcat servlets -->
+        <!-- May need to re-copy files -->
+        <!-- then use Remove-Install targets -->
+        <reload url="${manager.url}"
+           username="${manager.username}"
+           password="${manager.password}"
+               path="${app.path}"
+        /> 
+
+<!-- deploy the webservices -->
+        <axis-admin
+            url="${axis.admin-service}"
+            failonerror="true"
+            debug="true"
+            username="${manager.username}"
+            password="${manager.password}"
+            xmlfile="undeploy.wsdd"
+        />
+                        
+        <axis-admin
+            port="${manager.port}"
+            hostname="localhost"
+            url="${axis.admin-service}"
+            failonerror="true"
+            debug="true"
+            username="${manager.username}"
+            password="${manager.password}"
+            xmlfile="deploy.wsdd"
+        />
+                        
+        <!-- copy the required files into AXIS -->
+        <copy todir="${catalina.home}/webapps/axis/WEB-INF/classes">
+            <fileset dir="${build.classes.dir}"/>
+        </copy>     
+          
+    </target>
+ 
+
+			
+    <target name="-post-init">
+        <!-- defining task which will be used to deploy and undeploy the web service -->
+        <path id="axis.classpath">
+            <!-- fileset dir="${netbeans.user}/jakarta-tomcat-5.5.7_base/webapps/axis/WEB-INF/lib" -->
+		<!-- ADDED -->  
+		<fileset dir="${catalina.home}/webapps/axis/WEB-INF/lib">
+		<!-- END of ADDED -->  
+                <include name="**/*.jar" />
+            </fileset>
+        </path>  
+	
+	<taskdef resource="axis-tasks.properties" classpathref="axis.classpath" />
+	
+		  <!-- copy the source files into the WAR tree-->
+        		<!-- copy todir="${webinf.dir}/src">
+            		<fileset dir="${src.dir}">
+                		<filename name="**/*.java"/>
+            		</fileset>
+        	</copy-->   
+    </target>
+    
+<target name="install" depends="compile, dist"
+        description="Install application to servlet container">
+        
+        <!-- copy the required war into Tomcat -->
+        <copy file="${dist.war}" todir="${catalina.home}/webapps"/>   
+        
+        <!-- copy the required libs into axis-->
+        <copy todir="${catalina.home}/webapps/axis/WEB-INF/lib">
+            <fileset dir="${lib.directory}"/>
+        </copy>
+
+        <!-- Unneccessary if auto-deploy is on -->
+            <!-- deploy url="${manager.url}"
+                username="${manager.username}"
+                password="${manager.password}"
+                path="${app.path}"
+                localWar="file://${war.name}"
+            / -->
+        
+        
+        <axis-admin
+            port="${manager.port}"
+            hostname="localhost"
+            url="${axis.admin-service}"
+            failonerror="true"
+            debug="true"
+            username="${manager.username}"
+            password="${manager.password}"
+            xmlfile="deploy.wsdd"
+        />
+        
+        <!-- copy the required files into AXIS -->
+        <copy todir="${catalina.home}/webapps/axis/WEB-INF/classes">
+            <fileset dir="${build.classes.dir}"/>
+        </copy>  
+        
+        <!-- Copy ${ant.project.name}.xml into Tomcat, to initiate query logging -->
+        <copy file="${basedir}/web/WEB-INF/${ant.project.name}.xml" todir="${catalina.home}/conf/Catalina/localhost"/> 
+		          
+  
+    </target>
+
+    
+    <target name="remove" depends="init"
+        description="Remove application on servlet container">
+                      <!-- remove the web content -->
+                <delete verbose="true" failonerror="false" includeEmptyDirs="true">
+                        <fileset dir="${catalina.home}/webapps/${app.name}">
+                                <!--present targetdir="${basedir}/web/"/-->
+                        </fileset>
+                </delete>
+                <delete>
+                        <fileset file="${catalina.home}/webapps/${app.name}.war">
+                        </fileset>
+                </delete>                          
+        
+        <axis-admin
+            url="${axis.admin-service}"
+            failonerror="true"
+            debug="true"
+            username="${manager.username}"
+            password="${manager.password}"
+            xmlfile="undeploy.wsdd"
+        />     
+
+        <!-- delete all files from AXIS which also exist in build/ folder -->
+        <delete includeEmptyDirs="true">
+            <fileset dir="${catalina.home}/webapps/axis/WEB-INF/classes">
+                <present targetdir="${build.classes.dir}" />
+            </fileset>
+        </delete>
+	
+	
+    </target>        
+    
+    <target name="-post-clean">
+
+        <!-- delete all additionally copied files -->
+        <delete includeEmptyDirs="true">
+            <fileset file="${catalina.home}/conf/Catalina/localhost/${ant.project.name}.xml" />
+        </delete>                
+    
+    </target>    
+
+    
+
+    
+    
+    <!-- Synonym for run -->
+    <target name="reload" depends="run" description="Synonym for run target"/>
+
+    
+</project>

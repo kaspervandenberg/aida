@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:ec3e8ad0-b45b-4dbb-b5a9-da5e273d82c1" author="" title="Test_NERcrf" />
+  <s:processor name="apply">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:9999/axis/services/CRFapply?wsdl</s:wsdl>
+      <s:operation>apply</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="input_text" sink="apply:testFile" />
+  <s:link source="model" sink="apply:modelFile" />
+  <s:link source="output_mode" sink="apply:outputMode" />
+  <s:link source="tokenization" sink="apply:tokenization" />
+  <s:link source="apply:applyReturn" sink="output" />
+  <s:source name="input_text">
+    <s:metadata>
+      <s:description>Example:
+We have identified a transcriptional repressor, Nrg1, in a genetic screen designed to reveal negative factors involved in the expression of STA1, which encodes a glucoamylase. The NRG1 gene encodes a 25-kDa C2H2 zinc finger protein which specifically binds to two regions in the upstream activation sequence of the STA1 gene, as judged by gel retardation and DNase I footprinting analyses. Disruption of the NRG1 gene causes a fivefold increase in the level of the STA1 transcript in the presence of glucose.</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="model">
+    <s:metadata>
+      <s:description>1 : BioCreative I</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="output_mode">
+    <s:metadata>
+      <s:description>1: IOB format
+2: SGML format
+3: a list of entities
+4: ABNER format</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="tokenization">
+    <s:metadata>
+      <s:description>1: activate tokenization</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="output" />
+</s:scufl>
+

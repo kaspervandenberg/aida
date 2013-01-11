@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:1c2b5081-98c5-4e7a-8445-ef2553d16086" author="" title="Concatenate" />
+  <s:processor name="Concatenate_two_strings1">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:processor name="Concatenate_two_strings3">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:processor name="Concatenate_two_strings2">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:link source="input1" sink="Concatenate_two_strings1:string1" />
+  <s:link source="input2" sink="Concatenate_two_strings1:string2" />
+  <s:link source="Concatenate_two_strings1:output" sink="Concatenate_two_strings2:string1" />
+  <s:link source="Concatenate_two_strings2:output" sink="Concatenate_two_strings3:string1" />
+  <s:link source="input3" sink="Concatenate_two_strings2:string2" />
+  <s:link source="input4" sink="Concatenate_two_strings3:string2" />
+  <s:link source="Concatenate_two_strings3:output" sink="concatenated_string" />
+  <s:source name="input1" />
+  <s:source name="input2" />
+  <s:source name="input3" />
+  <s:source name="input4" />
+  <s:sink name="concatenated_string" />
+</s:scufl>
+

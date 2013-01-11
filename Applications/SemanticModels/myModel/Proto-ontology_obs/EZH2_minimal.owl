@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EZH2_minimal.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:assert="http://www.owl-ontologies.com/assert.owl#"
+  xml:base="http://integrativebioinformatics.nl/Ontology/ProtoOntology/EZH2_minimal.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.owl-ontologies.com/assert.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Bladder_cancer">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Bladder cancer</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Barretts_esophagus">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Barretts esophagus</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Myeloma_Lymphoma">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Myeloma Lymphoma</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Hepatocellular_carcinoma">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Hepatocellular carcinoma</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Prostate_cancer">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Prostate cancer</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Melanoma">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Melanoma</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Cell_cycle_defects">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Cell cycle defects</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Wilms_Tumor">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Wilms tumor</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Breast_cancer">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Breast cancer</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Colorectal_cancer">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Colorectal cancer</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="EZH2">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:SymmetricProperty rdf:ID="associatedWith"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Breast_cancer"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Enhancer of Zeste (EZH2) is one of two mammalian homologues of Drosophila E(Z), a SET domain protein that methylates K27H3 [23]. E(Z) is a Polycomb group (PcG) protein involved in homeotic gene repression in Drosophila [24]. (From: PMID: 17306846 [PubMed - as supplied by publisher])</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:SymmetricProperty rdf:about="#associatedWith"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Colorectal_cancer"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Enhancer of Zeste</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Wilms_Tumor"/>
+        <owl:onProperty>
+          <owl:SymmetricProperty rdf:about="#associatedWith"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >EZH2</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:SymmetricProperty rdf:about="#associatedWith"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Prostate_cancer"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:SymmetricProperty rdf:about="#associatedWith"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Melanoma"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Bladder_cancer"/>
+        <owl:onProperty>
+          <owl:SymmetricProperty rdf:about="#associatedWith"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:SymmetricProperty rdf:about="#associatedWith"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Hepatocellular_carcinoma"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="#Cell_cycle_defects"/>
+        <owl:onProperty>
+          <owl:SymmetricProperty rdf:about="#associatedWith"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:SymmetricProperty rdf:about="#associatedWith"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Myeloma_Lymphoma"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:SymmetricProperty rdf:about="#associatedWith"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Barretts_esophagus"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:SymmetricProperty rdf:about="#associatedWith">
+    <owl:inverseOf rdf:resource="#associatedWith"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:SymmetricProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.2, Build 355)  http://protege.stanford.edu -->

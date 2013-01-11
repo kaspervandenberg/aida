@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:7e2c52f1-919d-42b3-8f15-db2af2171011" author="" title="SplitPairs" />
+  <s:processor name="SplitPairs">
+    <s:beanshell>
+      <s:scriptvalue>// expects 2-deep list of form: ((first,second),(first,second),...))
+// returns two lists of form: (first,first,...) and (second,second,...)
+
+Iterator bigiter = pair_list.iterator();
+ArrayList pair;
+ArrayList firsts = new ArrayList();
+ArrayList seconds = new ArrayList();
+
+while (bigiter.hasNext()) {
+	pair = (ArrayList) bigiter.next();
+	firsts.add(pair.get(0));
+	seconds.add(pair.get(1));
+}
+
+first_list = firsts;
+second_list = seconds;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l(l('text/plain'))">pair_list</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">first_list</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">second_list</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="list_of_pairs" sink="SplitPairs:pair_list" />
+  <s:link source="SplitPairs:first_list" sink="list_of_firsts" />
+  <s:link source="SplitPairs:second_list" sink="list_of_seconds" />
+  <s:source name="list_of_pairs" />
+  <s:sink name="list_of_firsts" />
+  <s:sink name="list_of_seconds" />
+</s:scufl>
+

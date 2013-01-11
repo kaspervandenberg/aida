@@ -1,0 +1,54 @@
+<html>
+<head>
+<title>Learner</title>
+</head>
+<body>
+<b>Purpose</b>: To train learning methods on the data provided by the user & to create a learning model for a given task. The task is to carry out named entity recognition (concept learning) based on the text context.
+
+<br><br>
+This is a Learner, service which provides the following functionality: it makes use of a user's annotation to build a model
+which might be used to annotate the unseen data. It also provides the information on how well this model performs on the
+training data set (provided by a user) based on the 10-fold cross-validation.<br>
+
+<br><br>
+<b>Input</b>:
+<br>
+train_set (String)  - annotated data in XML file. All tags apart from <document> (and tags used for annotating structural parts of Medline ) are considered to be class labels.
+<br>  context_window (String) - size of a context window (e.g., 2, 3, etc). It is set to 3 by default
+<br>  mode (String) - mode is currently set to "a" (automatic). It is indended to add interactive mode in the future releases
+<br>  model_file (String) - path with the filename where the model file must be stored (e.g., "D://INSTALL/Data/train/corpus2TTT.mod") 
+<br>	inp (String) - type of the input data. It is set to "text" in the current implementation
+
+<br><br>
+<b>Output</b>:  
+<ul>
+<li/> <b>Direct:</b> String (performance info stored in the XML file). 
+<li/> <b>Additional:</b>
+<ul>
+<li/>The model file (which might be used for the test purposes)
+is stored with a filename provided by a user as a model_file parameter, see above).
+<li/>The log file which contains the following information:
+<ul>
+<li/>date
+<li/>training data
+<li/>performance info
+<li/>ARFF header needed to use a stored model. Do <b>NOT</b> delete it if you plan to use a model in the future
+</ul>
+</ul>
+</ul>
+<br/><br/>
+<b>Part of a Client example</b>:
+<br/>String endpoint = "http://localhost:8084/axis/services/LearnModel";
+<br/>        Service  service = new Service();
+<br/>        Call     call    = (Call) service.createCall();
+<br/>        call.setTargetEndpointAddress(endpoint);
+<br/>        call.setOperationName("train_model");      
+<br/>        ret = (String) call.invoke( new Object[] { train_file[0], con[0], "a", "D://INSTALL/Data/train/corpus2TTT.mod", "text" } );       
+       
+<br/><br/>
+<b>Realization</b>: Uses Weka, SAX Parser 
+
+
+</body>
+</html> 
+

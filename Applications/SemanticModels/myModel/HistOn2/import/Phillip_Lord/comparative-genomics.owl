@@ -1,0 +1,769 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://www.owl-ontologies.com/unnamed.owl#"
+  xml:base="http://www.owl-ontologies.com/unnamed.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Allele">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="CellDivisionProcess"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="InSituHybridization"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="LinkageGroup"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Chromosome"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Homology"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Species"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Marker"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Trait"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Gene"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Synteny"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="GenomeSurveySequence"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Map"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="ExpressedSequenceTag"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="RadtionHybridMap"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Map">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Homology"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Gene"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Synteny"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Species"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#LinkageGroup"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Marker"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Chromosome"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Trait"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#ExpressedSequenceTag"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#InSituHybridization"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#CellDivisionProcess"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="FluorescenceInSituHybridization">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#InSituHybridization"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Marker">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Gene"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#LinkageGroup"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Homology"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#RadtionHybridMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Trait"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Chromosome"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Synteny"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#CellDivisionProcess"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#InSituHybridization"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#ExpressedSequenceTag"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Species"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="NaturalChromosome">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Chromosome"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Gene">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Trait"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#RadtionHybridMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Chromosome"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#CellDivisionProcess"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#ExpressedSequenceTag"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Synteny"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#InSituHybridization"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Homology"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Species"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#LinkageGroup"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Species">
+    <owl:disjointWith rdf:resource="#Gene"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#InSituHybridization"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Homology"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Chromosome"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#RadtionHybridMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#ExpressedSequenceTag"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#LinkageGroup"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Synteny"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Trait"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#CellDivisionProcess"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="ChromosomeStructuralElement"/>
+  <owl:Class rdf:about="#ExpressedSequenceTag">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Homology"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Synteny"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#InSituHybridization"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Gene"/>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Chromosome"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#CellDivisionProcess"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#RadtionHybridMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#LinkageGroup"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Species"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Trait"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="YeastArtificialChromosome">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ArtificialChromosome"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Trait">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Chromosome"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#LinkageGroup"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#InSituHybridization"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Gene"/>
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Homology"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#ExpressedSequenceTag"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Species"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#CellDivisionProcess"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Synteny"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="Meiosis">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#CellDivisionProcess"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Mitosis"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#ArtificialChromosome">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Chromosome"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Locus"/>
+  <owl:Class rdf:ID="Paralogy">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Homology"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#RadtionHybridMap">
+    <owl:disjointWith rdf:resource="#ExpressedSequenceTag"/>
+    <rdfs:subClassOf rdf:resource="#Map"/>
+    <owl:disjointWith rdf:resource="#Species"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#LinkageGroup"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Chromosome"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Homology"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Gene"/>
+  </owl:Class>
+  <owl:Class rdf:about="#LinkageGroup">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#CellDivisionProcess"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith rdf:resource="#ExpressedSequenceTag"/>
+    <owl:disjointWith rdf:resource="#Gene"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Chromosome"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Synteny"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#InSituHybridization"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith rdf:resource="#RadtionHybridMap"/>
+    <owl:disjointWith rdf:resource="#Species"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Homology"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Trait"/>
+  </owl:Class>
+  <owl:Class rdf:ID="CytogeneticMap">
+    <rdfs:subClassOf rdf:resource="#Map"/>
+  </owl:Class>
+  <owl:Class rdf:about="#CellDivisionProcess">
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith rdf:resource="#ExpressedSequenceTag"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Trait"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Chromosome"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Synteny"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#LinkageGroup"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#InSituHybridization"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Homology"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Gene"/>
+    <owl:disjointWith rdf:resource="#Species"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PhysicalMap">
+    <rdfs:subClassOf rdf:resource="#Map"/>
+  </owl:Class>
+  <owl:Class rdf:about="#InSituHybridization">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Homology"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#LinkageGroup"/>
+    <owl:disjointWith rdf:resource="#CellDivisionProcess"/>
+    <owl:disjointWith rdf:resource="#ExpressedSequenceTag"/>
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Synteny"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Trait"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Chromosome"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith rdf:resource="#Species"/>
+    <owl:disjointWith rdf:resource="#Gene"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Orthology">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Homology"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Centromere">
+    <rdfs:subClassOf rdf:resource="#ChromosomeStructuralElement"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Chromosome">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#InSituHybridization"/>
+    <owl:disjointWith rdf:resource="#Gene"/>
+    <owl:disjointWith rdf:resource="#CellDivisionProcess"/>
+    <owl:disjointWith rdf:resource="#Trait"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#LinkageGroup"/>
+    <owl:disjointWith rdf:resource="#ExpressedSequenceTag"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Homology"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith rdf:resource="#Species"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Synteny"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith rdf:resource="#RadtionHybridMap"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Synteny">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith rdf:resource="#CellDivisionProcess"/>
+    <owl:disjointWith rdf:resource="#Gene"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith rdf:resource="#LinkageGroup"/>
+    <owl:disjointWith rdf:resource="#Species"/>
+    <owl:disjointWith rdf:resource="#ExpressedSequenceTag"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Homology"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#InSituHybridization"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Chromosome"/>
+    <owl:disjointWith rdf:resource="#Trait"/>
+    <owl:disjointWith rdf:resource="#Map"/>
+  </owl:Class>
+  <owl:Class rdf:ID="BacterialArtificialChromosome">
+    <rdfs:subClassOf rdf:resource="#ArtificialChromosome"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Homology">
+    <owl:disjointWith rdf:resource="#Species"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#LinkageGroup"/>
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith rdf:resource="#CellDivisionProcess"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Trait"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#InSituHybridization"/>
+    <owl:disjointWith rdf:resource="#Chromosome"/>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#ExpressedSequenceTag"/>
+    <owl:disjointWith rdf:resource="#Gene"/>
+    <owl:disjointWith rdf:resource="#RadtionHybridMap"/>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith rdf:resource="#Synteny"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="DeoxyriboNucleicAcid">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#NucleicAcid"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="RiboNucleicAcid"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Mitosis">
+    <owl:disjointWith rdf:resource="#Meiosis"/>
+    <rdfs:subClassOf rdf:resource="#CellDivisionProcess"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Telomere">
+    <rdfs:subClassOf rdf:resource="#ChromosomeStructuralElement"/>
+  </owl:Class>
+  <owl:Class rdf:about="#NucleicAcid">
+    <owl:disjointWith rdf:resource="#ExpressedSequenceTag"/>
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith rdf:resource="#Synteny"/>
+    <owl:disjointWith rdf:resource="#Species"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#QuantitativeTraitLoci"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Gene"/>
+    <owl:disjointWith rdf:resource="#Chromosome"/>
+    <owl:disjointWith rdf:resource="#CellDivisionProcess"/>
+    <owl:disjointWith rdf:resource="#Trait"/>
+    <owl:disjointWith rdf:resource="#Homology"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#InSituHybridization"/>
+    <owl:disjointWith rdf:resource="#LinkageGroup"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Marker"/>
+  </owl:Class>
+  <owl:Class rdf:about="#QuantitativeTraitLoci">
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith rdf:resource="#LinkageGroup"/>
+    <owl:disjointWith rdf:resource="#Trait"/>
+    <owl:disjointWith rdf:resource="#CellDivisionProcess"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GenomeSurveySequence"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Synteny"/>
+    <owl:disjointWith rdf:resource="#NucleicAcid"/>
+    <owl:disjointWith rdf:resource="#Chromosome"/>
+    <owl:disjointWith rdf:resource="#ExpressedSequenceTag"/>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith rdf:resource="#Homology"/>
+    <owl:disjointWith rdf:resource="#InSituHybridization"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Gene"/>
+    <owl:disjointWith rdf:resource="#Species"/>
+  </owl:Class>
+  <owl:Class rdf:about="#RiboNucleicAcid">
+    <rdfs:subClassOf rdf:resource="#NucleicAcid"/>
+    <owl:disjointWith rdf:resource="#DeoxyriboNucleicAcid"/>
+  </owl:Class>
+  <owl:Class rdf:about="#GenomeSurveySequence">
+    <owl:disjointWith rdf:resource="#Gene"/>
+    <owl:disjointWith rdf:resource="#CellDivisionProcess"/>
+    <owl:disjointWith rdf:resource="#Trait"/>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Ploidy"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith rdf:resource="#Synteny"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#NucleicAcid"/>
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith rdf:resource="#Species"/>
+    <owl:disjointWith rdf:resource="#Chromosome"/>
+    <owl:disjointWith rdf:resource="#InSituHybridization"/>
+    <owl:disjointWith rdf:resource="#QuantitativeTraitLoci"/>
+    <owl:disjointWith rdf:resource="#ExpressedSequenceTag"/>
+    <owl:disjointWith rdf:resource="#Homology"/>
+    <owl:disjointWith rdf:resource="#LinkageGroup"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Ploidy">
+    <owl:disjointWith rdf:resource="#CellDivisionProcess"/>
+    <owl:disjointWith rdf:resource="#NucleicAcid"/>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith rdf:resource="#Trait"/>
+    <owl:disjointWith rdf:resource="#Gene"/>
+    <owl:disjointWith rdf:resource="#Homology"/>
+    <owl:disjointWith rdf:resource="#Map"/>
+    <owl:disjointWith rdf:resource="#InSituHybridization"/>
+    <owl:disjointWith rdf:resource="#Species"/>
+    <owl:disjointWith rdf:resource="#LinkageGroup"/>
+    <owl:disjointWith rdf:resource="#GenomeSurveySequence"/>
+    <owl:disjointWith rdf:resource="#Synteny"/>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith rdf:resource="#ExpressedSequenceTag"/>
+    <owl:disjointWith rdf:resource="#QuantitativeTraitLoci"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#GeneticLinkageMap"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Chromosome"/>
+  </owl:Class>
+  <owl:Class rdf:about="#GeneticLinkageMap">
+    <owl:disjointWith rdf:resource="#QuantitativeTraitLoci"/>
+    <owl:disjointWith rdf:resource="#Chromosome"/>
+    <owl:disjointWith rdf:resource="#Ploidy"/>
+    <owl:disjointWith rdf:resource="#Synteny"/>
+    <owl:disjointWith rdf:resource="#LinkageGroup"/>
+    <owl:disjointWith rdf:resource="#GenomeSurveySequence"/>
+    <owl:disjointWith rdf:resource="#NucleicAcid"/>
+    <owl:disjointWith rdf:resource="#ExpressedSequenceTag"/>
+    <owl:disjointWith rdf:resource="#Gene"/>
+    <owl:disjointWith rdf:resource="#Species"/>
+    <owl:disjointWith rdf:resource="#Homology"/>
+    <owl:disjointWith rdf:resource="#RadtionHybridMap"/>
+    <owl:disjointWith rdf:resource="#Allele"/>
+    <owl:disjointWith rdf:resource="#CellDivisionProcess"/>
+    <owl:disjointWith rdf:resource="#InSituHybridization"/>
+    <owl:disjointWith rdf:resource="#Marker"/>
+    <owl:disjointWith rdf:resource="#Trait"/>
+    <owl:disjointWith rdf:resource="#Map"/>
+  </owl:Class>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 1.3, Build 188)  http://protege.stanford.edu -->

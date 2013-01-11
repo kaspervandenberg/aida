@@ -1,0 +1,59 @@
+div.open_hits {
+    font-size: x-small;
+    padding-bottom: 10px;
+    clear: both;
+    display: block; 
+}
+
+div.hits_div {
+    background-color: #fff;
+    border: solid #ccc 1px;
+    padding: 10px;     
+    margin-top: 20px;
+}
+
+div.agriscaris_hits_header {
+    font-size: large;
+    font-weight: bold;
+}
+
+a.agriscaris_home_link {
+    display: block;
+    clear: left;
+    font-size: small;
+    font-weight: normal;
+    margin-bottom: 20px;
+}
+    
+div.hit {
+    margin-bottom: 10px;
+}
+
+li.hit_creator_li {
+    display: inline;
+    margin-right: 5px;
+}
+
+div.hit_title_label,
+div.hit_creator_label, 
+div.hit_date_label {
+    display: none;
+}
+
+ul.hit_title_list,
+ul.hit_creator_list,
+ul.hit_date_list {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+li.hit_title_li {
+    font-weight: bold;
+}
+
+li.hit_title_li,
+li.hit_creator_li,
+li.hit_date_li {
+
+}

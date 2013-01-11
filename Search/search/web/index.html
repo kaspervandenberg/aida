@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <title>AIDA Search</title>
+    
+    <link rel="stylesheet" type="text/css" href="ext-2.2.1/resources/css/ext-all.css" />
+
+    <style type="text/css">
+  		.broader-icon {background-image: url(icons/bullet_black.png) !important;}
+  		.narrower-icon {background-image:url(icons/bullet_blue.png) !important;}
+  		.pref-icon {background-image:url(icons/bullet_green.png) !important;}
+  		.alt-icon {background-image:url(icons/bullet_purple.png) !important;}
+  		.sibling-icon {background-image:url(icons/bullet_orange.png) !important;}
+  		
+  		.loading-icon {background-image: url(ext-2.2.1/resources/images/default/tree/loading.gif) !important;}
+  		.must-icon {background-image:url(icons/bullet_add.png) !important;}
+  		.not-icon {background-image:url(icons/bullet_delete.png) !important;}
+  		
+  		.query-icon {background-image:url(icons/magnifier.png) !important;}
+  
+      .btn-browse {background-image:url(icons/chart_organisation.png) !important;}
+      .btn-clear {background-image:url(icons/chart_organisation_delete.png) !important;}
+			.btn-collapse {background-image:url(icons/collapse-all.gif) !important;}
+			.btn-expand {background-image:url(icons/expand-all.gif) !important;}
+			
+			.btn-refreshdb {background-image:url(icons/database_refresh.png) !important;}
+      .btn-refresh {background-image:url(icons/arrow_refresh.png) !important;}
+			
+  		.nodename {
+  			font-weight: bold;
+  			color: black;
+  		}
+  		
+  		.text {
+        font: 11px  Tahoma, Verdana, Arial, Helvetica, sans-serif;
+        color:#444;
+        padding: 15px 15px 15px 15px;
+        text-align:left;
+        white-space:normal;
+  		}
+  		
+  		.text p {
+  		  padding: 10px 0px 0px 0px;
+  		}
+  		
+      .text b {
+        padding: 0px 0px 5px 0px;
+      }
+  		
+  		.nohits {
+  	    font: 10px  Tahoma, Verdana, Arial, Helvetica, sans-serif;
+  	    color:#444;
+  	    padding: 15px 15px 15px 15px;
+  			text-align:left;
+  		}
+  	
+  		.loading-indicator {
+  	    font: 10px  Tahoma, Verdana, Arial, Helvetica, sans-serif;
+  	    top: 250px;
+  	    left: 40%;
+  	    position: relative;
+  	    background-image: url(icons/s.gif);
+  	    background-repeat: no-repeat;  
+  	    background-position: left center;
+  	    padding: 10px 10px 200px 38px;
+  			text-align:left;
+  		}
+  			
+      #loading a {
+        font: bold 10px  Tahoma, Verdana, Arial, Helvetica, sans-serif;
+        color:#225588;
+      }
+      
+      #loading-msg {
+      }
+			
+			.concept-id {
+				/*font:normal 11px tahoma, arial, helvetica, sans-serif;*/
+  	    color:#555;
+				display: inline;
+			}
+  		
+			.x-combo-list {
+  	    font:normal 11px tahoma, arial, helvetica, sans-serif;
+  	    /*color:#555;*/
+  		}
+			
+			.x-combo-list-item {
+  	    /*font:normal 10px tahoma, arial, helvetica, sans-serif;*/
+  		}
+				
+  		.search-item {
+  	    font:normal 11px tahoma, arial, helvetica, sans-serif;
+  	    padding:3px 3px 3px 3px;
+  	    border:1px solid #fff;
+  	    border-bottom:1px solid #eeeeee;
+  	    white-space:normal;
+  	    color:#555;
+  	    /*border-bottom-width: 0px;*/
+  	    border-bottom-color: #E0E0E0;
+  		}
+  		
+  		.search-item h3 {
+  	    display:block;
+  	    font:inherit;
+  	    font-weight:bold;
+  	    color:#222;
+        background-color: white;
+  		}
+  			
+      .search-item img {
+        padding:3px 10px 3px 3px;
+      }
+      
+      .search-item h3 span {
+        float: right;
+        font-weight:normal;
+        margin:0 0 5px 5px;
+        width:100px;
+        display:block;
+        clear:none;
+      }
+      
+  		.focusnode {
+  	    font:inherit;
+  	    font-weight:bold;
+  	    color:#222;
+  		}
+  		
+  		.g {color:green;}
+  		.a {color:blue;}
+  		.c {color:#7777cc;}
+      .download {float: right;}
+      
+      .x-layout-split {
+        position: absolute;
+        height: 5px;
+        width: 5px;
+        line-height: 1px;
+        font-size: 1px;
+        z-index: 3;
+        background-color: white;
+      }
+    </style>
+	</head>
+	
+	<body>
+	  <div id="loading-mask" style=""></div>
+	  <div id="loading">
+	    <div class="loading-indicator">
+			<img src="icons/extanim64.gif" width="32" height="32" style="margin-right:8px;float:left;vertical-align:top;" alt="loading"/>	
+			<a href="http://adaptivedisclosure.org">AIDA</a>
+			<br/><span id="loading-msg">
+			Loading...
+			</span>
+		</div>
+	  </div>	
+    <script type="text/javascript">document.getElementById('loading-msg').innerHTML = 'Loading Core API ...';</script>
+		<script type="text/javascript" src="ext-2.2.1/adapter/ext/ext-base.js"></script>
+		<script type="text/javascript">document.getElementById('loading-msg').innerHTML = 'Loading ExtJS '+Ext.version+' ...';</script>
+    <script type="text/javascript" src="ext-2.2.1/ext-all-debug.js"></script>
+		<script type="text/javascript">Ext.BLANK_IMAGE_URL = 'icons/s.gif';</script>
+    <script type="text/javascript">document.getElementById('loading-msg').innerHTML = 'Loading AIDA API ...';</script>
+    <script type="text/javascript" src="resources/utils.js"></script>
+		<script type="text/javascript" src="resources/progressPagingToolbar.js"></script>
+		<!--script type="text/javascript" src="resources/tdgi.borderLayout.js"></script-->
+    <script type="text/javascript" src="resources/ButtonTabPanel.js"></script>
+    <script type="text/javascript" src="resources/DDTabPanel.js"></script>
+    <script type="text/javascript" src="resources/MessageWindow.js"></script>
+    <!--script type="text/javascript" src="resources/ux.maximgb.treegrid/TreeGrid.js"></script-->
+		<script type="text/javascript" src="resources/DynamicJsonReader.js"></script>
+    <script type="text/javascript" src="resources/SearchField.js"></script>
+    <script type="text/javascript" src="resources/SparqlQueriesButton.js"></script>
+		<script type="text/javascript" src="resources/ConceptCompletion.js"></script>
+    <script type="text/javascript" src="resources/ThesaurusBrowser.js"></script>
+		<script type="text/javascript" src="resources/ThesaurusServerPanel.js"></script>
+    <script type="text/javascript" src="resources/ThesaurusPanel.js"></script>
+		<script type="text/javascript" src="resources/RepositorySearch.js"></script>
+    <script type="text/javascript" src="resources/DocCache.js"></script>
+		<script type="text/javascript">document.getElementById('loading-msg').innerHTML = 'Initializing	...';</script>
+    <script type="text/javascript" src="resources/search.js"></script>
+    <script type="text/javascript" src="resources/ThesauriSearch.js"></script>
+		<div style="width:'100%';" id="panel">
+		</div>
+    <div id="center" class="text" > 
+      <p><b>Welcome to the AIDA Search Interface</b></p>
+      <p>
+        This interface may be used to query indexes generated using <a href="http://www.adaptivedisclosure.org">AIDA</a>, possibly using concepts retrieved from a thesaurus.
+      </p>
+      <p>
+        To begin, select an index on the top-left of the page and possibly a field ("content" usually suffices). You can then type in any query to search that index. Note that it assumes a Boolean OR by default. To get a Boolean AND, prefix your terms with a '+' character.
+      </p>
+      <p>
+        Moreover, you can also select a server and SKOS repository on the bottom right. As soon as the thesaurus is loaded, you can drag concepts onto the "My Query" node in the Query Builder at the top right. These concepts will then be searched for, in conjunction with a typed query (if any).
+      </p>
+      <p>
+        You can right click on the added nodes in the Query Builder for more advanced search options. 
+      </p>
+			<p>
+				Comments, questions, and other remarks can be sent to <a href='mailto:aidadev@lists.vl-e.nl'>aidadev@lists.vl-e.nl</a>.
+			</p>
+      <p> List of repository servers:
+          <ul>
+          <li><a href="http://ws.adaptivedisclosure.org/openrdf-sesame" title="http://ws.adaptivedisclosure.org/openrdf-sesame" >AIDA Repository</a> </li>
+          <li><a href="http://tarski.duhs.org:8080/openrdf-sesame" title="http://tarski.duhs.org:8080/openrdf-sesame" >Tarski/SNOMED </a> </li>
+	      <li><a href="http://hcls.deri.org/sparql" title="http://hcls.deri.org/sparql">HCLS Deri</a> </li>
+          <!-- <li><a href="http://www.csw.inf.fu-berlin.de:4039/sesame" title="http://www.csw.inf.fu-berlin.de:4039/sesame" >Berlin </a> </li> -->
+          </ul>
+     </p>
+
+
+    </div>
+<form id="history-form" class="x-hidden">
+    <input type="hidden" id="x-history-field" />
+    <iframe id="x-history-frame"></iframe>
+</form>
+
+	</body>
+</html>

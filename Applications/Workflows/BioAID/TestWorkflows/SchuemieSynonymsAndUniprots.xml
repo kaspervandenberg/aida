@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:1bf41db7-5ddc-4a7e-a5e3-6e17b6326ba1" author="Martijn Schuemie (web service) and Marco Roos (workflow)" title="SchuemieSynonymsAndUniprots">Test workflow for Martijn Schuemie's synonym service. The previous service (still on the aida development server) worked on human+rat+mouse; this one works on human only.
+
+From Martijn's e-mail.
+ik heb iets in elkaar gedraaid wat hopelijk doet wat het moet doen. Ik heb de SynsetServer uitgebreid met een nieuwe functie: String[] getUniprotID(String term). Deze hoest dus 0, 1 of meer Uniprot IDs op per term. Er hangt nu een andere thesaurus achter dan voorheen (mens i.p.v. mens+muis+rat), dus de andere functie (String[][] getSynsets(String term)) levert nu ook iets andere resultaten op.</s:workflowdescription>
+  <s:processor name="getUniprotID">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://bubbles.biosemantics.org:8180/axis/services/SynsetServer/SynsetServer.jws?wsdl</s:wsdl>
+      <s:operation>getUniprotID</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getSynsets">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://bubbles.biosemantics.org:8180/axis/services/SynsetServer/SynsetServer.jws?wsdl</s:wsdl>
+      <s:operation>getSynsets</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="protein_name" sink="getSynsets:term" />
+  <s:link source="protein_name" sink="getUniprotID:term" />
+  <s:link source="getSynsets:getSynsetsReturn" sink="synonyms" />
+  <s:link source="getUniprotID:getUniprotIDReturn" sink="uniprots" />
+  <s:source name="protein_name" />
+  <s:sink name="synonyms" />
+  <s:sink name="uniprots" />
+</s:scufl>
+

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:a53d5571-7a13-4040-9f2f-dca36b321c16" author="" title="ListConcatenationTest" />
+  <s:processor name="CreateList1">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.*;
+
+List newlist = new ArrayList();
+for (int i=1; i&lt;4; i++) {
+	newlist.add((String) (Integer.toString(i)));
+}
+outlist=newlist;</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">outlist</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="CreateList2">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.*;
+
+List newlist = new ArrayList();
+for (int i=0; i&lt;3; i++) {
+	newlist.add((String) Character.toString((char) ('a'+(char) i)));
+}
+outlist=newlist;</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">outlist</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="CreateList3">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.*;
+
+List newlist = new ArrayList();
+for (int i=0; i&lt;3; i++) {
+	newlist.add((String) Character.toString((char) ('A'+(char) i)));
+}
+outlist=newlist;</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">outlist</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="ConcatenateLists">
+    <s:beanshell>
+      <s:scriptvalue>/*
+variables
+item1
+item2
+item3
+*/
+import java.util.*;
+
+List tmpList = new ArrayList();
+
+tmpList.add(item1);
+tmpList.add(item2);
+tmpList.add(item3);
+
+outlist=tmpList;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">item1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">item2</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">item3</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">outlist</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+    <s:iterationstrategy>
+      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="item1" />
+        <i:iterator name="item2" />
+        <i:iterator name="item3" />
+      </i:dot>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:link source="ConcatenateLists:outlist" sink="concatenatedList" />
+  <s:link source="CreateList1:outlist" sink="ConcatenateLists:item1" />
+  <s:link source="CreateList2:outlist" sink="ConcatenateLists:item2" />
+  <s:link source="CreateList3:outlist" sink="ConcatenateLists:item3" />
+  <s:link source="CreateList1:outlist" sink="outlist" />
+  <s:link source="CreateList2:outlist" sink="outlist2" />
+  <s:link source="CreateList3:outlist" sink="outlist3" />
+  <s:sink name="outlist" />
+  <s:sink name="outlist2" />
+  <s:sink name="outlist3" />
+  <s:sink name="concatenatedList" />
+</s:scufl>
+

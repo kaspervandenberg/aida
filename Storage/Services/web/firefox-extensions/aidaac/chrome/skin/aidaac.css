@@ -1,0 +1,8 @@
+#aidaac-property-splitter,
+#aidaac-concept-splitter,
+#aidaac-load-document-splitter {
+  min-width: 11px;
+  min-height: 24px;
+  background-image: url("chrome://aidaac/skin/splitter.png");
+  cursor: e-resize;
+}

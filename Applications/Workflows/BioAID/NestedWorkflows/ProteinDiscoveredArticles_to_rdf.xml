@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:a7c6b8a8-5d6f-4b2e-8c0a-7c5b54666742" author="" title="ProteinDiscoveredArticles_to_rdf" />
+  <s:processor name="DiscoveredArticleRDFdoc">
+    <s:beanshell>
+      <s:scriptvalue>/*
+Variables (all a Plain Text):
+workflowURI
+article_id
+article_label
+
+RDFformat
+rdf_document
+data_URI
+*/
+
+// http://rdf.adaptivedisclosure.org/~marco/BioAID/Preliminary/Workflows/BeanshellScrtips/DiscoveredArticleRDFdoc.java
+// D://Marco/adaptivedisclosure.org/public_html/BioAID/Preliminary/Workflows/BeanshellScrtips/DiscoveredArticleRDFdoc.java
+
+// Comment: a lot of URIs (namespaces of ontology elements) are hard-coded here; I would like to find ways to make it less so
+// 		perhaps by asking a user to select the right elements from a list which may have been compiled from a search in the ontology on keyword or label value
+
+// Notation
+String RDFformat = "rdfxml";
+
+//data or base URI
+data_URI = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl";
+
+//Concepts
+String discartCon = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#DiscoveredArticle";
+
+//Properties
+String hasDiscStatProp = "disc:discoveredThroughProcedure";
+
+//Individuals
+String articleInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#" + article_id;
+String discoveryInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#" + workflowURI;
+
+//Relations (rdfxml):
+String rdf_doc;
+String oftypestring = " rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\"";
+String oftypeURI = " rdf:datatype=\"http://www.w3.org/2001/XMLSchema#anyURI\"";
+
+//header
+rdf_doc = "&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;\n";
+rdf_doc = rdf_doc + "&lt;rdf:RDF\n	xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n	xmlns:edis=\"http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#\"\n	xmlns:disc=\"http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#\"\n	xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"&gt;\n";
+
+//body
+rdf_doc = rdf_doc + "&lt;rdf:Description rdf:about=\"" + articleInd + "\"&gt;\n";
+rdf_doc = rdf_doc + "	&lt;rdf:type rdf:resource=\"" + discartCon + "\"/&gt;\n";
+rdf_doc = rdf_doc + "	&lt;rdfs:label " + oftypestring + "&gt;" + article_label + "&lt;/rdfs:label&gt;\n";
+rdf_doc = rdf_doc + "	&lt;rdfs:label " + oftypeURI + "&gt;" + article_label + "&lt;/rdfs:label&gt;\n";
+rdf_doc = rdf_doc + "	&lt;" + hasDiscStatProp + " rdf:resource=\"" + discoveryInd + "\"/&gt;\n";
+
+//footer
+rdf_doc = rdf_doc + "&lt;/rdf:Description&gt;\n&lt;/rdf:RDF&gt;\n";
+	
+rdf_document = rdf_doc;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">workflowURI</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">article_id</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">article_label</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">RDFformat</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="'text/plain'">rdf_document</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="'text/plain'">data_URI</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+    <s:iterationstrategy>
+      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="rdf_footer" />
+        <i:iterator name="rdf_header" />
+        <i:iterator name="enriched_ontologyURI" />
+        <i:iterator name="alt_short_name" />
+        <i:iterator name="alt_abbreviation" />
+        <i:iterator name="alt_full_name" />
+        <i:iterator name="short_name" />
+        <i:iterator name="abbreviation" />
+        <i:iterator name="full_name" />
+        <i:iterator name="disease_id" />
+        <i:iterator name="associatedEnzyme" />
+        <i:iterator name="workflowURI" />
+      </i:dot>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:processor name="AddToBioRepository">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:1f4a075e-9b2b-419c-a22d-4d9dd71925e5" author="" title="AddRDF_to_AIDA_biorepository" />
+        <s:processor name="addRdf">
+          <s:arbitrarywsdl>
+            <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/RepositoryWS?wsdl</s:wsdl>
+            <s:operation>addRdf</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:processor name="AIDA_bio_repository">
+          <s:workflow>
+            <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/UtilityWorkflows/AIDA_rdf_bio_repository_MR1_demo.xml</s:xscufllocation>
+          </s:workflow>
+        </s:processor>
+        <s:link source="AIDA_bio_repository:password" sink="addRdf:password" />
+        <s:link source="AIDA_bio_repository:repository" sink="addRdf:repository" />
+        <s:link source="AIDA_bio_repository:username" sink="addRdf:username" />
+        <s:link source="data" sink="addRdf:data" />
+        <s:link source="data_uri" sink="addRdf:data_uri" />
+        <s:link source="rdf_format" sink="addRdf:rdf_format" />
+        <s:link source="AIDA_bio_repository:server_url" sink="addRdf:server_url" />
+        <s:source name="rdf_format" />
+        <s:source name="data" />
+        <s:source name="data_uri" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:link source="workflowURI" sink="DiscoveredArticleRDFdoc:workflowURI" />
+  <s:link source="DiscoveredArticleRDFdoc:RDFformat" sink="AddToBioRepository:rdf_format" />
+  <s:link source="DiscoveredArticleRDFdoc:data_URI" sink="AddToBioRepository:data_uri" />
+  <s:link source="DiscoveredArticleRDFdoc:rdf_document" sink="AddToBioRepository:data" />
+  <s:link source="articleID" sink="DiscoveredArticleRDFdoc:article_id" />
+  <s:link source="articleID" sink="DiscoveredArticleRDFdoc:article_label" />
+  <s:source name="workflowURI">
+    <s:metadata>
+      <s:description>Example:
+http://ws.adaptivedisclosure.org/workflows/BioAID/BioAID_EnrichOntology_MR1.xml</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="articleID">
+    <s:metadata>
+      <s:description>Example: EZH2</s:description>
+    </s:metadata>
+  </s:source>
+</s:scufl>
+

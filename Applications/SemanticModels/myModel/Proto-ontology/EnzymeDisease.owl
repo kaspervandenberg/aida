@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#"
+    xmlns:pub="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/Publication.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/Publication.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Disease">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Disease</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Protein">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Protein</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Enzyme">
+    <rdfs:subClassOf rdf:resource="#Protein"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Protein with catalytic properties</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Enzyme</rdfs:label>
+  </owl:Class>
+  <owl:TransitiveProperty rdf:ID="associatedWith">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <owl:inverseOf rdf:resource="#associatedWith"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Weakest form of biological association between any two individuals of any type. Transitive symmetrical association: 
+R(x,y) implies R(y,x); e.g. a protein A associated with a protein B implies the B is also associated with A.
+R(x,y), R(y,z) implies R(x,z); e.g. a A associated with B, and B with C implies an association between A and C.
+Note: domain and range left at 'thing' to allow symmetry (need to be equal because any type used as domain or range becomes a subtype to the types defined here =&gt; symmetry implies  range becomes subtype of domain and vice versa). I assume it is valid to use this relationship for individuals at the level of their common supertype.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >associated with</rdfs:label>
+  </owl:TransitiveProperty>
+  <Disease rdf:ID="Prostate_cancer">
+    <pub:mentioned_in>
+      <pub:Article rdf:ID="http_3A__www_ncbi_nlm_nih_gov_pubmed_17306846">
+        <pub:mentions>
+          <Disease rdf:ID="Myeloma_Lymphoma">
+            <associatedWith>
+              <Enzyme rdf:ID="Q15910">
+                <pub:mentioned_in rdf:resource="#http_3A__www_ncbi_nlm_nih_gov_pubmed_17306846"/>
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >EZH2</rdfs:label>
+                <associatedWith>
+                  <Disease rdf:ID="Barretts_esophagus">
+                    <pub:mentioned_in rdf:resource="#http_3A__www_ncbi_nlm_nih_gov_pubmed_17306846"/>
+                    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >Barretts esophagus</rdfs:label>
+                    <associatedWith rdf:resource="#Q15910"/>
+                  </Disease>
+                </associatedWith>
+                <full_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Enhancer of Zeste (Drosophila) Homologue 2</full_name>
+                <associatedWith rdf:resource="#Myeloma_Lymphoma"/>
+                <associatedWith>
+                  <Disease rdf:ID="Wilms_tumor">
+                    <associatedWith rdf:resource="#Q15910"/>
+                    <pub:mentioned_in rdf:resource="#http_3A__www_ncbi_nlm_nih_gov_pubmed_17306846"/>
+                    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >Wilms tumor</rdfs:label>
+                  </Disease>
+                </associatedWith>
+                <abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >EZH2</abbreviation>
+                <associatedWith>
+                  <Disease rdf:ID="Hepatocellular_carcinoma">
+                    <pub:mentioned_in rdf:resource="#http_3A__www_ncbi_nlm_nih_gov_pubmed_17306846"/>
+                    <associatedWith rdf:resource="#Q15910"/>
+                    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >Hepatocellular carcinoma</rdfs:label>
+                  </Disease>
+                </associatedWith>
+                <associatedWith>
+                  <Disease rdf:ID="Cell_cycle_defects">
+                    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >Cell cycle defects</rdfs:label>
+                    <pub:mentioned_in rdf:resource="#http_3A__www_ncbi_nlm_nih_gov_pubmed_17306846"/>
+                    <associatedWith rdf:resource="#Q15910"/>
+                  </Disease>
+                </associatedWith>
+                <associatedWith rdf:resource="#Prostate_cancer"/>
+                <associatedWith>
+                  <Disease rdf:ID="Bladder_cancer">
+                    <associatedWith rdf:resource="#Q15910"/>
+                    <pub:mentioned_in rdf:resource="#http_3A__www_ncbi_nlm_nih_gov_pubmed_17306846"/>
+                    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >Bladder cancer</rdfs:label>
+                  </Disease>
+                </associatedWith>
+                <associatedWith>
+                  <Disease rdf:ID="Colorectal_cancer">
+                    <associatedWith rdf:resource="#Q15910"/>
+                    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >Colorectal cancer</rdfs:label>
+                    <pub:mentioned_in rdf:resource="#http_3A__www_ncbi_nlm_nih_gov_pubmed_17306846"/>
+                  </Disease>
+                </associatedWith>
+                <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Enhancer of Zeste (EZH2) is one of two mammalian homologues of Drosophila E(Z), a SET domain protein that methylates K27H3 [23]. E(Z) is a Polycomb group (PcG) protein involved in homeotic gene repression in Drosophila [24]. (From: PMID: 17306846 [PubMed - as supplied by publisher])</rdfs:comment>
+                <associatedWith>
+                  <Disease rdf:ID="Melanoma">
+                    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >Melanoma</rdfs:label>
+                    <pub:mentioned_in rdf:resource="#http_3A__www_ncbi_nlm_nih_gov_pubmed_17306846"/>
+                    <associatedWith rdf:resource="#Q15910"/>
+                  </Disease>
+                </associatedWith>
+                <associatedWith>
+                  <Disease rdf:ID="Breast_cancer">
+                    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                    >Breast cancer</rdfs:label>
+                    <pub:mentioned_in rdf:resource="#http_3A__www_ncbi_nlm_nih_gov_pubmed_17306846"/>
+                    <associatedWith rdf:resource="#Q15910"/>
+                  </Disease>
+                </associatedWith>
+              </Enzyme>
+            </associatedWith>
+            <pub:mentioned_in rdf:resource="#http_3A__www_ncbi_nlm_nih_gov_pubmed_17306846"/>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Myeloma lymphoma</rdfs:label>
+          </Disease>
+        </pub:mentions>
+        <pub:mentions rdf:resource="#Prostate_cancer"/>
+        <pub:mentions rdf:resource="#Barretts_esophagus"/>
+        <associatedWith rdf:resource="#http_3A__www_ncbi_nlm_nih_gov_pubmed_17306846"/>
+        <pub:mentions rdf:resource="#Cell_cycle_defects"/>
+        <pub:mentions rdf:resource="#Breast_cancer"/>
+        <pub:mentions rdf:resource="#Melanoma"/>
+        <pub:mentions rdf:resource="#Wilms_tumor"/>
+        <pub:mentions rdf:resource="#Q15910"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >http://www.ncbi.nlm.nih.gov/pubmed/17306846</rdfs:label>
+        <pub:mentions rdf:resource="#Bladder_cancer"/>
+        <pub:mentions rdf:resource="#Hepatocellular_carcinoma"/>
+        <pub:mentions rdf:resource="#Colorectal_cancer"/>
+      </pub:Article>
+    </pub:mentioned_in>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Prostate cancer</rdfs:label>
+    <associatedWith rdf:resource="#Q15910"/>
+  </Disease>
+  <owl:AnnotationProperty rdf:ID="full_name">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:AnnotationProperty>
+  <owl:AnnotationProperty rdf:ID="abbreviation">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:AnnotationProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3, Build 395)  http://protege.stanford.edu -->

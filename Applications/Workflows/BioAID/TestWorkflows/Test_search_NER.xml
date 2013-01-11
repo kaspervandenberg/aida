@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:e7ae8f2a-428f-4afd-93eb-52ccb89273e1" author="Marco Roos (AID)" title="Discover_entities">This workflow contains the 'Named Entity Recognize' web service from the AIDA toolbox, created by Sophia Katrenko. It can be used to discover entities of a certain type (determined by 'learned_model') in documents provided in a lucene output format.
+
+Known issues:
+The output of NErecognize contains concepts with / characters, breaking the xml. For post-processing its results it is better to use string manipulation than xml manipulations.
+The output is per document, which means entities will  be redundant if they occur in more than one document.</s:workflowdescription>
+  <s:processor name="Default_input_type" boring="true">
+    <s:stringconstant>lucene</s:stringconstant>
+  </s:processor>
+  <s:processor name="Default_output_type" boring="true">
+    <s:stringconstant>NElist</s:stringconstant>
+  </s:processor>
+  <s:processor name="NErecognize">
+    <s:defaults>
+      <s:default name="r_type">MedLine</s:default>
+    </s:defaults>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/NERecognizerService?wsdl</s:wsdl>
+      <s:operation>NErecognize</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="search">
+    <s:defaults>
+      <s:default name="index">MedLine_new</s:default>
+      <s:default name="maxHits">200</s:default>
+      <s:default name="defaultField">content</s:default>
+    </s:defaults>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:9999/axis/services/SearcherWS?wsdl</s:wsdl>
+      <s:operation>search</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Lucene_query" boring="true">
+    <s:stringconstant>p53</s:stringconstant>
+  </s:processor>
+  <s:link source="Default_input_type:value" sink="NErecognize:input_type" />
+  <s:link source="Default_output_type:value" sink="NErecognize:output_type" />
+  <s:link source="Lucene_query:value" sink="search:queryString" />
+  <s:link source="search:searchReturn" sink="NErecognize:input_data" />
+  <s:link source="NErecognize:NErecognizeReturn" sink="discovered_entities" />
+  <s:link source="search:searchReturn" sink="docs" />
+  <s:sink name="discovered_entities">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/rdf</s:mimeType>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+      <s:description>Entities discoverd in documents provided in lucene output format.</s:description>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="docs" />
+</s:scufl>
+

@@ -1,0 +1,35 @@
+digraph DiscoveredDiseases {
+	node [label="\N"];
+	graph [bb="0,0,4330,124"];
+	"DIABETES_MELLITUS_NONINSULIN-DEPENDENT" [label="DIABETES_MELLITUS_NONINSULIN-DEPENDENT", shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="169,18", width="4.69", height="0.50"];
+	DiscoveredDisease [label=DiscoveredDisease, shape=box, color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0", pos="2480,106", width="1.72", height="0.50"];
+	"PRADER-WILLI_SYNDROME" [label="PRADER-WILLI_SYNDROME", shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="456,18", width="2.78", height="0.50"];
+	HYPERLIPIDEMIA_FAMILIAL_COMBINED [label=HYPERLIPIDEMIA_FAMILIAL_COMBINED, shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="716,18", width="3.94", height="0.50"];
+	FACIOSCAPULOHUMERAL_MUSCULAR_DYSTROPHY_1A [label="FACIOSCAPULOHUMERAL_MUSCULAR_DYSTROPHY_1...", shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="1070,18", width="5.39", height="0.50"];
+	CORONARY_ARTERY_DISEASE_AUTOSOMAL_DOMINANT_2 [label="CORONARY_ARTERY_DISEASE_AUTOSOMAL_DOMINA...", shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="1475,18", width="5.36", height="0.50"];
+	MUSCULAR_DYSTROPHY_DUCHENNE_TYPE [label=MUSCULAR_DYSTROPHY_DUCHENNE_TYPE, shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="1841,18", width="4.31", height="0.50"];
+	POLYCYSTIC_OVARY_SYNDROME_1 [label=POLYCYSTIC_OVARY_SYNDROME_1, shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="2141,18", width="3.53", height="0.50"];
+	HYPOMAGNESEMIA_HYPERTENSION_AND_HYPERCHOLESTEROLEMIA_MITOCHONDRIAL [label="HYPOMAGNESEMIA_HYPERTENSION_AND_HYPERCHO...", shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="2480,18", width="5.39", height="0.50"];
+	"SPINAL_AND_BULBAR_MUSCULAR_ATROPHY_X-LINKED_1" [label="SPINAL_AND_BULBAR_MUSCULAR_ATROPHY_X-LIN...", shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="2879,18", width="5.19", height="0.50"];
+	SC_PHOCOMELIA_SYNDROME [label=SC_PHOCOMELIA_SYNDROME, shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="3192,18", width="3.00", height="0.50"];
+	APNEA [label=APNEA, shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="3349,18", width="0.86", height="0.50"];
+	HYPERTRIGLYCERIDEMIA_FAMILIAL [label=HYPERTRIGLYCERIDEMIA_FAMILIAL, shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="3528,18", width="3.61", height="0.50"];
+	OBESITY [label=OBESITY, shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="3713,18", width="1.03", height="0.50"];
+	MEDULLOBLASTOMA [label=MEDULLOBLASTOMA, shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="3848,18", width="2.22", height="0.50"];
+	"ALPHA-THALASSEMIA_MYELODYSPLASIA_SYNDROME" [label="ALPHA-THALASSEMIA_MYELODYSPLASIA_SYNDROM...", shape=box, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="4138,18", width="5.33", height="0.50"];
+	DiscoveredDisease -> "DIABETES_MELLITUS_NONINSULIN-DEPENDENT" [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2418,105 2408,105 2126,102 1099,87 772,70 626,62 459,48 338,36", lp="830,62"];
+	DiscoveredDisease -> "PRADER-WILLI_SYNDROME" [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2418,105 2408,105 2204,102 1610,92 1117,70 872,59 810,63 565,36 562,36 559,35 556,35", lp="1162,62"];
+	DiscoveredDisease -> HYPERLIPIDEMIA_FAMILIAL_COMBINED [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2418,105 2408,105 2180,102 1461,86 867,36 864,36 861,35 858,35", lp="1406,62"];
+	DiscoveredDisease -> FACIOSCAPULOHUMERAL_MUSCULAR_DYSTROPHY_1A [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2418,103 2408,102 2220,93 1703,67 1273,36 1270,36 1267,36 1264,35", lp="1810,62"];
+	DiscoveredDisease -> CORONARY_ARTERY_DISEASE_AUTOSOMAL_DOMINANT_2 [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2418,101 2408,100 2267,88 1946,59 1677,36 1674,36 1671,35 1668,35", lp="2100,62"];
+	DiscoveredDisease -> MUSCULAR_DYSTROPHY_DUCHENNE_TYPE [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2418,97 2408,96 2302,81 2105,54 1973,36", lp="2225,62"];
+	DiscoveredDisease -> POLYCYSTIC_OVARY_SYNDROME_1 [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2418,90 2408,87 2350,72 2269,51 2211,36", lp="2348,62"];
+	DiscoveredDisease -> HYPOMAGNESEMIA_HYPERTENSION_AND_HYPERCHOLESTEROLEMIA_MITOCHONDRIAL [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2480,88 2480,78 2480,64 2480,48 2480,36", lp="2486,62"];
+	DiscoveredDisease -> "SPINAL_AND_BULBAR_MUSCULAR_ATROPHY_X-LINKED_1" [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2542,92 2552,90 2621,75 2726,52 2798,36", lp="2710,62"];
+	DiscoveredDisease -> SC_PHOCOMELIA_SYNDROME [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2542,99 2552,98 2665,85 2888,61 3075,36 3078,36 3081,35 3084,35", lp="2936,62"];
+	DiscoveredDisease -> APNEA [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2542,104 2552,104 2727,95 3168,73 3309,36 3312,35 3315,34 3318,33", lp="3199,62"];
+	DiscoveredDisease -> HYPERTRIGLYCERIDEMIA_FAMILIAL [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2542,105 2552,105 2683,103 2968,95 3208,70 3284,62 3370,47 3433,36", lp="3322,62"];
+	DiscoveredDisease -> OBESITY [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2542,105 2552,105 2700,101 3043,91 3331,70 3481,59 3522,71 3667,36 3670,35 3673,34 3676,33", lp="3572,62"];
+	DiscoveredDisease -> MEDULLOBLASTOMA [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2542,105 2552,105 2763,103 3381,93 3581,70 3646,62 3719,48 3772,36", lp="3682,62"];
+	DiscoveredDisease -> "ALPHA-THALASSEMIA_MYELODYSPLASIA_SYNDROME" [dir=back, label=io, color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0", pos="s,2542,105 2552,105 2778,101 3469,86 3692,70 3798,62 3919,48 4008,36", lp="3856,62"];
+}

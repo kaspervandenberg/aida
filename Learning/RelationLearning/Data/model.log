@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<training_info>
+  <method>Support Vector Machines</method>
+  <date>dinsdag 6 november 2007</date>
+ <instances_number>27</instances_number>
+ <attributes_number>78</attributes_number>
+ <classes_number>2</classes_number>
+ <classes>
+  <no>
+   <precision>46.0</precision>
+   <recall>50.0</recall>
+   <F-score>48.0</F-score>
+  </no>
+  <yes>
+   <precision>57.0</precision>
+   <recall>53.0</recall>
+   <F-score>55.0</F-score>
+  </yes>
+ </classes>
+<class_value><![CDATA[no]]></class_value>
+<class_value><![CDATA[yes]]></class_value>
+<attribute_value><![CDATA[no]]></attribute_value>
+<attribute_value><![CDATA[yes]]></attribute_value>
+<attribute_value><![CDATA[coupl]]></attribute_value>
+<attribute_value><![CDATA[dephosphoryl]]></attribute_value>
+<attribute_value><![CDATA[phosphoryl]]></attribute_value>
+<attribute_value><![CDATA[limit]]></attribute_value>
+<attribute_value><![CDATA[prevent]]></attribute_value>
+<attribute_value><![CDATA[reduc]]></attribute_value>
+<attribute_value><![CDATA[reli]]></attribute_value>
+<attribute_value><![CDATA[stimul]]></attribute_value>
+<attribute_value><![CDATA[affect]]></attribute_value>
+<attribute_value><![CDATA[block]]></attribute_value>
+<attribute_value><![CDATA[convert]]></attribute_value>
+<attribute_value><![CDATA[contribut]]></attribute_value>
+<attribute_value><![CDATA[encod]]></attribute_value>
+<attribute_value><![CDATA[govern]]></attribute_value>
+<attribute_value><![CDATA[increas]]></attribute_value>
+<attribute_value><![CDATA[initi]]></attribute_value>
+<attribute_value><![CDATA[interact]]></attribute_value>
+<attribute_value><![CDATA[termin]]></attribute_value>
+<attribute_value><![CDATA[bind]]></attribute_value>
+<attribute_value><![CDATA[deriv]]></attribute_value>
+<attribute_value><![CDATA[inhibit]]></attribute_value>
+<attribute_value><![CDATA[recogn]]></attribute_value>
+<attribute_value><![CDATA[repress]]></attribute_value>
+<attribute_value><![CDATA[requir]]></attribute_value>
+<attribute_value><![CDATA[act]]></attribute_value>
+<attribute_value><![CDATA[depend]]></attribute_value>
+<attribute_value><![CDATA[induc]]></attribute_value>
+<attribute_value><![CDATA[regul]]></attribute_value>
+<attribute_value><![CDATA[activ]]></attribute_value>
+<attribute_value><![CDATA[?]]></attribute_value>
+<attribute_value><![CDATA[ykuD]]></attribute_value>
+<attribute_value><![CDATA[SigK]]></attribute_value>
+<attribute_value><![CDATA[-]]></attribute_value>
+<attribute_value><![CDATA[wa]]></attribute_value>
+<attribute_value><![CDATA[rna]]></attribute_value>
+<attribute_value><![CDATA[by]]></attribute_value>
+<attribute_value><![CDATA[GerE]]></attribute_value>
+<attribute_value><![CDATA[and]]></attribute_value>
+<attribute_value><![CDATA[were]]></attribute_value>
+<attribute_value><![CDATA[both]]></attribute_value>
+<attribute_value><![CDATA[ykvP]]></attribute_value>
+<attribute_value><![CDATA[express]]></attribute_value>
+<attribute_value><![CDATA[for]]></attribute_value>
+<attribute_value><![CDATA[factor]]></attribute_value>
+<attribute_value><![CDATA[spoiie]]></attribute_value>
+<attribute_value><![CDATA[sigmaf]]></attribute_value>
+<attribute_value><![CDATA[transcript]]></attribute_value>
+<attribute_value><![CDATA[secondli]]></attribute_value>
+<attribute_value><![CDATA[rsfA]]></attribute_value>
+<attribute_value><![CDATA[sigma(F)]]></attribute_value>
+<attribute_value><![CDATA[is]]></attribute_value>
+<attribute_value><![CDATA[of]]></attribute_value>
+<attribute_value><![CDATA[sigma(G)]]></attribute_value>
+<attribute_value><![CDATA[.]]></attribute_value>
+<attribute_value><![CDATA[sigma(K)]]></attribute_value>
+<attribute_value><![CDATA[cwlH]]></attribute_value>
+<attribute_value><![CDATA[gene]]></attribute_value>
+<attribute_value><![CDATA[the]]></attribute_value>
+<attribute_value><![CDATA[gerE]]></attribute_value>
+<attribute_value><![CDATA[on]]></attribute_value>
+<attribute_value><![CDATA[phrC]]></attribute_value>
+<attribute_value><![CDATA[sigmaH]]></attribute_value>
+<attribute_value><![CDATA[,]]></attribute_value>
+<attribute_value><![CDATA[appear]]></attribute_value>
+<attribute_value><![CDATA[CSF]]></attribute_value>
+<attribute_value><![CDATA[yfhS]]></attribute_value>
+<attribute_value><![CDATA[E_sigma_E]]></attribute_value>
+<attribute_value><![CDATA[dure]]></attribute_value>
+<attribute_value><![CDATA[that]]></attribute_value>
+<attribute_value><![CDATA[sigmaK]]></attribute_value>
+<attribute_value><![CDATA[Spo0A]]></attribute_value>
+<attribute_value><![CDATA[about]]></attribute_value>
+<attribute_value><![CDATA[sigE]]></attribute_value>
+<attribute_value><![CDATA[sigK]]></attribute_value>
+<attribute_value><![CDATA[protein]]></attribute_value>
+<attribute_value><![CDATA[which]]></attribute_value>
+</training_info>

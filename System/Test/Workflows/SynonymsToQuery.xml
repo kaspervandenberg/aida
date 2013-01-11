@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:ecb927cc-a200-4290-9342-302d5fc836ca" author="Marco Roos (AID) and Martijn Schuemie (ErasmusMC)" title="SynonymsToQuery">This workflow creates a query string from the query term (without quotes!), using Martijn Schuemie's synonym service.
+
+Known issues:
+The synonym services may fail instead of returning an empty list when it can not return a result.</s:workflowdescription>
+  <s:processor name="Concat_synonyms">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.*;
+String synstring="\"" + query_term + "\"";
+String syn;
+Iterator iterator = synonymlist.iterator();
+while ( iterator.hasNext() ) 
+	{
+	synstring = synstring + " OR ";
+	syn = ((String) iterator.next());
+	synstring = synstring + "\"" + syn + "\"";
+}
+new_query = synstring;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">synonymlist</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">query_term</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">new_query</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+    <s:mergemode input="synonymlist" mode="merge" />
+    <s:iterationstrategy>
+      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="synonymlist" />
+        <i:iterator name="query_term" />
+      </i:dot>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:processor name="Flatten_list">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="getSynsets">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://mojojojo.biosemantics.org:8180/axis/services/SynsetServer/SynsetServer.jws?wsdl</s:wsdl>
+      <s:operation>getSynsets</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="SplitQuery">
+    <s:workflow>
+      <s:xscufllocation>file:/D:/Marco/adaptivedisclosure.org/public_html/BioAID/Preliminary/Workflows/Archive/Split_query_string_MR3.xml</s:xscufllocation>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Flatten_list2">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:link source="getSynsets:getSynsetsReturn" sink="Flatten_list:inputlist" />
+  <s:link source="query_term" sink="Concat_synonyms:query_term" />
+  <s:link source="query_term" sink="SplitQuery:queryString" />
+  <s:link source="Flatten_list2:outputlist" sink="Concat_synonyms:synonymlist" />
+  <s:link source="Flatten_list2:outputlist" sink="synonyms" />
+  <s:link source="Flatten_list:outputlist" sink="Flatten_list2:inputlist" />
+  <s:link source="SplitQuery:queryList" sink="getSynsets:term" />
+  <s:link source="Concat_synonyms:new_query" sink="new_query" />
+  <s:source name="query_term">
+    <s:metadata>
+      <s:description>Query term without quotes.</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="synonyms" />
+  <s:sink name="new_query" />
+</s:scufl>
+

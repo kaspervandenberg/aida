@@ -1,0 +1,11 @@
+build.xml has to be modified according to the user's settings. Fields to be most likely modified are 
+the port (now the property "manager.port" is set to "8084") and catalina.home. Please note
+that all changes which concern the port to be used must be also reflected in the client's
+code (e.g., TestModelService\Client\src\java\sophia\wss\TestModelServlet.java)
+
+
+All necessary jars are in build\web\WEB-INF\lib.
+An example of client for the TestModelService web service is given in Client/.
+Data to test the funcionality of TestModelService is stored in Data/ 
+
+More information  is to be found in documentation.txt

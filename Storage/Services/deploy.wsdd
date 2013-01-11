@@ -1,0 +1,33 @@
+<deployment xmlns="http://xml.apache.org/axis/wsdd/"
+            xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+    <service name="RepositoryWS" provider="java:RPC">
+        <parameter name="className" value="org.vle.aid.metadata.ws.RepositoryWS"/>
+        <parameter name="allowedMethods" value="*"/>
+    </service>
+    <service name="ThesaurusRepositoryWS" provider="java:RPC">
+        <parameter name="className" value="org.vle.aid.metadata.ws.ThesaurusRepositoryWS"/>
+        <parameter name="allowedMethods" value="*"/>
+    </service>
+    <service name="BasicQueriesWS" provider="java:RPC">
+        <parameter name="className" value="org.vle.aid.bicad.ws.BasicQueriesWS"/>
+        <parameter name="allowedMethods" value="*"/>
+    </service>
+    <service name="RepositoryDetectWS" provider="java:RPC">
+        <parameter name="className" value="org.vle.aid.metadata.ws.RepositoryDetectWS"/>
+        <parameter name="allowedMethods" value="*"/>
+    </service>
+    <service name="SkosLensWS" provider="java:RPC">
+        <parameter name="className" value="org.vle.aid.metadata.ws.SkosLensWS"/>
+        <parameter name="allowedMethods" value="*"/>
+    </service>
+ 
+    <beanMapping qname="myNS:Annotation" xmlns:myNS="urn:BasicQueriesWS" languageSpecificType="java:org.vle.aid.bicad.entities.Annotation"/>
+    <beanMapping qname="myNS:BiCadObject" xmlns:myNS="urn:BasicQueriesWS" languageSpecificType="java:org.vle.aid.bicad.entities.BiCadObject"/>
+    <beanMapping qname="myNS:Concept" xmlns:myNS="urn:BasicQueriesWS" languageSpecificType="java:org.vle.aid.bicad.entities.Concept"/>
+    <beanMapping qname="myNS:ConceptRelation" xmlns:myNS="urn:BasicQueriesWS" languageSpecificType="java:org.vle.aid.bicad.entities.ConceptRelation"/>
+    <beanMapping qname="myNS:Document" xmlns:myNS="urn:BasicQueriesWS" languageSpecificType="java:org.vle.aid.bicad.entities.Document"/>
+    <beanMapping qname="myNS:Location" xmlns:myNS="urn:BasicQueriesWS" languageSpecificType="java:org.vle.aid.bicad.entities.Location"/>
+    <beanMapping qname="myNS:ObjectRelation" xmlns:myNS="urn:BasicQueriesWS" languageSpecificType="java:org.vle.aid.bicad.entities.ObjectRelation"/>
+    <beanMapping qname="myNS:Property" xmlns:myNS="urn:BasicQueriesWS" languageSpecificType="java:org.vle.aid.bicad.entities.Property"/>
+    <beanMapping qname="myNS:SelectionRule" xmlns:myNS="urn:BasicQueriesWS" languageSpecificType="java:org.vle.aid.bicad.entities.SelectionRule"/>
+</deployment>

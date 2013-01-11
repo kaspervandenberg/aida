@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:618ac202-acf6-4695-bdc6-ca0078be3649" author="Marco Roos (AID)" title="BioAID_DiseaseDiscovery">This workflow finds disease relevant to the query string via the following steps:
+1. A user query: a list of terms or boolean query - look at the Apache Lucene project for all details. E.g.: (EZH2 OR "Enhancer of Zeste" +(mutation chromatin) -clinical)
+2. Retrieve documents: finds relevant documents (abstract+title) based on query (edit maxHits to change the default maximum number of documents returned; the AIDA service inside is based on Apache Lucene)
+3. Discover proteins: extract proteins discovered in the set of relevant abstracts  (with a 'named entity recognizer' trained on genomic terms using a Bayesian approach; the AIDA service inside is based on LingPipe)
+4. Link proteins to disease contained in the OMIM disease database (with a service from Japan that interrogates OMIM)
+
+Workflow by Marco Roos (AID = Adaptive Information Disclosure, University of Amsterdam; http://adaptivedisclosure.org)
+
+Text mining services by Sophia Katrenko and Edgar Meij (AID)
+OMIM service from the Center for Information Biology and DNA Data Bank of Japan, National Institute of Genetics, director Hideaki Sugawara (see http://xml.nig.ac.jp)
+
+Workflow URL: http://adaptivedisclosure.org/workflows/BioAID/BioAID_DiseaseDiscovery.xml</s:workflowdescription>
+  <s:processor name="Document_index" boring="true">
+    <s:stringconstant>MedLine</s:stringconstant>
+  </s:processor>
+  <s:processor name="search_field" boring="true">
+    <s:stringconstant>content</s:stringconstant>
+  </s:processor>
+  <s:processor name="maxHits" boring="true">
+    <s:stringconstant>100</s:stringconstant>
+  </s:processor>
+  <s:processor name="Remove_xml_tag">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.regex.*;
+Pattern pattern = Pattern.compile("&lt;/?[\\w\\d-]+&gt;");
+Matcher matcher = pattern.matcher(tagged_term);
+String term= matcher.replaceAll("");</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/xml'">tagged_term</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">term</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Flatten_and_make_unique">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:f43db36c-a3ed-4f78-8d1c-89f27dfb53f7" author="" title="Flatten_and_make_unique" />
+        <s:processor name="Remove_duplicate_strings">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates</s:local>
+        </s:processor>
+        <s:processor name="Flatten_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:link source="input" sink="Flatten_list:inputlist" />
+        <s:link source="Flatten_list:outputlist" sink="Remove_duplicate_strings:stringlist" />
+        <s:link source="Remove_duplicate_strings:strippedlist" sink="flattened_unique_output" />
+        <s:source name="input" />
+        <s:sink name="flattened_unique_output" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Link_proteins_to_diseases">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:4dccdaac-5994-4350-b30b-28eac86c229a" author="" title="Link_protein_to_OMIM_disease" />
+        <s:processor name="filter_disease_regexp" boring="true">
+          <s:stringconstant>(#\d+ .+)|(%\d+ .+)</s:stringconstant>
+        </s:processor>
+        <s:processor name="split_OMIM_regexp" boring="true">
+          <s:stringconstant>\n</s:stringconstant>
+        </s:processor>
+        <s:processor name="Flatten_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Remove_duplicate_strings">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates</s:local>
+        </s:processor>
+        <s:processor name="Extract_diseases_from_OMIM">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="search">
+          <s:description>get Keyword</s:description>
+          <s:arbitrarywsdl>
+            <s:wsdl>http://xml.nig.ac.jp/wsdl/OMIM.wsdl</s:wsdl>
+            <s:operation>search</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:processor name="Split_OMIM_results">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+        </s:processor>
+        <s:processor name="label_OMIM_disease">
+          <s:beanshell>
+            <s:scriptvalue>StringBuffer temp= new StringBuffer();
+temp.append("&lt;OMIM_disease_label&gt;");
+temp.append(OMIM_disease_string);
+temp.append("&lt;/OMIM_disease_label&gt;");
+String OMIM_disease_label = temp.toString();</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">OMIM_disease_string</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/xml'">OMIM_disease_label</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:link source="keyword" sink="search:keyword" />
+        <s:link source="Extract_diseases_from_OMIM:filteredlist" sink="label_OMIM_disease:OMIM_disease_string" />
+        <s:link source="Flatten_list:outputlist" sink="Remove_duplicate_strings:stringlist" />
+        <s:link source="Remove_duplicate_strings:strippedlist" sink="OMIM_disease_label" />
+        <s:link source="Split_OMIM_results:split" sink="Extract_diseases_from_OMIM:stringlist" />
+        <s:link source="filter_disease_regexp:value" sink="Extract_diseases_from_OMIM:regex" />
+        <s:link source="label_OMIM_disease:OMIM_disease_label" sink="Flatten_list:inputlist" />
+        <s:link source="search:Result" sink="Split_OMIM_results:string" />
+        <s:link source="split_OMIM_regexp:value" sink="Split_OMIM_results:regex" />
+        <s:source name="keyword" />
+        <s:sink name="OMIM_disease_label">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Discover_proteins">
+    <s:description>This workflow applies the discovery workflow built around the AIDA 'Named Entity Recognize' web service by Sophia Katrenko. It uses the pre-learned genomics model, named 'MedLine', to find genomics concepts in a set of documents in lucene output format.</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:b4c1a118-6a38-40b5-99e9-febbd3c85f2b" author="Marco Roos (AID)" title="Discover_proteins">This workflow applies the discovery workflow built around the AIDA 'Named Entity Recognize' web service by Sophia Katrenko. It uses the pre-learned genomics model, named 'MedLine', to find genomics concepts in a set of documents in lucene output format.</s:workflowdescription>
+        <s:processor name="prelearned_genomics_model" boring="true">
+          <s:stringconstant>MedLine</s:stringconstant>
+        </s:processor>
+        <s:processor name="Extract_proteins">
+          <s:description>This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:description>
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="Marco Roos (AID)" title="Extract_proteins">This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:workflowdescription>
+              <s:processor name="Remove_duplicate_strings">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates</s:local>
+              </s:processor>
+              <s:processor name="Filter_protein_molecules">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+              </s:processor>
+              <s:processor name="splitOn_protein_molecule_regexp" boring="true">
+                <s:stringconstant>(?=&lt;protein_molecule&gt;)|(?&lt;=&lt;/protein_molecule&gt;)</s:stringconstant>
+              </s:processor>
+              <s:processor name="filter_protein_molecule_regexp" boring="true">
+                <s:stringconstant>&lt;protein_molecule&gt;\w*&lt;/protein_molecule&gt;</s:stringconstant>
+              </s:processor>
+              <s:processor name="SplitOn_protein_molecule">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+              </s:processor>
+              <s:link source="input_string" sink="SplitOn_protein_molecule:string" />
+              <s:link source="Filter_protein_molecules:filteredlist" sink="Remove_duplicate_strings:stringlist" />
+              <s:link source="SplitOn_protein_molecule:split" sink="Filter_protein_molecules:stringlist" />
+              <s:link source="filter_protein_molecule_regexp:value" sink="Filter_protein_molecules:regex" />
+              <s:link source="splitOn_protein_molecule_regexp:value" sink="SplitOn_protein_molecule:regex" />
+              <s:link source="Remove_duplicate_strings:strippedlist" sink="protein_molecule_list" />
+              <s:source name="input_string" />
+              <s:sink name="protein_molecule_list">
+                <s:metadata>
+                  <s:mimeTypes>
+                    <s:mimeType>text/xml</s:mimeType>
+                  </s:mimeTypes>
+                </s:metadata>
+              </s:sink>
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="Discover_entities">
+          <s:description>This workflow contains the 'Named Entity Recognize' web service from the AIDA toolbox, created by Sophia Katrenko. It can be used to discover entities of a certain type (determined by 'learned_model') in documents provided in a lucene output format.</s:description>
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:e7ae8f2a-428f-4afd-93eb-52ccb89273e1" author="Marco Roos (AID)" title="Discover_entities">This workflow contains the 'Named Entity Recognize' web service from the AIDA toolbox, created by Sophia Katrenko. It can be used to discover entities of a certain type (determined by 'learned_model') in documents provided in a lucene output format.
+
+Known issues:
+The output of NErecognize contains concepts with / characters, breaking the xml. For post-processing its results it is better to use string manipulation than xml manipulations.
+The output is per document, which means entities will  be redundant if they occur in more than one document.</s:workflowdescription>
+              <s:processor name="Default_output_type" boring="true">
+                <s:stringconstant>NElist</s:stringconstant>
+              </s:processor>
+              <s:processor name="Default_input_type" boring="true">
+                <s:stringconstant>lucene</s:stringconstant>
+              </s:processor>
+              <s:processor name="NErecognize">
+                <s:arbitrarywsdl>
+                  <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/NERecognizerService?wsdl</s:wsdl>
+                  <s:operation>NErecognize</s:operation>
+                </s:arbitrarywsdl>
+              </s:processor>
+              <s:link source="input_from_lucene" sink="NErecognize:input_data" />
+              <s:link source="learned_model" sink="NErecognize:r_type" />
+              <s:link source="Default_input_type:value" sink="NErecognize:input_type" />
+              <s:link source="Default_output_type:value" sink="NErecognize:output_type" />
+              <s:link source="NErecognize:NErecognizeReturn" sink="discovered_entities" />
+              <s:source name="input_from_lucene" />
+              <s:source name="learned_model">
+                <s:metadata>
+                  <s:description>Model to discover a set of specific concepts; e.g. the prelearned model named 'MedLine' will make the service discover genomics concepts.</s:description>
+                </s:metadata>
+              </s:source>
+              <s:sink name="discovered_entities">
+                <s:metadata>
+                  <s:mimeTypes>
+                    <s:mimeType>text/rdf</s:mimeType>
+                    <s:mimeType>text/xml</s:mimeType>
+                  </s:mimeTypes>
+                  <s:description>Entities discoverd in documents provided in lucene output format.</s:description>
+                </s:metadata>
+              </s:sink>
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:link source="documents_from_lucene" sink="Discover_entities:input_from_lucene" />
+        <s:link source="Discover_entities:discovered_entities" sink="Extract_proteins:input_string" />
+        <s:link source="prelearned_genomics_model:value" sink="Discover_entities:learned_model" />
+        <s:link source="Extract_proteins:protein_molecule_list" sink="discovered_proteins" />
+        <s:source name="documents_from_lucene" />
+        <s:sink name="discovered_proteins">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/rdf</s:mimeType>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Retrieve_documents">
+    <s:description>This workflow retrieves relevant documents, based on a query optimized by adding a string to the original query that will rank the search output according to the most recent years. The added string adds years with priorities (most recent is highest); it starts at 2007.</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:dd1e2961-a1ca-4902-9bfb-2b776a4399ee" author="Marco Roos (AID)" title="Retrieve_bio_documents">This workflow retrieves relevant documents, based on a query optimized by adding a string to the original query that will rank the search output according to the most recent years. The added string adds years with priorities (most recent is highest); it starts at 2007.</s:workflowdescription>
+        <s:processor name="Biooptimize_query">
+          <s:description>This workflow does four things:
+1. it retrieves documents relevant for the query string
+2. it discovers entities in those documents, these are considered relevant entities
+3. it filters proteins from those entities (on the tag protein_molecule)
+4. it removes all terms from the list produced by 3 (query terms temporarily considered proteins)
+
+ToDo
+* Replace step 4 by the following procedure:
+  1. remove the query terms from the output of NER (probably by a regexp matching on what is inside the tag, possibly case-insensitive)
+  2. remove tag_as_protein_molecule (obsolete)
+* Add synonym service/workflow
+
+Note that Remove_inputquery has an alternative iteration strategy (dot product instead of cross product). Idem for 'Join' in 'SplitQuery'.</s:description>
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:3d2eebb7-0b04-4979-9aa9-3d39b1464216" author="Marco Roos" title="Lucene_bioquery_optimizer_MR1">This workflow does four things:
+1. it retrieves documents relevant for the query string
+2. it discovers entities in those documents, these are considered relevant entities
+3. it filters proteins from those entities (on the tag protein_molecule)
+4. it removes all terms from the list produced by 3 (query terms temporarily considered proteins)
+
+ToDo
+* Replace step 4 by the following procedure:
+  1. remove the query terms from the output of NER (probably by a regexp matching on what is inside the tag, possibly case-insensitive)
+  2. remove tag_as_protein_molecule (obsolete)
+* Add synonym service/workflow
+
+Note that Remove_inputquery has an alternative iteration strategy (dot product instead of cross product). Idem for 'Join' in 'SplitQuery'.</s:workflowdescription>
+              <s:processor name="Lucene_year_priorities" boring="true">
+                <s:stringconstant>year:(2007^10 2006^9 2005^8 2004^7 2004^6 2003^5 2002^4 2001^3 2000^2 1999^1)</s:stringconstant>
+              </s:processor>
+              <s:processor name="Prioritise_lucene_query">
+                <s:beanshell>
+                  <s:scriptvalue>StringBuffer temp=new StringBuffer();
+temp.append("+(");
+temp.append(query_string);
+temp.append(") +");
+temp.append(priority_string);
+String lucene_query = temp.toString();</s:scriptvalue>
+                  <s:beanshellinputlist>
+                    <s:beanshellinput s:syntactictype="'text/plain'">query_string</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">priority_string</s:beanshellinput>
+                  </s:beanshellinputlist>
+                  <s:beanshelloutputlist>
+                    <s:beanshelloutput s:syntactictype="'text/plain'">lucene_query</s:beanshelloutput>
+                  </s:beanshelloutputlist>
+                  <s:dependencies s:classloader="iteration" />
+                </s:beanshell>
+              </s:processor>
+              <s:link source="Lucene_year_priorities:value" sink="Prioritise_lucene_query:priority_string" />
+              <s:link source="query_string" sink="Prioritise_lucene_query:query_string" />
+              <s:link source="Prioritise_lucene_query:lucene_query" sink="optimized_lucene_query" />
+              <s:source name="query_string">
+                <s:metadata>
+                  <s:description>Lucene query string</s:description>
+                </s:metadata>
+              </s:source>
+              <s:sink name="optimized_lucene_query" />
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="Retrieve">
+          <s:description>This workflow applies the search web service from the AIDA toolbox.
+
+Comments:
+This search service is based on lucene defaults; it may be necessary to optimize the querystring to adopt the behaviour to what is most relevant in a particular domain (e.g. for medline prioritizing based on publication date is useful). Lucene favours shorter sentences, which may be bad for subsequent information extraction.</s:description>
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:858efe24-26c0-4090-be46-c9a5b4f21cad" author="Marco Roos" title="Retrieve_documents_MR1">This workflow applies the search web service from the AIDA toolbox.
+
+Comments:
+This search service is based on lucene defaults; it may be necessary to optimize the querystring to adopt the behaviour to what is most relevant in a particular domain (e.g. for medline prioritizing based on publication date is useful). Lucene favours shorter sentences, which may be bad for subsequent information extraction.</s:workflowdescription>
+              <s:processor name="search">
+                <s:arbitrarywsdl>
+                  <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/SearcherWS?wsdl</s:wsdl>
+                  <s:operation>search</s:operation>
+                </s:arbitrarywsdl>
+              </s:processor>
+              <s:link source="document_index" sink="search:index" />
+              <s:link source="maxHits" sink="search:maxHits" />
+              <s:link source="queryString" sink="search:queryString" />
+              <s:link source="search_field" sink="search:defaultField" />
+              <s:link source="search:searchReturn" sink="relevant_documents" />
+              <s:source name="queryString" />
+              <s:source name="document_index" />
+              <s:source name="search_field" />
+              <s:source name="maxHits" />
+              <s:sink name="relevant_documents">
+                <s:metadata>
+                  <s:mimeTypes>
+                    <s:mimeType>text/xml</s:mimeType>
+                  </s:mimeTypes>
+                </s:metadata>
+              </s:sink>
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:link source="query_string" sink="Biooptimize_query:query_string" />
+        <s:link source="Biooptimize_query:optimized_lucene_query" sink="Retrieve:queryString" />
+        <s:link source="document_index" sink="Retrieve:document_index" />
+        <s:link source="maxHits" sink="Retrieve:maxHits" />
+        <s:link source="search_field" sink="Retrieve:search_field" />
+        <s:link source="Retrieve:relevant_documents" sink="relevant_documents" />
+        <s:source name="query_string" />
+        <s:source name="document_index" />
+        <s:source name="search_field" />
+        <s:source name="maxHits" />
+        <s:sink name="relevant_documents">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:link source="query_string" sink="Retrieve_documents:query_string" />
+  <s:link source="Discover_proteins:discovered_proteins" sink="Remove_xml_tag:tagged_term" />
+  <s:link source="Document_index:value" sink="Retrieve_documents:document_index" />
+  <s:link source="Link_proteins_to_diseases:OMIM_disease_label" sink="Flatten_and_make_unique:input" />
+  <s:link source="Remove_xml_tag:term" sink="Link_proteins_to_diseases:keyword" />
+  <s:link source="Retrieve_documents:relevant_documents" sink="Discover_proteins:documents_from_lucene" />
+  <s:link source="maxHits:value" sink="Retrieve_documents:maxHits" />
+  <s:link source="search_field:value" sink="Retrieve_documents:search_field" />
+  <s:link source="Discover_proteins:discovered_proteins" sink="discovered_proteins" />
+  <s:link source="Flatten_and_make_unique:flattened_unique_output" sink="discovered_diseases" />
+  <s:link source="Retrieve_documents:relevant_documents" sink="relevant_documents" />
+  <s:source name="query_string">
+    <s:metadata>
+      <s:description>Query for retrieving document from an indexed corpus. It is assumed the query will be used for a search service based on Lucene. In short that means the query should be string of terms with logical operators or +/- signs to denote if terms are wanted or unwanted. Documents that comply with this query will be used to discover entities in.
+
+Examples:
+EZH2
+EZH2 OR "Enhancer of Zeste" +(mutation chromatin) -clinical
+
+Please look at the Apache Lucene documentation for details on lucene queries.</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="relevant_documents" />
+  <s:sink name="discovered_proteins">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/rdf</s:mimeType>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="discovered_diseases" />
+</s:scufl>
+

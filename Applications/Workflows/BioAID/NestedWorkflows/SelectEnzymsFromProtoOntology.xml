@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:52e83882-c73a-4ab3-9b14-2851fc35c814" author="" title="SelectEnzymsFromProtoOntology" />
+  <s:processor name="selectProteins">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/RepositoryWS?wsdl</s:wsdl>
+      <s:operation>selectQuery</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="QueryEnzymeInstances" boring="true">
+    <s:stringconstant>select localName(Enzyme) 	from  {Enzyme} rdf:type {edis:Enzyme}  	using namespace  	      edis =  &lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#&gt;</s:stringconstant>
+  </s:processor>
+  <s:processor name="BioAID_repository">
+    <s:description>The role of this 'workflow' is to provide defaults for the AIDA rdf repository, especially for bio and food application in the VL-e project. Add this workflow to your workflow as a nested workflow. Open it and the beanshell in it to switch defaults (e.g. from bio to food).
+
+YOUR DATA IS NOT SAFE IN OUR AIDA REPOSITORY!
+
+In principle, we can delete all data without notice, but let us know if you would like to be informed of any changes to the repository. We advocate installing your own Sesame server, for which these defaults provide examples. To download sesame go to http://www.openrdf.org
+
+Meer voorbeeld van Willem:
+
+username:
+testuser
+
+password:
+opensesame
+
+rdf_format:
+rdfxml
+turtle
+n3
+
+query_language:
+serql
+rql
+
+subject: (eerste positie in een triple, altijd een URI)
+http://adaptivedisclosure.org/2007/03/watskeburt#Melanoma
+
+predicate: (tweede positie in een triple, altijd een URI)
+http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+http://www.w3.org/2000/01/rdf-schema#label
+
+object: (derde positie in een triple, een URI, of een literal, soms met type of taal)
+http://adaptivedisclosure.org/2007/03/watskeburt#Disease
+Melanoma
+"Melanoma"@en
+"10"^^&lt;http://www.w3.org/2001/XMLSchema#integer&gt;
+
+context: (gebruik deze nog maar niet, ik schrijf later wel documentatie)
+
+data_uri: (de URL van het file waar de RDF uit komt)
+file:///home/roos/bla/bla/disease_and_enzymes.rdf
+
+data: (afhankelijk van het rdf_format RDF in XML of Turtle, o.i.d.)
+&lt;rdf:RDF ...&gt; ... &lt;/rdf:RDF&gt;
+
+query: (afhankelijk van de query_language een SeRQL query, o.i.d.)
+select distinct S from {S} rdfs:label {O} where O like "simsala*"
+
+read_write: (of je alle repositories, of alleen die waar je read en/of write permissies op hebt wilt zien, je kunt ook niets meegeven)
+r
+rw
+w</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:6a0bac79-7df2-487d-96a7-4faac64c2fd5" author="Marco Roos (AID)" title="AIDA_rdf_repository">The role of this 'workflow' is to provide defaults for the AIDA rdf repository, especially for bio and food application in the VL-e project. Add this workflow to your workflow as a nested workflow. Open it and the beanshell in it to switch defaults (e.g. from bio to food).
+
+YOUR DATA IS NOT SAFE IN OUR AIDA REPOSITORY!
+
+In principle, we can delete all data without notice, but let us know if you would like to be informed of any changes to the repository. We advocate installing your own Sesame server, for which these defaults provide examples. To download sesame go to http://www.openrdf.org
+
+Meer voorbeeld van Willem:
+
+username:
+testuser
+
+password:
+opensesame
+
+rdf_format:
+rdfxml
+turtle
+n3
+
+query_language:
+serql
+rql
+
+subject: (eerste positie in een triple, altijd een URI)
+http://adaptivedisclosure.org/2007/03/watskeburt#Melanoma
+
+predicate: (tweede positie in een triple, altijd een URI)
+http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+http://www.w3.org/2000/01/rdf-schema#label
+
+object: (derde positie in een triple, een URI, of een literal, soms met type of taal)
+http://adaptivedisclosure.org/2007/03/watskeburt#Disease
+Melanoma
+"Melanoma"@en
+"10"^^&lt;http://www.w3.org/2001/XMLSchema#integer&gt;
+
+context: (gebruik deze nog maar niet, ik schrijf later wel documentatie)
+
+data_uri: (de URL van het file waar de RDF uit komt)
+file:///home/roos/bla/bla/disease_and_enzymes.rdf
+
+data: (afhankelijk van het rdf_format RDF in XML of Turtle, o.i.d.)
+&lt;rdf:RDF ...&gt; ... &lt;/rdf:RDF&gt;
+
+query: (afhankelijk van de query_language een SeRQL query, o.i.d.)
+select distinct S from {S} rdfs:label {O} where O like "simsala*"
+
+read_write: (of je alle repositories, of alleen die waar je read en/of write permissies op hebt wilt zien, je kunt ook niets meegeven)
+r
+rw
+w</s:workflowdescription>
+        <s:processor name="read_write" boring="true">
+          <s:description>'rw' or 'r' or 'w'</s:description>
+          <s:stringconstant>rw</s:stringconstant>
+        </s:processor>
+        <s:processor name="query_language" boring="true">
+          <s:description>'serql' or 'rql'</s:description>
+          <s:stringconstant>serql</s:stringconstant>
+        </s:processor>
+        <s:processor name="rdf_format" boring="true">
+          <s:description>'rdfxml' or 'turtle' or 'n3'</s:description>
+          <s:stringconstant>rdfxml</s:stringconstant>
+        </s:processor>
+        <s:processor name="password" boring="true">
+          <s:stringconstant>aidademo</s:stringconstant>
+        </s:processor>
+        <s:processor name="username" boring="true">
+          <s:stringconstant>bioaid_demo</s:stringconstant>
+        </s:processor>
+        <s:processor name="repository" boring="true">
+          <s:stringconstant>mem-rdf-db-bio-demo</s:stringconstant>
+        </s:processor>
+        <s:processor name="server_url" boring="true">
+          <s:stringconstant>http://rdf.adaptivedisclosure.org/sesame</s:stringconstant>
+        </s:processor>
+        <s:link source="password:value" sink="password" />
+        <s:link source="query_language:value" sink="query_language" />
+        <s:link source="rdf_format:value" sink="rdf_format" />
+        <s:link source="read_write:value" sink="read_write" />
+        <s:link source="repository:value" sink="repository" />
+        <s:link source="server_url:value" sink="server_url" />
+        <s:link source="username:value" sink="username" />
+        <s:sink name="server_url" />
+        <s:sink name="repository" />
+        <s:sink name="username" />
+        <s:sink name="password" />
+        <s:sink name="rdf_format" />
+        <s:sink name="query_language" />
+        <s:sink name="read_write" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="QueryEnzyme_localName_Label" boring="true">
+    <s:description>For reference; this query would select all at once, but selected items are produced below each other in a list. Replace Enzyme with Protein to find instances of proteins (none in demo-example).</s:description>
+    <s:stringconstant>select Enzyme, localName(Enzyme), label(X)  from  {Enzyme} rdf:type {edis:Enzyme}, {Enzyme} rdfs:label {X}   	using namespace  	      edis = &lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#&gt;</s:stringconstant>
+  </s:processor>
+  <s:processor name="selectProteinLabels">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/RepositoryWS?wsdl</s:wsdl>
+      <s:operation>selectQuery</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="QueryProteinLabel">
+    <s:beanshell>
+      <s:scriptvalue>String query= "select label(X) from  {edis:" + protein_id + "} rdfs:label {X} using namespace edis = &lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#&gt;";</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">protein_id</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">query</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="Flatten_Protein_list">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="Flatten_Labels_list">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="Flatten_list">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:link source="BioAID_repository:password" sink="selectProteinLabels:password" />
+  <s:link source="BioAID_repository:password" sink="selectProteins:password" />
+  <s:link source="BioAID_repository:query_language" sink="selectProteinLabels:query_language" />
+  <s:link source="BioAID_repository:query_language" sink="selectProteins:query_language" />
+  <s:link source="BioAID_repository:repository" sink="selectProteinLabels:repository" />
+  <s:link source="BioAID_repository:repository" sink="selectProteins:repository" />
+  <s:link source="BioAID_repository:server_url" sink="selectProteinLabels:server_url" />
+  <s:link source="BioAID_repository:server_url" sink="selectProteins:server_url" />
+  <s:link source="BioAID_repository:username" sink="selectProteinLabels:username" />
+  <s:link source="BioAID_repository:username" sink="selectProteins:username" />
+  <s:link source="Flatten_Labels_list:outputlist" sink="Flatten_list:inputlist" />
+  <s:link source="Flatten_Protein_list:outputlist" sink="QueryProteinLabel:protein_id" />
+  <s:link source="Flatten_Protein_list:outputlist" sink="protein_id" />
+  <s:link source="Flatten_list:outputlist" sink="protein_label" />
+  <s:link source="QueryEnzymeInstances:value" sink="selectProteins:query" />
+  <s:link source="QueryProteinLabel:query" sink="selectProteinLabels:query" />
+  <s:link source="selectProteinLabels:selectQueryReturn" sink="Flatten_Labels_list:inputlist" />
+  <s:link source="selectProteins:selectQueryReturn" sink="Flatten_Protein_list:inputlist" />
+  <s:sink name="protein_id">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="protein_label">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/plain</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

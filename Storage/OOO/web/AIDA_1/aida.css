@@ -1,0 +1,86 @@
+body {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 0px;
+	margin-right: 0px;
+	background-color: white;
+        color: black;
+	font-family: Verdana, sans-serif;
+}
+form {
+	display: inline;
+}
+.entry, .mdentry {
+	padding-left: 5px;
+	padding-top: 3px;
+	padding-bottom: 0px;
+}
+.label, .title {
+	text-transform: uppercase;
+	font-size: small;
+}
+.d, .r, .c {
+        margin-left: 15px;
+	margin-top: 15px;
+}
+.col1, .col2 {
+	float: left;
+	width: 50%;
+}
+.table {
+	margin-top: 20px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 70%;
+}
+.submit {
+	margin-top: 20px;
+}
+.title {
+	margin-top: 5%;
+}
+.subtitle {
+	margin-top: 10px;
+}
+.title, .subtitle {
+	margin-left: auto;
+	margin-right: auto;
+	width: 70%;
+	font-size: x-large;
+        font-weight: bold;
+}
+.subtitle {
+	font-size: small;
+}
+
+.suggestion {
+        background-color: transparent;
+        padding-left: 2px;
+}
+.suggestDiv {
+	font-family: Verdana, sans-serif;
+        font-size: small;
+}
+input {
+	font-family: Verdana, sans-serif;
+        font-size: small;
+}
+.match {
+        color: #c70;
+}
+.commentSpan {
+        padding-left: 5px;
+        font-size: small;
+        color: #777;
+}
+.mdentry {
+        margin-top: 200px;
+}
+.property {
+        float: left;
+        width: 45%; 
+}
+.concept {
+        float: left;
+        width: 55%;
+}

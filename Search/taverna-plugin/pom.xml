@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+	http://maven.apache.org/maven-v4_0_0.xsd"> 
+
+        
+	<modelVersion>4.0.0</modelVersion>
+	<name>AID Taverna Plug In for Taverna 2.1.0 </name>
+	<description> 
+		      AIDA Plugin 0.3.3 (for Taverna 2.1.0)  
+		      Please restart installation 
+	</description>
+
+	<groupId>org.vle.aid.taverna</groupId>
+	<artifactId>aid-plugin</artifactId>
+	<version>0.3.3</version>
+		
+	<repositories>
+		<repository>   <id>repo1</id>
+			       <name>Maven repository </name>
+			       <url>http://repo1.maven.org/maven2</url>
+	 	</repository>
+		<repository>  
+				<id>mygrid1-repository</id>  
+				<name>myGrid Repository</name>
+				<url>http://www.mygrid.org.uk/maven/repository</url>
+				<releases>  <enabled> true </enabled>  </releases>
+		</repository>  
+		<repository>
+				<id> ibiblio </id>
+				<name>Ibibilo mirrors </name>
+				<url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
+				<releases> <enabled>false</enabled></releases>
+		</repository>
+  		<repository>
+                        <id>java.net</id>
+                        <url>http://download.java.net/maven/2</url>
+                        <releases />
+                        <snapshots>
+                                <enabled>false</enabled>
+                        </snapshots>
+                </repository>
+                <repository>
+                        <id>jboss.org</id>
+                        <url>http://repository.jboss.org/maven2</url>
+                        <releases />
+                        <snapshots>
+                                <enabled>false</enabled>
+                        </snapshots>
+                </repository>
+                <repository>
+                        <snapshots>
+                                <enabled>true</enabled>
+                        </snapshots>
+                        <id>tupelo2</id>
+                        <name>tupelo2</name>
+                        <url>http://dlt-dev.ncsa.uiuc.edu/m2</url>
+                </repository>
+                <repository>
+                        <releases />
+                        <snapshots>
+                                <enabled>false</enabled>
+                        </snapshots>
+                        <id>opm-releases</id>
+                        <name>opm</name>
+                        <url>http://openprovenance.org/java/maven-releases</url>
+                </repository>
+	</repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>false</skip>
+					<systemProperties>
+						<property>
+							<name>java.awt.headless</name>
+							<value>true</value>
+						</property>
+					</systemProperties>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+<!--	I'll use the version number directly on each compoenents, based on this site:
+http://www.mygrid.org.uk/dev/wiki/display/developer/Maven+module+version+numbers#Mavenmoduleversionnumbers-Taverna2.1.0	
+
+	<properties>
+		<t2.infrastructure.version>2.0</t2.infrastructure.version>
+		<t2.core.version>1.0</t2.core.version>
+		<t2.activities.version>1.0</t2.activities.version>
+		<t2.ui.api.version>1.0</t2.ui.api.version>
+		<t2.ui.impl.version>1.0</t2.ui.impl.version>
+		<t2.ui.ext.version> 1.0</t2.ui.ext.version>
+
+		<t2.workbench.perspective.version>2.0</t2.workbench.perspective.version>
+		<t2.ui.version>0.6</t2.ui.version>
+		<t2.lang.version>1.0</t2.lang.version>
+
+		<taverna.version>1.7.2.0</taverna.version>
+	</properties>	
+-->
+
+	<dependencies> 
+	<!-- taverna dependency -->
+                 <dependency>
+                        <groupId>net.sf.taverna.t2.activities</groupId>
+                        <artifactId>stringconstant-activity</artifactId>
+                        <version>1.0</version>
+                 </dependency>
+                 <dependency>
+                        <groupId>net.sf.taverna.t2.activities</groupId>
+                        <artifactId>dataflow-activity</artifactId>
+                        <version>1.0</version>
+                 </dependency>
+<!-- assuming these dependencies is already obtained from workbench-api
+		 <dependency>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>workbench-api</artifactId>
+			<version>1.0</version>
+                </dependency>
+                <dependency>
+			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>edits-api</artifactId>
+			<version>1.0</version>
+                </dependency>
+		<dependency>
+                        <groupId>net.sf.taverna.t2.ui-api</groupId>
+                        <artifactId>menu-api</artifactId>
+                        <version>1.0</version>
+                </dependency>
+		<dependency>
+                        <groupId>net.sf.taverna.t2.ui-api</groupId>
+                        <artifactId>file-api</artifactId>
+                        <version>1.0</version>
+                </dependency>
+
+		<dependency>
+      			<groupId>net.sf.taverna.t2.ui-api</groupId>
+			<artifactId>perspective-core</artifactId>
+      			<version>1.0</version>
+		</dependency>
+
+ end taverna dependency -->
+		<dependency>
+                        <groupId>net.sf.taverna.t2.ui-impl</groupId>
+                        <artifactId>file-impl</artifactId>
+                        <version>1.0</version>
+                </dependency>
+
+		<dependency>
+                        <groupId>net.sf.taverna.t2.ui-exts</groupId>
+                        <artifactId>file-translator</artifactId>
+                        <version>1.0</version>
+                </dependency>
+		<dependency>
+                        <groupId>net.sf.taverna.t2.core</groupId>
+                        <artifactId>workflowmodel-impl</artifactId>
+                        <version>1.0</version>
+                </dependency> 
+                <dependency>
+                        <groupId>net.sf.taverna.t2.lang</groupId>
+                        <artifactId>ui</artifactId>
+                        <version>1.0</version>
+                </dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.infrastructure</groupId>
+			<artifactId>appconfig</artifactId>
+			<version>2.0</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.13</version>
+		</dependency>
+		<dependency>
+		    <groupId>axis</groupId>
+		    <artifactId>axis</artifactId>
+		    <version>1.3</version>
+		</dependency>   
+		<dependency>
+	      	    <groupId>commons-logging</groupId>
+	      	    <artifactId>commons-logging</artifactId>
+	      	    <version>1.1</version>
+		</dependency>  
+		<dependency>
+		    <groupId>commons-discovery</groupId>
+		    <artifactId>commons-discovery</artifactId>
+		    <version>20040218.194635</version>
+		</dependency> 
+		<dependency>
+		    <groupId>lobo</groupId>
+		    <artifactId>cobra</artifactId>
+		    <version>0.98.4</version>
+		</dependency>
+		 <dependency>
+		       <groupId>org.swinglabs</groupId>
+		       <artifactId>swingx</artifactId>
+		       <version>0.9.2</version>
+		</dependency>
+		<dependency> 
+		       <groupId>org.swinglabs</groupId> 
+		       <artifactId>swing-layout</artifactId> 
+		       <version>1.0.3</version> 
+		</dependency> 
+	</dependencies>
+	<distributionManagement>
+		<repository>
+			<id>aida-repository</id>
+			<url>scpexe://ws2.grid.sara.nl/home/ui_users/aida/tomcat/webapps/mvn</url>
+		</repository>
+	</distributionManagement>
+</project>

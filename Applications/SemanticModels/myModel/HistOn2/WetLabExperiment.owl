@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rfp="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#"
+    xmlns:obo_rel="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/obo_relationship_selection.owl#"
+    xmlns:exp="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/TopExperiment.owl#"
+    xmlns="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/WetLabExperiment.owl#"
+    xmlns:tbio-e="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#"
+    xmlns:spec="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/Species.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:rlp="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:tbio="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#"
+    xmlns:meta="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#"
+    xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xml:base="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/WetLabExperiment.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/TopExperiment.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl"/>
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Cell_line">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A cell line is an abstract notion to refers to the line of cells and cell cultures ultimately derived from one stem cell. Also called strain. In a sense it is the type of cells in a cell culture. Because we can point to an original physical cell as the originator, it is natural. Only its name is a human artefact.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#Natural_pattern"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="has_organismal_origin"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Organism_name"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological"/>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#has_bio_status"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_cell_line_of_cell_culture"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="Cell_culture"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Monoclonal_cell_culture">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Cell_culture"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="is_culture_from_cell_line"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Cell culture that started from one cell</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#Cell_culture">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_culture_from_cell_line"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="#Cell_line"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#is_culture_from_cell_line"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#Cell_line"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Cell culture is in a sense comparable to the concepts under gross_anat_structure, but can hardly be called anatomical structures. Cell culture refers to what you have in a cell culture flask.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="gross_artificial_structure"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#gross_artificial_structure">
+    <owl:disjointWith rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#gross_anat_structure"/>
+    <owl:disjointWith rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Cell"/>
+    <owl:disjointWith rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Cell_part"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Biological objects that are the result of or are used in laboratory experiments, e.g. a cell culture</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological_Macromolecule"/>
+    <owl:disjointWith rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological_small_molecule"/>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Biological_object"/>
+    <owl:disjointWith rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Biological_macromolecule_part"/>
+    <owl:disjointWith rdf:resource="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#Organism"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="#has_organismal_origin">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The name of the organism that is the origin of the pattern. For instance the organism from which a cell line is derived</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#is_abstracted_from"/>
+    <rdfs:range rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Organism_name"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is_organismal_origin_of">
+    <rdfs:domain rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Organism_name"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_abstraction"/>
+    <owl:inverseOf rdf:resource="#has_organismal_origin"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_culture_from_cell_line">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="#is_cell_line_of_cell_culture"/>
+    </owl:inverseOf>
+    <rdfs:range rdf:resource="#Cell_line"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_abstraction"/>
+    <rdfs:domain rdf:resource="#Cell_culture"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#is_cell_line_of_cell_culture">
+    <rdfs:range rdf:resource="#Cell_culture"/>
+    <rdfs:domain rdf:resource="#Cell_line"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#is_abstracted_from"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="Cell_line_name">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Name of a cell line or strain</rdfs:comment>
+    <rdfs:domain rdf:resource="#Cell_line"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </owl:DatatypeProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 331)  http://protege.stanford.edu -->

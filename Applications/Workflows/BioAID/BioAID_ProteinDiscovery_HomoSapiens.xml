@@ -1,0 +1,1538 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:00d3cce3-2ad3-4c81-af98-a61f6f312cec" author="Marco Roos (workflow) and the AID team (services)" title="BioAID_ProteinDiscovery_HomoSapiens">This workflow extracts proteins and protein relations from from a subset of Medline that is about Homo Sapiens according to mesh annotation. Protein names (symbols of at least 3 characters) are validated against human UniProt symbols.
+
+This workflow follows the following basic steps:
+1. it retrieves documents relevant for the query string (documents tagged with mesh term 'Humans' only)
+2. it discovers proteins in those documents, considered relevant to the query string (colocation in text mining terms)
+3. it extract protein-protein relations (slightly stronger than colocation)
+
+Protein discoveries are filtered on their presence in UniProt (human only)
+
+Acknowledgements:
+Synonyms and Uniprot services: Martijn Scheumie, BioSemantics Group, University of Rotterdam, The Netherlands (BioRange project)</s:workflowdescription>
+  <s:processor name="ExtractProteinRelations_HomoSapiens">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:bd98d551-525f-4f6c-b581-0d7250a7a40c" author="" title="Untitled workflow #167" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="AddScoreToSemanticRepository">
+    <s:description>Add RDF cf:
+@prefix mybio: &lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/BiologicalModel.owl#&gt; .
+@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
+@prefix pub: &lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/Publication.owl#&gt; .
+@prefix dsc: &lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#&gt; .
+@prefix owl: &lt;http://www.w3.org/2002/07/owl#&gt; .
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
+
+&lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl#ExampleInstance_DiscoveredEnzyme&gt; a &lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl#DiscoveredEnzyme&gt; ;
+	dsc:hasLikelihoodScore "1.0"^^&lt;http://www.w3.org/2001/XMLSchema#float&gt; .</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:f642ee66-0236-4222-820b-e45b4f33b923" author="Marco Roos (workfllow), Willem R. van Hage (services)" title="AddScoreToSemanticModel">Add Likelihood Score  to Semantic model with Sesame service cf example Score:
+
+N-Triples examples:
+&lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl#ExampleInstance_DiscoveredEnzyme&gt; &lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#hasLikelihoodScore&gt; "1.0"^^&lt;http://www.w3.org/2001/XMLSchema#float&gt; .
+
+&lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl#ExampleInstance_DiscoveredProtein&gt; &lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#hasLikelihoodScore&gt; "2.0"^^&lt;http://www.w3.org/2001/XMLSchema#float&gt; .
+
+Turtle:
+&lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl#ExampleInstance_DiscoveredEnzyme&gt; 	dsc:hasLikelihoodScore "1.0"^^&lt;http://www.w3.org/2001/XMLSchema#float&gt; .</s:workflowdescription>
+        <s:source name="score" />
+        <s:source name="protein_instance" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="AddQueryToSemanticModel">
+    <s:description>Add Query to Semantic model with Sesame service cf example Biological Query</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:2ca45a93-0d4d-4e5c-b305-240df4ae1d18" author="Marco Roos (workflow), Willem R. van Hage (service)" title="AddQueryToSemanticModel">Add Query to Semantic model with Sesame service cf example Biological Query:
+
+mybio:ExampleInstance_BiologicalQuery a mybio:BiologicalDocumentSearch ;
+	mybio:partially_represents mybio:ExampleInstance_BiologicalModel ;
+	rdfs:comment "Example Instance Biological Query"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	rdfs:label "Example Instance Biological Query"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	pub:boolean_search_query_lucene "ExampleBiologicalQuery"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	pub:search_on pub:ExampleInstance_Corpus .
+
+mybio:ExampleInstance_BiologicalModel a mybio:BiologicalModel ;
+	rdfs:label "Example instance Biological Model"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	rdfs:comment "Example instance Biological Model"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	mybio:partially_represented_by mybio:ExampleInstance_Enzyme , mybio:ExampleInstance_BiologicalQuery , mybio:ExampleInstance_Disease .</s:workflowdescription>
+        <s:link source="query" sink="query_instance" />
+        <s:source name="query" />
+        <s:sink name="query_instance" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="AddDocToSemanticModel">
+    <s:description>Add Document to Semantic model with Sesame service cf example discovered document</s:description>
+    <s:defaults>
+      <s:default name="corpus">MedLine</s:default>
+    </s:defaults>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:c5beeaee-ff9a-4f34-af41-a33a0c19c141" author="Marco Roos (workflow), Willem R. van Hage (service)" title="AddDocumentToSemanticModel">Add Document to Semantic model with Sesame service cf example discovered document:
+
+&lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl#ExampleInstance_DiscoveredArticle&gt; a &lt;http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/BiologicalDiscoveries.owl#DiscoveredArticle&gt; ;
+	pub:contained_in_corpus pub:ExampleInstance_Corpus ;
+	pub:pubmed_URL "http&amp;#58;//www.ncbi.nlm.nih.gov/sites/entrez?cmd=Retrieve&amp;amp;db=PubMed&amp;amp;list_uids=18377425"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	pub:pubmed_id "18377425"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	dsc:discoveredThroughProcedure dsc:ExampleInstance_TextMiningDiscoveryWorkflow ;
+	rdfs:comment "Example Instance Discovered Article"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; ;
+	rdfs:label "Example Instance Discovered Article"^^&lt;http://www.w3.org/2001/XMLSchema#string&gt; .</s:workflowdescription>
+        <s:link source="pubmed_id" sink="doc_instance" />
+        <s:source name="pubmed_id" />
+        <s:source name="pubmed_URL" />
+        <s:source name="query_instance" />
+        <s:source name="corpus" />
+        <s:sink name="doc_instance" />
+      </s:scufl>
+    </s:workflow>
+    <s:iterationstrategy>
+      <i:cross xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="query_instance" />
+        <i:dot>
+          <i:iterator name="pubmed_URL" />
+          <i:iterator name="pubmed_id" />
+        </i:dot>
+      </i:cross>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:processor name="AddProteinToSemanticModel">
+    <s:description>Add Protein to Semantic model with Sesame service cf example Discovered Proteins</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:fd7d0d06-932c-45cc-af4a-3d301b0a5a9f" author="Marco Roos (workflow), Willem R. van Hage (services)" title="AddProteinToSemanticModel">Add Protein to Semantic model with Sesame service cf example Discovered Proteins</s:workflowdescription>
+        <s:link source="uniprot_id" sink="protein_instance" />
+        <s:source name="protein_name" />
+        <s:source name="uniprot_id" />
+        <s:source name="doc_instance" />
+        <s:source name="entrez_pubmed_URL" />
+        <s:source name="expasy_URL" />
+        <s:source name="iHop_sentence_URL" />
+        <s:source name="iHop_search_URL" />
+        <s:sink name="protein_instance" />
+      </s:scufl>
+    </s:workflow>
+    <s:iterationstrategy>
+      <i:cross xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="doc_instance" />
+        <i:dot>
+          <i:iterator name="iHop_search_URL" />
+          <i:iterator name="iHop_sentence_URL" />
+          <i:iterator name="expasy_URL" />
+          <i:iterator name="entrez_pubmed_URL" />
+          <i:iterator name="uniprot_id" />
+          <i:iterator name="protein_name" />
+        </i:dot>
+      </i:cross>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:processor name="UniProtXrefURLs">
+    <s:description>Adds URL cross references to various protein information resources.</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:c0a963bc-2343-4d31-aa8c-304bfe3a6289" author="Marco Roos (workflow)" title="XrefUniprot_HomoSapiens">Adds URL cross references to various protein information resources.</s:workflowdescription>
+        <s:processor name="iHopSearchURL_stub" boring="true">
+          <s:stringconstant>http&amp;#58;//www.ihop-net.org/UniPub/iHOP/?field=UNIPROT__AC&amp;ncbi_tax_id=9606&amp;organism_syn=&amp;search=</s:stringconstant>
+        </s:processor>
+        <s:processor name="ConcatenateExpasyURL">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:processor name="Concatenate_iHopURL_preStub">
+          <s:defaults>
+            <s:default name="string1">http&amp;#58;//www.ihop-net.org/UniPub/iHOP/gismo/</s:default>
+          </s:defaults>
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:processor name="iHopSentenceURL_prestub" boring="true">
+          <s:stringconstant>http&amp;#58;//www.ihop-net.org/UniPub/iHOP/gismo/</s:stringconstant>
+        </s:processor>
+        <s:processor name="ConcatenateEntrezURL">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:processor name="ExpasyUniProtURL_stub" boring="true">
+          <s:stringconstant>http&amp;#58;//expasy.org/uniprot/</s:stringconstant>
+        </s:processor>
+        <s:processor name="Concatenate_iHopURL_postStub">
+          <s:defaults>
+            <s:default name="string2">.html?ORGANISM_ID=1</s:default>
+          </s:defaults>
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:processor name="Concatenate_iHopURL">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:processor name="ExtractiHopRefByRegexp">
+          <s:defaults>
+            <s:default name="regex">&lt;iHOPguessedSymbolId query=\".+\" xmlns=\"http://www.pdg.cnb.uam.es/UniPub/iHOP/xml\"&gt;(.+)&lt;/iHOPguessedSymbolId&gt;</s:default>
+            <s:default name="group">1</s:default>
+          </s:defaults>
+          <s:local>org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList</s:local>
+        </s:processor>
+        <s:processor name="EntrezPubMedUniProtURL_stub" boring="true">
+          <s:stringconstant>http&amp;#58;//www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&amp;val=</s:stringconstant>
+        </s:processor>
+        <s:processor name="iHopSentenceURL_poststub" boring="true">
+          <s:stringconstant>.html?ORGANISM_ID=1</s:stringconstant>
+        </s:processor>
+        <s:processor name="guessSymbolIdFromReference">
+          <s:description>It takes a biological database reference as input. It guess the iHOP Id which best matches with the input.</s:description>
+          <s:arbitrarywsdl>
+            <s:wsdl>http://ubio.bioinfo.cnio.es/biotools/iHOP/iHOP-SOAP.wsdl</s:wsdl>
+            <s:operation>guessSymbolIdFromReference</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:link source="UniProtID" sink="ConcatenateEntrezURL:string2" />
+        <s:link source="UniProtID" sink="ConcatenateExpasyURL:string2" />
+        <s:link source="UniProtID" sink="Concatenate_iHopURL:string2" />
+        <s:link source="UniProtID" sink="guessSymbolIdFromReference:reference" />
+        <s:link source="ConcatenateEntrezURL:output" sink="EntrezUniProtURL" />
+        <s:link source="ConcatenateExpasyURL:output" sink="ExpasyUniProtURL" />
+        <s:link source="Concatenate_iHopURL_preStub:output" sink="Concatenate_iHopURL_postStub:string1" />
+        <s:link source="EntrezPubMedUniProtURL_stub:value" sink="ConcatenateEntrezURL:string1" />
+        <s:link source="ExpasyUniProtURL_stub:value" sink="ConcatenateExpasyURL:string1" />
+        <s:link source="ExtractiHopRefByRegexp:filteredlist" sink="Concatenate_iHopURL_preStub:string2" />
+        <s:link source="guessSymbolIdFromReference:result" sink="ExtractiHopRefByRegexp:stringlist" />
+        <s:link source="iHopSearchURL_stub:value" sink="Concatenate_iHopURL:string1" />
+        <s:link source="iHopSentenceURL_poststub:value" sink="Concatenate_iHopURL_postStub:string2" />
+        <s:link source="iHopSentenceURL_prestub:value" sink="Concatenate_iHopURL_preStub:string1" />
+        <s:link source="Concatenate_iHopURL:output" sink="iHopSearchURL" />
+        <s:link source="Concatenate_iHopURL_postStub:output" sink="iHopSentencesURL" />
+        <s:source name="UniProtID">
+          <s:metadata>
+            <s:description>UniProt ID (for iHop a Human protein is expected)
+E.g. Q15190</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="ExpasyUniProtURL" />
+        <s:sink name="EntrezUniProtURL" />
+        <s:sink name="iHopSearchURL">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+        <s:sink name="iHopSentencesURL" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="RetrieveDocumentsFromMedline">
+    <s:description>This workflow applies the search web service from the AIDA toolbox.
+
+Comments:
+This search service is based on lucene defaults; it may be necessary to optimize the querystring to adopt the behaviour to what is most relevant in a particular domain (e.g. for medline prioritizing based on publication date is useful). Lucene favours shorter sentences, which may be bad for subsequent information extraction.</s:description>
+    <s:defaults>
+      <s:default name="document_index">MedLine</s:default>
+      <s:default name="search_field">content</s:default>
+    </s:defaults>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:858efe24-26c0-4090-be46-c9a5b4f21cad" author="Marco Roos (workflow), Edgard Meij (service)" title="AIDA_Retrieve_documents_in_parts">This workflow applies the search web service from the AIDA toolbox.
+
+Comments:
+This search service is based on lucene defaults; it may be necessary to optimize the querystring to adopt the behaviour to what is most relevant in a particular domain (e.g. for medline prioritizing based on publication date is useful). Lucene favours shorter sentences, which may be bad for subsequent information extraction.</s:workflowdescription>
+        <s:processor name="title_xpath" boring="true">
+          <s:stringconstant>/aid:result/doc/field[@name='title']/value</s:stringconstant>
+        </s:processor>
+        <s:processor name="PubMedURL_stub" boring="true">
+          <s:stringconstant>http&amp;#58;//www.ncbi.nlm.nih.gov/sites/entrez?cmd=Retrieve&amp;amp;db=PubMed&amp;amp;list_uids=</s:stringconstant>
+        </s:processor>
+        <s:processor name="Concatenate1">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:processor name="XPath_Title">
+          <s:local>net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker</s:local>
+        </s:processor>
+        <s:processor name="XPath_PMID">
+          <s:local>net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker</s:local>
+        </s:processor>
+        <s:processor name="XPath_Abstract">
+          <s:local>net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker</s:local>
+        </s:processor>
+        <s:processor name="Concatenate2">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:processor name="pubmedID_xpath" boring="true">
+          <s:stringconstant>/aid:result/doc/field[@name='PMID']/value</s:stringconstant>
+        </s:processor>
+        <s:processor name="abstract_xpath" boring="true">
+          <s:stringconstant>/aid:result/doc/field[@name='content']/value</s:stringconstant>
+        </s:processor>
+        <s:processor name="search">
+          <s:arbitrarywsdl>
+            <s:wsdl>http://aida.science.uva.nl:9999/axis/services/SearcherWS?wsdl</s:wsdl>
+            <s:operation>search</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:link source="document_index" sink="search:index" />
+        <s:link source="maxHits" sink="search:maxHits" />
+        <s:link source="queryString" sink="search:queryString" />
+        <s:link source="search_field" sink="search:defaultField" />
+        <s:link source="PubMedURL_stub:value" sink="Concatenate1:string1" />
+        <s:link source="XPath_Abstract:nodelist" sink="Concatenate2:string2" />
+        <s:link source="Concatenate1:output" sink="pubmed_URL" />
+        <s:link source="Concatenate2:output" sink="title_abstract" />
+        <s:link source="XPath_Abstract:nodelist" sink="abstract" />
+        <s:link source="XPath_PMID:nodelist" sink="Concatenate1:string2" />
+        <s:link source="XPath_PMID:nodelist" sink="pubmed_id" />
+        <s:link source="XPath_Title:nodelist" sink="Concatenate2:string1" />
+        <s:link source="XPath_Title:nodelist" sink="title" />
+        <s:link source="abstract_xpath:value" sink="XPath_Abstract:xpath" />
+        <s:link source="pubmedID_xpath:value" sink="XPath_PMID:xpath" />
+        <s:link source="search:searchReturn" sink="XPath_Abstract:xml-text" />
+        <s:link source="search:searchReturn" sink="XPath_PMID:xml-text" />
+        <s:link source="search:searchReturn" sink="XPath_Title:xml-text" />
+        <s:link source="title_xpath:value" sink="XPath_Title:xpath" />
+        <s:source name="queryString">
+          <s:metadata>
+            <s:description>Lucene query for search. Simple AND and OR queries will work. For advanced queries see http://lucene.apache.org for more information.</s:description>
+          </s:metadata>
+        </s:source>
+        <s:source name="document_index">
+          <s:metadata>
+            <s:description>e.g. MedLine will give access to a weekly update index of the medline corpus.</s:description>
+          </s:metadata>
+        </s:source>
+        <s:source name="search_field">
+          <s:metadata>
+            <s:description>e.g.' content' will search abstract and title; abstract just the abstract, title just the title.</s:description>
+          </s:metadata>
+        </s:source>
+        <s:source name="maxHits">
+          <s:metadata>
+            <s:description>limits the maximum number of hits search will produce. In Taverna 1 '100' works well while a 1000 and above is likely to halt Taverna 1 due to memory problems. This also depends on the memory setting for the java virtual machine by the client (usually your local Taverna).</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="pubmed_id" />
+        <s:sink name="pubmed_URL" />
+        <s:sink name="abstract" />
+        <s:sink name="title" />
+        <s:sink name="title_abstract" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="ProcessQuery">
+    <s:description>Workflow to optimize a Lucene document retrieval query to
+1. increase the priority of recent years (in decreasing order from 2009 down to 2002)
+2. limit a subsequent search to a specific organism using  a mesh organism tag</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:3d2eebb7-0b04-4979-9aa9-3d39b1464216" author="Marco Roos (workflow)" title="Lucene_bioquery_optimizer_with_synonyms">Workflow to optimize a Lucene document retrieval query to
+1. increase the priority of recent years (in decreasing order from 2009 down to 2002)
+2. replace protein names with protein synonym strings.</s:workflowdescription>
+        <s:processor name="Concatenate">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:processor name="Prioritise_lucene_query">
+          <s:beanshell>
+            <s:scriptvalue>StringBuffer temp=new StringBuffer();
+temp.append("+(");
+temp.append(query_string);
+temp.append(") ");
+/* temporarily out of order:
+temp.append(" +");
+temp.append(priority_string); */
+String lucene_query = temp.toString();</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">query_string</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">priority_string</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">lucene_query</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="Lucene_year_priorities" boring="true">
+          <s:stringconstant>year:(2009^10 2008^9 2007^8 2007^7 2006^6 2005^5 2004^4 2003^3 2002^2 2002^1)</s:stringconstant>
+        </s:processor>
+        <s:processor name="ProteinQueryToSynomyms">
+          <s:description>This workflow creates a query string from the query term using Martijn Schuemie's synonym service. The service is limited to proteins, enzymes and genes. An input query that is a boolean string will be split and processed. Until I find a smarter regular expression only terms withing double quotes will be replaced by synonym strings.</s:description>
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:ecb927cc-a200-4290-9342-302d5fc836ca" author="Marco Roos (workflow) and Martijn Schuemie (service)" title="ProteinSynonymsToQuery">This workflow creates a query string from the query term using Martijn Schuemie's synonym service. The service is limited to proteins, enzymes and genes. An input query that is a boolean string will be split and processed. Until I find a smarter regular expression only terms withing double quotes will be replaced by synonym strings.</s:workflowdescription>
+              <s:processor name="Flatten_list">
+                <s:local>
+                  org.embl.ebi.escience.scuflworkers.java.FlattenList
+                  <s:extensions>
+                    <s:flattenlist s:depth="2" />
+                  </s:extensions>
+                </s:local>
+              </s:processor>
+              <s:processor name="Concat_synonyms">
+                <s:beanshell>
+                  <s:scriptvalue>import java.util.*;
+String synstring="\"" + query_term + "\"";
+String syn;
+Iterator iterator = synonymlist.iterator();
+while ( iterator.hasNext() ) 
+	{
+	synstring = synstring + " OR ";
+	syn = ((String) iterator.next());
+	synstring = synstring + "\"" + syn + "\"";
+}
+new_query = synstring;</s:scriptvalue>
+                  <s:beanshellinputlist>
+                    <s:beanshellinput s:syntactictype="l('text/plain')">synonymlist</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">query_term</s:beanshellinput>
+                  </s:beanshellinputlist>
+                  <s:beanshelloutputlist>
+                    <s:beanshelloutput s:syntactictype="'text/plain'">new_query</s:beanshelloutput>
+                  </s:beanshelloutputlist>
+                  <s:dependencies s:classloader="iteration" />
+                </s:beanshell>
+                <s:mergemode input="synonymlist" mode="merge" />
+                <s:iterationstrategy>
+                  <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+                    <i:iterator name="synonymlist" />
+                    <i:iterator name="query_term" />
+                  </i:dot>
+                </s:iterationstrategy>
+              </s:processor>
+              <s:processor name="ListFindAndReplace">
+                <s:beanshell>
+                  <s:scriptvalue>import java.util.regex.*;
+
+String replaced_input=input;
+String findstring;
+
+Iterator find_iterator = findstringlist.iterator();
+Iterator replace_iterator = replacestringlist.iterator();
+while (find_iterator.hasNext() &amp;&amp; replace_iterator.hasNext())
+{
+	findstring = ((String) find_iterator.next());
+	
+	Pattern p = Pattern.compile("[\"]"+findstring+"[\"]");
+	Matcher m = p.matcher(replaced_input);
+
+	replaced_input = (String) m.replaceAll("("+((String) replace_iterator.next())+")");
+}
+
+output = replaced_input;</s:scriptvalue>
+                  <s:beanshellinputlist>
+                    <s:beanshellinput s:syntactictype="'text/plain'">input</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="l('text/plain')">findstringlist</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="l('text/plain')">replacestringlist</s:beanshellinput>
+                  </s:beanshellinputlist>
+                  <s:beanshelloutputlist>
+                    <s:beanshelloutput s:syntactictype="'text/plain'">output</s:beanshelloutput>
+                  </s:beanshelloutputlist>
+                  <s:dependencies s:classloader="iteration" />
+                </s:beanshell>
+                <s:mergemode input="input" mode="merge" />
+                <s:iterationstrategy>
+                  <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+                    <i:iterator name="input" />
+                    <i:iterator name="findstringlist" />
+                    <i:iterator name="replacestringlist" />
+                  </i:dot>
+                </s:iterationstrategy>
+              </s:processor>
+              <s:processor name="SplitQuery">
+                <s:description>Splits and input query string into its parts. Works for queries that contain search terms, search phrases between double quotes, connected by AND or OR. Behaviour undetermined when other characters such as +, -, or brackets are used. Should work now for well formed patterns with bracketed substrings separated by AND/OR/AND NOT/OR NOT, e.g. (Topic1) AND NOT (Topic2), but not extensively tested.</s:description>
+                <s:workflow>
+                  <s:scufl version="0.2" log="0">
+                    <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="Marco Roos" title="Split_query_string_MR3">Splits and input query string into its parts. Works for queries that contain search terms, search phrases between double quotes, connected by AND or OR. Behaviour undetermined when other characters such as +, -, or brackets are used. Should work now for well formed patterns with bracketed substrings separated by AND/OR/AND NOT/OR NOT, e.g. (Topic1) AND NOT (Topic2), but not extensively tested.</s:workflowdescription>
+                    <s:processor name="stripQuotes_regexp" boring="true">
+                      <s:stringconstant>"</s:stringconstant>
+                    </s:processor>
+                    <s:processor name="Flatten_SplitQuotes_list">
+                      <s:local>
+                        org.embl.ebi.escience.scuflworkers.java.FlattenList
+                        <s:extensions>
+                          <s:flattenlist s:depth="2" />
+                        </s:extensions>
+                      </s:local>
+                    </s:processor>
+                    <s:processor name="Join">
+                      <s:description>Changed iteration strategy!</s:description>
+                      <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetUnion</s:local>
+                      <s:iterationstrategy>
+                        <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+                          <i:iterator name="list2" />
+                          <i:iterator name="list1" />
+                        </i:dot>
+                      </s:iterationstrategy>
+                    </s:processor>
+                    <s:processor name="quotes_regexp" boring="true">
+                      <s:stringconstant>(((?&lt;=") (?=\w))|((?&lt;=\w) (?=")))|((?&lt;=") (?="))</s:stringconstant>
+                    </s:processor>
+                    <s:processor name="filterQuotes_regexp" boring="true">
+                      <s:stringconstant>".+"</s:stringconstant>
+                    </s:processor>
+                    <s:processor name="SplitOnANDOR">
+                      <s:defaults>
+                        <s:default name="string">s1 s2 s3 AND s4 s5 OR "s6 s7" s8 s9 AND s10 OR "s11" "s12 s13" s14 s15 "s16"</s:default>
+                      </s:defaults>
+                      <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+                    </s:processor>
+                    <s:processor name="filter_nonQuotes_regexp" boring="true">
+                      <s:stringconstant>[^"]+</s:stringconstant>
+                    </s:processor>
+                    <s:processor name="splitANDOR_regexp" boring="true">
+                      <s:stringconstant>( +AND +NOT +)|( +OR +NOT +)|( +AND +)|( +OR +)|\(|\)</s:stringconstant>
+                    </s:processor>
+                    <s:processor name="FilterNonQuotes">
+                      <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+                    </s:processor>
+                    <s:processor name="SplitQuotes">
+                      <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+                    </s:processor>
+                    <s:processor name="StripQuotes">
+                      <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+                    </s:processor>
+                    <s:processor name="FilterQuotes">
+                      <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+                    </s:processor>
+                    <s:processor name="cleanStrippedQuotes_regexp" boring="true">
+                      <s:stringconstant>\w.*</s:stringconstant>
+                    </s:processor>
+                    <s:processor name="cleanStrippedQuotes">
+                      <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+                    </s:processor>
+                    <s:processor name="Flatten_StripQuotes_list">
+                      <s:local>
+                        org.embl.ebi.escience.scuflworkers.java.FlattenList
+                        <s:extensions>
+                          <s:flattenlist s:depth="2" />
+                        </s:extensions>
+                      </s:local>
+                    </s:processor>
+                    <s:link source="FilterNonQuotes:filteredlist" sink="Join:list2" />
+                    <s:link source="FilterQuotes:filteredlist" sink="StripQuotes:string" />
+                    <s:link source="Flatten_SplitQuotes_list:outputlist" sink="FilterNonQuotes:stringlist" />
+                    <s:link source="Flatten_SplitQuotes_list:outputlist" sink="FilterQuotes:stringlist" />
+                    <s:link source="Flatten_StripQuotes_list:outputlist" sink="cleanStrippedQuotes:stringlist" />
+                    <s:link source="SplitOnANDOR:split" sink="SplitQuotes:string" />
+                    <s:link source="SplitQuotes:split" sink="Flatten_SplitQuotes_list:inputlist" />
+                    <s:link source="StripQuotes:split" sink="Flatten_StripQuotes_list:inputlist" />
+                    <s:link source="cleanStrippedQuotes_regexp:value" sink="cleanStrippedQuotes:regex" />
+                    <s:link source="filterQuotes_regexp:value" sink="FilterQuotes:regex" />
+                    <s:link source="filter_nonQuotes_regexp:value" sink="FilterNonQuotes:regex" />
+                    <s:link source="queryString" sink="SplitOnANDOR:string" />
+                    <s:link source="Join:union" sink="queryList" />
+                    <s:link source="cleanStrippedQuotes:filteredlist" sink="Join:list1" />
+                    <s:link source="quotes_regexp:value" sink="SplitQuotes:regex" />
+                    <s:link source="splitANDOR_regexp:value" sink="SplitOnANDOR:regex" />
+                    <s:link source="stripQuotes_regexp:value" sink="StripQuotes:regex" />
+                    <s:source name="queryString">
+                      <s:metadata>
+                        <s:description>Queries that contain search terms, search phrases between double quotes, possibly connected by AND or OR. Behaviour undetermined when other characters such as +, -, or brackets are used.</s:description>
+                      </s:metadata>
+                    </s:source>
+                    <s:sink name="queryList" />
+                  </s:scufl>
+                </s:workflow>
+              </s:processor>
+              <s:processor name="getSynsets">
+                <s:description>Protein synonym service by Martijn Schuemie, Erasmus Medical Centre, University of Rotterdam, The Netherlands.</s:description>
+                <s:arbitrarywsdl>
+                  <s:wsdl>http://aida.science.uva.nl:8888/axis/SynsetServer.jws?wsdl</s:wsdl>
+                  <s:operation>getSynsets</s:operation>
+                </s:arbitrarywsdl>
+              </s:processor>
+              <s:link source="SplitQuery:queryList" sink="getSynsets:term" />
+              <s:link source="getSynsets:getSynsetsReturn" sink="Flatten_list:inputlist" />
+              <s:link source="query_term" sink="SplitQuery:queryString" />
+              <s:link source="Flatten_list:outputlist" sink="Concat_synonyms:synonymlist" />
+              <s:link source="SplitQuery:queryList" sink="Concat_synonyms:query_term" />
+              <s:link source="query_term" sink="ListFindAndReplace:input" />
+              <s:link source="Concat_synonyms:new_query" sink="ListFindAndReplace:replacestringlist" />
+              <s:link source="SplitQuery:queryList" sink="ListFindAndReplace:findstringlist" />
+              <s:link source="ListFindAndReplace:output" sink="new_query" />
+              <s:source name="query_term">
+                <s:metadata>
+                  <s:description>Query term without quotes, only synonyms of proteins, enzymes and genes will be returned. Boolean queries will be processed, but the input boolean logic will be lost.
+E.g. 'EZH2'</s:description>
+                </s:metadata>
+              </s:source>
+              <s:sink name="new_query" />
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:link source="Lucene_year_priorities:value" sink="Prioritise_lucene_query:priority_string" />
+        <s:link source="query_string" sink="Prioritise_lucene_query:query_string" />
+        <s:link source="ProteinQueryToSynomyms:new_query" sink="Concatenate:string1" />
+        <s:link source="query_string" sink="ProteinQueryToSynomyms:query_term" />
+        <s:link source="Concatenate:output" sink="extended_lucene_query" />
+        <s:link source="Prioritise_lucene_query:lucene_query" sink="Concatenate:string2" />
+        <s:source name="query_string">
+          <s:metadata>
+            <s:description>Lucene query string</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="extended_lucene_query">
+          <s:metadata>
+            <s:description>Lucene query based on the input query with the addition of:
+1. A Lucene string to give recent years higher priority (in decreasing order from 2009 down to 2002)
+2. A mesh organism term to limit subsequent searches</s:description>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="ScoreExtractedProteins">
+    <s:description>This workflow calculates a min log likelihood score for the combination of a discoverd protein and a protein of interest (the query protein). Note that at the moment the total count of medline papers, which is part of the formula, is hard coded and not exact. Given its size this should not matter that much, and certainly not in comparison with other likelihoods calculated using the same value.</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:abc3350b-e618-4fdd-8317-cbf5c298804d" author="Marco Roos (for AID)" title="LiteratureLikelihoodScoreProteinDiscovery">This workflow calculates a min log likelihood score for the combination of a discoverd protein and a protein of interest (the query protein). Note that at the moment the total count of medline papers, which is part of the formula, is hard coded and not exact. Given its size this should not matter that much, and certainly not in comparison with other likelihoods calculated using the same value.</s:workflowdescription>
+        <s:processor name="Ready" boring="true">
+          <s:stringconstant>edit me!</s:stringconstant>
+        </s:processor>
+        <s:processor name="Flatten_query_discovered_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Flatten_discovered_frequency_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Flatten_discovery_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Flatten_querydiscoveredfrequency">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Flatten_mll">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="PubMedTotal" boring="true">
+          <s:stringconstant>17000000</s:stringconstant>
+        </s:processor>
+        <s:processor name="Flatten_query_frequency_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Flatten_query_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="CountListElements">
+          <s:beanshell>
+            <s:scriptvalue>count = list.size();</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="l('text/xml')">list</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="l('text/plain')">count</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="MinLogLikelihood">
+          <s:beanshell>
+            <s:scriptvalue>/*
+Mijn voorstel is een -log likelihood ratio:
+-log ( (#QD_expected / #N) / (#QD / #N) )
+waarbij
+#QD : het gevonden aantal documenten met het Query eiwit Q, en het discovered eiwit D
+#QD_expected = (#Q*#D)/#N : het verwachte aantal documenten met Q en D, gebaseerd op de gevonden aantallen #Q en #D
+
+Edgar: De maat die je beschrijft lijkt erg veel op PMI (point-wise mutual information), wellicht dat je daar wat aan hebt. 
+*/
+
+/* variables
+	query_frequency (#Q)
+	discovered_frequency (#D)
+	query_discovered_frequency (#QD)
+	total_frequency (#N)
+return
+	minloglikelihood
+*/
+import java.lang.Math;
+// import edu.uah.math.distributions;
+
+double q = (double) Integer.parseInt( query_frequency );
+double d = (double) Integer.parseInt( discovered_frequency );
+double qd = (double) Integer.parseInt( query_discovered_frequency );
+double n = (double) Integer.parseInt( total_frequency );
+
+double qd_expected = (double) ((q*d)/n);
+
+Double mll = (Double) new Double((double) -( ((double) Math.log(qd_expected/n)) - ((double) Math.log(qd/n))));
+
+minloglikelihood = mll.toString();
+
+// minloglikelihood = (String) "test";</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">query_frequency</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">discovered_frequency</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">query_discovered_frequency</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">total_frequency</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">minloglikelihood</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+          <s:iterationstrategy>
+            <i:cross xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+              <i:iterator name="total_frequency" />
+              <i:dot>
+                <i:iterator name="query_frequency" />
+                <i:iterator name="query_discovered_frequency" />
+                <i:iterator name="discovered_frequency" />
+              </i:dot>
+            </i:cross>
+          </s:iterationstrategy>
+        </s:processor>
+        <s:processor name="CloneFrequencies">
+          <s:beanshell>
+            <s:scriptvalue>import java.util.*;
+
+List newlist = new ArrayList();
+
+for (int i=0; i&lt;((int) Integer.parseInt(copy_number.toString())); i++) {
+	newlist.add(input);
+}
+
+clones=newlist;</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">copy_number</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">input</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">clones</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+          <s:iterationstrategy>
+            <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+              <i:iterator name="copy_number" />
+              <i:iterator name="input" />
+            </i:dot>
+          </s:iterationstrategy>
+        </s:processor>
+        <s:processor name="CloneQueries">
+          <s:beanshell>
+            <s:scriptvalue>import java.util.*;
+
+List newlist = new ArrayList();
+
+for (int i=0; i&lt;((int) Integer.parseInt(copy_number.toString())); i++) {
+	newlist.add(input);
+}
+
+clones=newlist;</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">copy_number</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">input</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">clones</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+          <s:iterationstrategy>
+            <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+              <i:iterator name="copy_number" />
+              <i:iterator name="input" />
+            </i:dot>
+          </s:iterationstrategy>
+        </s:processor>
+        <s:processor name="QueryFrequency">
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:abc3350b-e618-4fdd-8317-cbf5c298804d" author="" title="QueryFrequencyInCorpus" />
+              <s:processor name="DocumentsIndex" boring="true">
+                <s:stringconstant>MedLine</s:stringconstant>
+              </s:processor>
+              <s:processor name="XPath_From_Text">
+                <s:local>net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker</s:local>
+              </s:processor>
+              <s:processor name="Flatten_list">
+                <s:local>
+                  org.embl.ebi.escience.scuflworkers.java.FlattenList
+                  <s:extensions>
+                    <s:flattenlist s:depth="2" />
+                  </s:extensions>
+                </s:local>
+              </s:processor>
+              <s:processor name="RelativeFrequencyPoiInCorpus">
+                <s:defaults>
+                  <s:default name="corpus_total">17000000</s:default>
+                </s:defaults>
+                <s:beanshell>
+                  <s:scriptvalue>/* variables
+	poi_count_in_corpus
+	corpus_total
+return
+	relative_frequency
+*/
+import java.lang.Math;
+
+Double rf = new Double(-Math.log((double)(Integer.parseInt( poi_count_in_corpus ) ) / ((double) (Integer.parseInt( corpus_total )))));
+
+relative_frequency = rf.toString();</s:scriptvalue>
+                  <s:beanshellinputlist>
+                    <s:beanshellinput s:syntactictype="'text/plain'">corpus_total</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">poi_count_in_corpus</s:beanshellinput>
+                  </s:beanshellinputlist>
+                  <s:beanshelloutputlist>
+                    <s:beanshelloutput s:syntactictype="'text/plain'">relative_frequency</s:beanshelloutput>
+                  </s:beanshelloutputlist>
+                  <s:dependencies s:classloader="iteration" />
+                </s:beanshell>
+              </s:processor>
+              <s:processor name="ExtractCountXpath" boring="true">
+                <s:stringconstant>./aid:result/@total</s:stringconstant>
+              </s:processor>
+              <s:processor name="AIDA_search">
+                <s:defaults>
+                  <s:default name="maxHits">1</s:default>
+                  <s:default name="defaultField">content</s:default>
+                </s:defaults>
+                <s:arbitrarywsdl>
+                  <s:wsdl>http://aida.science.uva.nl:9999/axis/services/SearcherWS?wsdl</s:wsdl>
+                  <s:operation>search</s:operation>
+                </s:arbitrarywsdl>
+              </s:processor>
+              <s:link source="AIDA_search:searchReturn" sink="XPath_From_Text:xml-text" />
+              <s:link source="ExtractCountXpath:value" sink="XPath_From_Text:xpath" />
+              <s:link source="Flatten_list:outputlist" sink="RelativeFrequencyPoiInCorpus:poi_count_in_corpus" />
+              <s:link source="XPath_From_Text:nodelist" sink="Flatten_list:inputlist" />
+              <s:link source="corpus_total_doc_count" sink="RelativeFrequencyPoiInCorpus:corpus_total" />
+              <s:link source="DocumentsIndex:value" sink="AIDA_search:index" />
+              <s:link source="query" sink="AIDA_search:queryString" />
+              <s:link source="Flatten_list:outputlist" sink="poi_count_in_corpus" />
+              <s:link source="RelativeFrequencyPoiInCorpus:relative_frequency" sink="min_log_relative_frequency_poi_in_corpus" />
+              <s:link source="query" sink="poi_query" />
+              <s:source name="query" />
+              <s:source name="corpus_total_doc_count" />
+              <s:sink name="poi_count_in_corpus" />
+              <s:sink name="min_log_relative_frequency_poi_in_corpus" />
+              <s:sink name="poi_query" />
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="QueryDiscoveredFrequency">
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:abc3350b-e618-4fdd-8317-cbf5c298804d" author="" title="QueryFrequencyInCorpus" />
+              <s:processor name="PoiAndDpQuery">
+                <s:beanshell>
+                  <s:scriptvalue>poi_and_dp_query = "(" + poi_query + ") AND (" + dp_query + ")";</s:scriptvalue>
+                  <s:beanshellinputlist>
+                    <s:beanshellinput s:syntactictype="'text/plain'">poi_query</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">dp_query</s:beanshellinput>
+                  </s:beanshellinputlist>
+                  <s:beanshelloutputlist>
+                    <s:beanshelloutput s:syntactictype="'text/plain'">poi_and_dp_query</s:beanshelloutput>
+                  </s:beanshelloutputlist>
+                  <s:dependencies s:classloader="iteration" />
+                </s:beanshell>
+              </s:processor>
+              <s:processor name="XPath_From_Text">
+                <s:local>net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker</s:local>
+              </s:processor>
+              <s:processor name="DocumentsIndex" boring="true">
+                <s:stringconstant>MedLine</s:stringconstant>
+              </s:processor>
+              <s:processor name="Flatten_list">
+                <s:local>
+                  org.embl.ebi.escience.scuflworkers.java.FlattenList
+                  <s:extensions>
+                    <s:flattenlist s:depth="2" />
+                  </s:extensions>
+                </s:local>
+              </s:processor>
+              <s:processor name="ExtractCountXpath" boring="true">
+                <s:stringconstant>./aid:result/@total</s:stringconstant>
+              </s:processor>
+              <s:processor name="AIDA_search">
+                <s:defaults>
+                  <s:default name="maxHits">1</s:default>
+                  <s:default name="defaultField">content</s:default>
+                </s:defaults>
+                <s:arbitrarywsdl>
+                  <s:wsdl>http://aida.science.uva.nl:9999/axis/services/SearcherWS?wsdl</s:wsdl>
+                  <s:operation>search</s:operation>
+                </s:arbitrarywsdl>
+              </s:processor>
+              <s:link source="AIDA_search:searchReturn" sink="XPath_From_Text:xml-text" />
+              <s:link source="DocumentsIndex:value" sink="AIDA_search:index" />
+              <s:link source="ExtractCountXpath:value" sink="XPath_From_Text:xpath" />
+              <s:link source="XPath_From_Text:nodelist" sink="Flatten_list:inputlist" />
+              <s:link source="discovered_protein" sink="PoiAndDpQuery:dp_query" />
+              <s:link source="query" sink="PoiAndDpQuery:poi_query" />
+              <s:link source="Flatten_list:outputlist" sink="poidp_count_in_corpus" />
+              <s:link source="PoiAndDpQuery:poi_and_dp_query" sink="AIDA_search:queryString" />
+              <s:link source="PoiAndDpQuery:poi_and_dp_query" sink="poi_and_dp_query" />
+              <s:source name="query" />
+              <s:source name="discovered_protein" />
+              <s:sink name="poidp_count_in_corpus" />
+              <s:sink name="poi_and_dp_query" />
+            </s:scufl>
+          </s:workflow>
+          <s:iterationstrategy>
+            <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+              <i:iterator name="query" />
+              <i:iterator name="discovered_protein" />
+            </i:dot>
+          </s:iterationstrategy>
+        </s:processor>
+        <s:processor name="DiscoveredFrequency">
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:abc3350b-e618-4fdd-8317-cbf5c298804d" author="" title="QueryFrequencyInCorpus" />
+              <s:processor name="DocumentsIndex" boring="true">
+                <s:stringconstant>MedLine</s:stringconstant>
+              </s:processor>
+              <s:processor name="Flatten_list">
+                <s:local>
+                  org.embl.ebi.escience.scuflworkers.java.FlattenList
+                  <s:extensions>
+                    <s:flattenlist s:depth="2" />
+                  </s:extensions>
+                </s:local>
+              </s:processor>
+              <s:processor name="XPath_From_Text">
+                <s:local>net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker</s:local>
+              </s:processor>
+              <s:processor name="AIDA_search">
+                <s:defaults>
+                  <s:default name="maxHits">1</s:default>
+                  <s:default name="defaultField">content</s:default>
+                </s:defaults>
+                <s:arbitrarywsdl>
+                  <s:wsdl>http://aida.science.uva.nl:9999/axis/services/SearcherWS?wsdl</s:wsdl>
+                  <s:operation>search</s:operation>
+                </s:arbitrarywsdl>
+              </s:processor>
+              <s:processor name="ExtractCountXpath" boring="true">
+                <s:stringconstant>./aid:result/@total</s:stringconstant>
+              </s:processor>
+              <s:processor name="RelativeFrequencyPoiInCorpus">
+                <s:defaults>
+                  <s:default name="corpus_total">17000000</s:default>
+                </s:defaults>
+                <s:beanshell>
+                  <s:scriptvalue>/* variables
+	poi_count_in_corpus
+	corpus_total
+return
+	relative_frequency
+*/
+import java.lang.Math;
+
+Double rf = new Double(-Math.log((double)(Integer.parseInt( poi_count_in_corpus ) ) / ((double) (Integer.parseInt( corpus_total )))));
+
+relative_frequency = rf.toString();</s:scriptvalue>
+                  <s:beanshellinputlist>
+                    <s:beanshellinput s:syntactictype="'text/plain'">corpus_total</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">poi_count_in_corpus</s:beanshellinput>
+                  </s:beanshellinputlist>
+                  <s:beanshelloutputlist>
+                    <s:beanshelloutput s:syntactictype="'text/plain'">relative_frequency</s:beanshelloutput>
+                  </s:beanshelloutputlist>
+                  <s:dependencies s:classloader="iteration" />
+                </s:beanshell>
+              </s:processor>
+              <s:link source="AIDA_search:searchReturn" sink="XPath_From_Text:xml-text" />
+              <s:link source="ExtractCountXpath:value" sink="XPath_From_Text:xpath" />
+              <s:link source="Flatten_list:outputlist" sink="RelativeFrequencyPoiInCorpus:poi_count_in_corpus" />
+              <s:link source="XPath_From_Text:nodelist" sink="Flatten_list:inputlist" />
+              <s:link source="corpus_total_doc_count" sink="RelativeFrequencyPoiInCorpus:corpus_total" />
+              <s:link source="DocumentsIndex:value" sink="AIDA_search:index" />
+              <s:link source="query" sink="AIDA_search:queryString" />
+              <s:link source="Flatten_list:outputlist" sink="poi_count_in_corpus" />
+              <s:link source="RelativeFrequencyPoiInCorpus:relative_frequency" sink="min_log_relative_frequency_poi_in_corpus" />
+              <s:link source="query" sink="poi_query" />
+              <s:source name="query" />
+              <s:source name="corpus_total_doc_count" />
+              <s:sink name="poi_count_in_corpus" />
+              <s:sink name="min_log_relative_frequency_poi_in_corpus" />
+              <s:sink name="poi_query" />
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:link source="DiscoveredFrequency:poi_count_in_corpus" sink="Flatten_discovered_frequency_list:inputlist" />
+        <s:link source="DiscoveredFrequency:poi_query" sink="Flatten_discovery_list:inputlist" />
+        <s:link source="Flatten_discovered_frequency_list:outputlist" sink="MinLogLikelihood:discovered_frequency" />
+        <s:link source="Flatten_discovery_list:outputlist" sink="QueryDiscoveredFrequency:discovered_protein" />
+        <s:link source="Flatten_query_discovered_list:outputlist" sink="MinLogLikelihood:query_discovered_frequency" />
+        <s:link source="PubMedTotal:value" sink="DiscoveredFrequency:corpus_total_doc_count" />
+        <s:link source="PubMedTotal:value" sink="MinLogLikelihood:total_frequency" />
+        <s:link source="PubMedTotal:value" sink="QueryFrequency:corpus_total_doc_count" />
+        <s:link source="QueryDiscoveredFrequency:poidp_count_in_corpus" sink="Flatten_query_discovered_list:inputlist" />
+        <s:link source="QueryFrequency:poi_count_in_corpus" sink="Flatten_query_frequency_list:inputlist" />
+        <s:link source="discovered_protein" sink="CountListElements:list" />
+        <s:link source="CloneFrequencies:clones" sink="MinLogLikelihood:query_frequency" />
+        <s:link source="CountListElements:count" sink="CloneFrequencies:copy_number" />
+        <s:link source="CountListElements:count" sink="CloneQueries:copy_number" />
+        <s:link source="Flatten_query_discovered_list:outputlist" sink="Flatten_querydiscoveredfrequency:inputlist" />
+        <s:link source="Flatten_query_frequency_list:outputlist" sink="CloneFrequencies:input" />
+        <s:link source="Flatten_query_list:outputlist" sink="CloneQueries:input" />
+        <s:link source="MinLogLikelihood:minloglikelihood" sink="Flatten_mll:inputlist" />
+        <s:link source="QueryFrequency:poi_query" sink="Flatten_query_list:inputlist" />
+        <s:link source="discovered_protein" sink="DiscoveredFrequency:query" />
+        <s:link source="query" sink="QueryDiscoveredFrequency:query" />
+        <s:link source="query" sink="QueryFrequency:query" />
+        <s:link source="Flatten_discovered_frequency_list:outputlist" sink="discovered_frequency" />
+        <s:link source="Flatten_mll:outputlist" sink="min_log_likelihood" />
+        <s:link source="Flatten_query_frequency_list:outputlist" sink="query_frequency" />
+        <s:link source="Flatten_querydiscoveredfrequency:outputlist" sink="query_discovered_frequency" />
+        <s:source name="query">
+          <s:metadata>
+            <s:description>E.g. EZH2</s:description>
+          </s:metadata>
+        </s:source>
+        <s:source name="discovered_protein">
+          <s:metadata>
+            <s:description>E.g. HDAC1</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="query_frequency" />
+        <s:sink name="discovered_frequency" />
+        <s:sink name="min_log_likelihood">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/plain</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+        <s:sink name="query_discovered_frequency" />
+        <s:coordination name="Ready_BLOCKON_MinLogLikelihood">
+          <s:condition>
+            <s:state>Completed</s:state>
+            <s:target>MinLogLikelihood</s:target>
+          </s:condition>
+          <s:action>
+            <s:target>Ready</s:target>
+            <s:statechange>
+              <s:from>Scheduled</s:from>
+              <s:to>Running</s:to>
+            </s:statechange>
+          </s:action>
+        </s:coordination>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="ExtractProteins_HomoSapiens">
+    <s:description>Workflow to extract proteins from text, followed by filtering protein names known as human protein names.</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:c0a963bc-2343-4d31-aa8c-304bfe3a6289" author="Marco Roos (workflow), Martijn Schuemie (service)" title="ExtractProteinsFromText_HomoSapiens">Workflow to extract proteins from text, followed by filtering protein names known as human protein names.</s:workflowdescription>
+        <s:processor name="FlattenProteinName">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="FlattenUniProtID">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="FilterHumanProteins">
+          <s:description>This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:description>
+          <s:workflow retrydelay="10" retrybackoff="10.0">
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="Marco Roos (AID)" title="FilterHumanProteinsByUniprot">This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:workflowdescription>
+              <s:processor name="Filter1">
+                <s:defaults>
+                  <s:default name="regex">.+</s:default>
+                </s:defaults>
+                <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+              </s:processor>
+              <s:processor name="Filter2">
+                <s:defaults>
+                  <s:default name="regex">.+</s:default>
+                </s:defaults>
+                <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+              </s:processor>
+              <s:processor name="UniProtOrNot">
+                <s:beanshell>
+                  <s:scriptvalue>if (uniprotIDlist.isEmpty()) {
+	uniprotID_or_False = "False";
+} else {
+	uniprotID_or_False = (String) uniprotIDlist.iterator().next().toString();
+}</s:scriptvalue>
+                  <s:beanshellinputlist>
+                    <s:beanshellinput s:syntactictype="l('text/plain')">uniprotIDlist</s:beanshellinput>
+                  </s:beanshellinputlist>
+                  <s:beanshelloutputlist>
+                    <s:beanshelloutput s:syntactictype="l('text/plain')">uniprotID_or_False</s:beanshelloutput>
+                  </s:beanshelloutputlist>
+                  <s:dependencies s:classloader="iteration" />
+                </s:beanshell>
+              </s:processor>
+              <s:processor name="FilterTrueProteinByUniProtID">
+                <s:beanshell>
+                  <s:scriptvalue>if (uniprot!="False") {
+	true_protein=protein;
+	true_uniprot=uniprot;
+}</s:scriptvalue>
+                  <s:beanshellinputlist>
+                    <s:beanshellinput s:syntactictype="'text/plain'">protein</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">uniprot</s:beanshellinput>
+                  </s:beanshellinputlist>
+                  <s:beanshelloutputlist>
+                    <s:beanshelloutput s:syntactictype="'text/plain'">true_protein</s:beanshelloutput>
+                    <s:beanshelloutput s:syntactictype="'text/plain'">true_uniprot</s:beanshelloutput>
+                  </s:beanshelloutputlist>
+                  <s:dependencies s:classloader="iteration" />
+                </s:beanshell>
+                <s:iterationstrategy>
+                  <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+                    <i:iterator name="protein" />
+                    <i:iterator name="uniprot" />
+                  </i:dot>
+                </s:iterationstrategy>
+              </s:processor>
+              <s:processor name="getUniprotID">
+                <s:arbitrarywsdl retrydelay="1">
+                  <s:wsdl>http://bubbles.biosemantics.org:8180/axis/services/SynsetServer/SynsetServer.jws?wsdl</s:wsdl>
+                  <s:operation>getUniprotID</s:operation>
+                </s:arbitrarywsdl>
+              </s:processor>
+              <s:link source="FilterTrueProteinByUniProtID:true_protein" sink="Filter2:stringlist" />
+              <s:link source="FilterTrueProteinByUniProtID:true_uniprot" sink="Filter1:stringlist" />
+              <s:link source="UniProtOrNot:uniprotID_or_False" sink="FilterTrueProteinByUniProtID:uniprot" />
+              <s:link source="getUniprotID:getUniprotIDReturn" sink="UniProtOrNot:uniprotIDlist" />
+              <s:link source="input_string" sink="FilterTrueProteinByUniProtID:protein" />
+              <s:link source="input_string" sink="getUniprotID:term" />
+              <s:link source="Filter1:filteredlist" sink="uniprotID" />
+              <s:link source="Filter2:filteredlist" sink="protein_molecule" />
+              <s:source name="input_string" />
+              <s:sink name="protein_molecule" />
+              <s:sink name="uniprotID" />
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="ExtractProteinsFromText">
+          <s:description>Workflow to extract proteins from text
+
+Two methods are combined:
+Named entity recognition using LingPipe (NERecognize)
+Named entity recognition using Conditional Random Fields (applyCRF)
+Both are based on machine learning methods.
+
+Default inputs:
+Model: 1 = BioCreative I
+OutputMode: 1 = IOB format; 2 = SGML format; 3 = a list of entities; 4 = ABNER format
+Tokenization: 1 = activate tokenization (makes no difference in practice)
+testFile is expected to be a piece of text (string)</s:description>
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:ec3e8ad0-b45b-4dbb-b5a9-da5e273d82c1" author="Marco Roos (workflow) and Sophia Katrenko (service)" title="ProteinExtractionFromText">Workflow to extract proteins from text
+
+Two methods are combined:
+Named entity recognition using LingPipe (NERecognize)
+Named entity recognition using Conditional Random Fields (applyCRF)
+Both are based on machine learning methods.
+
+Default inputs:
+Model: 1 = BioCreative I
+OutputMode: 1 = IOB format; 2 = SGML format; 3 = a list of entities; 4 = ABNER format
+Tokenization: 1 = activate tokenization (makes no difference in practice)
+testFile is expected to be a piece of text (string)</s:workflowdescription>
+              <s:processor name="split_regexp" boring="true">
+                <s:stringconstant>\n</s:stringconstant>
+              </s:processor>
+              <s:processor name="String_list_union3">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetUnion</s:local>
+              </s:processor>
+              <s:processor name="FilterProteinsFromIOBformat1" boring="true">
+                <s:stringconstant>(.+[^,.])	B-PROTEIN</s:stringconstant>
+              </s:processor>
+              <s:processor name="FilterProteinsFromIOBformat2" boring="true">
+                <s:stringconstant>(.+)[,.]	B-PROTEIN</s:stringconstant>
+              </s:processor>
+              <s:processor name="FilterProteinsByRegexp2">
+                <s:defaults>
+                  <s:default name="group">1</s:default>
+                </s:defaults>
+                <s:local>org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList</s:local>
+              </s:processor>
+              <s:processor name="String_list_union1">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetUnion</s:local>
+              </s:processor>
+              <s:processor name="Remove_duplicate_strings">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates</s:local>
+              </s:processor>
+              <s:processor name="FilterProteinsFromListFormat" boring="true">
+                <s:stringconstant>PROTEIN	\[(.+)\]</s:stringconstant>
+              </s:processor>
+              <s:processor name="SplitProteinsList">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+              </s:processor>
+              <s:processor name="SplitStringByRegexp">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+              </s:processor>
+              <s:processor name="FilterProteins">
+                <s:defaults>
+                  <s:default name="group">1</s:default>
+                </s:defaults>
+                <s:local>org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList</s:local>
+              </s:processor>
+              <s:processor name="FilterProteinsByRegexp1">
+                <s:defaults>
+                  <s:default name="group">1</s:default>
+                </s:defaults>
+                <s:local>org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList</s:local>
+              </s:processor>
+              <s:processor name="String_list_union2">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetUnion</s:local>
+              </s:processor>
+              <s:processor name="applyCRF2">
+                <s:defaults>
+                  <s:default name="modelFile">1</s:default>
+                  <s:default name="outputMode">3</s:default>
+                  <s:default name="tokenization">1</s:default>
+                </s:defaults>
+                <s:arbitrarywsdl>
+                  <s:wsdl>http://aida.science.uva.nl:9999/axis/services/CRFapply?wsdl</s:wsdl>
+                  <s:operation>apply</s:operation>
+                </s:arbitrarywsdl>
+              </s:processor>
+              <s:processor name="applyCRF1">
+                <s:defaults>
+                  <s:default name="modelFile">1</s:default>
+                  <s:default name="outputMode">1</s:default>
+                  <s:default name="tokenization">1</s:default>
+                </s:defaults>
+                <s:arbitrarywsdl>
+                  <s:wsdl>http://aida.science.uva.nl:9999/axis/services/CRFapply?wsdl</s:wsdl>
+                  <s:operation>apply</s:operation>
+                </s:arbitrarywsdl>
+              </s:processor>
+              <s:processor name="NER1_ExtractProteins">
+                <s:description>This workflow applies the discovery workflow built around the AIDA 'Named Entity Recognize' web service by Sophia Katrenko. It uses the pre-learned genomics model, named 'MedLine', to find genomics concepts in a set of documents in lucene output format.</s:description>
+                <s:workflow>
+                  <s:scufl version="0.2" log="0">
+                    <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:b4c1a118-6a38-40b5-99e9-febbd3c85f2b" author="Marco Roos (AID)" title="Discover_proteins_from_plain_text">This workflow applies the discovery workflow built around the AIDA 'Named Entity Recognize' web service by Sophia Katrenko. It uses the pre-learned genomics model, named 'MedLine', to find genomics concepts in a set of documents in lucene output format.</s:workflowdescription>
+                    <s:processor name="prelearned_genomics_model" boring="true">
+                      <s:stringconstant>MedLine</s:stringconstant>
+                    </s:processor>
+                    <s:processor name="Discover_entities">
+                      <s:description>This workflow contains the 'Named Entity Recognize' web service from the AIDA toolbox, created by Sophia Katrenko. It can be used to discover entities of a certain type (determined by 'learned_model') in documents provided in a lucene output format.</s:description>
+                      <s:workflow>
+                        <s:scufl version="0.2" log="0">
+                          <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:e7ae8f2a-428f-4afd-93eb-52ccb89273e1" author="Marco Roos (AID)" title="Discover_entities">This workflow contains the 'Named Entity Recognize' web service from the AIDA toolbox, created by Sophia Katrenko. It can be used to discover entities of a certain type (determined by 'learned_model') in documents provided in a lucene output format.
+
+Known issues:
+The output of NErecognize contains concepts with / characters, breaking the xml. For post-processing its results it is better to use string manipulation than xml manipulations.
+The output is per document, which means entities will  be redundant if they occur in more than one document.</s:workflowdescription>
+                          <s:processor name="Default_output_type" boring="true">
+                            <s:stringconstant>NElist</s:stringconstant>
+                          </s:processor>
+                          <s:processor name="NErecognize">
+                            <s:arbitrarywsdl>
+                              <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/NERecognizerService?wsdl</s:wsdl>
+                              <s:operation>NErecognize</s:operation>
+                            </s:arbitrarywsdl>
+                          </s:processor>
+                          <s:processor name="Default_input_type" boring="true">
+                            <s:stringconstant>text</s:stringconstant>
+                          </s:processor>
+                          <s:link source="input_text" sink="NErecognize:input_data" />
+                          <s:link source="learned_model" sink="NErecognize:r_type" />
+                          <s:link source="Default_input_type:value" sink="NErecognize:input_type" />
+                          <s:link source="Default_output_type:value" sink="NErecognize:output_type" />
+                          <s:link source="NErecognize:NErecognizeReturn" sink="discovered_entities" />
+                          <s:source name="input_text">
+                            <s:metadata>
+                              <s:description>Example:
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;aid:result xmlns:aid="http://aid.vle.org" query="+content:ezh2 +(year:2007^10.0 year:2006^9.0 year:2005^8.0 year:2004^7.0 year:2004^6.0 year:2003^5.0 year:2002^4.0 year:2001^3.0 year:2000^2.0 year:1999)" total="78" time="2"&gt;
+  &lt;doc rank="1" score="0.55880820751190185546875"&gt;
+    &lt;field name="PMID"&gt;
+      &lt;value&gt;15208672&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="year"&gt;
+      &lt;value&gt;2004&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="PT"&gt;
+      &lt;value&gt;Journal Article&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="title"&gt;
+      &lt;value&gt;Activated p53 suppresses the histone methyltransferase EZH2 gene.&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="content"&gt;
+      &lt;value&gt;... Furthermore, the repression of EZH2 promoter by p53 is dependent on p53 transcriptional target p21(Waf1) inactivating RB/E2F pathways. In addition, the knockdown of EZH2 expression retards cell proliferation and induces G2/M arrest. We suggest that the p53-dependent suppression of EZH2 expression is a novel pathway that contributes to p53-mediated G2/M arrest. EZH2 associated complex possesses HMTase activity and is involved in epigenetic regulation. Activated p53 suppresses EZH2 expression, suggesting a further role for p53 in epigenetic regulation and in the maintenance of genetic stability. Suppression of EZH2 expression in tumors by p53 may lead to novel approaches to control cancer progression.&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="LuceneDocID"&gt;
+      &lt;value&gt;14861224&lt;/value&gt;
+    &lt;/field&gt;
+  &lt;/doc&gt;
+&lt;/aid:result&gt;</s:description>
+                            </s:metadata>
+                          </s:source>
+                          <s:source name="learned_model">
+                            <s:metadata>
+                              <s:description>Model to discover a set of specific concepts; e.g. the prelearned model named 'MedLine' will make the service discover genomics concepts.</s:description>
+                            </s:metadata>
+                          </s:source>
+                          <s:sink name="discovered_entities">
+                            <s:metadata>
+                              <s:mimeTypes>
+                                <s:mimeType>text/rdf</s:mimeType>
+                                <s:mimeType>text/xml</s:mimeType>
+                              </s:mimeTypes>
+                              <s:description>Entities discoverd in documents provided in lucene output format.</s:description>
+                            </s:metadata>
+                          </s:sink>
+                        </s:scufl>
+                      </s:workflow>
+                    </s:processor>
+                    <s:processor name="Extract_proteins">
+                      <s:description>This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:description>
+                      <s:workflow>
+                        <s:scufl version="0.2" log="0">
+                          <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="Marco Roos (AID)" title="Extract_proteins_fromXML">This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:workflowdescription>
+                          <s:processor name="filter_protein_molecule_regexp" boring="true">
+                            <s:stringconstant>&lt;protein_molecule&gt;\w*&lt;/protein_molecule&gt;</s:stringconstant>
+                          </s:processor>
+                          <s:processor name="Filter_protein_molecules">
+                            <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+                          </s:processor>
+                          <s:processor name="splitOn_protein_molecule_regexp" boring="true">
+                            <s:stringconstant>(?=&lt;protein_molecule&gt;)|(?&lt;=&lt;/protein_molecule&gt;)</s:stringconstant>
+                          </s:processor>
+                          <s:processor name="Remove_duplicate_strings">
+                            <s:local>org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates</s:local>
+                          </s:processor>
+                          <s:processor name="Strip_xml">
+                            <s:beanshell>
+                              <s:scriptvalue>import java.util.regex.*;
+Pattern pattern = Pattern.compile("&lt;/?[\\w\\d-]+&gt;");
+Matcher matcher = pattern.matcher(tagged_term);
+String term= matcher.replaceAll("");</s:scriptvalue>
+                              <s:beanshellinputlist>
+                                <s:beanshellinput s:syntactictype="'text/xml'">tagged_term</s:beanshellinput>
+                              </s:beanshellinputlist>
+                              <s:beanshelloutputlist>
+                                <s:beanshelloutput s:syntactictype="'text/plain'">term</s:beanshelloutput>
+                              </s:beanshelloutputlist>
+                              <s:dependencies s:classloader="iteration" />
+                            </s:beanshell>
+                          </s:processor>
+                          <s:processor name="SplitOn_protein_molecule">
+                            <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+                          </s:processor>
+                          <s:link source="input_string" sink="SplitOn_protein_molecule:string" />
+                          <s:link source="Filter_protein_molecules:filteredlist" sink="Remove_duplicate_strings:stringlist" />
+                          <s:link source="Remove_duplicate_strings:strippedlist" sink="Strip_xml:tagged_term" />
+                          <s:link source="SplitOn_protein_molecule:split" sink="Filter_protein_molecules:stringlist" />
+                          <s:link source="Strip_xml:term" sink="protein_molecule" />
+                          <s:link source="filter_protein_molecule_regexp:value" sink="Filter_protein_molecules:regex" />
+                          <s:link source="splitOn_protein_molecule_regexp:value" sink="SplitOn_protein_molecule:regex" />
+                          <s:source name="input_string" />
+                          <s:sink name="protein_molecule" />
+                        </s:scufl>
+                      </s:workflow>
+                    </s:processor>
+                    <s:link source="Discover_entities:discovered_entities" sink="Extract_proteins:input_string" />
+                    <s:link source="prelearned_genomics_model:value" sink="Discover_entities:learned_model" />
+                    <s:link source="text_document" sink="Discover_entities:input_text" />
+                    <s:link source="Extract_proteins:protein_molecule" sink="discovered_proteins" />
+                    <s:source name="text_document">
+                      <s:metadata>
+                        <s:description>Example:
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;aid:result xmlns:aid="http://aid.vle.org" query="+content:ezh2 +(year:2007^10.0 year:2006^9.0 year:2005^8.0 year:2004^7.0 year:2004^6.0 year:2003^5.0 year:2002^4.0 year:2001^3.0 year:2000^2.0 year:1999)" total="78" time="2"&gt;
+  &lt;doc rank="1" score="0.55880820751190185546875"&gt;
+    &lt;field name="PMID"&gt;
+      &lt;value&gt;15208672&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="year"&gt;
+      &lt;value&gt;2004&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="PT"&gt;
+      &lt;value&gt;Journal Article&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="title"&gt;
+      &lt;value&gt;Activated p53 suppresses the histone methyltransferase EZH2 gene.&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="content"&gt;
+      &lt;value&gt;... Furthermore, the repression of EZH2 promoter by p53 is dependent on p53 transcriptional target p21(Waf1) inactivating RB/E2F pathways. In addition, the knockdown of EZH2 expression retards cell proliferation and induces G2/M arrest. We suggest that the p53-dependent suppression of EZH2 expression is a novel pathway that contributes to p53-mediated G2/M arrest. EZH2 associated complex possesses HMTase activity and is involved in epigenetic regulation. Activated p53 suppresses EZH2 expression, suggesting a further role for p53 in epigenetic regulation and in the maintenance of genetic stability. Suppression of EZH2 expression in tumors by p53 may lead to novel approaches to control cancer progression.&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="LuceneDocID"&gt;
+      &lt;value&gt;14861224&lt;/value&gt;
+    &lt;/field&gt;
+  &lt;/doc&gt;
+&lt;/aid:result&gt;</s:description>
+                      </s:metadata>
+                    </s:source>
+                    <s:sink name="discovered_proteins">
+                      <s:metadata>
+                        <s:mimeTypes>
+                          <s:mimeType>text/rdf</s:mimeType>
+                          <s:mimeType>text/xml</s:mimeType>
+                        </s:mimeTypes>
+                      </s:metadata>
+                    </s:sink>
+                  </s:scufl>
+                </s:workflow>
+              </s:processor>
+              <s:link source="input_text" sink="applyCRF1:testFile" />
+              <s:link source="FilterProteins:filteredlist" sink="String_list_union2:list2" />
+              <s:link source="FilterProteinsByRegexp1:filteredlist" sink="String_list_union1:list1" />
+              <s:link source="FilterProteinsByRegexp2:filteredlist" sink="String_list_union1:list2" />
+              <s:link source="FilterProteinsFromIOBformat1:value" sink="FilterProteinsByRegexp1:regex" />
+              <s:link source="FilterProteinsFromIOBformat2:value" sink="FilterProteinsByRegexp2:regex" />
+              <s:link source="FilterProteinsFromListFormat:value" sink="FilterProteins:regex" />
+              <s:link source="SplitProteinsList:split" sink="FilterProteins:stringlist" />
+              <s:link source="SplitStringByRegexp:split" sink="FilterProteinsByRegexp1:stringlist" />
+              <s:link source="SplitStringByRegexp:split" sink="FilterProteinsByRegexp2:stringlist" />
+              <s:link source="String_list_union1:union" sink="String_list_union2:list1" />
+              <s:link source="applyCRF1:applyReturn" sink="SplitStringByRegexp:string" />
+              <s:link source="input_text" sink="applyCRF2:testFile" />
+              <s:link source="applyCRF2:applyReturn" sink="SplitProteinsList:string" />
+              <s:link source="input_text" sink="NER1_ExtractProteins:text_document" />
+              <s:link source="NER1_ExtractProteins:discovered_proteins" sink="String_list_union3:list2" />
+              <s:link source="Remove_duplicate_strings:strippedlist" sink="extracted_protein" />
+              <s:link source="String_list_union2:union" sink="String_list_union3:list1" />
+              <s:link source="String_list_union3:union" sink="Remove_duplicate_strings:stringlist" />
+              <s:link source="split_regexp:value" sink="SplitProteinsList:regex" />
+              <s:link source="split_regexp:value" sink="SplitStringByRegexp:regex" />
+              <s:source name="input_text">
+                <s:metadata>
+                  <s:description>Example:
+We have identified a transcriptional repressor, Nrg1, in a genetic screen designed to reveal negative factors involved in the expression of STA1, which encodes a glucoamylase. The NRG1 gene encodes a 25-kDa C2H2 zinc finger protein which specifically binds to two regions in the upstream activation sequence of the STA1 gene, as judged by gel retardation and DNase I footprinting analyses. Disruption of the NRG1 gene causes a fivefold increase in the level of the STA1 transcript in the presence of glucose.</s:description>
+                </s:metadata>
+              </s:source>
+              <s:sink name="extracted_protein" />
+              <s:coordination name="apply1_BLOCKON_apply">
+                <s:condition>
+                  <s:state>Completed</s:state>
+                  <s:target>applyCRF1</s:target>
+                </s:condition>
+                <s:action>
+                  <s:target>applyCRF2</s:target>
+                  <s:statechange>
+                    <s:from>Scheduled</s:from>
+                    <s:to>Running</s:to>
+                  </s:statechange>
+                </s:action>
+              </s:coordination>
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:link source="input_text" sink="ExtractProteinsFromText:input_text" />
+        <s:link source="ExtractProteinsFromText:extracted_protein" sink="FilterHumanProteins:input_string" />
+        <s:link source="FilterHumanProteins:protein_molecule" sink="FlattenProteinName:inputlist" />
+        <s:link source="FilterHumanProteins:uniprotID" sink="FlattenUniProtID:inputlist" />
+        <s:link source="FlattenProteinName:outputlist" sink="protein_name" />
+        <s:link source="FlattenUniProtID:outputlist" sink="uniprotID" />
+        <s:source name="input_text">
+          <s:metadata>
+            <s:description>Plain text to extract proteins from.
+e.g.
+We have identified a transcriptional repressor, Nrg1, in a genetic screen designed to reveal negative factors involved in the expression of STA1, which encodes a glucoamylase. The NRG1 gene encodes a 25-kDa C2H2 zinc finger protein which specifically binds to two regions in the upstream activation sequence of the STA1 gene, as judged by gel retardation and DNase I footprinting analyses. Disruption of the NRG1 gene causes a fivefold increase in the level of the STA1 transcript in the presence of glucose.</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="uniprotID">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/plain</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+        <s:sink name="protein_name">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/plain</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:link source="max_document_nr" sink="RetrieveDocumentsFromMedline:maxHits" />
+  <s:link source="query" sink="ProcessQuery:query_string" />
+  <s:link source="AddDocToSemanticModel:doc_instance" sink="AddProteinToSemanticModel:doc_instance" />
+  <s:link source="AddQueryToSemanticModel:query_instance" sink="AddDocToSemanticModel:query_instance" />
+  <s:link source="ExtractProteins_HomoSapiens:protein_name" sink="AddProteinToSemanticModel:protein_name" />
+  <s:link source="ExtractProteins_HomoSapiens:protein_name" sink="ScoreExtractedProteins:discovered_protein" />
+  <s:link source="ExtractProteins_HomoSapiens:uniprotID" sink="AddProteinToSemanticModel:uniprot_id" />
+  <s:link source="ExtractProteins_HomoSapiens:uniprotID" sink="UniProtXrefURLs:UniProtID" />
+  <s:link source="ProcessQuery:extended_lucene_query" sink="AddQueryToSemanticModel:query" />
+  <s:link source="ProcessQuery:extended_lucene_query" sink="RetrieveDocumentsFromMedline:queryString" />
+  <s:link source="ProcessQuery:extended_lucene_query" sink="ScoreExtractedProteins:query" />
+  <s:link source="RetrieveDocumentsFromMedline:abstract" sink="ExtractProteins_HomoSapiens:input_text" />
+  <s:link source="RetrieveDocumentsFromMedline:pubmed_URL" sink="AddDocToSemanticModel:pubmed_URL" />
+  <s:link source="RetrieveDocumentsFromMedline:pubmed_id" sink="AddDocToSemanticModel:pubmed_id" />
+  <s:link source="ScoreExtractedProteins:min_log_likelihood" sink="AddScoreToSemanticRepository:score" />
+  <s:link source="ScoreExtractedProteins:min_log_likelihood" sink="AddScoreToSemanticRepository:score" />
+  <s:link source="ExtractProteins_HomoSapiens:protein_name" sink="Protein_name" />
+  <s:link source="RetrieveDocumentsFromMedline:pubmed_URL" sink="PubMed_URL" />
+  <s:link source="ScoreExtractedProteins:min_log_likelihood" sink="protein_discovery_score" />
+  <s:link source="UniProtXrefURLs:EntrezUniProtURL" sink="AddProteinToSemanticModel:entrez_pubmed_URL" />
+  <s:link source="UniProtXrefURLs:EntrezUniProtURL" sink="ProteinURL" />
+  <s:link source="UniProtXrefURLs:ExpasyUniProtURL" sink="AddProteinToSemanticModel:expasy_URL" />
+  <s:link source="UniProtXrefURLs:iHopSearchURL" sink="AddProteinToSemanticModel:iHop_search_URL" />
+  <s:link source="UniProtXrefURLs:iHopSentencesURL" sink="AddProteinToSemanticModel:iHop_sentence_URL" />
+  <s:source name="query">
+    <s:metadata>
+      <s:description>Biological query, e.g. a protein of interest. See Lucene documentation for advanced queries (http://lucene.apache.org/)
+
+NB. If the input is a single protein, the synonym to query workflow is useful.</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="max_document_nr">
+    <s:metadata>
+      <s:description>limits the maximum number of hits search will produce. In Taverna 1 '100' works well while a 1000 and above is likely to halt Taverna 1 due to memory problems. This also depends on the memory setting for the java virtual machine by the client (usually your local Taverna).</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="ProteinURL" />
+  <s:sink name="PubMed_URL" />
+  <s:sink name="protein_discovery_score" />
+  <s:sink name="Protein_name" />
+</s:scufl>
+

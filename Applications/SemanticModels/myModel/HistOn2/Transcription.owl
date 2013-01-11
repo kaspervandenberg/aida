@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rfp="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#"
+    xmlns:obo_rel="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/obo_relationship_selection.owl#"
+    xmlns="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/Transcription.owl#"
+    xmlns:spec="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/Species.owl#"
+    xmlns:tbio_e="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:nuc="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/DNARNA.owl#"
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:seq="http://www.co-ode.org/ontologies/basic-bio/sequences.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:tbio_es="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended_seq.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:prot="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/Protein.owl#"
+    xmlns:rlp="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:meta="http://www.co-ode.org/ontologies/meta/2005/06/15/meta.owl#"
+    xmlns:tbio="http://www.co-ode.org/ontologies/basic-bio/top-bio.owl#"
+    xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xml:base="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/Transcription.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/Protein.owl"/>
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/DNARNA.owl"/>
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended_seq.owl"/>
+    <owl:imports rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl"/>
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/sequences.owl"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    ></rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Transcription">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#acts_on"/>
+        <owl:allValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/sequences.owl#DNA_molecule"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/basic-bio/sequences.owl#DNA_molecule"/>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#acts_on"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/DNARNA.owl#RNA_molecule"/>
+        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_outcome"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#Biomolecular_process"/>
+  </owl:Class>
+  <owl:Class rdf:ID="DNA_binding_protein">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Wanted to add restriction: tbio_e:potentially_binds some DNA_molecule, but I think I cannot say that there is always an individual DNA_molecule to satisfy this restriction.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/Protein.owl#Protein_molecule"/>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#potentially_binds"/>
+            <owl:someValuesFrom rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/DNARNA.owl#DNA_molecule_part"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Transcription_factor_binding_site">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Part of a DNA molecule that is or can be bound by a transcription factor</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#potentially_binds"/>
+            <owl:someValuesFrom>
+              <owl:Class rdf:ID="Transcription_factor"/>
+            </owl:someValuesFrom>
+          </owl:Restriction>
+          <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/DNARNA.owl#DNA_molecule_part"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="DNA_binding_transcription_factor">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#potentially_binds"/>
+            <owl:someValuesFrom rdf:resource="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/DNARNA.owl#DNA_molecule_part"/>
+          </owl:Restriction>
+          <owl:Class rdf:about="#Transcription_factor"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Transcription_factor">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/Protein.owl#Protein_molecule"/>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="#Transcription"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="is_regulator_of"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Proteins that regulate transcription are transcription factors by definition</rdfs:comment>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="#is_regulator_of">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Entity that regulates or modifies a process, but does not alter its principle behaviour and is not  an essential participant. E.g. a transcription factor that influences transcription.</rdfs:comment>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="has_regulator"/>
+    </owl:inverseOf>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#is_actor_of"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has_regulator">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >process that is influenced by an actor, without its principle behaviour being altered. The actor is also not an essential participant (e.g. transcription as regulated by transcription factors).</rdfs:comment>
+    <owl:inverseOf rdf:resource="#is_regulator_of"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/advanced-relational-properties.owl#has_actor"/>
+  </owl:ObjectProperty>
+  <rdf:Description rdf:about="http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/HistOn2/top-bio-extended.owl#has_direct_potential_physical_relationship_with">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >in biological terms: a potential chemical bond</rdfs:comment>
+  </rdf:Description>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.2.1, Build 365)  http://protege.stanford.edu -->

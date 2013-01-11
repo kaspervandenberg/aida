@@ -1,0 +1,18 @@
+<basepane>
+  <child>
+    <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+      <namedcomponent scroll="false">
+        <name>AID Plugin</name>
+      </namedcomponent>
+    </znode>
+  </child>
+  <namedcomponents>
+    <namedcomponent>
+      <groupid>org.vle.aid.taverna</groupid>
+      <artifact>aid-plugin</artifact>
+      <classname>org.vle.aid.taverna.AIDComponentFactory</classname>
+      <interface>net.sf.taverna.t2.workbench.ui.zaria.UIComponentFactorySPI</interface>
+      <name>AID Plugin</name>
+    </namedcomponent>
+  </namedcomponents>
+</basepane>

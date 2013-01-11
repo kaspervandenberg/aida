@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns='http://aid.org/'
+  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+  xsi:schemaLocation='http://aid.org/ file:config.xsd'
+>
+  <Name>testIndex</Name>
+  <IndexPath>index</IndexPath>
+  <IndexOverwrite>true</IndexOverwrite>
+  <IndexAnalyzer>STANDARD</IndexAnalyzer>
+  <DataPath>data</DataPath>
+  <SRBused>false</SRBused>
+  <MergeFactor>300</MergeFactor>
+  <MaxBufferedDocs>30</MaxBufferedDocs>
+
+  <DocType FileType="medline">
+    <FileExtension>med</FileExtension>
+    <DocTypeAnalyzer>STOP</DocTypeAnalyzer>
+    <Field Name="AU">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"Author field of Medline"</Description>
+    </Field>
+    <Field Name="TI">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>YES</Termvector>
+      <Description>"Title field of Medline"</Description>
+    </Field>
+    <Field Name="AB">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>YES</Termvector>
+      <Description>"Abstract field of Medline"</Description>
+    </Field>
+    <Field Name="FAU">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"First Author field of Medline"</Description>
+    </Field>
+    <Field Name="MH">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"MESH Heading field of Medline"</Description>
+    </Field>
+    <Field Name="PMID">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"PMID field of Medline"</Description>
+    </Field>
+    <Field Name="SO">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"SO field of Medline"</Description>
+    </Field>
+  </DocType>
+
+  <DocType FileType="pdf">
+    <Field Name="text">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>YES</Termvector>
+      <Description>"MSWORD text"</Description>
+    </Field>
+    <Field Name="summary">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>YES</Termvector>
+      <Description>"MSWORD summary"</Description>
+    </Field>
+    <Field Name="path">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"Abstract field of Medline"</Description>
+    </Field>
+    <Field Name="url">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"Abstract field of Medline"</Description>
+    </Field>
+
+
+  </DocType>
+
+  <DocType FileType="msword">
+    <Field Name="path">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"MSWORD path"</Description>
+    </Field>
+    <Field Name="url">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"MSWORD url"</Description>
+    </Field>
+    <Field Name="text">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>YES</Termvector>
+      <Description>"MSWORD text"</Description>
+    </Field>
+    <Field Name="summary">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>YES</Termvector>
+      <Description>"MSWORD summary"</Description>
+    </Field>
+  </DocType>
+</config>

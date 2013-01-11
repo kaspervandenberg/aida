@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:858efe24-26c0-4090-be46-c9a5b4f21cad" author="Marco Roos" title="Retrieve_documents_MR1">This workflow applies the search web service from the AIDA toolbox.
+
+Comments:
+This search service is based on lucene defaults; it may be necessary to optimize the querystring to adopt the behaviour to what is most relevant in a particular domain (e.g. for medline prioritizing based on publication date is useful). Lucene favours shorter sentences, which may be bad for subsequent information extraction.</s:workflowdescription>
+  <s:processor name="search">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/SearcherWS?wsdl</s:wsdl>
+      <s:operation>search</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="document_index" sink="search:index" />
+  <s:link source="maxHits" sink="search:maxHits" />
+  <s:link source="queryString" sink="search:queryString" />
+  <s:link source="search_field" sink="search:defaultField" />
+  <s:link source="search:searchReturn" sink="relevant_documents" />
+  <s:source name="queryString" />
+  <s:source name="document_index" />
+  <s:source name="search_field" />
+  <s:source name="maxHits" />
+  <s:sink name="relevant_documents">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

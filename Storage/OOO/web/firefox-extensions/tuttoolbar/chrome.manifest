@@ -1,0 +1,3 @@
+content tuttoolbar jar:chrome/tuttoolbar.jar!/content/
+overlay chrome://browser/content/browser.xul chrome://tuttoolbar/content/tuttoolbar.xul
+skin tuttoolbar classic/1.0 jar:chrome/tuttoolbar.jar!/skin/

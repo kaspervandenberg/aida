@@ -1,0 +1,1181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:5b244cbe-6773-4dc6-9a9a-8a7678cc688a" author="" title="BioAID_watskeburt_RDF" />
+  <s:processor name="WorkflowComment" boring="true">
+    <s:stringconstant>Workflow that links an enzyme to diseases via medline and OMIM in RDF</s:stringconstant>
+  </s:processor>
+  <s:processor name="enzyme" boring="true">
+    <s:stringconstant>EZH2</s:stringconstant>
+  </s:processor>
+  <s:processor name="Write_Text_File">
+    <s:local>net.sourceforge.taverna.scuflworkers.io.TextFileWriter</s:local>
+  </s:processor>
+  <s:processor name="WorkflowURI" boring="true">
+    <s:stringconstant>http%3A//rdf.adaptivedisclosure.org/~marco/BioAID/Preliminary/Workflows/BioAID_watskeburt/BioAID_watskeburt_MR5.xml</s:stringconstant>
+  </s:processor>
+  <s:processor name="Flatten_list">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="extractRdf">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/RepositoryWS?wsdl</s:wsdl>
+      <s:operation>extractRdf</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="WorkflowLabel" boring="true">
+    <s:stringconstant>BioAID_enzyme-to-disease_workflow</s:stringconstant>
+  </s:processor>
+  <s:processor name="output_filepath" boring="true">
+    <s:stringconstant>D:\Marco\adaptivedisclosure.org\public_html\BioAID\Preliminary\Output\EnrichedOntologies\EZH2_diseases.owl</s:stringconstant>
+  </s:processor>
+  <s:processor name="Enriched_ontologyURI" boring="true">
+    <s:stringconstant>http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl</s:stringconstant>
+  </s:processor>
+  <s:processor name="BioAID_repository">
+    <s:description>The role of this 'workflow' is to provide defaults for the AIDA rdf repository, especially for bio and food application in the VL-e project. Add this workflow to your workflow as a nested workflow. Open it and the beanshell in it to switch defaults (e.g. from bio to food).
+
+YOUR DATA IS NOT SAFE IN OUR AIDA REPOSITORY!
+
+In principle, we can delete all data without notice, but let us know if you would like to be informed of any changes to the repository. We advocate installing your own Sesame server, for which these defaults provide examples. To download sesame go to http://www.openrdf.org
+
+Meer voorbeeld van Willem:
+
+username:
+testuser
+
+password:
+opensesame
+
+rdf_format:
+rdfxml
+turtle
+n3
+
+query_language:
+serql
+rql
+
+subject: (eerste positie in een triple, altijd een URI)
+http://adaptivedisclosure.org/2007/03/watskeburt#Melanoma
+
+predicate: (tweede positie in een triple, altijd een URI)
+http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+http://www.w3.org/2000/01/rdf-schema#label
+
+object: (derde positie in een triple, een URI, of een literal, soms met type of taal)
+http://adaptivedisclosure.org/2007/03/watskeburt#Disease
+Melanoma
+"Melanoma"@en
+"10"^^&lt;http://www.w3.org/2001/XMLSchema#integer&gt;
+
+context: (gebruik deze nog maar niet, ik schrijf later wel documentatie)
+
+data_uri: (de URL van het file waar de RDF uit komt)
+file:///home/roos/bla/bla/disease_and_enzymes.rdf
+
+data: (afhankelijk van het rdf_format RDF in XML of Turtle, o.i.d.)
+&lt;rdf:RDF ...&gt; ... &lt;/rdf:RDF&gt;
+
+query: (afhankelijk van de query_language een SeRQL query, o.i.d.)
+select distinct S from {S} rdfs:label {O} where O like "simsala*"
+
+read_write: (of je alle repositories, of alleen die waar je read en/of write permissies op hebt wilt zien, je kunt ook niets meegeven)
+r
+rw
+w</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:6a0bac79-7df2-487d-96a7-4faac64c2fd5" author="Marco Roos (AID)" title="AIDA_rdf_repository">The role of this 'workflow' is to provide defaults for the AIDA rdf repository, especially for bio and food application in the VL-e project. Add this workflow to your workflow as a nested workflow. Open it and the beanshell in it to switch defaults (e.g. from bio to food).
+
+YOUR DATA IS NOT SAFE IN OUR AIDA REPOSITORY!
+
+In principle, we can delete all data without notice, but let us know if you would like to be informed of any changes to the repository. We advocate installing your own Sesame server, for which these defaults provide examples. To download sesame go to http://www.openrdf.org
+
+Meer voorbeeld van Willem:
+
+username:
+testuser
+
+password:
+opensesame
+
+rdf_format:
+rdfxml
+turtle
+n3
+
+query_language:
+serql
+rql
+
+subject: (eerste positie in een triple, altijd een URI)
+http://adaptivedisclosure.org/2007/03/watskeburt#Melanoma
+
+predicate: (tweede positie in een triple, altijd een URI)
+http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+http://www.w3.org/2000/01/rdf-schema#label
+
+object: (derde positie in een triple, een URI, of een literal, soms met type of taal)
+http://adaptivedisclosure.org/2007/03/watskeburt#Disease
+Melanoma
+"Melanoma"@en
+"10"^^&lt;http://www.w3.org/2001/XMLSchema#integer&gt;
+
+context: (gebruik deze nog maar niet, ik schrijf later wel documentatie)
+
+data_uri: (de URL van het file waar de RDF uit komt)
+file:///home/roos/bla/bla/disease_and_enzymes.rdf
+
+data: (afhankelijk van het rdf_format RDF in XML of Turtle, o.i.d.)
+&lt;rdf:RDF ...&gt; ... &lt;/rdf:RDF&gt;
+
+query: (afhankelijk van de query_language een SeRQL query, o.i.d.)
+select distinct S from {S} rdfs:label {O} where O like "simsala*"
+
+read_write: (of je alle repositories, of alleen die waar je read en/of write permissies op hebt wilt zien, je kunt ook niets meegeven)
+r
+rw
+w</s:workflowdescription>
+        <s:processor name="rdf_format" boring="true">
+          <s:description>'rdfxml' or 'turtle' or 'n3'</s:description>
+          <s:stringconstant>rdfxml</s:stringconstant>
+        </s:processor>
+        <s:processor name="username" boring="true">
+          <s:stringconstant>bioaid_demo</s:stringconstant>
+        </s:processor>
+        <s:processor name="query_language" boring="true">
+          <s:description>'serql' or 'rql'</s:description>
+          <s:stringconstant>serql</s:stringconstant>
+        </s:processor>
+        <s:processor name="read_write" boring="true">
+          <s:description>'rw' or 'r' or 'w'</s:description>
+          <s:stringconstant>rw</s:stringconstant>
+        </s:processor>
+        <s:processor name="repository" boring="true">
+          <s:stringconstant>mem-rdf-db-bio-demo</s:stringconstant>
+        </s:processor>
+        <s:processor name="password" boring="true">
+          <s:stringconstant>aidademo</s:stringconstant>
+        </s:processor>
+        <s:processor name="server_url" boring="true">
+          <s:stringconstant>http://rdf.adaptivedisclosure.org/sesame</s:stringconstant>
+        </s:processor>
+        <s:link source="password:value" sink="password" />
+        <s:link source="query_language:value" sink="query_language" />
+        <s:link source="rdf_format:value" sink="rdf_format" />
+        <s:link source="read_write:value" sink="read_write" />
+        <s:link source="repository:value" sink="repository" />
+        <s:link source="server_url:value" sink="server_url" />
+        <s:link source="username:value" sink="username" />
+        <s:sink name="server_url" />
+        <s:sink name="repository" />
+        <s:sink name="username" />
+        <s:sink name="password" />
+        <s:sink name="rdf_format" />
+        <s:sink name="query_language" />
+        <s:sink name="read_write" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="BioAID_DiseaseDiscovery">
+    <s:defaults>
+      <s:default name="query_string">EZH2</s:default>
+    </s:defaults>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:618ac202-acf6-4695-bdc6-ca0078be3649" author="" title="BioAID_watskeburt" />
+        <s:processor name="maxHits" boring="true">
+          <s:stringconstant>10</s:stringconstant>
+        </s:processor>
+        <s:processor name="Document_index" boring="true">
+          <s:stringconstant>MedLine</s:stringconstant>
+        </s:processor>
+        <s:processor name="search_field" boring="true">
+          <s:stringconstant>content</s:stringconstant>
+        </s:processor>
+        <s:processor name="Remove_xml_tag">
+          <s:beanshell>
+            <s:scriptvalue>import java.util.regex.*;
+Pattern pattern = Pattern.compile("&lt;/?[\\w\\d-]+&gt;");
+Matcher matcher = pattern.matcher(tagged_term);
+String term= matcher.replaceAll("");</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/xml'">tagged_term</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">term</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="Flatten_and_make_unique">
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:f43db36c-a3ed-4f78-8d1c-89f27dfb53f7" author="" title="Flatten_and_make_unique" />
+              <s:processor name="Flatten_list">
+                <s:local>
+                  org.embl.ebi.escience.scuflworkers.java.FlattenList
+                  <s:extensions>
+                    <s:flattenlist s:depth="2" />
+                  </s:extensions>
+                </s:local>
+              </s:processor>
+              <s:processor name="Remove_duplicate_strings">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates</s:local>
+              </s:processor>
+              <s:link source="input" sink="Flatten_list:inputlist" />
+              <s:link source="Flatten_list:outputlist" sink="Remove_duplicate_strings:stringlist" />
+              <s:link source="Remove_duplicate_strings:strippedlist" sink="flattened_unique_output" />
+              <s:source name="input" />
+              <s:sink name="flattened_unique_output" />
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="Retrieve_documents">
+          <s:description>This workflow retrieves relevant documents, based on a query optimized by adding a string to the original query that will rank the search output according to the most recent years. The added string adds years with priorities (most recent is highest); it starts at 2007.</s:description>
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:dd1e2961-a1ca-4902-9bfb-2b776a4399ee" author="Marco Roos (AID)" title="Retrieve_bio_documents">This workflow retrieves relevant documents, based on a query optimized by adding a string to the original query that will rank the search output according to the most recent years. The added string adds years with priorities (most recent is highest); it starts at 2007.</s:workflowdescription>
+              <s:processor name="Biooptimize_query">
+                <s:description>This workflow does four things:
+1. it retrieves documents relevant for the query string
+2. it discovers entities in those documents, these are considered relevant entities
+3. it filters proteins from those entities (on the tag protein_molecule)
+4. it removes all terms from the list produced by 3 (query terms temporarily considered proteins)
+
+ToDo
+* Replace step 4 by the following procedure:
+  1. remove the query terms from the output of NER (probably by a regexp matching on what is inside the tag, possibly case-insensitive)
+  2. remove tag_as_protein_molecule (obsolete)
+* Add synonym service/workflow
+
+Note that Remove_inputquery has an alternative iteration strategy (dot product instead of cross product). Idem for 'Join' in 'SplitQuery'.</s:description>
+                <s:workflow>
+                  <s:scufl version="0.2" log="0">
+                    <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:3d2eebb7-0b04-4979-9aa9-3d39b1464216" author="Marco Roos" title="Lucene_bioquery_optimizer_MR1">This workflow does four things:
+1. it retrieves documents relevant for the query string
+2. it discovers entities in those documents, these are considered relevant entities
+3. it filters proteins from those entities (on the tag protein_molecule)
+4. it removes all terms from the list produced by 3 (query terms temporarily considered proteins)
+
+ToDo
+* Replace step 4 by the following procedure:
+  1. remove the query terms from the output of NER (probably by a regexp matching on what is inside the tag, possibly case-insensitive)
+  2. remove tag_as_protein_molecule (obsolete)
+* Add synonym service/workflow
+
+Note that Remove_inputquery has an alternative iteration strategy (dot product instead of cross product). Idem for 'Join' in 'SplitQuery'.</s:workflowdescription>
+                    <s:processor name="Prioritise_lucene_query">
+                      <s:beanshell>
+                        <s:scriptvalue>StringBuffer temp=new StringBuffer();
+temp.append("+(");
+temp.append(query_string);
+temp.append(") +");
+temp.append(priority_string);
+String lucene_query = temp.toString();</s:scriptvalue>
+                        <s:beanshellinputlist>
+                          <s:beanshellinput s:syntactictype="'text/plain'">query_string</s:beanshellinput>
+                          <s:beanshellinput s:syntactictype="'text/plain'">priority_string</s:beanshellinput>
+                        </s:beanshellinputlist>
+                        <s:beanshelloutputlist>
+                          <s:beanshelloutput s:syntactictype="'text/plain'">lucene_query</s:beanshelloutput>
+                        </s:beanshelloutputlist>
+                        <s:dependencies s:classloader="iteration" />
+                      </s:beanshell>
+                    </s:processor>
+                    <s:processor name="Lucene_year_priorities" boring="true">
+                      <s:stringconstant>year:(2007^10 2006^9 2005^8 2004^7 2004^6 2003^5 2002^4 2001^3 2000^2 1999^1)</s:stringconstant>
+                    </s:processor>
+                    <s:link source="Lucene_year_priorities:value" sink="Prioritise_lucene_query:priority_string" />
+                    <s:link source="query_string" sink="Prioritise_lucene_query:query_string" />
+                    <s:link source="Prioritise_lucene_query:lucene_query" sink="optimized_lucene_query" />
+                    <s:source name="query_string">
+                      <s:metadata>
+                        <s:description>Lucene query string</s:description>
+                      </s:metadata>
+                    </s:source>
+                    <s:sink name="optimized_lucene_query" />
+                  </s:scufl>
+                </s:workflow>
+              </s:processor>
+              <s:processor name="Retrieve">
+                <s:description>This workflow applies the search web service from the AIDA toolbox.
+
+Comments:
+This search service is based on lucene defaults; it may be necessary to optimize the querystring to adopt the behaviour to what is most relevant in a particular domain (e.g. for medline prioritizing based on publication date is useful). Lucene favours shorter sentences, which may be bad for subsequent information extraction.</s:description>
+                <s:workflow>
+                  <s:scufl version="0.2" log="0">
+                    <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:858efe24-26c0-4090-be46-c9a5b4f21cad" author="Marco Roos" title="Retrieve_documents_MR1">This workflow applies the search web service from the AIDA toolbox.
+
+Comments:
+This search service is based on lucene defaults; it may be necessary to optimize the querystring to adopt the behaviour to what is most relevant in a particular domain (e.g. for medline prioritizing based on publication date is useful). Lucene favours shorter sentences, which may be bad for subsequent information extraction.</s:workflowdescription>
+                    <s:processor name="search">
+                      <s:arbitrarywsdl>
+                        <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/SearcherWS?wsdl</s:wsdl>
+                        <s:operation>search</s:operation>
+                      </s:arbitrarywsdl>
+                    </s:processor>
+                    <s:link source="document_index" sink="search:index" />
+                    <s:link source="maxHits" sink="search:maxHits" />
+                    <s:link source="queryString" sink="search:queryString" />
+                    <s:link source="search_field" sink="search:defaultField" />
+                    <s:link source="search:searchReturn" sink="relevant_documents" />
+                    <s:source name="queryString" />
+                    <s:source name="document_index" />
+                    <s:source name="search_field" />
+                    <s:source name="maxHits" />
+                    <s:sink name="relevant_documents">
+                      <s:metadata>
+                        <s:mimeTypes>
+                          <s:mimeType>text/xml</s:mimeType>
+                        </s:mimeTypes>
+                      </s:metadata>
+                    </s:sink>
+                  </s:scufl>
+                </s:workflow>
+              </s:processor>
+              <s:link source="query_string" sink="Biooptimize_query:query_string" />
+              <s:link source="Biooptimize_query:optimized_lucene_query" sink="Retrieve:queryString" />
+              <s:link source="document_index" sink="Retrieve:document_index" />
+              <s:link source="maxHits" sink="Retrieve:maxHits" />
+              <s:link source="search_field" sink="Retrieve:search_field" />
+              <s:link source="Retrieve:relevant_documents" sink="relevant_documents" />
+              <s:source name="query_string" />
+              <s:source name="document_index" />
+              <s:source name="search_field" />
+              <s:source name="maxHits" />
+              <s:sink name="relevant_documents">
+                <s:metadata>
+                  <s:mimeTypes>
+                    <s:mimeType>text/xml</s:mimeType>
+                  </s:mimeTypes>
+                </s:metadata>
+              </s:sink>
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="Discover_proteins">
+          <s:description>This workflow applies the discovery workflow built around the AIDA 'Named Entity Recognize' web service by Sophia Katrenko. It uses the pre-learned genomics model, named 'MedLine', to find genomics concepts in a set of documents in lucene output format.</s:description>
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:b4c1a118-6a38-40b5-99e9-febbd3c85f2b" author="Marco Roos (AID)" title="Discover_proteins">This workflow applies the discovery workflow built around the AIDA 'Named Entity Recognize' web service by Sophia Katrenko. It uses the pre-learned genomics model, named 'MedLine', to find genomics concepts in a set of documents in lucene output format.</s:workflowdescription>
+              <s:processor name="prelearned_genomics_model" boring="true">
+                <s:stringconstant>MedLine</s:stringconstant>
+              </s:processor>
+              <s:processor name="Extract_proteins">
+                <s:description>This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:description>
+                <s:workflow>
+                  <s:scufl version="0.2" log="0">
+                    <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="Marco Roos (AID)" title="Extract_proteins">This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:workflowdescription>
+                    <s:processor name="splitOn_protein_molecule_regexp" boring="true">
+                      <s:stringconstant>(?=&lt;protein_molecule&gt;)|(?&lt;=&lt;/protein_molecule&gt;)</s:stringconstant>
+                    </s:processor>
+                    <s:processor name="Filter_protein_molecules">
+                      <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+                    </s:processor>
+                    <s:processor name="Remove_duplicate_strings">
+                      <s:local>org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates</s:local>
+                    </s:processor>
+                    <s:processor name="SplitOn_protein_molecule">
+                      <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+                    </s:processor>
+                    <s:processor name="filter_protein_molecule_regexp" boring="true">
+                      <s:stringconstant>&lt;protein_molecule&gt;\w*&lt;/protein_molecule&gt;</s:stringconstant>
+                    </s:processor>
+                    <s:link source="input_string" sink="SplitOn_protein_molecule:string" />
+                    <s:link source="Filter_protein_molecules:filteredlist" sink="Remove_duplicate_strings:stringlist" />
+                    <s:link source="Remove_duplicate_strings:strippedlist" sink="protein_molecule_list" />
+                    <s:link source="SplitOn_protein_molecule:split" sink="Filter_protein_molecules:stringlist" />
+                    <s:link source="filter_protein_molecule_regexp:value" sink="Filter_protein_molecules:regex" />
+                    <s:link source="splitOn_protein_molecule_regexp:value" sink="SplitOn_protein_molecule:regex" />
+                    <s:source name="input_string" />
+                    <s:sink name="protein_molecule_list">
+                      <s:metadata>
+                        <s:mimeTypes>
+                          <s:mimeType>text/xml</s:mimeType>
+                        </s:mimeTypes>
+                      </s:metadata>
+                    </s:sink>
+                  </s:scufl>
+                </s:workflow>
+              </s:processor>
+              <s:processor name="Discover_entities">
+                <s:description>This workflow contains the 'Named Entity Recognize' web service from the AIDA toolbox, created by Sophia Katrenko. It can be used to discover entities of a certain type (determined by 'learned_model') in documents provided in a lucene output format.</s:description>
+                <s:workflow>
+                  <s:scufl version="0.2" log="0">
+                    <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:e7ae8f2a-428f-4afd-93eb-52ccb89273e1" author="Marco Roos (AID)" title="Discover_entities">This workflow contains the 'Named Entity Recognize' web service from the AIDA toolbox, created by Sophia Katrenko. It can be used to discover entities of a certain type (determined by 'learned_model') in documents provided in a lucene output format.
+
+Known issues:
+The output of NErecognize contains concepts with / characters, breaking the xml. For post-processing its results it is better to use string manipulation than xml manipulations.
+The output is per document, which means entities will  be redundant if they occur in more than one document.</s:workflowdescription>
+                    <s:processor name="Default_output_type" boring="true">
+                      <s:stringconstant>NElist</s:stringconstant>
+                    </s:processor>
+                    <s:processor name="Default_input_type" boring="true">
+                      <s:stringconstant>lucene</s:stringconstant>
+                    </s:processor>
+                    <s:processor name="NErecognize">
+                      <s:arbitrarywsdl>
+                        <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/NERecognizerService?wsdl</s:wsdl>
+                        <s:operation>NErecognize</s:operation>
+                      </s:arbitrarywsdl>
+                    </s:processor>
+                    <s:link source="input_from_lucene" sink="NErecognize:input_data" />
+                    <s:link source="learned_model" sink="NErecognize:r_type" />
+                    <s:link source="Default_input_type:value" sink="NErecognize:input_type" />
+                    <s:link source="Default_output_type:value" sink="NErecognize:output_type" />
+                    <s:link source="NErecognize:NErecognizeReturn" sink="discovered_entities" />
+                    <s:source name="input_from_lucene" />
+                    <s:source name="learned_model">
+                      <s:metadata>
+                        <s:description>Model to discover a set of specific concepts; e.g. the prelearned model named 'MedLine' will make the service discover genomics concepts.</s:description>
+                      </s:metadata>
+                    </s:source>
+                    <s:sink name="discovered_entities">
+                      <s:metadata>
+                        <s:mimeTypes>
+                          <s:mimeType>text/rdf</s:mimeType>
+                          <s:mimeType>text/xml</s:mimeType>
+                        </s:mimeTypes>
+                        <s:description>Entities discoverd in documents provided in lucene output format.</s:description>
+                      </s:metadata>
+                    </s:sink>
+                  </s:scufl>
+                </s:workflow>
+              </s:processor>
+              <s:link source="documents_from_lucene" sink="Discover_entities:input_from_lucene" />
+              <s:link source="Discover_entities:discovered_entities" sink="Extract_proteins:input_string" />
+              <s:link source="Extract_proteins:protein_molecule_list" sink="discovered_proteins" />
+              <s:link source="prelearned_genomics_model:value" sink="Discover_entities:learned_model" />
+              <s:source name="documents_from_lucene" />
+              <s:sink name="discovered_proteins">
+                <s:metadata>
+                  <s:mimeTypes>
+                    <s:mimeType>text/rdf</s:mimeType>
+                    <s:mimeType>text/xml</s:mimeType>
+                  </s:mimeTypes>
+                </s:metadata>
+              </s:sink>
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:processor name="Link_proteins_to_diseases">
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:4dccdaac-5994-4350-b30b-28eac86c229a" author="" title="Link_protein_to_OMIM_disease" />
+              <s:processor name="split_OMIM_regexp" boring="true">
+                <s:stringconstant>\n</s:stringconstant>
+              </s:processor>
+              <s:processor name="label_OMIM_disease">
+                <s:beanshell>
+                  <s:scriptvalue>StringBuffer temp= new StringBuffer();
+temp.append("&lt;OMIM_disease_label&gt;");
+temp.append(OMIM_disease_string);
+temp.append("&lt;/OMIM_disease_label&gt;");
+String OMIM_disease_label = temp.toString();</s:scriptvalue>
+                  <s:beanshellinputlist>
+                    <s:beanshellinput s:syntactictype="'text/plain'">OMIM_disease_string</s:beanshellinput>
+                  </s:beanshellinputlist>
+                  <s:beanshelloutputlist>
+                    <s:beanshelloutput s:syntactictype="'text/xml'">OMIM_disease_label</s:beanshelloutput>
+                  </s:beanshelloutputlist>
+                  <s:dependencies s:classloader="iteration" />
+                </s:beanshell>
+              </s:processor>
+              <s:processor name="Split_OMIM_results">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+              </s:processor>
+              <s:processor name="Flatten_list">
+                <s:local>
+                  org.embl.ebi.escience.scuflworkers.java.FlattenList
+                  <s:extensions>
+                    <s:flattenlist s:depth="2" />
+                  </s:extensions>
+                </s:local>
+              </s:processor>
+              <s:processor name="filter_disease_regexp" boring="true">
+                <s:stringconstant>(#\d+ .+)|(%\d+ .+)</s:stringconstant>
+              </s:processor>
+              <s:processor name="Extract_diseases_from_OMIM">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+              </s:processor>
+              <s:processor name="search">
+                <s:description>get Keyword</s:description>
+                <s:arbitrarywsdl>
+                  <s:wsdl>http://xml.nig.ac.jp/wsdl/OMIM.wsdl</s:wsdl>
+                  <s:operation>search</s:operation>
+                </s:arbitrarywsdl>
+              </s:processor>
+              <s:processor name="Remove_duplicate_strings">
+                <s:local>org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates</s:local>
+              </s:processor>
+              <s:link source="keyword" sink="search:keyword" />
+              <s:link source="Extract_diseases_from_OMIM:filteredlist" sink="label_OMIM_disease:OMIM_disease_string" />
+              <s:link source="Flatten_list:outputlist" sink="Remove_duplicate_strings:stringlist" />
+              <s:link source="Split_OMIM_results:split" sink="Extract_diseases_from_OMIM:stringlist" />
+              <s:link source="filter_disease_regexp:value" sink="Extract_diseases_from_OMIM:regex" />
+              <s:link source="label_OMIM_disease:OMIM_disease_label" sink="Flatten_list:inputlist" />
+              <s:link source="search:Result" sink="Split_OMIM_results:string" />
+              <s:link source="split_OMIM_regexp:value" sink="Split_OMIM_results:regex" />
+              <s:link source="Remove_duplicate_strings:strippedlist" sink="OMIM_disease_label" />
+              <s:source name="keyword" />
+              <s:sink name="OMIM_disease_label">
+                <s:metadata>
+                  <s:mimeTypes>
+                    <s:mimeType>text/xml</s:mimeType>
+                  </s:mimeTypes>
+                </s:metadata>
+              </s:sink>
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:link source="query_string" sink="Retrieve_documents:query_string" />
+        <s:link source="Discover_proteins:discovered_proteins" sink="Remove_xml_tag:tagged_term" />
+        <s:link source="Discover_proteins:discovered_proteins" sink="discovered_proteins" />
+        <s:link source="Document_index:value" sink="Retrieve_documents:document_index" />
+        <s:link source="Flatten_and_make_unique:flattened_unique_output" sink="discovered_diseases" />
+        <s:link source="Link_proteins_to_diseases:OMIM_disease_label" sink="Flatten_and_make_unique:input" />
+        <s:link source="Remove_xml_tag:term" sink="Link_proteins_to_diseases:keyword" />
+        <s:link source="Retrieve_documents:relevant_documents" sink="Discover_proteins:documents_from_lucene" />
+        <s:link source="Retrieve_documents:relevant_documents" sink="relevant_documents" />
+        <s:link source="maxHits:value" sink="Retrieve_documents:maxHits" />
+        <s:link source="search_field:value" sink="Retrieve_documents:search_field" />
+        <s:source name="query_string">
+          <s:metadata>
+            <s:description>Query for retrieving document from an indexed corpus. It is assumed the query will be used for a search service based on Lucene. In short that means the query should be string of terms with logical operators or +/- signs to denote if terms are wanted or unwanted. Documents that comply with this query will be used to discover entities in.</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="relevant_documents" />
+        <s:sink name="discovered_proteins">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/rdf</s:mimeType>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+        <s:sink name="discovered_diseases" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="DiscoveredOMIMDiseasesToRDF">
+    <s:description>Think especially carefully about the iteration strategies. If the inputs for 'CreateDiscoveredRDF' should be seen as pairs (equal amounts of values that can be viewed as rows in a table) use a dot product. If the diseases come as a list, while other parameters such as ontology URIs are singular you may need to group the singular values together in a dot product, and the whole as a cross product.</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:9cb02e85-c1f5-4494-98f6-b01008fdb4dc" author="Marco Roos (AID)" title="DiscoveredOMIMDiseaseToRDF">Think especially carefully about the iteration strategies. If the inputs for 'CreateDiscoveredRDF' should be seen as pairs (equal amounts of values that can be viewed as rows in a table) use a dot product. If the diseases come as a list, while other parameters such as ontology URIs are singular you may need to group the singular values together in a dot product, and the whole as a cross product.</s:workflowdescription>
+        <s:processor name="ExtractOMIM_id">
+          <s:defaults>
+            <s:default name="group">1</s:default>
+          </s:defaults>
+          <s:local>org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList</s:local>
+        </s:processor>
+        <s:processor name="OMIM_regexp" boring="true">
+          <s:stringconstant>[%#](\d+) (.+)&lt;.*</s:stringconstant>
+        </s:processor>
+        <s:processor name="empty_alternative">
+          <s:beanshell>
+            <s:scriptvalue>alt_empty = "";</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">OMIM_disease</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">alt_empty</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="DefineShortname">
+          <s:beanshell>
+            <s:scriptvalue>import java.util.regex.*;
+String shortname = "";
+Pattern p = Pattern.compile("([%#]\\d+) (.+[,;]) (.+)&lt;.*");
+Matcher m = p.matcher(OMIMdisease);
+if (m.find()) { 
+  shortname = m.group(3);
+} else {
+  p = Pattern.compile("([%#]\\d+) (.*)&lt;.*");
+  m = p.matcher(OMIMdisease);
+  if (m.find()) shortname = m.group(2);
+};</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">OMIMdisease</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">shortname</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="ExtractOMIM_name">
+          <s:defaults>
+            <s:default name="group">2</s:default>
+          </s:defaults>
+          <s:local>org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList</s:local>
+        </s:processor>
+        <s:processor name="DefineAbbreviation">
+          <s:beanshell>
+            <s:scriptvalue>import java.util.regex.*;
+String abbreviation = "";
+Pattern p = Pattern.compile("([%#]\\d+) (.+[,;]) (.+)&lt;.*");
+Matcher m = p.matcher(OMIMdisease);
+if (m.find()) abbreviation = m.group(3);</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">OMIMdisease</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">abbreviation</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="OMIM_id">
+          <s:defaults>
+            <s:default name="string1">OMIM_</s:default>
+          </s:defaults>
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:processor name="OMIM_uri">
+          <s:beanshell>
+            <s:scriptvalue>OMIM_uri = ontology_uri + "#" + OMIM_id;</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">OMIM_id</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">ontology_uri</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">OMIM_uri</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="AddToBioRDFRepository">
+          <s:description>Carefully set the iteration strategy taking into account how this workflow receives its input from workflows it may be used in.
+In the default case we expect the input of the workflow of this subworkflow to have been tabular (a cross product was set for iteration).</s:description>
+          <s:defaults>
+            <s:default name="alt_short_name" />
+            <s:default name="alt_full_name" />
+            <s:default name="alt_abbreviation" />
+          </s:defaults>
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:a7c6b8a8-5d6f-4b2e-8c0a-7c5b54666742" author="" title="EnzymeDiscoveredDiseases_to_rdf" />
+              <s:processor name="DiscoveredDiseaseRDFdoc">
+                <s:defaults>
+                  <s:default name="alt_full_name" />
+                  <s:default name="alt_abbreviation" />
+                  <s:default name="alt_short_name" />
+                </s:defaults>
+                <s:beanshell>
+                  <s:scriptvalue>// http://rdf.adaptivedisclosure.org/~marco/BioAID/Preliminary/Workflows/Beanshell_code/Beanshell_diseaseTriples_070713.txt
+// D://Marco/adaptivedisclosure.org/public_html/BioAID/Preliminary/Workflows/Beanshell_code/Beanshell_diseaseTriples_070713.txt
+
+// Comment: a lot of URIs (namespaces of ontology elements) are hard-coded here; I would like to find ways to make it less so
+// 		perhaps by asking a user to select the right elements from a list which may have been compiled from a search in the ontology on keyword or label value
+
+// Notation
+String RDFformat = "rdfxml";
+
+//data or base URI
+data_URI = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl";
+
+//Concepts
+String discdisCon = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#DiscoveredDisease";
+
+//Properties
+String hasDiscStatProp = "disc:discoveredThroughProcedure";
+String assocenzymeProp = "proto:associatedWithEnzyme";
+String abbrevProp = "proto:abbreviation";
+String fullnameProp = "proto:full_name";
+String shortnameProp = "proto:short_name";
+
+//Individuals
+String diseaseInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#" + disease_id;
+String discoveryInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#" + workflowURI;
+String enzymeInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#" + associatedEnzyme;
+
+//Relations (rdfxml):
+String rdf_doc;
+String oftypestring = " rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\"";
+
+//header
+rdf_doc = "&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;\n";
+rdf_doc = rdf_doc + "&lt;rdf:RDF\n	xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n	xmlns:proto=\"http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Proto-ontology/EnzymeDisease.owl#\"\n	xmlns:disc=\"http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#\"\n	xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"&gt;\n";
+
+//body
+rdf_doc = rdf_doc + "&lt;rdf:Description rdf:about=\"" + diseaseInd + "\"&gt;\n";
+rdf_doc = rdf_doc + "	&lt;rdf:type rdf:resource=\"" + discdisCon + "\"/&gt;\n";
+rdf_doc = rdf_doc + "	&lt;rdfs:label " + oftypestring + "&gt;" + disease_id + "&lt;/rdfs:label&gt;\n";
+rdf_doc = rdf_doc + "	&lt;" + hasDiscStatProp + " rdf:resource=\"" + discoveryInd + "\"/&gt;\n";
+rdf_doc = rdf_doc + "	&lt;" + assocenzymeProp + " rdf:resource=\"" + enzymeInd + "\"/&gt;\n";
+if (abbreviation.length()&gt;0) 
+	{ rdf_doc = rdf_doc + "	&lt;" + abbrevProp + oftypestring + "&gt;" + abbreviation + "&lt;/" + abbrevProp + "&gt;\n"; }
+if (full_name.length()&gt;0) 
+	{ rdf_doc = rdf_doc + "	&lt;" + fullnameProp + oftypestring + "&gt;" + full_name + "&lt;/" + fullnameProp + "&gt;\n"; }
+if (short_name.length()&gt;0) 
+	{ rdf_doc = rdf_doc + "	&lt;" + shortnameProp + oftypestring + "&gt;" + short_name + "&lt;/" + shortnameProp + "&gt;\n"; }
+if (alt_abbreviation.length()&gt;0) 
+	{ rdf_doc = rdf_doc + "	&lt;" + abbrevProp + oftypestring + "&gt;" + alt_abbreviation + "&lt;/" + abbrevProp + "&gt;\n"; }
+if (alt_full_name.length()&gt;0) 
+	{ rdf_doc = rdf_doc + "	&lt;" + fullnameProp + oftypestring + "&gt;" + alt_full_name + "&lt;/" + fullnameProp + "&gt;\n"; }
+if (alt_short_name.length()&gt;0) 
+	{ rdf_doc = rdf_doc + "	&lt;" + shortnameProp + oftypestring + "&gt;" + alt_short_name + "&lt;/" + shortnameProp + "&gt;\n"; }
+
+//footer
+rdf_doc = rdf_doc + "&lt;/rdf:Description&gt;\n&lt;/rdf:RDF&gt;\n";
+	
+rdf_document = rdf_doc;</s:scriptvalue>
+                  <s:beanshellinputlist>
+                    <s:beanshellinput s:syntactictype="'text/plain'">workflowURI</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">associatedEnzyme</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">disease_id</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">full_name</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">abbreviation</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">short_name</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">alt_full_name</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">alt_abbreviation</s:beanshellinput>
+                    <s:beanshellinput s:syntactictype="'text/plain'">alt_short_name</s:beanshellinput>
+                  </s:beanshellinputlist>
+                  <s:beanshelloutputlist>
+                    <s:beanshelloutput s:syntactictype="'text/plain'">RDFformat</s:beanshelloutput>
+                    <s:beanshelloutput s:syntactictype="'text/plain'">rdf_document</s:beanshelloutput>
+                    <s:beanshelloutput s:syntactictype="'text/plain'">data_URI</s:beanshelloutput>
+                  </s:beanshelloutputlist>
+                  <s:dependencies s:classloader="iteration" />
+                </s:beanshell>
+                <s:iterationstrategy>
+                  <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+                    <i:iterator name="workflowURI" />
+                    <i:iterator name="associatedEnzyme" />
+                    <i:iterator name="disease_id" />
+                    <i:iterator name="full_name" />
+                    <i:iterator name="abbreviation" />
+                    <i:iterator name="short_name" />
+                    <i:iterator name="alt_full_name" />
+                    <i:iterator name="alt_abbreviation" />
+                    <i:iterator name="alt_short_name" />
+                    <i:iterator name="enriched_ontologyURI" />
+                    <i:iterator name="rdf_header" />
+                    <i:iterator name="rdf_footer" />
+                  </i:dot>
+                </s:iterationstrategy>
+              </s:processor>
+              <s:processor name="AddToBioRepository">
+                <s:workflow>
+                  <s:scufl version="0.2" log="0">
+                    <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:1f4a075e-9b2b-419c-a22d-4d9dd71925e5" author="" title="AddRDF_to_AIDA_biorepository" />
+                    <s:processor name="addRdf">
+                      <s:arbitrarywsdl>
+                        <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/RepositoryWS?wsdl</s:wsdl>
+                        <s:operation>addRdf</s:operation>
+                      </s:arbitrarywsdl>
+                    </s:processor>
+                    <s:processor name="AIDA_bio_repository">
+                      <s:workflow>
+                        <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/UtilityWorkflows/AIDA_rdf_bio_repository_MR1_demo.xml</s:xscufllocation>
+                      </s:workflow>
+                    </s:processor>
+                    <s:link source="AIDA_bio_repository:password" sink="addRdf:password" />
+                    <s:link source="AIDA_bio_repository:repository" sink="addRdf:repository" />
+                    <s:link source="AIDA_bio_repository:username" sink="addRdf:username" />
+                    <s:link source="data" sink="addRdf:data" />
+                    <s:link source="data_uri" sink="addRdf:data_uri" />
+                    <s:link source="rdf_format" sink="addRdf:rdf_format" />
+                    <s:link source="AIDA_bio_repository:server_url" sink="addRdf:server_url" />
+                    <s:source name="rdf_format" />
+                    <s:source name="data" />
+                    <s:source name="data_uri" />
+                  </s:scufl>
+                </s:workflow>
+              </s:processor>
+              <s:link source="abbreviation" sink="DiscoveredDiseaseRDFdoc:abbreviation" />
+              <s:link source="alt_abbreviation" sink="DiscoveredDiseaseRDFdoc:alt_abbreviation" />
+              <s:link source="alt_full_name" sink="DiscoveredDiseaseRDFdoc:alt_full_name" />
+              <s:link source="alt_short_name" sink="DiscoveredDiseaseRDFdoc:alt_short_name" />
+              <s:link source="associatedEnzyme" sink="DiscoveredDiseaseRDFdoc:associatedEnzyme" />
+              <s:link source="diseaseID" sink="DiscoveredDiseaseRDFdoc:disease_id" />
+              <s:link source="full_name" sink="DiscoveredDiseaseRDFdoc:full_name" />
+              <s:link source="short_name" sink="DiscoveredDiseaseRDFdoc:short_name" />
+              <s:link source="workflowURI" sink="DiscoveredDiseaseRDFdoc:workflowURI" />
+              <s:link source="DiscoveredDiseaseRDFdoc:RDFformat" sink="AddToBioRepository:rdf_format" />
+              <s:link source="DiscoveredDiseaseRDFdoc:data_URI" sink="AddToBioRepository:data_uri" />
+              <s:link source="DiscoveredDiseaseRDFdoc:rdf_document" sink="AddToBioRepository:data" />
+              <s:source name="short_name">
+                <s:metadata>
+                  <s:description>Example: APNEA</s:description>
+                </s:metadata>
+              </s:source>
+              <s:source name="full_name">
+                <s:metadata>
+                  <s:description>Example: APNEA, OBSTRUCTIVE SLEEP</s:description>
+                </s:metadata>
+              </s:source>
+              <s:source name="abbreviation">
+                <s:metadata>
+                  <s:description>Example: APNEA</s:description>
+                </s:metadata>
+              </s:source>
+              <s:source name="alt_short_name">
+                <s:metadata>
+                  <s:description>If none exists define this input with nothing (zero length string)</s:description>
+                </s:metadata>
+              </s:source>
+              <s:source name="alt_full_name">
+                <s:metadata>
+                  <s:description>If none exists define this input with nothing (zero length string)</s:description>
+                </s:metadata>
+              </s:source>
+              <s:source name="alt_abbreviation">
+                <s:metadata>
+                  <s:description>If none exists define this input with nothing (zero length string)</s:description>
+                </s:metadata>
+              </s:source>
+              <s:source name="workflowURI">
+                <s:metadata>
+                  <s:description>Example:
+http://ws.adaptivedisclosure.org/workflows/BioAID/BioAID_EnrichOntology_MR1.xml</s:description>
+                </s:metadata>
+              </s:source>
+              <s:source name="associatedEnzyme">
+                <s:metadata>
+                  <s:description>Example: EZH2</s:description>
+                </s:metadata>
+              </s:source>
+              <s:source name="diseaseID">
+                <s:metadata>
+                  <s:description>For instance an OMIM id or the abbreviation of the disease.</s:description>
+                </s:metadata>
+              </s:source>
+            </s:scufl>
+          </s:workflow>
+          <s:iterationstrategy>
+            <i:cross xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+              <i:iterator name="workflowURI" />
+              <i:iterator name="associatedEnzyme" />
+              <i:dot>
+                <i:iterator name="diseaseID" />
+                <i:iterator name="abbreviation" />
+                <i:iterator name="full_name" />
+                <i:iterator name="short_name" />
+                <i:iterator name="alt_abbreviation" />
+                <i:iterator name="alt_full_name" />
+                <i:iterator name="alt_short_name" />
+              </i:dot>
+            </i:cross>
+          </s:iterationstrategy>
+        </s:processor>
+        <s:link source="OMIM_disease" sink="DefineAbbreviation:OMIMdisease" />
+        <s:link source="OMIM_disease" sink="DefineShortname:OMIMdisease" />
+        <s:link source="OMIM_disease" sink="ExtractOMIM_id:stringlist" />
+        <s:link source="OMIM_disease" sink="ExtractOMIM_name:stringlist" />
+        <s:link source="DefineAbbreviation:abbreviation" sink="AddToBioRDFRepository:abbreviation" />
+        <s:link source="DefineShortname:shortname" sink="AddToBioRDFRepository:short_name" />
+        <s:link source="ExtractOMIM_name:filteredlist" sink="AddToBioRDFRepository:full_name" />
+        <s:link source="OMIM_disease" sink="empty_alternative:OMIM_disease" />
+        <s:link source="OMIM_id:output" sink="AddToBioRDFRepository:diseaseID" />
+        <s:link source="OMIM_regexp:value" sink="ExtractOMIM_id:regex" />
+        <s:link source="OMIM_regexp:value" sink="ExtractOMIM_name:regex" />
+        <s:link source="enriched_ontologyURI" sink="OMIM_uri:ontology_uri" />
+        <s:link source="enzyme" sink="AddToBioRDFRepository:associatedEnzyme" />
+        <s:link source="workflowURI" sink="AddToBioRDFRepository:workflowURI" />
+        <s:link source="ExtractOMIM_id:filteredlist" sink="OMIM_id:string2" />
+        <s:link source="OMIM_id:output" sink="OMIM_uri:OMIM_id" />
+        <s:link source="empty_alternative:alt_empty" sink="AddToBioRDFRepository:alt_abbreviation" />
+        <s:link source="empty_alternative:alt_empty" sink="AddToBioRDFRepository:alt_full_name" />
+        <s:link source="empty_alternative:alt_empty" sink="AddToBioRDFRepository:alt_short_name" />
+        <s:source name="OMIM_disease" />
+        <s:source name="workflowURI" />
+        <s:source name="enriched_ontologyURI" />
+        <s:source name="enzyme" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="WorkflowRefToRDF">
+    <s:description>This workflow creates an RDF document (RDF statements in N-triples format) and saves it in the ntriplesFileDirectory under a name determined by the workflowURI (must be unique).</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:4230dfc9-f87f-4162-9233-8fe32310c305" author="Marco Roos (AID)" title="WorkflowReferenceToRDF">This workflow creates an RDF document (RDF statements in N-triples format) and saves it in the ntriplesFileDirectory under a name determined by the workflowURI (must be unique).</s:workflowdescription>
+        <s:processor name="CreateWorkflowRDFdocument">
+          <s:beanshell>
+            <s:scriptvalue>// http://rdf.adaptivedisclosure.org/~marco/BioAID/Preliminary/Workflows/Beanshell_code/Beanshell_workflowRDFXML_070713.txt
+// D://Marco/adaptivedisclosure.org/public_html/BioAID/Preliminary/Workflows/Beanshell_code/Beanshell_workflowRDFXML_070713.txt
+
+// Comment: a lot of URIs (namespaces of ontology elements) are hard-coded here; I would like to find ways to make it less so
+
+// Notation
+String RDFformat = "rdfxml";
+
+//data or base URI
+data_URI = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl";
+
+//Concepts
+String tminewfCon = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredEntities.owl#TextMiningDiscoveryWorkflow";
+
+//Properties
+
+//Individuals
+String wfInd = "http://rdf.adaptivedisclosure.org/owl/BioAID/myModel/Enriched-ontology/DiscoveredDiseases.owl#" + workflowURI;
+
+//Relations (triples):
+String rdf_doc;
+String oftypestring = "rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\"";
+
+//header
+rdf_doc = "&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;\n";
+rdf_doc = rdf_doc + "&lt;rdf:RDF\n	xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n	xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"&gt;\n";
+
+//body
+rdf_doc = rdf_doc + "&lt;rdf:Description rdf:about=\"" + wfInd +"\"&gt;\n";
+rdf_doc = rdf_doc + "	&lt;rdf:type rdf:resource= \"" + tminewfCon + "\"/&gt;\n";
+if (workflowLabel.length()&gt;0) {
+	rdf_doc = rdf_doc + "	&lt;rdfs:label " + oftypestring + "&gt;" + workflowLabel + "&lt;/rdfs:label&gt;\n";
+} else {
+	rdf_doc = rdf_doc + "	&lt;rdfs:label " + oftypestring + "&gt;" + workflowURI + "&lt;/rdfs:label&gt;\n";
+}
+if (workflowComment.length()&gt;0) {
+	rdf_doc = rdf_doc + "	&lt;rdfs:comment " + oftypestring + "&gt;" + workflowComment + "&lt;/rdfs:comment&gt;\n";
+}
+
+//footer
+rdf_doc = rdf_doc + "&lt;/rdf:Description&gt;\n&lt;/rdf:RDF&gt;\n";
+
+rdf_document = rdf_doc;</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/plain'">workflowURI</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">workflowLabel</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">workflowComment</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">RDFformat</s:beanshelloutput>
+              <s:beanshelloutput s:syntactictype="'text/plain'">rdf_document</s:beanshelloutput>
+              <s:beanshelloutput s:syntactictype="'text/plain'">data_URI</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="AddToBioRepository">
+          <s:workflow>
+            <s:scufl version="0.2" log="0">
+              <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:1f4a075e-9b2b-419c-a22d-4d9dd71925e5" author="" title="AddRDF_to_AIDA_biorepository" />
+              <s:processor name="addRdf">
+                <s:arbitrarywsdl>
+                  <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/RepositoryWS?wsdl</s:wsdl>
+                  <s:operation>addRdf</s:operation>
+                </s:arbitrarywsdl>
+              </s:processor>
+              <s:processor name="AIDA_bio_repository">
+                <s:workflow>
+                  <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/UtilityWorkflows/AIDA_rdf_bio_repository_MR1_demo.xml</s:xscufllocation>
+                </s:workflow>
+              </s:processor>
+              <s:link source="AIDA_bio_repository:password" sink="addRdf:password" />
+              <s:link source="AIDA_bio_repository:repository" sink="addRdf:repository" />
+              <s:link source="AIDA_bio_repository:username" sink="addRdf:username" />
+              <s:link source="data" sink="addRdf:data" />
+              <s:link source="data_uri" sink="addRdf:data_uri" />
+              <s:link source="rdf_format" sink="addRdf:rdf_format" />
+              <s:link source="AIDA_bio_repository:server_url" sink="addRdf:server_url" />
+              <s:source name="rdf_format" />
+              <s:source name="data" />
+              <s:source name="data_uri" />
+            </s:scufl>
+          </s:workflow>
+        </s:processor>
+        <s:link source="workflowComment" sink="CreateWorkflowRDFdocument:workflowComment" />
+        <s:link source="workflowLabel" sink="CreateWorkflowRDFdocument:workflowLabel" />
+        <s:link source="workflowURI" sink="CreateWorkflowRDFdocument:workflowURI" />
+        <s:link source="CreateWorkflowRDFdocument:RDFformat" sink="AddToBioRepository:rdf_format" />
+        <s:link source="CreateWorkflowRDFdocument:data_URI" sink="AddToBioRepository:data_uri" />
+        <s:link source="CreateWorkflowRDFdocument:rdf_document" sink="AddToBioRepository:data" />
+        <s:source name="workflowURI" />
+        <s:source name="workflowLabel" />
+        <s:source name="workflowComment" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="AddSynonyms">
+    <s:description>This workflow creates a query string from the query term (without quotes!), using Martijn Schuemie's synonym service.
+
+Known issues:
+The synonym services may fail instead of returning an empty list when it can not return a result.</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:ecb927cc-a200-4290-9342-302d5fc836ca" author="Marco Roos (AID) and Martijn Schuemie (ErasmusMC)" title="SynonymsToQuery">This workflow creates a query string from the query term (without quotes!), using Martijn Schuemie's synonym service.
+
+Known issues:
+The synonym services may fail instead of returning an empty list when it can not return a result.</s:workflowdescription>
+        <s:processor name="Flatten_list2">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Flatten_list">
+          <s:local>
+            org.embl.ebi.escience.scuflworkers.java.FlattenList
+            <s:extensions>
+              <s:flattenlist s:depth="2" />
+            </s:extensions>
+          </s:local>
+        </s:processor>
+        <s:processor name="Concat_synonyms">
+          <s:beanshell>
+            <s:scriptvalue>import java.util.*;
+String synstring="\"" + query_term + "\"";
+String syn;
+Iterator iterator = synonymlist.iterator();
+while ( iterator.hasNext() ) 
+	{
+	synstring = synstring + " OR ";
+	syn = ((String) iterator.next());
+	synstring = synstring + "\"" + syn + "\"";
+}
+new_query = synstring;</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="l('text/plain')">synonymlist</s:beanshellinput>
+              <s:beanshellinput s:syntactictype="'text/plain'">query_term</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">new_query</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+          <s:mergemode input="synonymlist" mode="merge" />
+          <s:iterationstrategy>
+            <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+              <i:iterator name="synonymlist" />
+              <i:iterator name="query_term" />
+            </i:dot>
+          </s:iterationstrategy>
+        </s:processor>
+        <s:processor name="getSynsets">
+          <s:arbitrarywsdl>
+            <s:wsdl>http://aida.science.uva.nl:8888/axis/SynsetServer.jws?wsdl</s:wsdl>
+            <s:operation>getSynsets</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:processor name="SplitQuery">
+          <s:workflow>
+            <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/UtilityWorkflows/Split_query_string_MR3.xml</s:xscufllocation>
+          </s:workflow>
+        </s:processor>
+        <s:link source="Flatten_list:outputlist" sink="Flatten_list2:inputlist" />
+        <s:link source="SplitQuery:queryList" sink="getSynsets:term" />
+        <s:link source="getSynsets:getSynsetsReturn" sink="Flatten_list:inputlist" />
+        <s:link source="query_term" sink="Concat_synonyms:query_term" />
+        <s:link source="query_term" sink="SplitQuery:queryString" />
+        <s:link source="Flatten_list2:outputlist" sink="Concat_synonyms:synonymlist" />
+        <s:link source="Concat_synonyms:new_query" sink="new_query" />
+        <s:link source="Flatten_list2:outputlist" sink="synonyms" />
+        <s:source name="query_term">
+          <s:metadata>
+            <s:description>Query term without quotes.</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="synonyms" />
+        <s:sink name="new_query" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="OntologyToRepository">
+    <s:workflow>
+      <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/UtilityWorkflows/AddReceivingOntologyToRdfRepository_MR1.xml</s:xscufllocation>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="clear">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:8888/axis/services/RepositoryWS?wsdl</s:wsdl>
+      <s:operation>clear</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="AddSynonyms:new_query" sink="BioAID_DiseaseDiscovery:query_string" />
+  <s:link source="BioAID_DiseaseDiscovery:discovered_diseases" sink="Flatten_list:inputlist" />
+  <s:link source="BioAID_repository:password" sink="clear:password" />
+  <s:link source="BioAID_repository:password" sink="extractRdf:password" />
+  <s:link source="BioAID_repository:rdf_format" sink="extractRdf:rdf_format" />
+  <s:link source="BioAID_repository:repository" sink="clear:repository" />
+  <s:link source="BioAID_repository:repository" sink="extractRdf:repository" />
+  <s:link source="BioAID_repository:server_url" sink="clear:server_url" />
+  <s:link source="BioAID_repository:server_url" sink="extractRdf:server_url" />
+  <s:link source="BioAID_repository:username" sink="clear:username" />
+  <s:link source="BioAID_repository:username" sink="extractRdf:username" />
+  <s:link source="Enriched_ontologyURI:value" sink="DiscoveredOMIMDiseasesToRDF:enriched_ontologyURI" />
+  <s:link source="Enriched_ontologyURI:value" sink="OntologyToRepository:receiving_ontologyURI" />
+  <s:link source="Flatten_list:outputlist" sink="DiscoveredOMIMDiseasesToRDF:OMIM_disease" />
+  <s:link source="WorkflowComment:value" sink="WorkflowRefToRDF:workflowComment" />
+  <s:link source="WorkflowLabel:value" sink="WorkflowRefToRDF:workflowLabel" />
+  <s:link source="WorkflowURI:value" sink="DiscoveredOMIMDiseasesToRDF:workflowURI" />
+  <s:link source="WorkflowURI:value" sink="WorkflowRefToRDF:workflowURI" />
+  <s:link source="enzyme:value" sink="AddSynonyms:query_term" />
+  <s:link source="enzyme:value" sink="DiscoveredOMIMDiseasesToRDF:enzyme" />
+  <s:link source="extractRdf:extractRdfReturn" sink="Write_Text_File:filecontents" />
+  <s:link source="output_filepath:value" sink="Write_Text_File:outputFile" />
+  <s:link source="Flatten_list:outputlist" sink="OMIM_Diseases" />
+  <s:link source="Write_Text_File:outputFile" sink="rdf_file_content" />
+  <s:sink name="OMIM_Diseases" />
+  <s:sink name="rdf_file_content" />
+  <s:coordination name="OntologyToRepository_BLOCKON_clear">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>clear</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>OntologyToRepository</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="WorkflowRefToRDF_BLOCKON_OntologyToRepository">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>OntologyToRepository</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>WorkflowRefToRDF</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="DiscoveredOMIMDiseasesToRDF_BLOCKON_WorkflowRefToRDF">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>WorkflowRefToRDF</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>DiscoveredOMIMDiseasesToRDF</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="extractRdf_BLOCKON_DiscoveredOMIMDiseasesToRDF">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>DiscoveredOMIMDiseasesToRDF</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>extractRdf</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+</s:scufl>
+

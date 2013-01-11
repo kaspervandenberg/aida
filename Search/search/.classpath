@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/AIDA - Lucene 2.1.0"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/axis.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-collections-3.2.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-lang-2.3.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/commons-math-1.1.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jdbm-1.0.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jsr173_1.0_api.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jstl.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/junit-3.8.2.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/lingpipe-2.2.0.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/lucene-core-2.1.0.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/lucene-highlighter-2.2-dev.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/PDFRenderer.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/result.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/saaj.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/standard.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/xbean.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="web/WEB-INF/classes"/>
+</classpath>

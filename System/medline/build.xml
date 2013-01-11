@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<project name="medline" default="default" basedir=".">
+  <description>Builds, tests, and runs the project medline.</description>
+  <import file="nbproject/build-impl.xml"/>
+  
+	<property file="${user.home}/build.properties"/>
+	<property file="build.properties"/>
+	<!-- Settings defined below will override those in the the abovefound property files -->
+	<!-- If settings below are left empty, the property file will be used -->
+  
+  <!--property name="index.dir"
+            value="/home/aida/AIDA27june2007/INDEXDIR/MedLine2008"/>
+  <property name="medline.dir"
+            value="/home/aida/medline/2008"/-->
+            
+            
+  <property name="server.updates.path"
+            value="/nlmdata/.medlease/gz"/>
+  <property name="server.baseline.path"
+            value="/nlmdata/.medleasebaseline/gz"/>            
+            
+
+
+  <property name="medline.updates.dir"
+            value="${medline.dir}/updates"/>
+  <property name="medline.baseline.dir"
+            value="${medline.dir}/baseline"/>
+            
+  <!-- Sanity check -->          
+	<target name="-pre-init">
+		
+		<fail message="You need to define the environment variable index.dir, the directory in which the Medline index is stored.">
+			<condition>
+				<or>
+					<not>
+						<length string="${index.dir}" when="greater" trim="true" length="0" />
+					</not>
+					<not>
+						<isset property="index.dir"/>
+					</not>
+				</or>
+			</condition>
+		</fail>
+		<fail message="You need to define the environment variable medline.dir, the directory in which the Medline files are stored.">
+			<condition>
+				<or>
+					<not>
+						<length string="${medline.dir}" when="greater" trim="true" length="0" />
+					</not>
+					<not>
+						<isset property="medline.dir"/>
+					</not>
+				</or>
+			</condition>
+		</fail>
+		
+		<echo message="index.dir:            '${index.dir}'" />
+		<echo message="medline.dir:          '${medline.dir}'" />
+		<echo message="server.updates.path:  '${server.updates.path}'" />
+		<echo message="server.baseline.path: '${server.baseline.path}'" />
+		
+		<mkdir dir="${index.dir}"/>
+		<mkdir dir="${medline.dir}"/>
+		
+	</target>
+	
+  <target name="download-baseline"
+          depends="compile"
+          description="Downloads Medline baseline files." >
+    <java classname="org.vle.aid.medline.DownloadMedline"
+          fork="true"
+          classpath="${run.classpath}"
+          >
+      <jvmarg value="-Xms256m"/>
+      <jvmarg value="-Xmx1520m"/>
+      <arg value="-domain=ftp.nlm.nih.gov"/>
+      <arg value="-user=anonymous"/>
+      <arg value="-password=emeij@science.uva.nl"/>
+      <arg value="-medlineDir=${medline.dir}"/>
+      <arg value="-baselinePath=${server.baseline.path}"/>
+    </java>
+  </target>
+		
+  <target name="index-baseline"
+          depends="compile"
+          description="Indexes Medline baseline files." >
+    <java classname="org.vle.aid.medline.IndexBaseline"
+          fork="true"
+          classpath="${run.classpath}"
+          >
+      <arg value="-f"/>
+      <arg value="${index.dir}"/>
+      <arg value="stopwordfile"/>
+      <arg value="${medline.baseline.dir}"/>
+    </java>
+  </target>
+  
+  <target name="download-index-baseline"
+          depends="download-baseline,index-baseline"
+          description="Downloads and indexes Medline baseline files." />
+          
+  <target name="download-updates"
+          depends="compile"
+          description="Downloads Medline update files." >
+    <java classname="org.vle.aid.medline.DownloadMedline"
+          fork="true" 
+          classpath="${run.classpath}"
+          >
+      <jvmarg value="-Xms256m"/>
+      <jvmarg value="-Xmx1520m"/>
+      <arg value="-domain=ftp.nlm.nih.gov"/>
+      <arg value="-user=anonymous"/>
+      <arg value="-password=emeij@science.uva.nl"/>
+      <arg value="-medlineDir=${medline.dir}"/>
+      <arg value="-updatePath=${server.updates.path}"/>
+      <arg value="-indexdir=${index.dir}"/>
+    </java>
+    
+  </target>
+            
+  <target name="download-index-updates"
+          depends="compile"
+          description="Downloads and indexes Medline update files." >
+    <java classname="org.vle.aid.medline.DownloadMedline"
+          fork="true" 
+          classpath="${run.classpath}"
+          >
+      <jvmarg value="-Xms256m"/>
+      <jvmarg value="-Xmx1520m"/>
+      <arg value="-domain=ftp.nlm.nih.gov"/>
+      <arg value="-user=anonymous"/>
+      <arg value="-password=emeij@science.uva.nl"/>
+      <arg value="-medlineDir=${medline.dir}"/>
+      <arg value="-updatePath=${server.updates.path}"/>
+      <arg value="-indexdir=${index.dir}"/>
+      <arg value="-index"/>
+    </java>
+    
+  </target>
+  
+  <target name="download-index-updates-aida"
+          depends="compile,download-index-updates"
+          description="Downloads, indexes, and backups Medline update files." >
+    
+    <delete dir="/data/medline_backup_1"/>
+    
+    <move todir="/data/medline_backup_1">
+      <fileset dir="/data/medline_backup"/>
+    </move>
+    
+    <copy todir="/data/medline_backup">
+      <fileset dir="${index.dir}"/>
+    </copy>
+    
+  </target>
+
+  <target name="index-updates"
+          depends="compile"
+          description="Indexes Medline update files." >
+    <java classname="org.vle.aid.medline.IndexUpdater"
+          fork="true"
+          classpath="${run.classpath}"
+          >
+      <arg value="${index.dir}"/>
+      <arg value="${medline.updates.dir}"/>
+    </java>
+  </target>
+  
+  
+  
+  <!--
+
+    There exist several targets which are by default empty and which can be 
+    used for execution of your tasks. These targets are usually executed 
+    before and after some main targets. They are: 
+
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-compile-single:       called before javac compilation of single file
+      -post-compile-single:      called after javac compilation of single file
+      -pre-compile-test:         called before javac compilation of JUnit tests
+      -post-compile-test:        called after javac compilation of JUnit tests
+      -pre-compile-test-single:  called before javac compilation of single JUnit test
+      -post-compile-test-single: called after javac compilation of single JUunit test
+      -pre-jar:                  called before JAR building
+      -post-jar:                 called after JAR building
+      -post-clean:               called after cleaning build products
+
+    (Targets beginning with '-' are not intended to be called on their own.)
+
+    Example of inserting an obfuscator after compilation could look like this:
+
+        <target name="-post-compile">
+            <obfuscate>
+                <fileset dir="${build.classes.dir}"/>
+            </obfuscate>
+        </target>
+
+    For list of available properties check the imported 
+    nbproject/build-impl.xml file. 
+
+
+    Another way to customize the build is by overriding existing main targets.
+    The targets of interest are: 
+
+      -init-macrodef-javac:     defines macro for javac compilation
+      -init-macrodef-junit:     defines macro for junit execution
+      -init-macrodef-debug:     defines macro for class debugging
+      -init-macrodef-java:      defines macro for class execution
+      -do-jar-with-manifest:    JAR building (if you are using a manifest)
+      -do-jar-without-manifest: JAR building (if you are not using a manifest)
+      run:                      execution of project 
+      -javadoc-build:           Javadoc generation
+      test-report:              JUnit report generation
+
+    An example of overriding the target for project execution could look like this:
+
+        <target name="run" depends="medline-impl.jar">
+            <exec dir="bin" executable="launcher.exe">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
+
+    Notice that the overridden target depends on the jar target and not only on 
+    the compile target as the regular run target does. Again, for a list of available 
+    properties which you can use, check the target you are overriding in the
+    nbproject/build-impl.xml file. 
+
+  -->
+</project>

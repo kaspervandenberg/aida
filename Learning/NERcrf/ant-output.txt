@@ -1,0 +1,121 @@
+Buildfile: build.xml
+
+-pre-init:
+
+-init-private:
+
+-init-user:
+
+-init-project:
+
+-init-macrodef-property:
+
+-do-ear-init:
+
+-do-init:
+
+-post-init:
+
+-init-check:
+
+-init-macrodef-javac:
+
+-init-macrodef-junit:
+
+-init-macrodef-java:
+
+-init-macrodef-nbjpda:
+
+-init-macrodef-debug:
+
+init:
+
+deps-module-jar:
+
+deps-ear-jar:
+
+deps-jar:
+
+-pre-pre-compile:
+
+-pre-compile:
+
+-copy-manifest:
+
+library-inclusion-in-archive:
+
+library-inclusion-in-manifest:
+
+-do-compile:
+    [javac] Compiling 1 source file to /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/build/web/WEB-INF/classes
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]               ^
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]                ^
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]                 ^
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]                  ^
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]                   ^
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]                    ^
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]                     ^
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]                      ^
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]                            ^
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]                             ^
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]                              ^
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]                               ^
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]                                ^
+    [javac] /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/src/java/katrenko/ws/applyCRFServlet.java:4: warning: unmappable character for encoding UTF8
+    [javac]  * Created on ��������, 4, ������ 2008, 18:44
+    [javac]                                 ^
+    [javac] 14 warnings
+
+-post-compile:
+
+compile:
+
+-pre-dist:
+
+compile-jsps:
+
+-do-dist-with-manifest:
+      [jar] Building jar: /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/dist/NERcrf.war
+
+-do-dist-without-manifest:
+
+do-dist:
+
+-post-dist:
+
+dist:
+
+install:
+     [copy] Copying 1 file to /home/aida/tomcat-dev/webapps
+[axis-admin] Processing file /home/aida/.hudson/jobs/AIDA/workspace/AIDA/Learning/NERcrf/deploy.wsdd
+[axis-admin] <Admin>Done processing</Admin>
+     [copy] Copying 1 file to /home/aida/tomcat-dev/webapps/axis/WEB-INF/classes
+
+BUILD SUCCESSFUL
+Total time: 4 seconds

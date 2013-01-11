@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:3672a28d-b5a0-4b77-bd65-a310122e0bb1" author="" title="Test_TrainRelationExtraction" />
+  <s:processor name="learnRelation">
+    <s:defaults>
+      <s:default name="inputData">D:\Marco\adaptivedisclosure.org\public_html\BioAID\Preliminary\Input\TrainingSetExampleForRelationLearning.txt</s:default>
+      <s:default name="modelFile">D:\Marco\adaptivedisclosure.org\public_html\BioAID\Preliminary\Output\LearnedModels\TestRelationLearningModel</s:default>
+    </s:defaults>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:9999/axis/services/RelationLearner?wsdl</s:wsdl>
+      <s:operation>learnRelation</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="Filename" sink="learnRelation:inputData" />
+  <s:link source="modelFilenamePath" sink="learnRelation:modelFile" />
+  <s:link source="learnRelation:learnRelationReturn" sink="output" />
+  <s:source name="Filename" />
+  <s:source name="modelFilenamePath" />
+  <s:sink name="output" />
+</s:scufl>
+

@@ -1,0 +1,9 @@
+div#left.nalt, div#right.nalt {
+        background-color: #CEC;
+        border-color: #9B9;
+}
+
+div#left.agrovoc, div#right.agrovoc {
+        background-color: #DFD;
+        border-color: #BDB;
+}

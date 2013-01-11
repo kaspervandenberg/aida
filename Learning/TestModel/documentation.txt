@@ -1,0 +1,34 @@
+TestModelService
+
+Purpose: To apply model acquired via LearnModelService to  the new “unseen“ data (test data) and to annotate it according to the information stored in the chosen model. For instance, in case a model was trained to recognize proteins in the text data, all occurrences of proteins in the test data will be annotated with the corresponding tags.
+
+Input: 
+
+model_file (String) - model file which is an output of LearnModelService
+(and log file for the model (from LearnModelService) !)*
+test_file (String) – path to the test data
+type (String) – it is only set to “text” in a current version
+
+*Please keep in mind that together with a model_file, this service needs lof file (which is also the output of LearnModelService and is by default stored as model_file.log in the *same* folder as model_file). TestModelService can’t be used without a log file.
+
+Output: String - annotated test set 
+
+Example from the client’s code:
+
+String[] model = new String[1];
+model = request.getParameterValues("model_file");
+String[] test = new String[1];
+test = request.getParameterValues("test_file");
+
+String endpoint =
+                      "http://localhost:8084/axis/services/TestModelService";
+  
+             Service  service = new Service();
+             Call     call    = (Call) service.createCall();  
+             call.setTargetEndpointAddress(endpoint);
+             call.setOperationName("test_model");
+  
+             ret = (String) call.invoke( new Object[] { model[0], test[0], "text"} );
+          
+
+Realization: Uses Weka libraries, SAX Parser 

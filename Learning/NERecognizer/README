@@ -1,0 +1,14 @@
+
+The service is deployed by 
+
+ant compile
+ant install
+
+and undeployed by 
+
+ant remove
+
+It was tested using JDK 1.5.0, Ant 1.6.5 (http://ant.apache.org/), and Tomcat 5.5.9.
+
+Please note that sources include three recognition models (src/java/katrenko/ws/), which must
+be located there to make named entity recognition work.

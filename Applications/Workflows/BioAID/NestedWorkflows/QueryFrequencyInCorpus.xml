@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:abc3350b-e618-4fdd-8317-cbf5c298804d" author="" title="QueryFrequencyInCorpus" />
+  <s:processor name="DocumentsIndex" boring="true">
+    <s:stringconstant>MedLine</s:stringconstant>
+  </s:processor>
+  <s:processor name="AIDA_search">
+    <s:defaults>
+      <s:default name="maxHits">1</s:default>
+      <s:default name="defaultField">content</s:default>
+    </s:defaults>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:9999/axis/services/SearcherWS?wsdl</s:wsdl>
+      <s:operation>search</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Flatten_list">
+    <s:local>
+      org.embl.ebi.escience.scuflworkers.java.FlattenList
+      <s:extensions>
+        <s:flattenlist s:depth="2" />
+      </s:extensions>
+    </s:local>
+  </s:processor>
+  <s:processor name="RelativeFrequencyPoiInCorpus">
+    <s:defaults>
+      <s:default name="corpus_total">17000000</s:default>
+    </s:defaults>
+    <s:beanshell>
+      <s:scriptvalue>/* variables
+	poi_count_in_corpus
+	corpus_total
+return
+	relative_frequency
+*/
+import java.lang.Math;
+
+Double rf = new Double(-Math.log((double)(Integer.parseInt( poi_count_in_corpus ) ) / ((double) (Integer.parseInt( corpus_total )))));
+
+relative_frequency = rf.toString();</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">corpus_total</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">poi_count_in_corpus</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">relative_frequency</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="XPath_From_Text">
+    <s:local>net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker</s:local>
+  </s:processor>
+  <s:processor name="ExtractCountXpath" boring="true">
+    <s:stringconstant>./aid:result/@total</s:stringconstant>
+  </s:processor>
+  <s:link source="AIDA_search:searchReturn" sink="XPath_From_Text:xml-text" />
+  <s:link source="ExtractCountXpath:value" sink="XPath_From_Text:xpath" />
+  <s:link source="Flatten_list:outputlist" sink="RelativeFrequencyPoiInCorpus:poi_count_in_corpus" />
+  <s:link source="XPath_From_Text:nodelist" sink="Flatten_list:inputlist" />
+  <s:link source="corpus_total_doc_count" sink="RelativeFrequencyPoiInCorpus:corpus_total" />
+  <s:link source="DocumentsIndex:value" sink="AIDA_search:index" />
+  <s:link source="query" sink="AIDA_search:queryString" />
+  <s:link source="Flatten_list:outputlist" sink="poi_count_in_corpus" />
+  <s:link source="RelativeFrequencyPoiInCorpus:relative_frequency" sink="min_log_relative_frequency_poi_in_corpus" />
+  <s:link source="query" sink="poi_query" />
+  <s:source name="query" />
+  <s:source name="corpus_total_doc_count" />
+  <s:sink name="poi_count_in_corpus" />
+  <s:sink name="min_log_relative_frequency_poi_in_corpus" />
+  <s:sink name="poi_query" />
+</s:scufl>
+

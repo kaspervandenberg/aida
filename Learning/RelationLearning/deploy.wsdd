@@ -1,0 +1,11 @@
+<deployment xmlns="http://xml.apache.org/axis/wsdd/"
+            xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+    <service name="RelationLearner" provider="java:RPC" style="rpc" use="encoded">
+        <parameter name="className" value="katrenko.ws.RelationLearning"/>
+        <parameter name="allowedMethods" value="*"/>
+    </service>
+    <service name="RelationExtractor" provider="java:RPC" style="rpc" use="encoded">
+        <parameter name="className" value="katrenko.ws.RelationExtraction"/>
+        <parameter name="allowedMethods" value="*"/>
+    </service>
+</deployment>

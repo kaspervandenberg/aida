@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:sta="http://www.co-ode.org/ontologies/basic-bio/additional-top-self-standing.owl#"
+    xmlns:vt="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#"
+    xmlns:rfp="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#"
+    xmlns:st="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://www.co-ode.org/ontologies/basic-bio/normality.owl#"
+  xml:base="http://www.co-ode.org/ontologies/basic-bio/normality.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Instrinsically_nonNormal_status">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Things that are always non-normal but might not be pathological, e.g. situs inversus.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="NonNormal_status"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Intrinsically_pathological_status">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Things that are always pathological, e.g. malignant tumours.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Pathological_status"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="NonPathological_status">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="Normality_status"/>
+          <owl:Class>
+            <owl:complementOf>
+              <owl:Class rdf:about="#Pathological_status"/>
+            </owl:complementOf>
+          </owl:Class>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Not pathological - see pathological</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#Normality_status">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/refining-entities-and-properties.owl#Quality_partition"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The standard GALEN version of normality.  
+
+NB: To understand must classify and view in inferred window, probably with OWLViz.
+
+Roughly - normal means 'normative'.  The heuristic test is whether, in usual contexts, it would be noteworthy in a medical record.  Pathological means harmful.  The normal test is whether it requires medical management - possibly watchful waiting.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#Pathological_status">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#NonNormal_status"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Harmful to the organism.  Pragmatic test. Would it usually require medical management - including observation/watchful waiting.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Normal_status">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Normative - pragmatically, not worth noting in most contgexts.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Normality_status"/>
+          <owl:Class>
+            <owl:complementOf>
+              <owl:Class rdf:about="#NonNormal_status"/>
+            </owl:complementOf>
+          </owl:Class>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#NonNormal_status">
+    <rdfs:subClassOf rdf:resource="#Normality_status"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Not normalitive.  Pragmatic test: Is it usually worth noting?</rdfs:comment>
+  </owl:Class>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 304)  http://protege.stanford.edu -->

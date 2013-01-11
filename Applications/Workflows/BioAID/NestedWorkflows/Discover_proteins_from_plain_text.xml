@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:b4c1a118-6a38-40b5-99e9-febbd3c85f2b" author="Marco Roos (AID)" title="Discover_proteins_from_plain_text">This workflow applies the discovery workflow built around the AIDA 'Named Entity Recognize' web service by Sophia Katrenko. It uses the pre-learned genomics model, named 'MedLine', to find genomics concepts in a set of documents in lucene output format.</s:workflowdescription>
+  <s:processor name="prelearned_genomics_model" boring="true">
+    <s:stringconstant>MedLine</s:stringconstant>
+  </s:processor>
+  <s:processor name="Discover_entities">
+    <s:description>This workflow contains the 'Named Entity Recognize' web service from the AIDA toolbox, created by Sophia Katrenko. It can be used to discover entities of a certain type (determined by 'learned_model') in documents provided in a lucene output format.</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:e7ae8f2a-428f-4afd-93eb-52ccb89273e1" author="Marco Roos (AID)" title="Discover_entities">This workflow contains the 'Named Entity Recognize' web service from the AIDA toolbox, created by Sophia Katrenko. It can be used to discover entities of a certain type (determined by 'learned_model') in documents provided in a lucene output format.
+
+Known issues:
+The output of NErecognize contains concepts with / characters, breaking the xml. For post-processing its results it is better to use string manipulation than xml manipulations.
+The output is per document, which means entities will  be redundant if they occur in more than one document.</s:workflowdescription>
+        <s:processor name="Default_output_type" boring="true">
+          <s:stringconstant>NElist</s:stringconstant>
+        </s:processor>
+        <s:processor name="Default_input_type" boring="true">
+          <s:stringconstant>text</s:stringconstant>
+        </s:processor>
+        <s:processor name="NErecognize">
+          <s:arbitrarywsdl>
+            <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/NERecognizerService?wsdl</s:wsdl>
+            <s:operation>NErecognize</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:link source="input_text" sink="NErecognize:input_data" />
+        <s:link source="learned_model" sink="NErecognize:r_type" />
+        <s:link source="Default_input_type:value" sink="NErecognize:input_type" />
+        <s:link source="Default_output_type:value" sink="NErecognize:output_type" />
+        <s:link source="NErecognize:NErecognizeReturn" sink="discovered_entities" />
+        <s:source name="input_text">
+          <s:metadata>
+            <s:description>Example:
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;aid:result xmlns:aid="http://aid.vle.org" query="+content:ezh2 +(year:2007^10.0 year:2006^9.0 year:2005^8.0 year:2004^7.0 year:2004^6.0 year:2003^5.0 year:2002^4.0 year:2001^3.0 year:2000^2.0 year:1999)" total="78" time="2"&gt;
+  &lt;doc rank="1" score="0.55880820751190185546875"&gt;
+    &lt;field name="PMID"&gt;
+      &lt;value&gt;15208672&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="year"&gt;
+      &lt;value&gt;2004&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="PT"&gt;
+      &lt;value&gt;Journal Article&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="title"&gt;
+      &lt;value&gt;Activated p53 suppresses the histone methyltransferase EZH2 gene.&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="content"&gt;
+      &lt;value&gt;... Furthermore, the repression of EZH2 promoter by p53 is dependent on p53 transcriptional target p21(Waf1) inactivating RB/E2F pathways. In addition, the knockdown of EZH2 expression retards cell proliferation and induces G2/M arrest. We suggest that the p53-dependent suppression of EZH2 expression is a novel pathway that contributes to p53-mediated G2/M arrest. EZH2 associated complex possesses HMTase activity and is involved in epigenetic regulation. Activated p53 suppresses EZH2 expression, suggesting a further role for p53 in epigenetic regulation and in the maintenance of genetic stability. Suppression of EZH2 expression in tumors by p53 may lead to novel approaches to control cancer progression.&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="LuceneDocID"&gt;
+      &lt;value&gt;14861224&lt;/value&gt;
+    &lt;/field&gt;
+  &lt;/doc&gt;
+&lt;/aid:result&gt;</s:description>
+          </s:metadata>
+        </s:source>
+        <s:source name="learned_model">
+          <s:metadata>
+            <s:description>Model to discover a set of specific concepts; e.g. the prelearned model named 'MedLine' will make the service discover genomics concepts.</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="discovered_entities">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/rdf</s:mimeType>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+            <s:description>Entities discoverd in documents provided in lucene output format.</s:description>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Extract_proteins">
+    <s:description>This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="Marco Roos (AID)" title="Extract_proteins_fromXML">This workflow filters protein_molecule-labeled terms from an input string(list). The result is a tagged list of proteins (disregarding false positives in the input).
+
+Internal information:
+This workflow is a copy of 'filter_protein_molecule_MR3' used for the NBIC poster (now in Archive).</s:workflowdescription>
+        <s:processor name="Remove_duplicate_strings">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates</s:local>
+        </s:processor>
+        <s:processor name="Filter_protein_molecules">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="filter_protein_molecule_regexp" boring="true">
+          <s:stringconstant>&lt;protein_molecule&gt;\w*&lt;/protein_molecule&gt;</s:stringconstant>
+        </s:processor>
+        <s:processor name="Strip_xml">
+          <s:beanshell>
+            <s:scriptvalue>import java.util.regex.*;
+Pattern pattern = Pattern.compile("&lt;/?[\\w\\d-]+&gt;");
+Matcher matcher = pattern.matcher(tagged_term);
+String term= matcher.replaceAll("");</s:scriptvalue>
+            <s:beanshellinputlist>
+              <s:beanshellinput s:syntactictype="'text/xml'">tagged_term</s:beanshellinput>
+            </s:beanshellinputlist>
+            <s:beanshelloutputlist>
+              <s:beanshelloutput s:syntactictype="'text/plain'">term</s:beanshelloutput>
+            </s:beanshelloutputlist>
+            <s:dependencies s:classloader="iteration" />
+          </s:beanshell>
+        </s:processor>
+        <s:processor name="SplitOn_protein_molecule">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+        </s:processor>
+        <s:processor name="splitOn_protein_molecule_regexp" boring="true">
+          <s:stringconstant>(?=&lt;protein_molecule&gt;)|(?&lt;=&lt;/protein_molecule&gt;)</s:stringconstant>
+        </s:processor>
+        <s:link source="input_string" sink="SplitOn_protein_molecule:string" />
+        <s:link source="Filter_protein_molecules:filteredlist" sink="Remove_duplicate_strings:stringlist" />
+        <s:link source="Remove_duplicate_strings:strippedlist" sink="Strip_xml:tagged_term" />
+        <s:link source="SplitOn_protein_molecule:split" sink="Filter_protein_molecules:stringlist" />
+        <s:link source="Strip_xml:term" sink="protein_molecule" />
+        <s:link source="filter_protein_molecule_regexp:value" sink="Filter_protein_molecules:regex" />
+        <s:link source="splitOn_protein_molecule_regexp:value" sink="SplitOn_protein_molecule:regex" />
+        <s:source name="input_string" />
+        <s:sink name="protein_molecule" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:link source="Discover_entities:discovered_entities" sink="Extract_proteins:input_string" />
+  <s:link source="prelearned_genomics_model:value" sink="Discover_entities:learned_model" />
+  <s:link source="text_document" sink="Discover_entities:input_text" />
+  <s:link source="Extract_proteins:protein_molecule" sink="discovered_proteins" />
+  <s:source name="text_document">
+    <s:metadata>
+      <s:description>Example:
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;aid:result xmlns:aid="http://aid.vle.org" query="+content:ezh2 +(year:2007^10.0 year:2006^9.0 year:2005^8.0 year:2004^7.0 year:2004^6.0 year:2003^5.0 year:2002^4.0 year:2001^3.0 year:2000^2.0 year:1999)" total="78" time="2"&gt;
+  &lt;doc rank="1" score="0.55880820751190185546875"&gt;
+    &lt;field name="PMID"&gt;
+      &lt;value&gt;15208672&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="year"&gt;
+      &lt;value&gt;2004&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="PT"&gt;
+      &lt;value&gt;Journal Article&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="title"&gt;
+      &lt;value&gt;Activated p53 suppresses the histone methyltransferase EZH2 gene.&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="content"&gt;
+      &lt;value&gt;... Furthermore, the repression of EZH2 promoter by p53 is dependent on p53 transcriptional target p21(Waf1) inactivating RB/E2F pathways. In addition, the knockdown of EZH2 expression retards cell proliferation and induces G2/M arrest. We suggest that the p53-dependent suppression of EZH2 expression is a novel pathway that contributes to p53-mediated G2/M arrest. EZH2 associated complex possesses HMTase activity and is involved in epigenetic regulation. Activated p53 suppresses EZH2 expression, suggesting a further role for p53 in epigenetic regulation and in the maintenance of genetic stability. Suppression of EZH2 expression in tumors by p53 may lead to novel approaches to control cancer progression.&lt;/value&gt;
+    &lt;/field&gt;
+    &lt;field name="LuceneDocID"&gt;
+      &lt;value&gt;14861224&lt;/value&gt;
+    &lt;/field&gt;
+  &lt;/doc&gt;
+&lt;/aid:result&gt;</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="discovered_proteins">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/rdf</s:mimeType>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

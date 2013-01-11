@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>LingPipe: Development Sandbox</title>
+<meta http-equiv="Content-type" 
+      content="application/xhtml+xml; charset=utf-8"/>
+<meta http-equiv="Content-Language" 
+      content="en"/>
+<link href="css/lp-site.css" 
+      type="text/css" 
+      rel="stylesheet"
+      title="lp-site"
+      media="screen,projection,tv"/>
+
+<link href="css/lp-site-print.css" 
+      title="lp-site" 
+      type="text/css" 
+      rel="stylesheet" 
+      media="print,handheld,tty,aural,braille,embossed"/>
+
+</head>
+
+<body>
+
+<div id="header">
+<h1 id="product">LingPipe</h1><h1 id="pagetitle">Development Sandbox</h1>
+<a id="logo" 
+   href="http://www.alias-i.com/"
+  ><img src="img/logo-small.gif" alt="alias-i logo"/>
+</a>
+</div><!-- head -->
+
+
+<div id="navig">
+
+<!-- set class="current" for current link -->
+<ul>
+<li><a href="../index.html">home</a></li>
+
+<li><a href="demos.html">demos</a></li>
+
+<li><a href="licensing.html">license</a></li>
+
+<li>download
+<ul>
+<li><a href="download.html">lingpipe core</a></li>
+<li><a href="models.html">models</a></li>
+</ul>
+</li>
+
+<li>docs
+<ul>
+<li><a href="install.html">install</a></li>
+<li><a href="../demos/tutorial/read-me.html">tutorials</a></li>
+<li><a href="../docs/api/index.html">javadoc</a></li>
+<li><a href="faq.html">faq</a></li>
+</ul>
+</li>
+
+<li>community
+<ul>
+<li><a href="customers.html">customers</a></li>
+<li><a href="http://groups.yahoo.com/group/LingPipe/">newsgroup</a></li>
+<li><a href="http://alias-i.com/blog/">blog</a></li>
+<li><a href="bugs.html">bugs</a></li>
+<li><a class="current" href="sandbox.html">sandbox</a></li>
+<li><a href="competition.html">competition</a></li>
+</ul>
+</li>
+
+<li><a href="contact.html">contact</a></li>
+
+<li><a href="about.html">about alias-i</a></li>
+</ul>
+
+<div class="search">
+<form action="http://www.google.com/search">
+<p>
+<input type="hidden" name="hl" value="en" />
+<input type="hidden" name="ie" value="UTF-8" />
+<input type="hidden" name="oe" value="UTF-8" />
+<input type="hidden" name="sitesearch" value="www.alias-i.com" />
+<input class="query" size="10%" name="q" value="" />
+<br />
+<input class="submit" type="submit" value="search" name="submit" />
+</p>
+</form>
+</div>
+
+</div><!-- navig -->
+
+
+<div id="content" class="content">
+
+<h2>Playing in the Sandbox</h2>
+
+<div class="sidebar">
+<h2>What's CVS?</h2>
+<p>
+CVS refers to the concurrent versions system.  It's
+a form of source code control that allows multiple
+developers to work on a project concurrently.
+For more information, see:
+</p>
+
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/Concurrent_Versions_System">Wikipedia: CVS</a></li>
+<li><a href="http://www.nongnu.org/cvs/">GNU: CVS</a></li>
+</ul>
+
+</div>
+
+<p>
+The sandbox is filled with experimental LingPipe projects with working
+code.  We'll be using it to share things we're working on in development
+and things our users would like to share with others.  Because it's
+based on CVS, it will be more fluid than our standard releases.
+</p>
+
+<p>
+If you're familiar with anonymous CVS, jump to the:
+</p>
+<ul>
+<li><a href="#sandbox-projects">Sandbox Project List</a></li>
+</ul>
+
+<h2>Checking Out Projects</h2>
+
+<p>
+The sandbox is set up to allow anonymous CVS access.  After
+installing CVS, use the following command:
+</p>
+
+<pre class="code">
+cvs -d :pserver:anonymous@threattracker.com:/usr/local/sandbox checkout <i>ProjectName</i>
+</pre>
+
+<p>
+where <code class="var">ProjectName</code> is the name of the project.
+This will check out the project into a directory of the same name.
+</p>
+
+
+<h2>Updating Projects</h2>
+<div class="sidebar">
+<h2>Installing CVS</h2>
+<p>
+CVS comes preinstalled on most linux systems and is part of the <a
+href="http://www.cygwin.com/">Cygwin</a> package on windows.  
+
+There are also several OS-integrated (e.g. <a
+href="http://www.tortoisecvs.org/">TortoiseCVS</a>), and GUI (e.g. <a
+href="http://www.wincvs.org/">WinCVS</a>) versions.  (No, we're not
+running CVSWeb.)
+</p>
+</div>
+<p>
+To update an existing project to the latest version, use
+the following commands:
+</p>
+
+<pre class="code">
+cd <i>ProjectName</i>
+cvs update
+</pre>
+
+<p>
+That is, you move to the directory containing the project
+and issue the update command to CVS.  
+This will merge all of the changes in the CVS archive into
+your local copy.
+</p>
+
+<p>The reason you don't need to specify the CVS root
+again (<code>:pserver:anonymous...</code>) is that it's
+stored under <code><i>ProjectName</i>/CVS</code> in a file
+called <code>Root</code>.
+</p>
+
+
+<h2>Contributing</h2>
+
+<p>
+Just send us email about your project.  Ideally, you can describe it
+and send us a tarball with working code.  We can either just check it
+in for you or give you an account on our CVS server so you can use
+the <code>:ext</code> mode for CVS instead of <code>:pserver</code>.
+</p>
+
+
+<a name="sandbox-projects"></a>
+<h2>Sandbox Project List</h2>
+
+<div class="sidebar">
+<h2>Etymology Corner: <i>Sandbox</i></h2>
+<p>
+The <a href="http://en.wikipedia.org/wiki/Etymology">etymology</a> of
+the term <i>sandbox</i> is straightforward.  Colloquially, a <a
+href="http://dictionary.reference.com/search?q=sandbox">sandbox</a> is
+just a box full of sand in which children can play.
+</p>
+<p>In computer
+security, the term <a
+href="http://en.wikipedia.org/wiki/Sandbox_%28computer_security%29">sandbox</a>
+was borrowed to mean a safe place where (often untrusted) programs can
+play without danger of taking out critical resources.  <a
+href="http://www.apache.org">Apache</a> offers sandboxes for projects
+(e.g. the <a
+href="http://lucene.apache.org/java/docs/lucene-sandbox/">Lucene
+Sandbox</a> and <a
+href="http://jakarta.apache.org/commons/sandbox/">Commons
+Sandbox</a>).  
+</p>
+<p>
+A related concept is Apache's <a
+href="http://incubator.apache.org/">incubator</a>, aimed at providing
+a trial space for projects aspiring to Apache status.
+</p>
+</div>
+
+<h3>Named Entity Corpus Annotation Tool</h3>
+
+<p>
+This is a complete application for creating your own
+named-entity training data.  It's language independent and
+only requires a tokenizer.  It interactively learns as
+you tag just like the original <a href="">Alembic Workbench</a>.
+</p>
+<p>
+We've been able to use it to tag on the order of 5-10K tokens/hour,
+depending on the complexity of the task.
+</p>
+<p>
+There's generic information, and also a whole section on
+extracting bibliographies from PDF docs, starting from
+text conversion, then bibliography extraction, then
+citation extraction and then finally field extraction.
+</p>
+
+<p>The name of the repository is derived from its
+original use for bibliographies:
+</p>
+
+<ul>
+<li><code>citationEntities</code></li>
+</ul>
+
+
+
+
+<h3>SIGHan 2006: Chinese Words and Entities</h3>
+
+<p>
+This project contains the complete code used to
+submit Alias-i's 2006 SIGHan bakeoff results.
+It includes training and output for the two
+bakeoff tasks: word segmentation and named entity
+extraction.  Code for both tasks is under one page.
+</p>
+
+<ul>
+<li><code>sighan2006</code></li>
+</ul>
+
+
+<h3>BioCreative 2006: Gene Entity Recognition</h3>
+
+<p>
+This project contains the complete code used to
+submit Alias-i's 2006 BioCreative bakeoff results.
+It includes training and output for the
+bakeoff task: named entity extraction.
+This includes first best along with
+precision- and recall-oriented runs with confidence.
+</p>
+
+<ul>
+<li><code>biocreative2006</code></li>
+</ul>
+
+
+<h3>IBM's UIMA</h3>
+
+<p>
+This project contains sample code for getting started
+using LingPipe in IBM's UIMA framework.  We're actively
+soliciting submissions for this sandbox entry if you have
+anything you'd be willing to share.  As is, this is for
+the old IBM UIMA, not the new Apache UIMA.
+</p>
+
+<ul>
+<li><code>uima</code></li>
+</ul>
+
+
+<h3>Sentence, Entity and Coreference Demo</h3>
+
+<p>
+This demo illustrates the 2.0 sentence chunking model,
+the 2.2 HMM-based entity extraction, and the 1.0 version
+of coreference in a simple one-pager.
+</p>
+
+<ul>
+<li><code>simpleCoref</code></li>
+</ul>
+
+
+
+
+
+<h3>XHTML: Document Object Model</h3>
+
+<p>
+This is our answer to Jakarta's Element Construction
+Set, which seems to be moribund.  Our approach builds
+a full XHTML document-object model based on the XHTML
+DTD.  The classes reflects the macros in the DTD through
+interfaces, allowing for simple constraints on occurrence.
+</p>
+<p>Feedback on this project would be most welcome.  
+</p>
+
+<ul>
+<li><code>xhtml</code></li>
+</ul>
+
+</div><!-- content -->
+
+<div id="foot">
+<p>
+&#169; 2003&ndash;2007 &nbsp;
+<a href="mailto:lingpipe@alias-i.com">alias-i</a>
+</p>
+</div>
+</body>
+</html>
+
+

@@ -1,0 +1,676 @@
+<?xml version="1.0"?>
+<!DOCTYPE rdf:RDF [
+
+   <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+   ]>
+
+<rdf:RDF
+xmlns="http://www.mindswap.org/2004/darwinCore.owl#"
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+xmlns:owl="http://www.w3.org/2002/07/owl#"
+>
+  
+<owl:AnnotationProperty rdf:ID="conceptID">
+<rdfs:domain rdf:resource="#CollectionItem"/>
+</owl:AnnotationProperty>
+  
+
+  
+
+<owl:Class rdf:ID="CollectionItem">
+  
+	<rdfs:label>A Darwin Core Collection Item</rdfs:label>
+	<rdfs:subClassOf>
+	
+		<owl:Restriction>
+			<owl:onProperty rdf:resource="#Institution_Code"/>
+			<owl:cardinality 
+rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+		</owl:Restriction>
+</rdfs:subClassOf>
+<rdfs:subClassOf>
+		<owl:Restriction>
+				<owl:onProperty rdf:resource="#Date_Last_Modified"/>
+				<owl:cardinality 
+rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+		</owl:Restriction> 
+</rdfs:subClassOf>
+	  <rdfs:subClassOf>
+		<owl:Restriction>
+				<owl:onProperty rdf:resource="#Collection_Code"/>
+				<owl:cardinality 
+rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+		</owl:Restriction>
+</rdfs:subClassOf>
+
+<rdfs:subClassOf>
+		<owl:Restriction>
+				<owl:onProperty rdf:resource="#Catalog_Number"/>
+				<owl:cardinality 
+rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+		</owl:Restriction>
+</rdfs:subClassOf>
+
+<rdfs:subClassOf>
+		<owl:Restriction>
+				<owl:onProperty rdf:resource="#Scientific_Name"/>
+				<owl:cardinality 
+rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+		</owl:Restriction>
+	</rdfs:subClassOf>
+</owl:Class>
+
+
+<owl:ObjectProperty rdf:ID="Date_Last_Modified">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Date Last Modified</rdfs:label>
+  <rdfs:comment>"ISO 8601 compliant stamp indicating the date and time in UTC(GMT) when 
+the record was last modified. Example: the instant ""November 5, 1994, 8:15:30 am, US 
+Eastern Standard Time"" would be represented as ""1994-11-05T13:15:30Z"" (see W3C Note on 
+Date and Time Formats). (What to do when this date-time is unknown? Use Date-Time first 
+""published""?"</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Date_Last_Modified_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Institution_Code">
+  <conceptID>10</conceptID>
+  <rdfs:label>Institution Code</rdfs:label>
+  <rdfs:comment>"A ""standard"" code identifier that identifies the institution to which 
+the collection belongs. No global registry exists for assigning institutional codes. Use 
+the code that is ""standard"" in your discipline."</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Institution_Code_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Collection_Code">
+  <conceptID>11</conceptID>
+  <rdfs:label>Collection Code</rdfs:label>
+  <rdfs:comment>A unique alphanumeric value which identifies the collection within the 
+institution</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Collection_Code_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Catalog_Number">
+  <conceptID>12</conceptID>
+  <rdfs:label>Catalog Number</rdfs:label>
+  <rdfs:comment>A unique alphanumeric value which identifies an individual record within 
+the collection. It is recommended that this value provides a key by which the actual 
+specimen can be identified. If the specimen has several items such as various types of 
+preparation, this value should identify the individual component of the 
+specimen</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Catalog_Number_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Scientific_Name">
+  <conceptID>1</conceptID>
+  <rdfs:label>Scientific Name</rdfs:label>
+  <rdfs:comment>The full name of lowest level taxon the Cataloged Item can be identified 
+as a member of; includes genus name, specific epithet, and subspecific epithet (zool.) or 
+infraspecific rank abbreviation, and infraspecific epithet (bot.) Use name of suprageneric 
+taxon (e.g., family name) if Cataloged Item cannot be identified to genus, species, or 
+infraspecific taxon.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Scientific_Name_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Basis_of_record">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Basis of record</rdfs:label>
+  <rdfs:comment>An abbreviation indicating whether the record represents an observation 
+(O), living organism (L), specimen (S), germplasm/seed (G), etc.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Basis_of_record_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Kingdom">
+  <conceptID>2</conceptID>
+  <rdfs:label>Kingdom</rdfs:label>
+  <rdfs:comment>The kingdom to which the organism belongs</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Kingdom_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Phylum">
+  <conceptID>3</conceptID>
+  <rdfs:label>Phylum</rdfs:label>
+  <rdfs:comment>The phylum (or division) to which the organism belongs</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Phylum_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Class">
+  <conceptID>4</conceptID>
+  <rdfs:label>Class</rdfs:label>
+  <rdfs:comment>The class name of the organism</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Class_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Order">
+  <conceptID>5</conceptID>
+  <rdfs:label>Order</rdfs:label>
+  <rdfs:comment>The order name of the organism</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Order_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Family">
+  <conceptID>6</conceptID>
+  <rdfs:label>Family</rdfs:label>
+  <rdfs:comment>The family name of the organism</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Family_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Genus">
+  <conceptID>7</conceptID>
+  <rdfs:label>Genus</rdfs:label>
+  <rdfs:comment>The genus name of the organism</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Genus_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Species">
+  <conceptID>8</conceptID>
+  <rdfs:label>Species</rdfs:label>
+  <rdfs:comment>The specific epithet of the organism</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Species_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Subspecies">
+  <conceptID>9</conceptID>
+  <rdfs:label>Subspecies</rdfs:label>
+  <rdfs:comment>The sub-specific epithet of the organism</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Subspecies_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Scientific_Name_Author">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Scientific Name Author</rdfs:label>
+  <rdfs:comment>The author of a scientific name. Author string as applied to the accepted 
+name. Can be more than one author (concatenated string). Should be formatted according to 
+the conventions of the applicable taxonomic discipline.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Scientific_Name_Author_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Identified_By">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Identified By</rdfs:label>
+  <rdfs:comment>The name(s) of the person(s) who applied the currently accepted Scientific 
+Name to the Cataloged Item.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Identified_By_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Year_Identified">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Year Identified</rdfs:label>
+  <rdfs:comment>The year portion of the date when the Collection Item was identified; as 
+four digits [-9999..9999], e.g., 1906, 2002.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Year_Identified_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Month_Identified">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Month Identified</rdfs:label>
+  <rdfs:comment>The month portion of the date when the Collection Item was identified; as 
+two digits [01..12].</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Month_Identified_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Day_Identified">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Day Identified</rdfs:label>
+  <rdfs:comment>The day portion of the date when the Collection Item was identified; as 
+two digits [01..31].</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Day_Identified_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Type_Status">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Type Status</rdfs:label>
+  <rdfs:comment>Indicates the kind of nomenclatural type that a specimen represents. (This 
+is incomplete because type status actually describes the relationship between a name and a 
+specimen [or ternary relatiohnship between a specimen, name, and publication].) In 
+particular, the type status may not apply to the name listed in the scientific name, i.e., 
+current identification. In rare cases, a single specimen may be the type of more than one 
+name.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Type_Status_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Collector_Number">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Collector Number</rdfs:label>
+  <rdfs:comment>"An identifying ""number"" (really a string) applied to specimens (in some 
+disciplines) at the time of collection. Establishes a links different parts/preparations 
+of a single specimen and between field notes and the specimen."</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Collector_Number_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Field_Number">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Field Number</rdfs:label>
+  <rdfs:comment>"A ""number"" (really a string) created at collection time to identify all 
+material that resulted from a collecting event."</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Field_Number_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Collector">
+  <conceptID>13</conceptID>
+  <rdfs:label>Collector</rdfs:label>
+  <rdfs:comment>The name(s) of the collector(s) responsible for collection the specimen or 
+taking the observation</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Collector_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Year_Collected">
+  <conceptID>14</conceptID>
+  <rdfs:label>Year Collected</rdfs:label>
+  <rdfs:comment>"The year (expressed as an integer) in which the specimen was collected. 
+The full year should be expressed (e.g. 1972 must be expressed as ""1972"" not ""72""). 
+Must always be a four digit integer [-9999..9999]"</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Year_Collected_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Month_Collected">
+  <conceptID>15</conceptID>
+  <rdfs:label>Month Collected</rdfs:label>
+  <rdfs:comment>The month of year the specimen was collected from the field. Possible 
+values range from 01...12 inclusive</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Month_Collected_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Day_Collected">
+  <conceptID>16</conceptID>
+  <rdfs:label>Day Collected</rdfs:label>
+  <rdfs:comment>The day of the month the specimen was collected from the field. Possible 
+value ranges from 01..31 inclusive</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Day_Collected_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Julian_Day">
+  <conceptID>24</conceptID>
+  <rdfs:label>Julian Day</rdfs:label>
+  <rdfs:comment>The ordinal day of the year; i.e., the number of days since January 1 of 
+the same year. (January 1 is Julian Day 1.)</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Julian_Day_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Time_of_Day">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Time of Day</rdfs:label>
+  <rdfs:comment>The time of day a specimen was collected expressed as decimal hours from 
+midnight local time (e.g. 12.0 = mid day, 13.5 = 1:30pm)</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Time_of_Day_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Continent_Ocean">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Continent Ocean</rdfs:label>
+  <rdfs:comment>The continent or ocean from which a specimen was collected.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Continent_Ocean_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Country">
+  <conceptID>17</conceptID>
+  <rdfs:label>Country</rdfs:label>
+  <rdfs:comment>The country or major political unit from which the specimen was collected. 
+ISO 3166-1 values should be used. Full country names are currently in use. A future 
+recommendation is to use ISO3166-1 two letter codes or the full name when 
+searching</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Country_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="State_Province">
+  <conceptID>18</conceptID>
+  <rdfs:label>State Province</rdfs:label>
+  <rdfs:comment>The state, province or region (i.e. next political region smaller than 
+Country) from which the specimen was collected. There is some suggestion to use the values 
+described in ISO 3166-2, however these values are in a continual state of flux and it 
+appears unlikely that an appropriate mechanism (by ISO) will be in place to manage these 
+changes. Hence it is recommended that where possible, the full, unabbreviated name should 
+be used for storing information. The server should optionally handle abbreviations as an 
+access point. Note: this is a recurring theme (country and state) abbreviations. Check the 
+existence of an attribute type to deal with abbreviations from the bib-1 
+profile</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="State_Province_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="County">
+  <conceptID>19</conceptID>
+  <rdfs:label>County</rdfs:label>
+  <rdfs:comment>The county (or shire, or next political region smaller than State / 
+Province) from which the specimen was collected</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="County_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Locality">
+  <conceptID>20</conceptID>
+  <rdfs:label>Locality</rdfs:label>
+  <rdfs:comment>The locality description (place name plus optionally a displacement from 
+the place name) from which the specimen was collected. Where a displacement from a 
+location is provided, it should be in un-projected units of measurement</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Locality_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Longitude">
+  <conceptID>21</conceptID>
+  <rdfs:label>Longitude</rdfs:label>
+  <rdfs:comment>The longitude of the location from which the specimen was collected. This 
+value should be expressed in decimal degrees with a datum such as WGS-84</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Longitude_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Latitude">
+  <conceptID>22</conceptID>
+  <rdfs:label>Latitude</rdfs:label>
+  <rdfs:comment>The latitude of the location from which the specimen was collected. This 
+value should be expressed in decimal degrees with a datum such as WGS-84</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Latitude_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Coordinate_Precision">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Coordinate Precision</rdfs:label>
+  <rdfs:comment>An estimate of how tightly the collecting locality was specified; 
+expressed as a distance, in meters, that corresponds to a radius around the 
+latitude-longitude coordinates. Use NULL where precision is unknown, cannot be estimated, 
+or is not applicable.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Coordinate_Precision_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Bounding_Box">
+  <conceptID>23</conceptID>
+  <rdfs:label>Bounding Box</rdfs:label>
+  <rdfs:comment>This access point provides a mechanism for performing searches using a 
+bounding box. A Bounding Box element is not typically present in the database, but rather 
+is derived from the Latitude and Longitude columns by the data provider</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Bounding_Box_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Minimum_Elevation">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Minimum Elevation</rdfs:label>
+  <rdfs:comment>The minimum distance in meters above (positive) or below sea level of the 
+collecting locality.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Minimum_Elevation_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Maximum_Elevation">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Maximum Elevation</rdfs:label>
+  <rdfs:comment>The maximum distance in meters above (positive) or below sea level of the 
+collecting locality.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Maximum_Elevation_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Minimum_Depth">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Minimum Depth</rdfs:label>
+  <rdfs:comment>The minimum distance in meters below the surface of the water at which the 
+collection was made; all material collected was at least this deep. Positive below the 
+surface, negative above (e.g. collecting above sea level in tidal areas).</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Minimum_Depth_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Maximum_Depth">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Maximum Depth</rdfs:label>
+  <rdfs:comment>The maximum distance in meters below the surface of the water at which the 
+collection was made; all material collected was at most this deep. Positive below the 
+surface, negative above (e.g. collecting above sea level in tidal areas).</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Maximum_Depth_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Sex">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Sex</rdfs:label>
+  <rdfs:comment>The sex of a specimen. The domain should be a controlled set of terms 
+(codes) based on community consensus. Proposed values: M=Male; F=Female; H=Hermaphrodite; 
+I=Indeterminate (examined but could not be determined; U=Unkown (not examined); 
+T=Transitional (between sexes; useful for sequential hermaphrodites)</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Sex_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Preparation_Type">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Preparation Type</rdfs:label>
+  <rdfs:comment>The type of preparation (skin. slide, etc). Probably best to add this as a 
+record element rather than access point. Should be a list of preparations for a single 
+collection record.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Preparation_Type_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Individual_Count">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Individual Count</rdfs:label>
+  <rdfs:comment>The number of individuals present in the lot or container. Not an estimate 
+of abundance or density at the collecting locality.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Individual_Count_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Previous_Catalog_Number">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Previous Catalog Number</rdfs:label>
+  <rdfs:comment>The previous (fully qualified) catalog number of the Cataloged Item if the 
+item earlier identified by another Catalog Number, either in the current catalog or 
+another Institution / catalog. A fully qualified Catalog Number is preceded by Institution 
+Code and Collection Code, with a space separating the each subelement. Referencing a 
+previous Catalog Number does not imply that a record for the referenced item is or is not 
+present in the corresponding catalog, or even that the referenced catalog still exists. 
+This access point is intended to provide a way to retrieve this record by previously used 
+identifier, which may used in the literature. In future versions of this schema this 
+attribute should be set-valued.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Previous_Catalog_Number_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Relationship_Type">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Relationship Type</rdfs:label>
+  <rdfs:comment>"A named or coded valued that identifies the kind relationship between 
+this Collection Item and the referenced Collection Item. Named values include: ""parasite 
+of"", ""epiphyte on"", ""progeny of"", etc. In future versions of this schema this 
+attribute should be set-valued."</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Relationship_Type_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Related_Catalog_Item">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Related Catalog Item</rdfs:label>
+  <rdfs:comment>The fully qualified identifier of a related Catalog Item (a reference to 
+another specimen); Institution Code, Collection Code, and Catalog Number of the related 
+Cataloged Item, where a space separates the three subelements.</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Related_Catalog_Item_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+
+
+<owl:ObjectProperty rdf:ID="Notes">
+  <conceptID>xx</conceptID>
+  <rdfs:label>Notes</rdfs:label>
+  <rdfs:comment>Free text notes attached to the specimen record</rdfs:comment>
+  <rdfs:range>
+	<owl:Class rdf:ID="Notes_class"/>
+  </rdfs:range>
+</owl:ObjectProperty>
+
+</rdf:RDF>
+

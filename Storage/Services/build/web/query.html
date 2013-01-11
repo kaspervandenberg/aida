@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>AID Operations On Ontologies - query services</title>
+    </head>
+    <link rel="stylesheet" type="text/css" href="ooo.css"/>
+    <body>
+    
+    <h1>Query Services</h1>
+    <h2>Queries that produce RDF output.</h2>
+    <form method="POST" action="RepositoryConstructQuerySVL">
+        <h3>Construct Query a repository.</h3>        
+        <table>
+            <tr><td>Axis Server URL</td><td><input type="text" size="80" name="axis_url" value="http://localhost:8080/axis"></td></tr>
+            <tr><td>Sesame Server URL</td><td><input type="text" size="20" name="server_url" value="http://localhost:8080/sesame"></td></tr>
+            <tr><td>Repository</td><td><input type="text" size="20" name="repository" value="aid-1"></td></tr>
+            <tr><td>User</td><td><input type="text" size="20" name="username" value=""></td></tr>
+            <tr><td>Password</td><td><input type="password" size="20" name="password" value=""></td></tr>
+            <tr><td>Query Language</td>
+                <td>
+                    <select name="query_language">
+                        <option value="sparql">SPARQL</option>
+                        <option value="serql" selected>SeRQL</option>
+                    </select>
+                </td></tr>
+            <tr><td>RDF Format</td>
+                <td>
+                    <select name="rdf_format">
+                        <option value="rdfxml" selected>RDF/XML</option>
+                        <option value="n3">N3</option>
+                        <option value="ntriples">N-triples</option>
+                        <option value="turtle">Turtle</option>
+                    </select>
+                </td></tr>
+            <tr><td>Construct Query</td><td><textarea cols="80" rows="5" name="query" value=""></textarea></td></tr>
+            <tr><td></td><td><input type="submit" value="submit"></td></tr>
+        </table>
+    </form>
+    
+    <hr/>
+    
+    <h2>Queries that produce table output.</h2>
+    <form method="POST" action="RepositorySelectQuerySVL">
+        <h3>Select Query a repository, service delivers HTML table.</h3>        
+        <table>
+            <tr><td>Axis Server URL</td><td><input type="text" size="80" name="axis_url" value="http://localhost:8080/axis"></td></tr>
+            <tr><td>Sesame Server URL</td><td><input type="text" size="20" name="server_url" value="http://localhost:8080/sesame"></td></tr>
+            <tr><td>Repository</td><td><input type="text" size="20" name="repository" value="aid-1"></td></tr>
+            <tr><td>User</td><td><input type="text" size="20" name="username" value=""></td></tr>
+            <tr><td>Password</td><td><input type="password" size="20" name="password" value=""></td></tr>
+            <tr><td>Query Language</td>
+                <td>
+                    <select name="query_language">
+                        <option value="sparql">SPARQL</option>
+                        <option value="serql" selected>SeRQL</option>
+                   </select>
+                </td></tr>
+            <tr><td>Output Format</td>
+                <td>
+                    <select name="select_output_format">
+                        <option value="html_table" selected>HTML table</option>
+                        <option value="xml">XML table</option>
+                        <option value="csv">Comma Separated Value (CSV) format</option>
+                     </select>
+                </td></tr>
+            <tr><td>SeRQL Select Query</td><td><textarea cols="80" rows="5" name="query" value=""></textarea></td></tr>
+            <tr><td></td><td><input type="submit" value="submit"></td></tr>
+        </table>
+    </form>
+    
+    <form method="POST" action="RepositorySelectQueryTableSVL">
+        <h3>Select Query a repository, service delivers table, servlet translates to HTML table.</h3>        
+        <table>
+            <tr><td>Axis Server URL</td><td><input type="text" size="80" name="axis_url" value="http://localhost:8080/axis"></td></tr>
+            <tr><td>Sesame Server URL</td><td><input type="text" size="20" name="server_url" value="http://localhost:8080/sesame"></td></tr>
+            <tr><td>Repository</td><td><input type="text" size="20" name="repository" value="aid-1"></td></tr>
+            <tr><td>User</td><td><input type="text" size="20" name="username" value=""></td></tr>
+            <tr><td>Password</td><td><input type="password" size="20" name="password" value=""></td></tr>
+            <tr><td>Query Language</td>
+                <td>
+                    <select name="query_language">
+                        <option value="sparql">SPARQL</option>
+                        <option value="serql" selected>SeRQL</option>
+                   </select>
+                </td></tr>
+            <tr><td>SeRQL Select Query</td><td><textarea cols="80" rows="5" name="query" value=""></textarea></td></tr>
+            <tr><td></td><td><input type="submit" value="submit"></td></tr>
+        </table>
+    </form>
+    </body>
+</html>

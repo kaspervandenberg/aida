@@ -1,0 +1,20 @@
+NERecognizerService
+(Named entity recognition web service)
+
+NERecognizerService provides 3 options - either for annotating biomedical text data (EN_GENOMICS.model
+and EN_GENES_BIOCREATIVE03.model) or for annotating text data based on the newspaper model (EN_NEWS.model).
+
+
+Input: 	input_data (String)
+	r_type (String)
+
+
+r_type is type of recognition. It must be set to one of the models, "News", "Genomics", or "Biocreative".
+"News" corresponds to EN_NEWS.model, "Genomics" to EN_GENOMICS.model, and "Biocreative" to 
+EN_GENES_BIOCREATIVE03.model. 
+
+Output: annotations in XML format (String)
+
+The output of NERecognizer is an annotated text with all annotations presented by tags.
+
+Realization: Uses lingpipe, SAX Parser 

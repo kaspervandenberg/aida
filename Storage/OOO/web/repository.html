@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>AID Operations On Ontologies - repository management services</title>
+    </head>
+    <link rel="stylesheet" type="text/css" href="ooo.css"/>
+    <body>
+
+    <h1>Repository Management Services</h1>
+
+    <h2>Show Repositories</h2>
+    <form method="POST" action="RepositoryGetRepositoriesSVL">
+        <input type="hidden" name="read_write" value="rw">
+        <h3>List all the repositories on the server.</h3>        
+        <table>
+          <tr><td>Axis Server URL</td><td><input type="text" size="80" name="axis_url" value="http://localhost:8080/axis"></td></tr>
+          <tr><td>Sesame Server URL</td><td><input type="text" size="80" name="server_url" value="http://localhost:8080/sesame"></td></tr>
+          <tr><td>User</td><td><input type="text" size="20" name="username" value=""></td></tr>
+          <tr><td>Password</td><td><input type="password" size="20" name="password" value=""></td></tr>
+          <tr><td></td><td><input type="submit" value="submit"></td></tr>
+        </table>
+    </form>
+    
+    <h2>Add / Remove RDF Files</h2>
+    <form method="POST" action="RepositoryAddRdfFileSVL">
+        <h3>Add the contents of an RDF file into a repository.</h3>        
+        <table>
+          <tr><td>Axis Server URL</td><td><input type="text" size="80" name="axis_url" value="http://localhost:8080/axis"></td></tr>
+          <tr><td>Sesame Server URL</td><td><input type="text" size="80" name="server_url" value="http://localhost:8080/sesame"></td></tr>
+            <tr><td>Repository</td><td><input type="text" size="80" name="repository" value="aid-1"></td></tr>
+            <tr><td>User</td><td><input type="text" size="20" name="username" value=""></td></tr>
+            <tr><td>Password</td><td><input type="password" size="20" name="password" value=""></td></tr>
+            <tr><td>RDF Format</td>
+                <td>
+                    <select name="rdf_format">
+                        <option value="rdfxml" selected>RDF/XML</option>
+                        <option value="n3">N3</option>
+                        <option value="ntriples">N-triples</option>
+                        <option value="turtle">Turtle</option>
+                        <!--option value="TRIX">TRIX</option-->
+                    </select>
+                </td></tr>
+            <tr><td>Data URL</td><td><input type="text" size="80" name="data_uri" value="file:///home/wrvhage/test.rdf"></td></tr>
+            <tr><td></td><td><input type="submit" value="submit"></td></tr>
+        </table>
+    </form>
+
+    <form method="POST" action="RepositoryRemoveRdfFileSVL">
+        <h3>Remove the contents of an RDF file from a repository.</h3>        
+        <table>
+          <tr><td>Axis Server URL</td><td><input type="text" size="80" name="axis_url" value="http://localhost:8080/axis"></td></tr>
+          <tr><td>Sesame Server URL</td><td><input type="text" size="80" name="server_url" value="http://localhost:8080/sesame"></td></tr>
+            <tr><td>Repository</td><td><input type="text" size="80" name="repository" value="aid-1"></td></tr>
+            <tr><td>User</td><td><input type="text" size="20" name="username" value=""></td></tr>
+            <tr><td>Password</td><td><input type="password" size="20" name="password" value=""></td></tr>
+            <tr><td>RDF Format</td>
+                <td>
+                    <select name="rdf_format">
+                        <option value="rdfxml" selected>RDF/XML</option>
+                        <option value="n3">N3</option>
+                        <option value="ntriples">N-triples</option>
+                        <option value="turtle">Turtle</option>
+                        <!--option value="TRIX">TRIX</option-->
+                    </select>
+                </td></tr>
+            <tr><td>Data URL</td><td><input type="text" size="80" name="data_uri" value="file:///home/wrvhage/test.rdf"></td></tr>
+            <tr><td></td><td><input type="submit" value="submit"></td></tr>
+        </table>
+    </form>
+
+    <hr/>
+    
+    <h2>Add / Remove RDF Code</h2>
+    <form method="POST" action="RepositoryAddRdfSVL">
+        <h3>Add RDF code into a repository.</h3>        
+        <table>
+          <tr><td>Axis Server URL</td><td><input type="text" size="80" name="axis_url" value="http://localhost:8080/axis"></td></tr>
+          <tr><td>Sesame Server URL</td><td><input type="text" size="80" name="server_url" value="http://localhost:8080/sesame"></td></tr>
+            <tr><td>Repository</td><td><input type="text" size="80" name="repository" value="aid-1"></td></tr>
+            <tr><td>User</td><td><input type="text" size="20" name="username" value=""></td></tr>
+            <tr><td>Password</td><td><input type="password" size="20" name="password" value=""></td></tr>
+            <tr><td>RDF Format</td>
+                <td>
+                    <select name="rdf_format">
+                        <option value="rdfxml" selected>RDF/XML</option>
+                        <option value="n3">N3</option>
+                        <option value="ntriples">N-triples</option>
+                        <option value="turtle">Turtle</option>
+                        <!--option value="TRIX">TRIX</option-->
+                    </select>
+                </td></tr>
+            <tr><td>Data URI (authority)</td><td><input type="text" size="80" name="data_uri" value="file:///home/wrvhage/test.rdf"></td></tr>
+            <tr><td>Data</td><td><textarea cols="80" rows="5" name="data"></textarea></td></tr>
+            <tr><td></td><td><input type="submit" value="submit"></td></tr>
+        </table>
+    </form>
+    
+    <form method="POST" action="RepositoryRemoveRdfSVL">
+        <h3>Remove RDF code from a repository.</h3>        
+        <table>
+            <tr><td>Sesame Location</td><td><input type="text" size="80" name="server_url" value=""></td></tr>
+            <tr><td>Repository</td><td><input type="text" size="80" name="repository" value="aid-1"></td></tr>
+            <tr><td>User</td><td><input type="text" size="20" name="username" value=""></td></tr>
+            <tr><td>Password</td><td><input type="password" size="20" name="password" value=""></td></tr>
+            <tr><td>RDF Format</td>
+                <td>
+                    <select name="rdf_format">
+                        <option value="rdfxml" selected>RDF/XML</option>
+                        <option value="n3">N3</option>
+                        <option value="ntriples">N-triples</option>
+                        <option value="turtle">Turtle</option>
+                        <!--option value="TRIX">TRIX</option-->
+                    </select>
+                </td></tr>
+            <tr><td>Data URI (authority)</td><td><input type="text" size="80" name="data_uri" value="file:///home/wrvhage/test.rdf"></td></tr>
+            <tr><td>Data</td><td><textarea cols="80" rows="5" name="data"></textarea></td></tr>
+            <tr><td></td><td><input type="submit" value="submit"></td></tr>
+        </table>
+    </form>
+    
+    <hr/>
+    <form method="POST" action="RepositoryAddRdfStatementSVL">
+        <h3>Add an RDF statement to a repository, optionally in a context (URI).<br/>
+            Objects are either URI's or Literals as strings in quotes, optionally with XML datatype (e.g. "0"^^xsd:integer)</h3>        
+        <table>
+          <tr><td>Axis Server URL</td><td><input type="text" size="80" name="axis_url" value="http://localhost:8080/axis"></td></tr>
+          <tr><td>Sesame Server URL</td><td><input type="text" size="80" name="server_url" value="http://localhost:8080/sesame"></td></tr>
+            <tr><td>Repository</td><td><input type="text" size="80" name="repository" value="aid-1"></td></tr>
+            <tr><td>User</td><td><input type="text" size="20" name="username" value=""></td></tr>
+            <tr><td>Password</td><td><input type="password" size="20" name="password" value=""></td></tr>
+            <tr><td>Subject URI</td><td><input type="text" size="80" name="subject" value=""></td></tr>
+            <tr><td>Predicate URI</td><td><input type="text" size="80" name="predicate" value=""></td></tr>
+            <tr><td>Object URI / Literal</td><td><input type="text" size="80" name="object" value=""></td></tr>
+            <tr><td>Context URI</td><td><input type="text" size="80" name="context" value=""></td></tr>
+            <tr><td></td><td><input type="submit" value="submit"></td></tr>
+        </table>
+    </form>
+
+    <form method="POST" action="RepositoryRemoveRdfStatementSVL">
+        <h3>Remove an RDF statement from a repository, optionally from a context (URI).<br/>
+            Objects are either URI's or Literals as strings in quotes, optionally with XML datatype (e.g. "0"^^xsd:integer)</h3>       
+        <table>
+          <tr><td>Axis Server URL</td><td><input type="text" size="80" name="axis_url" value="http://localhost:8080/axis"></td></tr>
+          <tr><td>Sesame Server URL</td><td><input type="text" size="80" name="server_url" value="http://localhost:8080/sesame"></td></tr>
+            <tr><td>Repository</td><td><input type="text" size="80" name="repository" value="aid-1"></td></tr>
+            <tr><td>User</td><td><input type="text" size="20" name="username" value=""></td></tr>
+            <tr><td>Password</td><td><input type="password" size="20" name="password" value=""></td></tr>
+            <tr><td>Subject URI</td><td><input type="text" size="80" name="subject" value=""></td></tr>
+            <tr><td>Predicate URI</td><td><input type="text" size="80" name="predicate" value=""></td></tr>
+            <tr><td>Object URI / Literal</td><td><input type="text" size="80" name="object" value=""></td></tr>
+            <tr><td>Context URI</td><td><input type="text" size="80" name="context" value=""></td></tr>
+            <tr><td></td><td><input type="submit" value="submit"></td></tr>
+        </table>
+    </form>
+
+    <hr/>
+    
+    <h2>Extract RDF</h2>
+    <form method="POST" action="RepositoryExtractRdfSVL">
+        <h3>Extract all RDF from a repository.</h3>        
+        <table>
+          <tr><td>Axis Server URL</td><td><input type="text" size="80" name="axis_url" value="http://localhost:8080/axis"></td></tr>
+          <tr><td>Sesame Server URL</td><td><input type="text" size="80" name="server_url" value="http://localhost:8080/sesame"></td></tr>
+            <tr><td>Repository</td><td><input type="text" size="80" name="repository" value="aid-1"></td></tr>
+            <tr><td>User</td><td><input type="text" size="20" name="username" value=""></td></tr>
+            <tr><td>Password</td><td><input type="password" size="20" name="password" value=""></td></tr>
+            <tr><td>RDF Format</td>
+                <td>
+                    <select name="rdf_format">
+                        <option value="rdfxml" selected>RDF/XML</option>
+                        <option value="n3">N3</option>
+                        <option value="ntriples">N-triples</option>
+                        <option value="turtle">Turtle</option>
+                        <!--option value="TRIX">TRIX</option-->
+                    </select>
+                </td></tr>
+            <tr><td></td><td><input type="submit" value="submit"></td></tr>
+        </table>
+    </form>
+    
+    <hr/>
+    
+    <h2>Clear</h2>
+    <form method="POST" action="RepositoryClearSVL">
+        <h3>Clear a repository</h3>        
+        <table>
+          <tr><td>Axis Server URL</td><td><input type="text" size="80" name="axis_url" value="http://localhost:8080/axis"></td></tr>
+          <tr><td>Sesame Server URL</td><td><input type="text" size="80" name="server_url" value="http://localhost:8080/sesame"></td></tr>
+            <tr><td>Repository</td><td><input type="text" size="80" name="repository" value="aid-1"></td></tr>
+            <tr><td>User</td><td><input type="text" size="20" name="username" value=""></td></tr>
+            <tr><td>Password</td><td><input type="password" size="20" name="password" value=""></td></tr>
+            <tr><td></td><td><input type="submit" value="submit"></td></tr>
+        </table>
+    </form>
+
+    </body>
+</html>

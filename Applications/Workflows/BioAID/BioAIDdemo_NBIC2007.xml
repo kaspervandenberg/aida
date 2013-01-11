@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:3d2eebb7-0b04-4979-9aa9-3d39b1464216" author="Marco Roos" title="BioAIDdemo_NBIC2007_MR9">This workflow does four things:
+1. it retrieves documents relevant for the query string
+2. it discovers entities in those documents, these are considered relevant entities
+3. it filters proteins from those entities (on the tag protein_molecule)
+4. it removes all terms from the list produced by 3 (query terms temporarily considered proteins)
+
+ToDo
+* Replace step 4 by the following procedure:
+  1. remove the query terms from the output of NER (probably by a regexp matching on what is inside the tag, possibly case-insensitive)
+  2. remove tag_as_protein_molecule (obsolete)
+* Add synonym service/workflow
+
+Note that Remove_inputquery has an alternative iteration strategy (dot product instead of cross product). Idem for 'Join' in 'SplitQuery'.</s:workflowdescription>
+  <s:processor name="Genomics_prelearned_model" boring="true">
+    <s:stringconstant>MedLine</s:stringconstant>
+  </s:processor>
+  <s:processor name="Remove_duplicate_strings">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates</s:local>
+  </s:processor>
+  <s:processor name="getConcepts">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:5fe737bb-2f1c-4af7-b725-1d5a63f5a599" author="" title="Untitled workflow #476" />
+        <s:link source="query_input" sink="query_output" />
+        <s:source name="query_input" />
+        <s:sink name="query_output">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/plain</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Tag_as_protein_molecule">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:d2f4c331-01a1-4bf5-b6f1-480d3f531bfb" author="" title="Protein_molecule_tag_MR1" />
+        <s:processor name="Concatenate_two_strings1">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:processor name="protein_molecule_close" boring="true">
+          <s:stringconstant>&lt;/protein_molecule&gt;</s:stringconstant>
+        </s:processor>
+        <s:processor name="Concatenate_two_strings">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+        </s:processor>
+        <s:processor name="protein_molecule_open" boring="true">
+          <s:stringconstant>&lt;protein_molecule&gt;</s:stringconstant>
+        </s:processor>
+        <s:link source="string_to_tag" sink="Concatenate_two_strings:string2" />
+        <s:link source="Concatenate_two_strings:output" sink="Concatenate_two_strings1:string1" />
+        <s:link source="protein_molecule_close:value" sink="Concatenate_two_strings1:string2" />
+        <s:link source="protein_molecule_open:value" sink="Concatenate_two_strings:string1" />
+        <s:link source="Concatenate_two_strings1:output" sink="protein_molecule_xml" />
+        <s:source name="string_to_tag" />
+        <s:sink name="protein_molecule_xml">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Extract_protein_molecules">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="" title="filter_protein_molecule_MR3" />
+        <s:processor name="Filter_protein_molecules">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="filter_protein_molecule_regexp" boring="true">
+          <s:stringconstant>&lt;protein_molecule&gt;\w*&lt;/protein_molecule&gt;</s:stringconstant>
+        </s:processor>
+        <s:processor name="splitOn_protein_molecule_regexp" boring="true">
+          <s:stringconstant>(?=&lt;protein_molecule&gt;)|(?&lt;=&lt;/protein_molecule&gt;)</s:stringconstant>
+        </s:processor>
+        <s:processor name="SplitOn_protein_molecule">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+        </s:processor>
+        <s:link source="input_string" sink="SplitOn_protein_molecule:string" />
+        <s:link source="Filter_protein_molecules:filteredlist" sink="protein_molecule_list" />
+        <s:link source="SplitOn_protein_molecule:split" sink="Filter_protein_molecules:stringlist" />
+        <s:link source="filter_protein_molecule_regexp:value" sink="Filter_protein_molecules:regex" />
+        <s:link source="splitOn_protein_molecule_regexp:value" sink="SplitOn_protein_molecule:regex" />
+        <s:source name="input_string" />
+        <s:sink name="protein_molecule_list">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Search">
+    <s:defaults>
+      <s:default name="document_index">MedLine</s:default>
+      <s:default name="search_field">content</s:default>
+      <s:default name="maxHits">300</s:default>
+    </s:defaults>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:1fd54e54-5b79-4c87-89c7-12d7faa9bf8e" author="" title="search" />
+        <s:processor name="search">
+          <s:defaults>
+            <s:default name="index">MedLine</s:default>
+            <s:default name="maxHits">100</s:default>
+            <s:default name="defaultField">content</s:default>
+          </s:defaults>
+          <s:arbitrarywsdl>
+            <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/SearcherWS?wsdl</s:wsdl>
+            <s:operation>search</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:link source="document_index" sink="search:index" />
+        <s:link source="maxHits" sink="search:maxHits" />
+        <s:link source="query" sink="search:queryString" />
+        <s:link source="search_field" sink="search:defaultField" />
+        <s:link source="search:searchReturn" sink="retrieved_documents" />
+        <s:source name="query">
+          <s:metadata>
+            <s:description>Query string. See Lucene documentation (http://lucene.apache.org/java/docs/queryparsersyntax.html)</s:description>
+          </s:metadata>
+        </s:source>
+        <s:source name="document_index">
+          <s:metadata>
+            <s:description>Current indexes:
+BODIES
+CORPUS
+CORPUS.5-grams
+MedLine
+MedLine2006.sentence
+trec06
+trecgenLMContentTitle
+
+Note that MedLine becomes useful when the defaultfield (searh_field) is set to 'AB' (see description of search_field).</s:description>
+          </s:metadata>
+        </s:source>
+        <s:source name="search_field">
+          <s:metadata>
+            <s:description>Default search fields per index:
+BODIES
+	BODY
+	id
+CORPUS, CORPUS.5-grams
+	AB
+	AU
+	BODY
+	JO
+	JO_ISO
+	J_DIR
+	MESH
+	TI
+	URL
+	VOL
+	YEAR
+ 	id 
+MedLine
+	content
+	DATE
+	MH
+	MQ
+	PMID
+	PT
+	TI
+	eMH
+	mMH
+MedLine2006.sentence
+	LENGTH
+	OFFSET
+	PMID
+	SID
+	content
+	id
+trec06
+	file
+	filename
+	text
+trecgenLMContentTitle
+	MH
+	MHtext
+	PMID
+	TI
+	UMLS
+	content
+	id</s:description>
+          </s:metadata>
+        </s:source>
+        <s:source name="maxHits">
+          <s:metadata>
+            <s:description>Maximum number of hits to return</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="retrieved_documents">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Discover">
+    <s:defaults>
+      <s:default name="InputType">text</s:default>
+      <s:default name="OutputType">NElist</s:default>
+    </s:defaults>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:f0f9883e-d9ed-4f76-ad1e-d80480cdd4ee" author="" title="BioAIDdemo_NBIC2007_Learn_MR1" />
+        <s:processor name="NErecognize">
+          <s:defaults>
+            <s:default name="input_type">text</s:default>
+            <s:default name="output_type">NElist</s:default>
+          </s:defaults>
+          <s:arbitrarywsdl>
+            <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/NERecognizerService?wsdl</s:wsdl>
+            <s:operation>NErecognize</s:operation>
+          </s:arbitrarywsdl>
+        </s:processor>
+        <s:link source="InputType" sink="NErecognize:input_type" />
+        <s:link source="LearnedModel" sink="NErecognize:r_type" />
+        <s:link source="OutputType" sink="NErecognize:output_type" />
+        <s:link source="StructuredInput" sink="NErecognize:input_data" />
+        <s:link source="NErecognize:NErecognizeReturn" sink="RecognizedEntities" />
+        <s:source name="StructuredInput">
+          <s:metadata>
+            <s:description>The data to recognize entities in, usually text documents. The format the input must be in is determined by input_type.</s:description>
+          </s:metadata>
+        </s:source>
+        <s:source name="LearnedModel">
+          <s:metadata>
+            <s:description>The learned model to use for entity recognition. This is either a 'black box model' from e.g. a Bayesian approach, or patterns from other approaches. This model determines the concepts (types of entities) that can be recognized.
+Currently two models are supported: 'News' or 'MedLine', possibly also 'Genomics', and 'Biocreative' (case sensitive).</s:description>
+          </s:metadata>
+        </s:source>
+        <s:source name="InputType">
+          <s:metadata>
+            <s:description>The type of the input, i.e. the format input must be in. Currently only input from Lucene is expected, for which this parameter is set to 'text'. Lucene produces results wrapped in an XML structure (simple XML with ontly root and doc tags).</s:description>
+          </s:metadata>
+        </s:source>
+        <s:source name="OutputType">
+          <s:metadata>
+            <s:description>Determines the format for the output. Currently this can only be 'NElist', which is a simple list of entities and their types wrapped in XML.  The types refer to concepts of which the entities are instances of, determined by the learned model used.</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="RecognizedEntities">
+          <s:metadata>
+            <s:mimeTypes>
+              <s:mimeType>text/xml</s:mimeType>
+            </s:mimeTypes>
+            <s:description>Named entities recognized in the input. The output format is deterimined by the output_type parameter.</s:description>
+          </s:metadata>
+        </s:sink>
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Remove_inputTerms">
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:71fa35dd-543d-4523-a5f1-1366dc457bac" author="" title="RemoveStringList_MR1" />
+        <s:processor name="String_list_intersection">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetIntersection</s:local>
+        </s:processor>
+        <s:processor name="String_list_difference">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetDifference</s:local>
+        </s:processor>
+        <s:link source="StringListToRemove" sink="String_list_intersection:list1" />
+        <s:link source="inputStringList" sink="String_list_intersection:list2" />
+        <s:link source="String_list_intersection:intersection" sink="String_list_difference:list2" />
+        <s:link source="inputStringList" sink="String_list_difference:list1" />
+        <s:link source="String_list_difference:difference" sink="cleanedStringList" />
+        <s:link source="String_list_intersection:intersection" sink="intersection" />
+        <s:source name="StringListToRemove" />
+        <s:source name="inputStringList" />
+        <s:sink name="cleanedStringList" />
+        <s:sink name="intersection" />
+      </s:scufl>
+    </s:workflow>
+    <s:iterationstrategy>
+      <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+        <i:iterator name="StringListToRemove" />
+        <i:iterator name="inputStringList" />
+      </i:dot>
+    </s:iterationstrategy>
+  </s:processor>
+  <s:processor name="SplitQuery">
+    <s:description>Splits and input query string into its parts. Works for queries that contain search terms, search phrases between double quotes, connected by AND or OR. Behaviour undetermined when other characters such as +, -, or brackets are used. Should work now for well formed patterns with bracketed substrings separated by AND/OR/AND NOT/OR NOT, e.g. (Topic1) AND NOT (Topic2), but not extensively tested.</s:description>
+    <s:workflow>
+      <s:scufl version="0.2" log="0">
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:df6063f9-b469-4d56-aecc-a62db4bcb3ad" author="Marco Roos" title="Split_query_string_MR3">Splits and input query string into its parts. Works for queries that contain search terms, search phrases between double quotes, connected by AND or OR. Behaviour undetermined when other characters such as +, -, or brackets are used. Should work now for well formed patterns with bracketed substrings separated by AND/OR/AND NOT/OR NOT, e.g. (Topic1) AND NOT (Topic2), but not extensively tested.</s:workflowdescription>
+        <s:processor name="cleanStrippedQuotes">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="FilterQuotes">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="quotes_regexp" boring="true">
+          <s:stringconstant>(((?&lt;=") (?=\w))|((?&lt;=\w) (?=")))|((?&lt;=") (?="))</s:stringconstant>
+        </s:processor>
+        <s:processor name="SplitOnANDOR">
+          <s:defaults>
+            <s:default name="string">s1 s2 s3 AND s4 s5 OR "s6 s7" s8 s9 AND s10 OR "s11" "s12 s13" s14 s15 "s16"</s:default>
+          </s:defaults>
+          <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+        </s:processor>
+        <s:processor name="SplitQuotes">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+        </s:processor>
+        <s:processor name="cleanStrippedQuotes_regexp" boring="true">
+          <s:stringconstant>\w.*</s:stringconstant>
+        </s:processor>
+        <s:processor name="stripQuotes_regexp" boring="true">
+          <s:stringconstant>"</s:stringconstant>
+        </s:processor>
+        <s:processor name="splitANDOR_regexp" boring="true">
+          <s:stringconstant>( +AND +NOT +)|( +OR +NOT +)|( +AND +)|( +OR +)|\(|\)</s:stringconstant>
+        </s:processor>
+        <s:processor name="FilterNonQuotes">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+        </s:processor>
+        <s:processor name="StripQuotes">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.SplitByRegex</s:local>
+        </s:processor>
+        <s:processor name="filter_nonQuotes_regexp" boring="true">
+          <s:stringconstant>[^"]+</s:stringconstant>
+        </s:processor>
+        <s:processor name="filterQuotes_regexp" boring="true">
+          <s:stringconstant>".+"</s:stringconstant>
+        </s:processor>
+        <s:processor name="Flatten_StripQuotes_list">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FlattenList</s:local>
+        </s:processor>
+        <s:processor name="Join">
+          <s:description>Changed iteration strategy!</s:description>
+          <s:local>org.embl.ebi.escience.scuflworkers.java.StringSetUnion</s:local>
+          <s:iterationstrategy>
+            <i:dot xmlns:i="http://org.embl.ebi.escience/xscufliteration/0.1beta10">
+              <i:iterator name="list2" />
+              <i:iterator name="list1" />
+            </i:dot>
+          </s:iterationstrategy>
+        </s:processor>
+        <s:processor name="Flatten_SplitQuotes_list">
+          <s:local>org.embl.ebi.escience.scuflworkers.java.FlattenList</s:local>
+        </s:processor>
+        <s:link source="FilterNonQuotes:filteredlist" sink="Join:list2" />
+        <s:link source="FilterQuotes:filteredlist" sink="StripQuotes:string" />
+        <s:link source="Flatten_SplitQuotes_list:outputlist" sink="FilterNonQuotes:stringlist" />
+        <s:link source="Flatten_SplitQuotes_list:outputlist" sink="FilterQuotes:stringlist" />
+        <s:link source="Flatten_StripQuotes_list:outputlist" sink="cleanStrippedQuotes:stringlist" />
+        <s:link source="SplitOnANDOR:split" sink="SplitQuotes:string" />
+        <s:link source="SplitQuotes:split" sink="Flatten_SplitQuotes_list:inputlist" />
+        <s:link source="StripQuotes:split" sink="Flatten_StripQuotes_list:inputlist" />
+        <s:link source="cleanStrippedQuotes_regexp:value" sink="cleanStrippedQuotes:regex" />
+        <s:link source="filterQuotes_regexp:value" sink="FilterQuotes:regex" />
+        <s:link source="filter_nonQuotes_regexp:value" sink="FilterNonQuotes:regex" />
+        <s:link source="queryString" sink="SplitOnANDOR:string" />
+        <s:link source="Join:union" sink="queryList" />
+        <s:link source="cleanStrippedQuotes:filteredlist" sink="Join:list1" />
+        <s:link source="quotes_regexp:value" sink="SplitQuotes:regex" />
+        <s:link source="splitANDOR_regexp:value" sink="SplitOnANDOR:regex" />
+        <s:link source="stripQuotes_regexp:value" sink="StripQuotes:regex" />
+        <s:source name="queryString">
+          <s:metadata>
+            <s:description>Queries that contain search terms, search phrases between double quotes, possibly connected by AND or OR. Behaviour undetermined when other characters such as +, -, or brackets are used.</s:description>
+          </s:metadata>
+        </s:source>
+        <s:sink name="queryList" />
+      </s:scufl>
+    </s:workflow>
+  </s:processor>
+  <s:processor name="Optimize_query">
+    <s:workflow>
+      <s:xscufllocation>http://rdf.adaptivedisclosure.org/~marco/BioAID/Public/Workflows/UtilityWorkflows/Lucene_bioquery_optimizer_MR1.xml</s:xscufllocation>
+    </s:workflow>
+  </s:processor>
+  <s:link source="Discover:RecognizedEntities" sink="Extract_protein_molecules:input_string" />
+  <s:link source="Extract_protein_molecules:protein_molecule_list" sink="Remove_inputTerms:inputStringList" />
+  <s:link source="Genomics_prelearned_model:value" sink="Discover:LearnedModel" />
+  <s:link source="Remove_inputTerms:cleanedStringList" sink="Remove_duplicate_strings:stringlist" />
+  <s:link source="Search:retrieved_documents" sink="Discover:StructuredInput" />
+  <s:link source="query_string" sink="getConcepts:query_input" />
+  <s:link source="SplitQuery:queryList" sink="Tag_as_protein_molecule:string_to_tag" />
+  <s:link source="Tag_as_protein_molecule:protein_molecule_xml" sink="Remove_inputTerms:StringListToRemove" />
+  <s:link source="query_string" sink="SplitQuery:queryString" />
+  <s:link source="Optimize_query:optimized_lucene_query" sink="Search:query" />
+  <s:link source="Discover:RecognizedEntities" sink="RecognizedEntities" />
+  <s:link source="Extract_protein_molecules:protein_molecule_list" sink="filtered_protein_molecules" />
+  <s:link source="Optimize_query:optimized_lucene_query" sink="search_input" />
+  <s:link source="getConcepts:query_output" sink="Optimize_query:query_string" />
+  <s:link source="Remove_duplicate_strings:strippedlist" sink="Protein_molecules_of_interest" />
+  <s:link source="Search:retrieved_documents" sink="SearchOutput" />
+  <s:link source="SplitQuery:queryList" sink="checkQueryList" />
+  <s:source name="query_string">
+    <s:metadata>
+      <s:description>Lucene query string</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="RecognizedEntities">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="SearchOutput">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="Protein_molecules_of_interest" />
+  <s:sink name="checkQueryList" />
+  <s:sink name="search_input" />
+  <s:sink name="filtered_protein_molecules" />
+</s:scufl>
+

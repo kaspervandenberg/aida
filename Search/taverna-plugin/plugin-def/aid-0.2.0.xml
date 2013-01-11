@@ -1,0 +1,21 @@
+<plugin>
+	<name>AID Taverna</name>
+	<description> AIDA Plugin 0.2.0. Please restart Taverna 2.0 after installation 
+	</description>
+	<identifier>org.vle.aid.taverna</identifier>
+	<version>0.2.0</version>
+	<provider>wongiseng.homelinux.org</provider>
+	<repositories>
+		<repository> http://wongiseng.homelinux.org/repository </repository>
+		<repository> http://repo1.maven.org/maven2 </repository>
+	</repositories>
+	<profile>
+		<artifact groupId="org.vle.aid.taverna" artifactId="aid-plugin" version="0.2.0" />
+	</profile>
+        <compatibility>
+            <application>
+                <version>2.0</version>
+            </application>
+       </compatibility>
+ 
+</plugin>

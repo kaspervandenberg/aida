@@ -1,0 +1,603 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY owl11 "http://www.w3.org/2006/12/owl11#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl11xml "http://www.w3.org/2006/12/owl11-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY protege "http://protege.stanford.edu/plugins/owl/protege#" >
+    <!ENTITY hivprimer "http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#" >
+    <!ENTITY hivprimer2 "http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#3" >
+    <!ENTITY aa "http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#"
+     xml:base="http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:hivprimer2="&hivprimer;3"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:owl11="http://www.w3.org/2006/12/owl11#"
+     xmlns:owl11xml="http://www.w3.org/2006/12/owl11-xml#"
+     xmlns:hivprimer="http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:aa="http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#">
+    <owl:Ontology rdf:about="">
+        <owl:imports rdf:resource="http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:AnnotationProperty rdf:about="#full_name"/>
+    <owl:AnnotationProperty rdf:about="#abbreviation"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#encodesProtein -->
+
+    <owl:ObjectProperty rdf:about="#encodesProtein">
+        <rdfs:label rdf:datatype="&xsd;string">encodes</rdfs:label>
+        <rdfs:range rdf:resource="#Protein"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Genome encodes some protein</rdfs:comment>
+        <rdfs:domain rdf:resource="#Reference_genome"/>
+        <owl:inverseOf rdf:resource="#proteinFromGenome"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#inhibitsEnzyme -->
+
+    <owl:ObjectProperty rdf:about="#inhibitsEnzyme">
+        <rdfs:label rdf:datatype="&xsd;string">inihibits</rdfs:label>
+        <rdfs:domain rdf:resource="#Drug"/>
+        <rdfs:range rdf:resource="#Enzyme"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#mutationByAminoAcid -->
+
+    <owl:ObjectProperty rdf:about="#mutationByAminoAcid">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string"
+            >substituted amino acid</rdfs:label>
+        <rdfs:range rdf:resource="&aa;SpecificAminoAcid"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >amino acid that substituted the replaced amino acid</rdfs:comment>
+        <rdfs:domain rdf:resource="#Mutation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#mutationInGenome -->
+
+    <owl:ObjectProperty rdf:about="#mutationInGenome">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >mutation in genome</rdfs:label>
+        <rdfs:domain rdf:resource="#Mutation"/>
+        <rdfs:range rdf:resource="#Reference_genome"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#mutationOfAminoAcid -->
+
+    <owl:ObjectProperty rdf:about="#mutationOfAminoAcid">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string"
+            >replaced amino acid</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >amino acid that was replaced by the substituted amino acid</rdfs:comment>
+        <rdfs:domain rdf:resource="#Mutation"/>
+        <rdfs:range rdf:resource="&aa;SpecificAminoAcid"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#mutationOfProtein -->
+
+    <owl:ObjectProperty rdf:about="#mutationOfProtein">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label rdf:datatype="&xsd;string"
+            >mutation of protein</rdfs:label>
+        <rdfs:domain rdf:resource="#Mutation"/>
+        <rdfs:range rdf:resource="#Protein"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#proteinFromGenome -->
+
+    <owl:ObjectProperty rdf:about="#proteinFromGenome">
+        <rdfs:label rdf:datatype="&xsd;string">from genome</rdfs:label>
+        <rdfs:range rdf:resource="#Reference_genome"/>
+        <rdfs:domain rdf:resource="#Protein"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Genome in which a protein is encoded</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#proteinHasMutation -->
+
+    <owl:ObjectProperty rdf:about="#proteinHasMutation">
+        <rdfs:label rdf:datatype="&xsd;string">has mutation</rdfs:label>
+        <rdfs:domain rdf:resource="#Protein"/>
+        <rdfs:range rdf:resource="#Mutation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#abbreviation -->
+
+    <owl:AnnotationProperty rdf:about="#abbreviation">
+        <rdf:type rdf:resource="&owl;DatatypeProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#full_name -->
+
+    <owl:AnnotationProperty rdf:about="#full_name">
+        <rdf:type rdf:resource="&owl;DatatypeProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#mutationAtPostition -->
+
+    <owl:DatatypeProperty rdf:about="#mutationAtPostition">
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#Drug -->
+
+    <owl:Class rdf:about="#Drug">
+        <rdfs:label rdf:datatype="&xsd;string">Drug class</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#Enzyme -->
+
+    <owl:Class rdf:about="#Enzyme">
+        <rdfs:label rdf:datatype="&xsd;string">Enzyme</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Protein"/>
+    </owl:Class>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#MutatedGenome -->
+
+    <owl:Class rdf:about="#MutatedGenome">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Reference_genome"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#encodesProtein"/>
+                        <owl:someValuesFrom rdf:resource="#MutatedProtein"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#MutatedProtein -->
+
+    <owl:Class rdf:about="#MutatedProtein">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#proteinHasMutation"/>
+                        <owl:someValuesFrom rdf:resource="#Mutation"/>
+                    </owl:Restriction>
+                    <rdf:Description rdf:about="#Protein"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#Mutation -->
+
+    <owl:Class rdf:about="#Mutation">
+        <rdfs:label rdf:datatype="&xsd;string">Mutation</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#mutationAtPostition"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#mutationByAminoAcid"/>
+                <owl:someValuesFrom rdf:resource="&aa;SpecificAminoAcid"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <full_name rdf:datatype="&xsd;string">Mutation</full_name>
+        <full_name rdf:datatype="&xsd;string">Substitution</full_name>
+    </owl:Class>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#NRTI -->
+
+    <owl:Class rdf:about="#NRTI">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >Nucleoside reverse transcriptase inhibitor</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#inhibitsEnzyme"/>
+                <owl:someValuesFrom rdf:resource="#Reverse_transcriptase"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="#Drug"/>
+        <abbreviation rdf:datatype="&xsd;string">NRTI</abbreviation>
+        <full_name rdf:datatype="&xsd;string"
+            >Nucleoside reverse transcriptase inhibitor</full_name>
+    </owl:Class>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#PI -->
+
+    <owl:Class rdf:about="#PI">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >Protease inhibitor</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#inhibitsEnzyme"/>
+                <owl:someValuesFrom rdf:resource="#Protease"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#Drug"/>
+        <abbreviation rdf:datatype="&xsd;string">PI</abbreviation>
+        <full_name rdf:datatype="&xsd;string"
+            >Protease inhibitor</full_name>
+    </owl:Class>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#Protease -->
+
+    <owl:Class rdf:about="#Protease">
+        <rdfs:label rdf:datatype="&xsd;string">Protease</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Enzyme"/>
+        <full_name rdf:datatype="&xsd;string">Protease</full_name>
+        <abbreviation rdf:datatype="&xsd;string">PR</abbreviation>
+    </owl:Class>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#Protein -->
+
+    <owl:Class rdf:about="#Protein">
+        <rdfs:label rdf:datatype="&xsd;string">Protein</rdfs:label>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#proteinFromGenome"/>
+                <owl:someValuesFrom rdf:resource="#Reference_genome"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#Reference_genome -->
+
+    <owl:Class rdf:about="#Reference_genome"/>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#Reverse_transcriptase -->
+
+    <owl:Class rdf:about="#Reverse_transcriptase">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >Reverse transcriptase</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Enzyme"/>
+        <abbreviation rdf:datatype="&xsd;string">RT</abbreviation>
+        <full_name rdf:datatype="&xsd;string"
+            >Reverse transcriptase</full_name>
+    </owl:Class>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#nNRTI -->
+
+    <owl:Class rdf:about="#nNRTI">
+        <rdfs:label rdf:datatype="&xsd;string"
+            >Non nucleoside reverse transcriptase inhibitor</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#Drug"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#inhibitsEnzyme"/>
+                <owl:someValuesFrom rdf:resource="#Reverse_transcriptase"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <full_name rdf:datatype="&xsd;string"
+            >Non nucleoside reverse transcriptase inhibitor</full_name>
+        <abbreviation rdf:datatype="&xsd;string">nNRTI</abbreviation>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#SpecificAminoAcid -->
+
+    <owl:Class rdf:about="&aa;SpecificAminoAcid"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#3TC -->
+
+    <NRTI rdf:about="#3TC">
+        <rdfs:label rdf:datatype="&xsd;string">3TC</rdfs:label>
+        <abbreviation rdf:datatype="&xsd;string">3TC</abbreviation>
+        <full_name rdf:datatype="&xsd;string">lamivudine</full_name>
+    </NRTI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#ABC -->
+
+    <NRTI rdf:about="#ABC">
+        <abbreviation rdf:datatype="&xsd;string">ABV</abbreviation>
+        <abbreviation rdf:datatype="&xsd;string">ABC</abbreviation>
+        <full_name rdf:datatype="&xsd;string">abacavir</full_name>
+    </NRTI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#APV -->
+
+    <PI rdf:about="#APV">
+        <rdfs:label rdf:datatype="&xsd;string">APV</rdfs:label>
+        <abbreviation rdf:datatype="&xsd;string">APV</abbreviation>
+        <full_name rdf:datatype="&xsd;string">amprenavir</full_name>
+        <abbreviation rdf:datatype="&xsd;string">AMP</abbreviation>
+    </PI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#ATV -->
+
+    <PI rdf:about="#ATV">
+        <rdfs:label rdf:datatype="&xsd;string">ATV</rdfs:label>
+        <full_name rdf:datatype="&xsd;string">atazanavir</full_name>
+        <abbreviation rdf:datatype="&xsd;string">ATV</abbreviation>
+    </PI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#AZT -->
+
+    <NRTI rdf:about="#AZT">
+        <rdfs:label rdf:datatype="&xsd;string">AZT</rdfs:label>
+        <abbreviation rdf:datatype="&xsd;string">AZT</abbreviation>
+        <abbreviation rdf:datatype="&xsd;string">ZDV</abbreviation>
+        <full_name rdf:datatype="&xsd;string">zidovudine</full_name>
+    </NRTI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#D4T -->
+
+    <NRTI rdf:about="#D4T">
+        <rdfs:label rdf:datatype="&xsd;string">D4T</rdfs:label>
+        <abbreviation rdf:datatype="&xsd;string">D4T</abbreviation>
+        <rdfs:comment rdf:datatype="&xsd;string">stavudine</rdfs:comment>
+    </NRTI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#DDC -->
+
+    <NRTI rdf:about="#DDC">
+        <rdfs:label rdf:datatype="&xsd;string">DDC</rdfs:label>
+        <full_name rdf:datatype="&xsd;string">zalcitabine</full_name>
+        <abbreviation rdf:datatype="&xsd;string">DDC</abbreviation>
+    </NRTI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#DDI -->
+
+    <NRTI rdf:about="#DDI">
+        <rdfs:label rdf:datatype="&xsd;string">DDI</rdfs:label>
+        <abbreviation rdf:datatype="&xsd;string">DDI</abbreviation>
+        <full_name rdf:datatype="&xsd;string">didanosine</full_name>
+    </NRTI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#DLV -->
+
+    <nNRTI rdf:about="#DLV">
+        <rdfs:label rdf:datatype="&xsd;string">DLV</rdfs:label>
+        <abbreviation rdf:datatype="&xsd;string">DLV</abbreviation>
+        <full_name rdf:datatype="&xsd;string">delavirdine</full_name>
+    </nNRTI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#EFV -->
+
+    <nNRTI rdf:about="#EFV">
+        <rdfs:label rdf:datatype="&xsd;string">EFV</rdfs:label>
+        <abbreviation rdf:datatype="&xsd;string">EFV</abbreviation>
+        <full_name rdf:datatype="&xsd;string">efavirenz</full_name>
+    </nNRTI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#FTV -->
+
+    <PI rdf:about="#FTV">
+        <rdfs:label rdf:datatype="&xsd;string">FTV</rdfs:label>
+        <abbreviation rdf:datatype="&xsd;string">FTV</abbreviation>
+        <full_name rdf:datatype="&xsd;string">saquinavir</full_name>
+    </PI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#HIV_PR -->
+
+    <Protease rdf:about="#HIV_PR">
+        <rdfs:label rdf:datatype="&xsd;string">HIV PR</rdfs:label>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Instance of HIV protease</rdfs:comment>
+        <abbreviation rdf:datatype="&xsd;string">HIV PR</abbreviation>
+        <full_name rdf:datatype="&xsd;string">HIV protease</full_name>
+    </Protease>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#HIV_RT -->
+
+    <Reverse_transcriptase rdf:about="#HIV_RT">
+        <rdfs:label rdf:datatype="&xsd;string">HIV RT</rdfs:label>
+        <full_name rdf:datatype="&xsd;string"
+            >HIV reverse transcriptase</full_name>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Instance of HIV reverse transcriptase</rdfs:comment>
+        <abbreviation rdf:datatype="&xsd;string">HIV RT</abbreviation>
+    </Reverse_transcriptase>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#IDV -->
+
+    <PI rdf:about="#IDV">
+        <rdfs:label rdf:datatype="&xsd;string">IDV</rdfs:label>
+        <abbreviation rdf:datatype="&xsd;string">IDV</abbreviation>
+        <abbreviation rdf:datatype="&xsd;string">IND</abbreviation>
+        <full_name rdf:datatype="&xsd;string">indinavir</full_name>
+    </PI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#LPV -->
+
+    <PI rdf:about="#LPV">
+        <rdfs:label rdf:datatype="&xsd;string">LPV</rdfs:label>
+        <abbreviation rdf:datatype="&xsd;string">LPV</abbreviation>
+        <full_name rdf:datatype="&xsd;string">lopinavir</full_name>
+    </PI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#NFV -->
+
+    <PI rdf:about="#NFV">
+        <rdfs:label rdf:datatype="&xsd;string">NFV</rdfs:label>
+        <full_name rdf:datatype="&xsd;string">nelfinavir</full_name>
+        <abbreviation rdf:datatype="&xsd;string">NFV</abbreviation>
+    </PI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#NL4-3_wt -->
+
+    <Reference_genome rdf:about="#NL4-3_wt">
+        <rdfs:label rdf:datatype="&xsd;string">NL4-3 wt</rdfs:label>
+        <full_name rdf:datatype="&xsd;string"
+            >NL4-3 wild type of HIV-1 genome</full_name>
+        <abbreviation rdf:datatype="&xsd;string">NL4-3 wt</abbreviation>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Commonly used NL4-3 wild type reference genome of HIV-1</rdfs:comment>
+    </Reference_genome>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#NVP -->
+
+    <nNRTI rdf:about="#NVP">
+        <rdfs:label rdf:datatype="&xsd;string">NVP</rdfs:label>
+        <full_name rdf:datatype="&xsd;string">nevirapine</full_name>
+        <abbreviation rdf:datatype="&xsd;string">NVP</abbreviation>
+    </nNRTI>
+    
+
+
+    <!-- http://rdf.adaptivedisclosure.org/BioAID/HIV/hivprimer.owl#TDF -->
+
+    <NRTI rdf:about="#TDF">
+        <rdfs:label rdf:datatype="&xsd;string">TDF</rdfs:label>
+        <abbreviation rdf:datatype="&xsd;string">TDF</abbreviation>
+        <full_name rdf:datatype="&xsd;string">tenofovir</full_name>
+    </NRTI>
+</rdf:RDF>

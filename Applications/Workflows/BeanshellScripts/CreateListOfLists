@@ -1,0 +1,12 @@
+import java.util.*;
+
+List newListOfLists = new ArrayList();
+
+for (int j=1; j<4; j++) {
+	List newlist = new ArrayList();
+	for (int i=1; i<4; i++) {
+		newlist.add((String) (Integer.toString(j)+"."+Integer.toString(i)));
+	}
+	newListOfLists.add((List) newlist);
+}
+outlist=newListOfLists;

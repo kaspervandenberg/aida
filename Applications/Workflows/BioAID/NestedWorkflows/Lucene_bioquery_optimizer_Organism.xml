@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:3d2eebb7-0b04-4979-9aa9-3d39b1464216" author="Marco Roos (for AID)" title="Lucene_bioquery_optimizer_Organism">Workflow to optimize a Lucene document retrieval query to
+1. increase the priority of recent years (in decreasing order from 2009 down to 2002)
+2. limit a subsequent search to a specific organism using  a mesh organism tag</s:workflowdescription>
+  <s:processor name="Lucene_year_priorities" boring="true">
+    <s:stringconstant>year:(2009^10 2008^9 2007^8 2007^7 2006^6 2005^5 2004^4 2003^3 2002^2 2002^1)</s:stringconstant>
+  </s:processor>
+  <s:processor name="Prioritise_lucene_query">
+    <s:defaults>
+      <s:default name="mesh_organism_term">Humans</s:default>
+    </s:defaults>
+    <s:beanshell>
+      <s:scriptvalue>StringBuffer temp=new StringBuffer();
+temp.append("+(");
+temp.append(query_string);
+temp.append(") +");
+temp.append(priority_string);
+temp.append(") +mesh:(");
+temp.append(mesh_organism_term+")");
+String lucene_query = temp.toString();</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">query_string</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">priority_string</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">mesh_organism_term</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">lucene_query</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="Lucene_year_priorities:value" sink="Prioritise_lucene_query:priority_string" />
+  <s:link source="organism" sink="Prioritise_lucene_query:mesh_organism_term" />
+  <s:link source="query_string" sink="Prioritise_lucene_query:query_string" />
+  <s:link source="Prioritise_lucene_query:lucene_query" sink="optimized_lucene_query" />
+  <s:source name="query_string">
+    <s:metadata>
+      <s:description>Lucene query string</s:description>
+    </s:metadata>
+  </s:source>
+  <s:source name="organism">
+    <s:metadata>
+      <s:description>Organism cf mesh headings (see http://www.nlm.nih.gov/mesh/2008/MeSHtree.B.html), e.g. 'Humans'
+Limits the lucene query to the organism of choice</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="optimized_lucene_query">
+    <s:metadata>
+      <s:description>Lucene query based on the input query with the addition of:
+1. A Lucene string to give recent years higher priority (in decreasing order from 2009 down to 2002)
+2. A mesh organism term to limit subsequent searches</s:description>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

@@ -1,0 +1,375 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://www.co-ode.org/ontologies/basic-bio/top-self-standing.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The top self-standing entities but not the properties that link them.
+
+This module must import some additional module for properties, either of:
+	basic-bio-basic-top-properties.owl - the very simplest unit mostly used for documentation
+	basic-bio-top-properties-location-part-whole - the version holding the part-whole hierarchy
+No module should import both.
+	
+
+At this stage it is a limitation of the tool that superproperties cannot be added to an imported ontology.  Therefore the property trees have to be imported en bloc.</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Continuant_entity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >To a first approximation: "Things" (as opposed to "Processes")
+
+Entities that persist in time that participate in Occurrents.  Entities that things happen to.  Entities all of whose parts must be present at the same time. 
+
+Opposite: Occurrent
+
+Slogans: "Events happen to things."
+               "Continuants participate in Occurrents"
+
+Questions: "Do things happen to it?" (if yes, Continuant). 
+                   OR "Does it happen or occur?" (if yes, Occurrent)
+                  "Are all parts present at the same time?" (If yes, Continuant)
+                  OR "Can one part occur after another?" (if yes, Occurrent)
+
+Examples:  "Book", "Idea", "Organ", "Water in a Lake", 
+
+Anti Examples: (Occurrents) "Reading a book", "Formulating an idea", "evaluation of the water in the lake"
+
+DOLCE "Endurants".</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Occurrent_entity"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="Composed_entity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Anything made up necessarily of other things.  Includes collectives, groups, and relationships.  Also includes "Qualities".
+
+The label is problematic.  Suggestions happily received.  "Complex" was the original but caused problems for biologists and chemists because of the obvious homononym.  We might just adopt John Sowa's "Seconds and Thirds" as being at least incomprehensible as opposed to being likely to be misunderstood. 
+
+Composed_entities are Self_standing_entities that are not "independent" but take their identity from the things of which they are composed. 
+
+
+Complexes do not have an opposite, because the notion of Monad is dangerous, as many things can be, arguably, viewed as complexes.   A good commitment to defer.
+
+See subclasses for detailed questions and definitions.;</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Mass_entity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >To a first approximation: "Stuff" (as opposed to "Things")
+
+Entities that can be measured and must have 'amounts' but cannot counted. 
+
+Opposite:  Discrete.
+
+Slogans: "Things are made of Stuff"
+              "Mass_entities constitute Discrete_entities"
+
+Questions: "Can it be measured?" (Mass) 
+              OR:"Must it be counted?" (Discrete)
+                  "Can things be made of it? or made up of it?" (Mass)
+              OR "Is it made up of things?" (Discrete)
+
+Examples:  Water, Tissue, Sand
+
+Anti examples: Lake, Liver, Beach
+
+Generalisation of DOLCE "Amount_of_matter" .
+
+NB: The mass-discrete distinction is one of the key differences between the "cognitivist"/"informationalist"/"multiplicative" view taken in this ontology and by DOLCE and the "realist" view taken by BFO.</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Discrete_entity"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Physical_object">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="Material_entity"/>
+          <owl:Class rdf:about="#Discrete_entity"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Discrete material entities are usually known as physical objects. 
+
+Questions:  
+   Is it Physical? 
+   If so is it material - i.e. does it have mass or energy?
+   If so, is it countable? (discrete).</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Cavity">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Discrete_non_material_entity"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Holes that can contain things.
+
+Slogan: Cavities contain
+
+Question: Can I put something in it?</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#Discrete_entity">
+    <owl:disjointWith rdf:resource="#Mass_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >To a first approximation: "Things" (as opposed to "Stuff")
+
+Entities that can be counted (rather than only measured). 
+
+Opposite:  Mass_entity.
+
+Slogans: "Things are made of Stuff"
+              "Discrete_entities are constituted of Mass_entities"
+
+Questions: "Can it be measured?" (Mass) 
+              OR:"Must it be counted?" (Discrete)
+                  "Can things be made of it? or made up of it?" (Mass)
+              OR "Is it made up of things?" (Discrete)
+
+Examples:  Llake, Organ, Organism, Beach
+
+Anti examples: Water, Liver tissue, Sand
+
+Generalisation of DOLCE "Physical_object"
+
+NB: The mass-discrete distinction is one of the key differences between the "cognitivist"/"informationalist"/"multiplicative" view taken in this ontology and by DOLCE and the "realist" view taken by BFO.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Discrete_Physical_continuant">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="Physical_entity"/>
+          <owl:Class rdf:about="#Continuant_entity"/>
+          <owl:Class rdf:about="#Discrete_entity"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >No common name for this entity.
+The common parent of physical objects non-meterial discrete physical continuants - holes etc.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Mass_continuant_entity">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Mass_entity"/>
+          <owl:Class rdf:about="#Continuant_entity"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Amount_of_matter_or_energy">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >DOLCE - "Amount of matter"</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Material_entity"/>
+          <owl:Class rdf:about="#Mass_entity"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Natural_pattern">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Pattern"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Patterns abstracted from the world.
+
+Opposite: "Oeuvres"
+
+Question: Was it discovered rather than created or composed? 
+                 If so, a "Pattern_of_physical_entity"
+
+Examples: The sequence of a protein, dna molecuole, form of an anatomical structure, etc.
+
+For "Natural_patterns" the natural phenomenon is primary; the pattern is dependent.
+
+In general, in the ontology, Natural_patterns are simply handles to the representation of the thing itself.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Non_material_entity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >To a first approximation:  Things I can fill; Things I can demarcate
+
+Opposite: Material_entity
+
+Slogan: "Things can have holes in them"
+            "Material defines non-material"
+          
+
+Questions: "Is it a hold, corner, edge etc in something else?" (Then Non_material)
+                   "Can it have holes, corners, edges etc. in it?" (then Material)
+
+Examples: Cavity in Ball, bowl or tank or cup.  Interior of room
+
+Anti-examples: Ball, bowl, tank, Cup, Walls of room
+
+We are unaware of examples of mass non-material entities but do not want to make the ontological commitment that all non-mterial entities are discrete,  So the usual usage is the subclass Discrete_non_material_entity</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Physical_entity"/>
+          <owl:Class>
+            <owl:complementOf>
+              <owl:Class rdf:about="#Material_entity"/>
+            </owl:complementOf>
+          </owl:Class>
+          <owl:Class rdf:about="#Continuant_entity"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Occurrent_entity">
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >To a first approximation: "Processes"
+
+Entities that occur over time.  Entities that happen (to Continuants).  
+
+Opposite: Continuant
+
+Slogans: "Events happen to things."
+               "Continuants participate in Occurrents"
+
+Questions: "Does it happen to things?" (If yes, Occurrent)
+             OR "Do things happen to it?" (If yes, Continuant)
+                   "Can one part occur after another?" (if yes, Occurrent)
+             OR "Are all the parts present at the same time?" (if yes, Continuant)
+
+Examples:"Reading a book", "Formulating an idea", "evaluation of the water in the lake"
+
+Anti Examples:  "Book", "Idea", "Organ", "Water in a Lake"
+
+DOLCE "Perdurants"</rdfs:comment>
+    <owl:disjointWith rdf:resource="#Continuant_entity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Pattern">
+    <rdfs:subClassOf rdf:resource="#Continuant_entity"/>
+    <rdfs:subClassOf rdf:resource="#Discrete_entity"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Non_physical_entity"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Patterns or Information.  "Information" may be more correct but carries more commitments.
+
+Examples: Sequence, Novel, Musical Work
+
+Slogals: Patterns manifest as physical_entities
+
+
+Anti-Examples: Macromolecule, Copy of Novel, Performance of musical work
+
+Questions:  Can you have multiple copies of it? If yes, it is probably a pattern.
+                   (Each copy manifests that pattern)
+                   Can it be represented in multiple ways? If yes, then it is probably a pattern.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#Material_entity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >To a first approximation:  Things I can touch and feel.
+	                  Things that can have holes in them.
+
+Opposite: Non-material-entity
+
+Slogan: "Things can have holes in them"
+            "Material defines non-material"
+          
+
+Questions: "Can it have holes, corners, edges etc. in it?" (then Material)
+                  "Is it a hold, corner, edge etc in something else?" (Then Non_material)
+
+Examples: Ball, bowl, tank, Cup, Walls of room
+
+Anti-examples: Cavity in Ball, bowl or tank or cup.  Interior of room
+
+Commitment: All material entities are continuants.  But we do not rule out that there might be other Physical Continuants.  In fact there clearly are as the common parent of Physical Objects and Holes, etc.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Physical_entity"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="#Continuant_entity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Oeuvre">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Patterns created by agents.  "Intellectual/ artistic works"
+
+(The word "Oeuvre" is used because the English "Work" has too many homonyms. 
+
+Opposite: Natural_pattern
+
+Questions: Did somebody create or compose it? 
+
+Examples: Hamlet, A symphony, this ontology, 
+Anti-examples: The sequence of a protein, dna molecule, etc.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#Pattern"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Physical_entity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >To a first approximation: things and processes in the physical world
+
+Anything that exists or occurs in space-time as opposed to things that have only a psycho-social existence such as organisations and rights, or that are patterns or information.
+
+Opposite: Non_physical_entity
+
+Slogan: Physical can be manifestation of non-physical.
+
+Questions: "Can I touch or feel it or its effects? Its boundaries?" (If yes, then Physical)
+            OR "Does it exist only as an idea or convention? (if yes, then Non-physical)
+                  "Is it a thing or the pattern for a thing?" If a thing, then physical;
+                                                                                 If a pattern, then non-physical
+
+Examples: Physical objects, energy, holes in physical objects, signals, the flow of a river, animals, 
+
+Anti-examples: Ideas, Hamlet, organisations and 'legal persons', contracts, 
+
+.  All the obviously physical things in the world including both mass and energy and all physical processes involving them</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Non_physical_entity"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Discrete_non_material_entity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >We are unaware of examples of mass non-material entities but do not want to make the ontological commitment that all non-mterial entities are discrete,  So the usual usage is the subclass Discrete_non_material_entity</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Non_material_entity"/>
+          <owl:Class rdf:about="#Discrete_entity"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Non_physical_entity">
+    <owl:disjointWith rdf:resource="#Physical_entity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >To a first approximation: Abstractions and psychosocial constructs
+
+Things that have neither mass nor energy nor extent in space.
+
+Opposite: Physical
+
+Slogan: Non-physical manifests through Physical
+
+Questions: "Does it exist only as an idea or convention? (if yes, then Non-physical)
+                  "Is it a thing or the pattern for a thing?" If a thing, then physical;
+                                                                                 If a pattern, then non-physical
+                  "Can I touch or feel it or its effects? Its boundaries?" (If yes, then Physical)"Can I touch or feel it or its effects? Its boundaries?" (If yes, then Physical)
+                  "Must it be manifest through a physical thing?" (if yes, then non-physical)
+
+Examples: Physical objects, energy, holes in physical objects, signals, the flow of a river, animals.
+
+Anti-examples: Ideas, Hamlet, organisations and 'legal persons', contracts, 
+
+.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/basic-bio/very-top.owl#Self_standing_entity"/>
+  </owl:Class>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2, Build 331)  http://protege.stanford.edu -->

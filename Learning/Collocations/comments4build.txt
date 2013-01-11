@@ -1,0 +1,21 @@
+The service can be either deployed/undeployed from the command line as follows
+(for Windows):
+
+java -cp "%AXISCLASSPATH%" org.apache.axis.client.AdminClient -p8084 deploy.wsdd
+java -cp "%AXISCLASSPATH%" org.apache.axis.client.AdminClient -p8084 undeploy.wsdd
+
+where port has to be changed according to the seetings a user has. Please make sure
+the environmental variable $AXISCLASSPATH includes all standard Axis jars from, such
+as axis.jar, jaxrpc.jar, etc.
+
+Another option is to use the provided build.xml. In the latter case, a service is deployed
+by 
+
+ant compile
+ant install
+
+and undeployed by 
+
+ant remove
+
+It was tested using JDK 1.5.0, Ant 1.6.5 (http://ant.apache.org/), and Tomcat 5.5.9.

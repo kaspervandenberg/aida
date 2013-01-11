@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:fa0d0295-84d7-42f3-b462-569d455ec80e" author="Sophia Katrenko (service), Marco Roos (workflow)" title="Test_LearnModel">Learns a model given the input data. Input: annotated text data in XML format as in, e.g.: &lt;doc&gt;In contrast to the genes of the &lt;protein&gt;MAGE-A&lt;/protein&gt;, &lt;protein&gt;MAGE- B&lt;/protein&gt; and &lt;protein&gt;MAGE-C&lt;/protein&gt; clusters, &lt;protein&gt;MAGED2&lt;/protein&gt; is expressed ubiquitously. &lt;/doc&gt;Do not forget to include a root tag &lt;doc&gt; (&lt;document&gt; is also allowed to be a root tag). All other tags are considered to be class labels (such as protein in the example above).
+
+Returns performance given 10-fold cross-validation on the input data. A model is stored in model_file provided by a user. Its log file is created in the same folder using model_file with “.log” appended. Note: a model’s log is always stored in the same folder where a model is stored (if any of these are removed by a user eventual applying of a model on the new data set (testing) by using TestModel service will fail).</s:workflowdescription>
+  <s:processor name="train_model">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://ws.adaptivedisclosure.org/axis/services/LearnModel?wsdl</s:wsdl>
+      <s:operation>train_model</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="Training_set" boring="true">
+    <s:description>train_set (String) - annotated data in XML file. All tags apart from  (and tags used for annotating structural parts of Medline ) are considered to be class labels.
+Example:
+&lt;doc&gt;In contrast to the genes of the &lt;protein&gt;MAGE-A&lt;/protein&gt;, &lt;protein&gt;MAGE- B&lt;/protein&gt; and &lt;protein&gt;MAGE-C&lt;/protein&gt; clusters, &lt;protein&gt;MAGED2&lt;/protein&gt; is expressed ubiquitously. &lt;/doc&gt;
+Example2 (from http://ws.adaptivedisclosure.org/LearnModel/learn):
+&lt;document&gt;TI - Expression pattern and further characterization of human &lt;protein&gt;MAGED2&lt;/protein&gt; and identification of rodent orthologues. AB  - In a search for genes involved in X-linked mental retardation we have analyzed the expression pattern and genomic structure of human &lt;protein&gt;MAGED2&lt;/protein&gt;. This gene is a member of a new defined &lt;protein&gt;MAGE-D&lt;/protein&gt; cluster in Xp11.2, a hot spot for X-linked mental retardation. Rat and mouse orthologues have been isolated. In contrast to the genes of the &lt;protein&gt;MAGE-A&lt;/protein&gt;, &lt;protein&gt;MAGE-B&lt;/protein&gt; and &lt;protein&gt;MAGE-C&lt;/protein&gt; clusters, &lt;protein&gt;MAGED2&lt;/protein&gt; is expressed ubiquitously. High expression was detected in specific brain regions and in the interstitium of testes. Five SNPs in the coding region of human &lt;protein&gt;MAGED2&lt;/protein&gt; were characterized and their allele frequencies determined in a German and Turkish population.&lt;/document&gt;</s:description>
+    <s:stringconstant>&lt;document&gt;TI - Expression pattern and further characterization of human &lt;protein&gt;MAGED2&lt;/protein&gt; and identification of rodent orthologues. AB  - In a search for genes involved in X-linked mental retardation we have analyzed the expression pattern and genomic structure of human &lt;protein&gt;MAGED2&lt;/protein&gt;. This gene is a member of a new defined &lt;protein&gt;MAGE-D&lt;/protein&gt; cluster in Xp11.2, a hot spot for X-linked mental retardation. Rat and mouse orthologues have been isolated. In contrast to the genes of the &lt;protein&gt;MAGE-A&lt;/protein&gt;, &lt;protein&gt;MAGE-B&lt;/protein&gt; and &lt;protein&gt;MAGE-C&lt;/protein&gt; clusters, &lt;protein&gt;MAGED2&lt;/protein&gt; is expressed ubiquitously. High expression was detected in specific brain regions and in the interstitium of testes. Five SNPs in the coding region of human &lt;protein&gt;MAGED2&lt;/protein&gt; were characterized and their allele frequencies determined in a German and Turkish population.&lt;/document&gt;</s:stringconstant>
+  </s:processor>
+  <s:processor name="Context_window" boring="true">
+    <s:description>context_window (String) - size of a context window (e.g., 2, 3, etc). It is set to 3 by default</s:description>
+    <s:stringconstant>2</s:stringconstant>
+  </s:processor>
+  <s:processor name="Mode" boring="true">
+    <s:description>mode (String) - mode is currently set to “a” (automatic). It is indended to add interactive mode in the future releases</s:description>
+    <s:stringconstant>a</s:stringconstant>
+  </s:processor>
+  <s:processor name="Model_file" boring="true">
+    <s:description>model_file (String) - path with the filename where the model file must be stored (e.g., “D://INSTALL/Data/train/corpus2TTT.mod”)</s:description>
+    <s:stringconstant>/home/aida/LearnedModelForNER_MR</s:stringconstant>
+  </s:processor>
+  <s:processor name="Input_type" boring="true">
+    <s:description>inp (String) - type of the input data. It is set to “text” in the current implementation</s:description>
+    <s:stringconstant>text</s:stringconstant>
+  </s:processor>
+  <s:processor name="train_model_aida9999">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://aida.science.uva.nl:9999/axis/services/LearnModel?wsdl</s:wsdl>
+      <s:operation>train_model</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="Context_window:value" sink="train_model:context_window" />
+  <s:link source="Context_window:value" sink="train_model_aida9999:context_window" />
+  <s:link source="Input_type:value" sink="train_model:inp" />
+  <s:link source="Input_type:value" sink="train_model_aida9999:inp" />
+  <s:link source="Mode:value" sink="train_model:mode" />
+  <s:link source="Mode:value" sink="train_model_aida9999:mode" />
+  <s:link source="Model_file:value" sink="train_model:model_file" />
+  <s:link source="Model_file:value" sink="train_model_aida9999:model_file" />
+  <s:link source="Training_set:value" sink="train_model:train_set" />
+  <s:link source="Training_set:value" sink="train_model_aida9999:train_set" />
+  <s:link source="train_model:train_modelReturn" sink="result_ws" />
+  <s:link source="train_model_aida9999:train_modelReturn" sink="result_aida" />
+  <s:sink name="result_ws">
+    <s:metadata>
+      <s:description>the results of the 10-fold cross-validation</s:description>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="result_aida" />
+</s:scufl>
+

@@ -1,0 +1,4 @@
+digraph "EZH2_minimal" {
+
+"EZH2" [shape=box, label="EZH2", color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+}

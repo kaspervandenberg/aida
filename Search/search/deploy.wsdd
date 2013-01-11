@@ -1,0 +1,117 @@
+<deployment xmlns="http://xml.apache.org/axis/wsdd/"
+            xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+    <service 
+                name="synonym" 
+                provider="java:RPC">
+        <parameter 
+                name="className" 
+                value="org.vle.aid.lucene.tools.getSynonymsWS"/>
+        <parameter 
+                name="allowedMethods" 
+                value="*"/>
+    </service>
+
+    <service name="tokenize" provider="java:RPC">
+        <documentation>Service for tokenizing Strings or Lucene Queries into terms.</documentation>
+        <parameter name="className" value="org.vle.aid.lucene.tools.Tokenizer"/>
+        <parameter name="allowedMethods" value="wordsToArray, queryToArray"/>
+        <operation name="wordsToArray">
+          <documentation>Use this method to tokenize a String into terms.</documentation>
+          <parameter name="in" type="xsd:string"/>
+        </operation>
+        <operation name="queryToArray">
+          <documentation>Use this method to tokenize a Lucene Query into terms.</documentation>
+          <parameter name="in" type="xsd:string"/>
+        </operation>
+    </service>
+
+    <service 
+                name="spellCheck" 
+                provider="java:RPC">
+        <parameter 
+                name="className" 
+                value="org.vle.aid.lucene.tools.getSpellSuggestionsWS"/>
+        <parameter 
+                name="allowedMethods" 
+                value="*"/>
+    </service>
+
+    <service 
+                name="getIndexes" 
+                provider="java:RPC">
+        <parameter 
+                name="className" 
+                value="org.vle.aid.lucene.getIndexes"/>
+        <parameter 
+                name="allowedMethods" 
+                value="*"/>
+    </service>
+
+    <service 
+                name="SearcherWS" 
+                provider="java:RPC">
+        <parameter 
+                name="className" 
+                value="org.vle.aid.lucene.SearcherWS"/>
+        <parameter 
+                name="allowedMethods" 
+                value="search, searchMFquery, searchJason"/>
+    </service>
+
+    <service 
+                name="getFields" 
+                provider="java:RPC">
+        <parameter 
+                name="className" 
+                value="org.vle.aid.lucene.getFields"/>
+        <parameter 
+                name="allowedMethods" 
+                value="*"/>
+    </service>
+
+    <service 
+                name="getTermVector" 
+                provider="java:RPC">
+        <parameter 
+                name="className" 
+                value="org.vle.aid.lucene.getTermVector"/>
+        <parameter 
+                name="allowedMethods" 
+                value="*"/>
+    </service>
+
+    <service 
+                name="getWordnetSynWS" 
+                provider="java:RPC">
+        <parameter 
+                name="className" 
+                value="org.vle.aid.lucene.tools.getWordnetSynWS"/>
+        <parameter 
+                name="allowedMethods" 
+                value="*"/>
+    </service>
+
+    <service 
+                name="getOnlineAcronymsWS" 
+                provider="java:RPC">
+        <parameter 
+                name="className" 
+                value="org.vle.aid.lucene.tools.getOnlineAcronymsWS"/>
+        <parameter 
+                name="allowedMethods" 
+                value="*"/>
+    </service>
+
+    <service 
+                name="termFinderWS" 
+                provider="java:RPC">
+        <parameter 
+                name="className" 
+                value="org.vle.aid.lucene.tools.termFinderWS"/>
+        <parameter 
+                name="allowedMethods" 
+                value="*"/>
+    </service>
+
+</deployment>

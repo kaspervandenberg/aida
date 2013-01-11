@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:c0a963bc-2343-4d31-aa8c-304bfe3a6289" author="Marco Roos (workflow)" title="XrefUniprot_HomoSapiens">Adds URL cross references to various protein information resources.</s:workflowdescription>
+  <s:processor name="ConcatenateExpasyURL">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:processor name="Concatenate_iHopURL_postStub">
+    <s:defaults>
+      <s:default name="string2">.html?ORGANISM_ID=1</s:default>
+    </s:defaults>
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:processor name="ExpasyUniProtURL_stub" boring="true">
+    <s:stringconstant>http&amp;#58;//expasy.org/uniprot/</s:stringconstant>
+  </s:processor>
+  <s:processor name="EntrezPubMedUniProtURL_stub" boring="true">
+    <s:stringconstant>http&amp;#58;//www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=protein&amp;val=</s:stringconstant>
+  </s:processor>
+  <s:processor name="Concatenate_iHopURL">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:processor name="ConcatenateEntrezURL">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:processor name="Concatenate_iHopURL_preStub">
+    <s:defaults>
+      <s:default name="string1">http&amp;#58;//www.ihop-net.org/UniPub/iHOP/gismo/</s:default>
+    </s:defaults>
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:processor name="iHopSearchURL_stub" boring="true">
+    <s:stringconstant>http&amp;#58;//www.ihop-net.org/UniPub/iHOP/?field=UNIPROT__AC&amp;ncbi_tax_id=9606&amp;organism_syn=&amp;search=</s:stringconstant>
+  </s:processor>
+  <s:processor name="ExtractiHopRefByRegexp">
+    <s:defaults>
+      <s:default name="regex">&lt;iHOPguessedSymbolId query=\".+\" xmlns=\"http://www.pdg.cnb.uam.es/UniPub/iHOP/xml\"&gt;(.+)&lt;/iHOPguessedSymbolId&gt;</s:default>
+      <s:default name="group">1</s:default>
+    </s:defaults>
+    <s:local>org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList</s:local>
+  </s:processor>
+  <s:processor name="guessSymbolIdFromReference">
+    <s:description>It takes a biological database reference as input. It guess the iHOP Id which best matches with the input.</s:description>
+    <s:arbitrarywsdl>
+      <s:wsdl>http://ubio.bioinfo.cnio.es/biotools/iHOP/iHOP-SOAP.wsdl</s:wsdl>
+      <s:operation>guessSymbolIdFromReference</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="iHopSentenceURL_prestub" boring="true">
+    <s:stringconstant>http&amp;#58;//www.ihop-net.org/UniPub/iHOP/gismo/</s:stringconstant>
+  </s:processor>
+  <s:processor name="iHopSentenceURL_poststub" boring="true">
+    <s:stringconstant>.html?ORGANISM_ID=1</s:stringconstant>
+  </s:processor>
+  <s:link source="UniProtID" sink="ConcatenateEntrezURL:string2" />
+  <s:link source="UniProtID" sink="ConcatenateExpasyURL:string2" />
+  <s:link source="UniProtID" sink="Concatenate_iHopURL:string2" />
+  <s:link source="UniProtID" sink="guessSymbolIdFromReference:reference" />
+  <s:link source="ConcatenateEntrezURL:output" sink="EntrezUniProtURL" />
+  <s:link source="ConcatenateExpasyURL:output" sink="ExpasyUniProtURL" />
+  <s:link source="Concatenate_iHopURL_preStub:output" sink="Concatenate_iHopURL_postStub:string1" />
+  <s:link source="EntrezPubMedUniProtURL_stub:value" sink="ConcatenateEntrezURL:string1" />
+  <s:link source="ExpasyUniProtURL_stub:value" sink="ConcatenateExpasyURL:string1" />
+  <s:link source="ExtractiHopRefByRegexp:filteredlist" sink="Concatenate_iHopURL_preStub:string2" />
+  <s:link source="guessSymbolIdFromReference:result" sink="ExtractiHopRefByRegexp:stringlist" />
+  <s:link source="iHopSearchURL_stub:value" sink="Concatenate_iHopURL:string1" />
+  <s:link source="iHopSentenceURL_poststub:value" sink="Concatenate_iHopURL_postStub:string2" />
+  <s:link source="iHopSentenceURL_prestub:value" sink="Concatenate_iHopURL_preStub:string1" />
+  <s:link source="Concatenate_iHopURL:output" sink="iHopSearchURL" />
+  <s:link source="Concatenate_iHopURL_postStub:output" sink="iHopSentencesURL" />
+  <s:source name="UniProtID">
+    <s:metadata>
+      <s:description>UniProt ID (for iHop a Human protein is expected)
+E.g. Q15190</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="ExpasyUniProtURL" />
+  <s:sink name="EntrezUniProtURL" />
+  <s:sink name="iHopSearchURL">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>text/xml</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+  <s:sink name="iHopSentencesURL" />
+</s:scufl>
+

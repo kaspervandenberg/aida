@@ -11,6 +11,8 @@ import org.apache.axis.client.Service;
 
 import java.util.logging.Logger;
 
+import org.vle.aid.common.Properties;
+
 /**
  * Servlet to function as a bridge from web-requests to SOAP webservices
  *  
@@ -77,7 +79,7 @@ public class jason extends HttpServlet {
             query.replaceAll("%2B","+");
             log.info("Received JSON: " + query);
   
-            String endpoint = "http://localhost/axis/services/SearcherWS";
+            String endpoint =  Properties.Entries.AXIS_ENDPOINT.get() + "/services/SearcherWS";
   
             Service service = new Service();
             Call call = (Call) service.createCall();
@@ -94,7 +96,7 @@ public class jason extends HttpServlet {
           } else if (((String[])param.get("target"))[0].equalsIgnoreCase("fields")) {
             String index = ((String[])param.get("index"))[0];
   
-            String endpoint = "http://localhost/axis/services/getFields";
+            String endpoint =  Properties.Entries.AXIS_ENDPOINT.get() + "/services/getFields";
   
             Service service = new Service();
             Call call = (Call) service.createCall();
@@ -109,7 +111,7 @@ public class jason extends HttpServlet {
             out.print(res);
             
           } else if (((String[])param.get("target"))[0].equalsIgnoreCase("indexes")) {
-            String endpoint = "http://localhost/axis/services/getIndexes";
+            String endpoint =  Properties.Entries.AXIS_ENDPOINT.get() + "/services/getIndexes";
   
             Service service = new Service();
             Call call = (Call) service.createCall();

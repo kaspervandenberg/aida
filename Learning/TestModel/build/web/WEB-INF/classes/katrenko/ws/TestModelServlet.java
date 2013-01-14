@@ -27,6 +27,8 @@ import javax.xml.parsers.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author software
@@ -53,8 +55,8 @@ public class TestModelServlet extends HttpServlet {
     //    System.out.println("TEST " + test_file[0]);
         String ret = new String();ret = "<doc>Please check your test data once again!</doc>";
         try {
-            String endpoint =
-                      "http://localhost/axis/services/TestModel";
+	    String endpoint = Properties.Entries.AXIS_ENDPOINT.get() + 
+                      "/services/TestModel";
   
              Service  service = new Service();
              Call     call    = (Call) service.createCall();

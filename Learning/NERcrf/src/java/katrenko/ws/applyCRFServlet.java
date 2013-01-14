@@ -23,6 +23,8 @@ import javax.servlet.ServletException;
 import javax.xml.rpc.ServiceException;
 import java.util.logging.Logger;
 
+import org.vle.aid.common.Properties;
+
 /*import java.io.File;
 import java.io.IOException;
 import java.lang.Double;
@@ -46,7 +48,8 @@ public class applyCRFServlet extends HttpServlet {
     
     Service service;
     Call        call;
-    String      endpoint = "http://localhost:8080/axis/services/";       
+    String      endpoint = Properties.Entries.AXIS_ENDPOINT.get() +
+	"/services/";       
     private transient Logger log =
  	            Logger.getLogger(applyCRFServlet.class.getName());
      

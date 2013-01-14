@@ -24,6 +24,8 @@ import org.apache.axis.client.Service;
 
 import org.apache.lucene.index.IndexReader;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author Edgar Meij
@@ -36,11 +38,13 @@ public final class didyoumeanClient extends HttpServlet {
     
     Service     service;
     Call        call;
-    String      endpoint = "http://localhost/axis/services/spellCheck";        
+    String      endpoint = Properties.Entries.AXIS_ENDPOINT.get() +
+		 "/services/spellCheck";        
     
     Service     serviceFields;
     Call        callFields;
-    String      endpointFields = "http://localhost/axis/services/getFields";
+    String      endpointFields = Properties.Entries.AXIS_ENDPOINT.get() +
+		"/services/getFields";
     
     /** logger for Commons logging. */
     private transient Logger log =

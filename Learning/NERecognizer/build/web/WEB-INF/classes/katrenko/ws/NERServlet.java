@@ -27,6 +27,9 @@ import javax.xml.parsers.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
 import katrenko.ws.NERServlet;
+
+import org.vle.aid.common.Properties;
+
 /**
  * NERServlet is a client for NERService. To invoke the web service, make sure that
  * the port number in <code> String endpoint = "http://localhost/axis/services/NERecognizerService";</code>
@@ -115,8 +118,8 @@ public class NERServlet extends HttpServlet {
         String ret=new String();ret="<message>Check your input please!</message>";
         
          try {
-             String endpoint =
-                      "http://localhost/axis/services/NERecognizerService";
+             String endpoint = Properties.Entries.AXIS_ENDPOINT.get() + 
+                      "/services/NERecognizerService";
   
              Service  service = new Service();
              Call     call    = (Call) service.createCall();

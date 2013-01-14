@@ -1,7 +1,6 @@
 /*
  * synonymClient.java
  *
- * TODO: Need to update 'String endpoint'
  * TODO: Remove IndexLocation
  *
  */
@@ -25,6 +24,8 @@ import org.apache.axis.client.Service;
 
 import org.apache.lucene.index.IndexReader;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author Edgar Meij
@@ -37,7 +38,7 @@ public final class synonymClient extends HttpServlet {
     Call        call;
     String          indexLocation = System.getenv("INDEXDIR") + 
             System.getProperty("file.separator");
-    String      endpoint = "http://localhost/axis/services/synonym";        
+    String      endpoint =  Properties.Entries.AXIS_ENDPOINT.get() + "/services/synonym";        
     
     /** logger for Commons logging. */
     private transient Logger log =

@@ -14,6 +14,8 @@ import javax.servlet.http.*;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author wrvhage
@@ -120,7 +122,8 @@ public class AutoCompletionSVL extends HttpServlet
             } 
             else
             {
-                endpoint = "http://localhost:8080/axis/services/RepositoryWS";
+		endpoint = Properties.Entries.AXIS_ENDPOINT.get() +
+                	"/services/RepositoryWS";
             }
 
             Service service = new Service();

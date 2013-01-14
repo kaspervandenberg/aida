@@ -27,6 +27,8 @@ import org.apache.lucene.analysis.WordlistLoader;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.queryParser.ParseException;
 
+import org.vle.aid.common.Properties;
+
 //import java.util.HashMap;
 import java.util.Enumeration;
 import java.util.logging.Logger;
@@ -46,7 +48,7 @@ public class search extends HttpServlet {
     private Query       luceneQuery;
     
     private static final String endpoint =
-        "http://localhost/axis/services/";
+         Properties.Entries.AXIS_ENDPOINT.get() + "/services/";
     
         /** logger for Commons logging. */
     private transient Logger log =

@@ -14,6 +14,8 @@ import org.apache.axis.client.Service;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import org.vle.aid.common.Properties;
+
 /**
  * Calls LearnModel web service which returns 10-fold cross-validation results on the input data
  * and stores a model and its log file in the folder provided by a user.
@@ -46,7 +48,8 @@ public class LearnModelServlet extends HttpServlet {
         
         String ret=new String();ret = "<doc>Please check your training data set once again!</doc>";
          try {
-             String endpoint = "http://localhost:8080/axis/services/LearnModel";
+	     String endpoint = Properties.Entries.AXIS_ENDPOINT.get() + 
+             		"/services/LearnModel";
   
              Service  service = new Service();
              Call     call    = (Call) service.createCall();

@@ -16,6 +16,8 @@ import javax.servlet.http.*;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author wrvhage
@@ -66,7 +68,8 @@ public class LuceneAutoCompletionSVL extends HttpServlet {
         out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<ajax-response><response type='object' id='" + id + "_updater'><matches>");
         try {
-            String endpoint = "http://localhost/axis/services/termFinderWS";
+            String endpoint = Properties.Entries.AXIS_ENDPOINT.get() +
+		 "/services/termFinderWS";
             
             Service service = new Service();
             Call call = (Call) service.createCall();

@@ -2,7 +2,6 @@
  * synonymClient.java
  *
  *
- * Need to update 'String endpoint'
  *
  */
 
@@ -26,6 +25,8 @@ import org.apache.axis.client.Service;
 
 import org.apache.lucene.index.IndexReader;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author Edgar Meij
@@ -35,7 +36,9 @@ public final class searchClient extends HttpServlet {
     
     Service     service;
     Call        call;
-    String      endpoint = "http://localhost/axis/services/";        
+    String      endpoint = Properties.Entries.AXIS_ENDPOINT.get() +
+			"/services/";
+	 
     IndexReader reader = null;
     
     /** logger for Commons logging. */

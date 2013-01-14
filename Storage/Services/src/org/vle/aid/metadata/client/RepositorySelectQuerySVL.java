@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author wrvhage
@@ -110,7 +112,7 @@ public class RepositorySelectQuerySVL extends HttpServlet {
         if (endpoint != null) {
           endpoint += "/services/RepositoryWS";
         } else {
-          endpoint = "http://localhost:8080/axis/services/RepositoryWS";
+          endpoint =  Properties.Entries.AXIS_ENDPOINT.get() + "/services/RepositoryWS";
         }
 
         Service service = new Service();

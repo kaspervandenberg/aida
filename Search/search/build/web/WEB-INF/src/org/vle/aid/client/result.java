@@ -33,6 +33,8 @@ import org.apache.xmlbeans.*;
 
 import org.apache.lucene.search.Query;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author Edgar Meij
@@ -41,7 +43,7 @@ public final class result extends HttpServlet {
     
     private         Service     service;
     private         Call        call;
-    private final   String      endpoint = "http://localhost/axis/services/";
+    private final   String      endpoint =  Properties.Entries.AXIS_ENDPOINT.get() + "/services/";
     private final   String      root = "/search";
     private         String      queryExpansionURL;
     private         String      spellSuggestURL;

@@ -6,12 +6,14 @@ import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import java.util.Arrays;
 
+import org.vle.aid.common.Properties;
+
 public class RepositoryWSTest extends TestCase
 {
     public Service     service  = new Service();
     
     // Correct Default Parameter Values:
-    private static String       endpoint            = "http://localhost:8080/axis/services/";
+    private static String       endpoint            =  Properties.Entries.AXIS_ENDPOINT.get() + "/services/";
     private static String       web_service_name    = "RepositoryWS";
     private static String       query_function_name = "selectQuery";
     private static String[]     function_names      = {"getRepositories",

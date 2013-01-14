@@ -17,6 +17,8 @@ import java.util.logging.Logger;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author wrvhage
@@ -64,7 +66,8 @@ public class facet extends HttpServlet {
         query.replaceAll("%2B", "+");
         log.info("Received facet_JSON: " + query);
 
-        String   endpoint = "http://localhost/axis/services/getFields";
+        String   endpoint = Properties.Entries.AXIS_ENDPOINT.get() +
+		"/services/getFields";
         String[] res      = new String[0];
 
         try {

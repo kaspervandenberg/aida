@@ -13,6 +13,8 @@ import javax.servlet.http.*;
 
 import org.apache.axis.client.*;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author wrvhage
@@ -38,7 +40,7 @@ public class RepositoryGetRepositoriesSVL extends HttpServlet {
         if (param.get("axis_url") != null) {
           endpoint = ((String[]) param.get("axis_url"))[0] + "/services/RepositoryWS";
         } else {
-          endpoint = "http://localhost:8080/axis/services/RepositoryWS";
+          endpoint =  Properties.Entries.AXIS_ENDPOINT.get() + "/services/RepositoryWS";
         }
 
         Service service = new Service();

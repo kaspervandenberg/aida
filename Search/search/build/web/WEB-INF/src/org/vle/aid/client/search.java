@@ -31,6 +31,8 @@ import org.apache.lucene.queryParser.ParseException;
 import java.util.Enumeration;
 import java.util.logging.Logger;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author Edgar Meij
@@ -46,7 +48,7 @@ public class search extends HttpServlet {
     private Query       luceneQuery;
     
     private static final String endpoint =
-        "http://localhost/axis/services/";
+         Properties.Entries.AXIS_ENDPOINT.get() + "/services/";
     
         /** logger for Commons logging. */
     private transient Logger log =

@@ -26,6 +26,8 @@ import javax.xml.parsers.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
 
+import org.vle.aid.common.Properties;
+
 /**
  * Client for the RelationExtraction web service. To invoke a service make sure
  * that the port number in <code>String endpoint = "http://localhost:8080/axis/services/RelationExtraction";</code>
@@ -52,8 +54,8 @@ public class RelationExtractionServlet extends HttpServlet {
         test = request.getParameterValues("inputData");
         String ret = new String();ret = "A. Check if a model and its log file exists \nB. Check if the test data is in a needed format";
         try {
-            String endpoint =
-                      "http://localhost:8080/axis/services/RelationExtractor";
+            String endpoint = Properties.Entries.AXIS_ENDPOINT.get() + 
+                      "/services/RelationExtractor";
   
              Service  service = new Service();
              Call     call    = (Call) service.createCall();

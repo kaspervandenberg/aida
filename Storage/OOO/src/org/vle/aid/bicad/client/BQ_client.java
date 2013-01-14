@@ -18,6 +18,8 @@ import org.apache.axis.client.Service;
         
 import org.vle.aid.bicad.entities.*;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author Camille
@@ -25,7 +27,7 @@ import org.vle.aid.bicad.entities.*;
 public class BQ_client {
     static Service service = null;
     // TODO make service location configurable
-    static String _axisEndpoint = "http://localhost:8080/axis/services/BasicQueriesWS";
+    static String _axisEndpoint =  Properties.Entries.AXIS_ENDPOINT.get() + "/services/BasicQueriesWS";
 
     static int locationCount = 0;
     static int annotationCount = 0;

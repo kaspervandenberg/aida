@@ -13,6 +13,8 @@ import org.apache.xmlbeans.XmlOptions;
 import org.vle.aid.ResultDocument;
 import org.vle.aid.ResultType;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author emeij
@@ -62,7 +64,7 @@ public class SearcherWSTest extends TestCase {
   public void testSearchWS() throws Exception {
      
     System.err.println("search webservice");
-    String      endpoint = "http://localhost:8080/axis/services/";
+    String      endpoint =  Properties.Entries.AXIS_ENDPOINT.get() + "/services/";
 
     /* This doesn't work
     SimpleAxisServer s = new SimpleAxisServer();

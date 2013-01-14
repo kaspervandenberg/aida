@@ -27,6 +27,8 @@ import javax.xml.parsers.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
 
+import org.vle.aid.common.Properties;
+
 /**
  *
  * @author software
@@ -63,7 +65,8 @@ public class Phrases extends HttpServlet {
 //        PrintWriter out = response.getWriter();
         String ret = new String();
         try {
-             String endpoint = "http://localhost:8080/axis/services/CollocationService";
+             String endpoint = Properties.Entries.AXIS_ENDPOINT.get() +
+		 "/services/CollocationService";
   
              Service  service = new Service();
              Call     call    = (Call) service.createCall();

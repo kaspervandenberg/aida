@@ -348,6 +348,8 @@ function loadFailed(proxy, options, response, error, servlet) {
 function loadServerList() {
   var storedserverlist = loadObject('storedserverlist', new Array(0));
   storedserverlist.add(getBaseURL() + '/openrdf-sesame');	  
+  storedserverlist.add('http://vocab.maastro.nl/sesame');
+  storedserverlist.add('http://localhost/sesame');
   storedserverlist.add('http://amc-app2.amc.sara.nl/openrdf-sesame');
   storedserverlist.add('http://hcls.deri.org/sparql');
   storedserverlist.add('http://tarski.duhs.org:8080/openrdf-sesame');

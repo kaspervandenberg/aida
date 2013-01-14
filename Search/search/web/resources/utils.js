@@ -348,7 +348,6 @@ function loadFailed(proxy, options, response, error, servlet) {
 function loadServerList() {
   var storedserverlist = loadObject('storedserverlist', new Array(0));
   storedserverlist.add(getBaseURL() + '/openrdf-sesame');	  
-  storedserverlist.add('http://vocab.maastro.nl/sesame');
   storedserverlist.add('http://localhost/sesame');
   storedserverlist.add('http://amc-app2.amc.sara.nl/openrdf-sesame');
   storedserverlist.add('http://hcls.deri.org/sparql');
@@ -399,6 +398,9 @@ alert('Debug load repositories called');
       // and when they click "OK", they are redirected to whatever page
       // you define as redirect.
       success : function(form, action) {
+// <KB DEBUG>
+alert('Debug load repositories::success called');
+// </KB DEBUG>
         
         if (action.response.getResponseHeader['org.vle.aid.metadata.exception.SystemQueryException']) {
         	showWindow('Error', action.response.getResponseHeader['org.vle.aid.metadata.exception.SystemQueryException']);
@@ -469,6 +471,9 @@ alert('Debug load repositories called');
       // You can see here, if login fails, it throws a messagebox
       // at the user telling him / her as much.
       failure : function(form, action) {
+// <KB DEBUG>
+alert('Debug load repositories::failure called');
+// </KB DEBUG>
         if (action.failureType == 'server') {
           var obj = Ext.util.JSON.decode(action.response.responseText);
           showWindow('Login Failed!', obj.errors.reason);

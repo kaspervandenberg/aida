@@ -371,6 +371,10 @@ function loadServers() {
 }
 
 function loadRepositories() {
+// <KB DEBUG>
+alert('Debug load repositories called');
+// </KB DEBUG>
+
 	var items = Ext.getCmp('sesame-panel').getForm().getValues();
 		
 	if (items.server_url === 'Select or type in a server...' || items.server_url === '' ) {

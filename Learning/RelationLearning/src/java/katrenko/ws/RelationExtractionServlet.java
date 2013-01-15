@@ -29,12 +29,16 @@ import org.xml.sax.helpers.*;
 import org.vle.aid.common.Properties;
 
 /**
- * Client for the RelationExtraction web service. To invoke a service make sure
- * that the port number in <code>String endpoint = "http://localhost:8080/axis/services/RelationExtraction";</code>
- * is set accordingly. Change it if needed.
+ * Client for the RelationExtraction web service.
  *<p>
  * To run this client, use <code>http://localhost:8080/RelationExtraction/extractRelation</code>
+ * </p>
  * <p>
+ * Note: do not forget to check whether Tomcat uses the same port and location
+ * for AXIS as specified in the file "common-aida-runtime.properties" in
+ * property "org.vle.aid.axis_endpoint".
+ * Change it if needed.
+ * </p>
  * @author Sophia Katrenko
  * @version 1.0
 */

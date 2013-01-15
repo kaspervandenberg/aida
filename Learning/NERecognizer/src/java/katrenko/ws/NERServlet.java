@@ -31,12 +31,16 @@ import katrenko.ws.NERServlet;
 import org.vle.aid.common.Properties;
 
 /**
- * NERServlet is a client for NERService. To invoke the web service, make sure that
- * the port number in <code> String endpoint = "http://localhost:8080/axis/services/NERecognizerService";</code>
- * is set accordingly. Change it if needed.
+ * NERServlet is a client for NERService.
  * <p>
  * To run this client, use <code>http://localhost:8080/NERecognizerService/NERServlet</code>
  * <p>
+ * <p>
+ * Note: do not forget to check whether Tomcat uses the same port and location
+ * for AXIS as specified in the file "common-aida-runtime.properties" in
+ * property "org.vle.aid.axis_endpoint".
+ * Change it if needed.
+ * </p>
  * @author Sophia Katrenko
  * @version 1.0
  */

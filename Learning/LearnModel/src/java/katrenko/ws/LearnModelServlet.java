@@ -21,8 +21,9 @@ import org.vle.aid.common.Properties;
  * and stores a model and its log file in the folder provided by a user.
  * To run this client, use <code>http://localhost:8080/LearnModel/learn</code>
  * <p>
- * Note: do not forget to check whether Tomcat uses the same port as in 
- * <code>String endpoint = "http://localhost:8080/axis/services/LearnModel";</code>. 
+ * Note: do not forget to check whether Tomcat uses the same port and location
+ * for AXIS as specified in the file "common-aida-runtime.properties" in
+ * property "org.vle.aid.axis_endpoint".
  * Change it if needed.
  * <p>
  * @author Sophia Katrenko

@@ -35,8 +35,8 @@ COMMAND_LIST_FORMATTED=""
 for FILEPAT in "${FILEPATTERNS[@]}"; do
 	for ((i = 0; i < ( ${#PATTERNS[@]} - 1); i+=2)); do
 		sedExpr $i EXPR
-		COMMAND="find . -type f -name \\\"$FILEPAT\\\" -exec sed -i$BACKUPEXT \\\"$EXPR\\\" \'{}\'\'\;\';"
-		COMMAND_LIST+=$COMMAND
+		COMMAND="find . -type f -name \"$FILEPAT\" -exec sed -i"$BACKUPEXT" \'"$EXPR"\' {} \; ;"
+		COMMAND_LIST+="$COMMAND"
 		COMMAND_LIST_FORMATTED+=$COMMAND\\n
 	done
 done

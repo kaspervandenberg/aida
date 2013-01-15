@@ -4,6 +4,7 @@ echo 'all exports aida install might need'
 export JAVA_HOME=/usr/lib/jvm/jdk1.7.0
 export AIDA_HOME=/home/aida/
 export TARGET_URL=http://vocab.maastro.nl:80
+export TARGET_HOST=vocab.maastro.nl
 export TARGET_PORT=80
 
 #common stuff
@@ -110,7 +111,7 @@ echo "INDEXDIR=$INDEXDIR"
 
 mkdir $AIDA_HOME
 mkdir $INDEXDIR
-export CATALINA_BASE=$CATALINA_HOME
+# export CATALINA_BASE=$CATALINA_HOME
 export HTTPD_DIR=/var/www/rdf.adaptivedisclosure.org/tmp/
 export HTTPD_URL=http://rdf.adaptivedisclosure.org/tmp/
 #export PWD=`pwd` #if not already set

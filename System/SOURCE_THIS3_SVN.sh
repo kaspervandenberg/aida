@@ -1,21 +1,39 @@
 echo 'all exports aida install might need'
 
-#aida@aida.science.uva.nl /home/aida/dev http://aida.science.uva.nl:9999
-export JAVA_HOME=/usr/java/latest
-export AIDA_HOME=/home/aida/dev
-export TARGET_URL=http://aida.science.uva.nl:9999
-export TARGET_PORT=9999
+#aida@vocab.maastro.nl /tmp/aida http://vocab.maastro.nl:80
+export JAVA_HOME=/usr/lib/jvm/jdk1.7.0
+export AIDA_HOME=/home/aida/
+export TARGET_URL=http://vocab.maastro.nl:80
+export TARGET_PORT=80
 
 #common stuff
-export CATALINA_HOME=$AIDA_HOME/apache-tomcat-6.0.13
+export ANT_HOME=/usr/share/ant
+export CATALINA_HOME=/usr/local/tomcat
+export CATALINA_BASE=/usr/local/tomcat
 export PATH=$JAVA_HOME/bin:$CATALINA_HOME/bin:$ANT_HOME/bin:$PATH
-export ANT_HOME=$AIDA_HOME/apache-ant-1.7.0
-export INDEXDIR=/home/aida/AIDA27june2007/INDEXDIR #shared with version running on 8888
-export EDITOR=gedit
+export INDEXDIR=/var/local/aida/indexes
+export EDITOR=nano
 export JRE_HOME=$JAVA_HOME
-export CATALINA_OPTS=-Xmx1000M
+export CATALINA_OPTS="-Xms4256m -Xmx4512m"
+export JAVA_OPTS="-Xms4256m -Xmx4512m"
 
 echo 'skip stuff below'
+
+# #aida@aida.science.uva.nl /home/aida/dev http://aida.science.uva.nl:9999
+# export JAVA_HOME=/usr/
+# export AIDA_HOME=/home/aida/dev
+# export TARGET_URL=http://aida.science.uva.nl:9999
+# export TARGET_PORT=9999
+
+# #common stuff
+# export CATALINA_HOME=$AIDA_HOME/apache-tomcat-6.0.13
+# export PATH=$JAVA_HOME/bin:$CATALINA_HOME/bin:$ANT_HOME/bin:$PATH
+# export ANT_HOME=$AIDA_HOME/apache-ant-1.7.0
+# export INDEXDIR=/home/aida/AIDA27june2007/INDEXDIR #shared with version running on 8888
+# export EDITOR=gedit
+# export JRE_HOME=$JAVA_HOME
+# export CATALINA_OPTS=-Xmx1000M
+
 
 #aida@ws.vl-e.nl /home/aida/AIDA27june2007 http://aida.science.uva.nl:8888/axis/servlet/AxisServlet
 #export JAVA_HOME=/usr/java/latest
@@ -81,7 +99,7 @@ echo "AIDA_HOME=$AIDA_HOME"
 echo "ANT_HOME=$ANT_HOME"
 
 cd $AIDA_HOME
-export PATH=$JAVA_HOME/bin:$PATH
+# export PATH=$JAVA_HOME/bin:$PATH
 export JRE_HOME=$JAVA_HOME
 export CVS_RSH=ssh
 export INDEXDIR=${INDEXDIR:-AIDA_HOME/INDEXDIR}
@@ -96,7 +114,7 @@ export CATALINA_BASE=$CATALINA_HOME
 export HTTPD_DIR=/var/www/rdf.adaptivedisclosure.org/tmp/
 export HTTPD_URL=http://rdf.adaptivedisclosure.org/tmp/
 #export PWD=`pwd` #if not already set
-export CATALINA_OPTS=-Xmx1000M
+# export CATALINA_OPTS=-Xmx1000M
 export SOPHIA_CP=".`find $JAVA_HOME/lib/ -type f -name '*.jar' -printf ':%p'``find $ANT_HOME/lib/ -name '*.jar' -printf ':%p'`"
 
 java -version

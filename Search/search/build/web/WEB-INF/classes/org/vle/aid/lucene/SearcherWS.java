@@ -49,6 +49,7 @@ import org.vle.aid.FieldType;
 import org.vle.aid.ResultDocument;
 import org.vle.aid.ResultType;
 import org.vle.aid.lucene.tools.Thumbnails;
+import org.vle.aid.common.Properties;
 
 
 /**
@@ -191,7 +192,7 @@ public class SearcherWS {
         fieldType.setValue(escape(f.stringValue()));
         
         if (f.name().equalsIgnoreCase("PMID") || f.name().equalsIgnoreCase("ID")) 
-          doc.setUrl("http://localhost:80/search/item/"+f.stringValue()+"?index="+this.index);
+          doc.setUrl(Properties.Entries.SEARCH_SERVLET + "/item/"+f.stringValue()+"?index="+this.index);
       }
 
       // Add Lucene Document ID
@@ -390,7 +391,7 @@ public class SearcherWS {
               // Exhibit-specific
               json += "\n\t\t\"label\" : \"" + id + "\",";
               //json += "\n\t\t\"path\" : \"" + id  + "\",";
-              json += "\n\t\t\"uri\" : \"http://localhost:80/search/item/" + id + "?index="+index+"\",";
+              json += "\n\t\t\"uri\" : \"" Properties.http://localhost:80/search/item/" + id + "?index="+index+"\",";
               
               // Thumbnail todo list
               if (id.toLowerCase().endsWith("pdf")) {

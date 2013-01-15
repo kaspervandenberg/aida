@@ -3,6 +3,7 @@
  * 
  * TODO: Single thread model?
  * TODO: Make it smarter, so it recognizes \", \', ...
+ * TODO: Read localhost URL from a property file
  * 
  */
  
@@ -692,7 +693,7 @@ public final class result extends HttpServlet {
                     out.println("            <td colspan=2 width=200px>");
 
                     if (fields[i].getName().equalsIgnoreCase("id") || fields[i].getName().equalsIgnoreCase("pmid")) {
-                      url = "http://localhost/search/item?index=" +
+                      url = Properties.Entries.SEARCH_SERVLET + "/item?index=" +
                         result.index + "&file=" + fields[i].getValue();
                       out.print("              " + "<b><a href='"+url+"'>" + fields[i].getValue() + "</a></b>");// + fields[i].getValue());  
                     } else {

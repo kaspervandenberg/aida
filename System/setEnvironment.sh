@@ -12,7 +12,7 @@ export JAVA_HOME=/usr/lib/jvm/jdk1.7.0
 export JRE_HOME=$JAVA_HOME
 export AIDA_HOME=/home/aida/
 export ANT_HOME=/usr/share/ant
-export TARGET_URL=http://vocab.maastro.nl:80
+export TARGET_URL=http://vocab.maastro.nl:80/
 export TARGET_HOST=vocab.maastro.nl
 export TARGET_PORT=80
 

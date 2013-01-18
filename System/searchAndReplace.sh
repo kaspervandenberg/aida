@@ -8,7 +8,7 @@ PATTERNS=(
 	"http://localhost:80/" "$TARGET_URL"
 	"localhost" "$TARGET_HOST"
 	"\([^[:alnum:]]\)8080\([^[:alnum:]]\)" "\1$TARGET_PORT\2"
-	"\([^[a:alnum:]]\)80\([^[:alnum:]]\)" "\1$TARGET_PORT\2"
+	"\([^[:alnum:]]\)80\([^[:alnum:]]\)" "\1$TARGET_PORT\2"
 	"/home/sophijka/Tomcat/apache-tomcat-5.5.20" "$CATALINA_HOME"
 	"/scratch/emij/old.jakarta" "$CATALINA_HOME"
 )

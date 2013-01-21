@@ -14,6 +14,9 @@ AXIS_HOME=${AXIS_HOME-$CATALINA_HOME/webapps/axis}
 # Path of AIDA::Search servlet in Tomcat
 SEARCH_HOME=${SEARCH_HOME-$CATALINA_HOME/webapps/search}
 
+# Path of AIDA::Search.war in Tomcat
+SEARCH_WAR=${SEARCH_WAR-$CATALINA_HOME/webapps/search.war}
+
 # Path of AIDA::Storage Services servlet in Tomcat
 SERVICES_HOME=${SERVICES_HOME-$CATALINA_HOME/webapps/Services}
 
@@ -71,7 +74,8 @@ if [ -n "$AXIS_HOME" ]; then
 fi
 
 if [ -n "$SEARCH_HOME" ]; then
-	rm -rf $SEARCH_HOME
+	sudo rm -rf $SEARCH_HOME
+	sudo rm $SEARCH_WAR
 fi
 
 if [ -n "$SERVICES_HOME" ]; then

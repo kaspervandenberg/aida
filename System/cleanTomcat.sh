@@ -70,7 +70,7 @@ select yn in "Yes" "No"; do
 done
 
 if [ -n "$AXIS_HOME" ]; then
-	rm -rf $AXIS_HOME
+	sudo rm -rf $AXIS_HOME
 fi
 
 if [ -n "$SEARCH_HOME" ]; then
@@ -79,7 +79,7 @@ if [ -n "$SEARCH_HOME" ]; then
 fi
 
 if [ -n "$SERVICES_HOME" ]; then
-	rm -rf $SERVICES_HOME
+	sudo rm -rf $SERVICES_HOME
 fi
 
 EXTRACTDIR=`mktemp -d`

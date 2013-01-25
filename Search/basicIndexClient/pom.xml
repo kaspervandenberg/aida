@@ -1,0 +1,106 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>nl.maastro.eureca.aida</groupId>
+	<artifactId>index.basicClient</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>AIDA Indexer::basic client </name>
+	<description>
+		Basic client to driver the AIDA Indexer webservice.
+	</description>
+	<packaging>jar</packaging>
+
+	<build>
+		<finalName>aida-basicIndexClient</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-toolchains-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>toolchain</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<toolchains>
+						<jdk>
+							<version>1.7</version>
+							<!-- <id>CheckerFrameWork</id> -->
+						</jdk>
+				</toolchains>
+				</configuration>
+			</plugin>
+
+			<plugin>
+<!--
+				<groupId>org.jvnet.jax-ws-commons</groupId>
+				<artifactId>jaxws-maven-plugin</artifactId>
+				<version>2.2</version>
+-->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>axistools-maven-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<goals>
+<!--
+							<goal>wsimport</goal>
+-->
+							<goal>wsdl2java</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/generated-sources/axistools</outputDirectory>
+							<urls>
+								<url>http://vocab.maastro.nl/axis/services/IndexWS?wsdl</url>	
+							</urls>
+							<packagenName>nl.maastro.eureca.aida.serviceStub</packagenName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<dependencies>
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.xml.ws</groupId>
+			<artifactId>jaxws-rt</artifactId>
+			<version>2.2.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+		</dependency>
+	</dependencies>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<netbeans.hint.jdkPlatform>JDK_1.7</netbeans.hint.jdkPlatform>
+	</properties>
+
+</project>
+    
+<!-- vim: set shiftwidth=2 tabstop=2 : -->
+

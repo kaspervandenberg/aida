@@ -212,6 +212,28 @@ public class Indexer {
         log.info("Indexing time: "+elapsed+" msec");
         return(status);
     }
+
+	/**
+	 * Index file(s) from a Windows share (Samba or CIFS) into an index on the 
+	 * server using {@code config} as settings. Analogue to {@link #indexFromSRB}.
+	 * 
+	 * @param fromPath	URL for the file or directory to index. 
+	 * 		See {@link http://jcifs.samba.org/src/docs/api/jcifs/smb/SmbFile.html} 
+	 * 		for detailed syntax.  SMB URLs have the following syntax: {@code 
+	 * 		smb://[[[domain;]username[:password]@]server[:port]/[[share/[dir/]file]]][?[param=value[param2=value2[...]]]}
+	 * 		Examples: {@code smb://usersnyc;miallen:mypass@angus/tmp/},
+	 * 		{@code smb://Administrator:P%40ss@msmith1/c/WINDOWS/Desktop/foo.txt}, 
+	 * 		{@code smb://angus.foo.net/d/jcifs/pipes.doc}, 
+	 * 		{@code smb://192.168.1.15/ADMIN$/} and
+	 * 		{@code smb://domain;username:password@server/share/path/to/file.txt}
+	 * @param config	String containing the contents of indexconfig.xml
+	 * 
+	 * @return	Status string 
+	 */
+	public String indexFromSamba(String fromPath, String config) {
+
+		throw new UnsupportedOperationException("Not yet implemented");
+	}
     
      /**
      * Index file(s) from a TCP stream into an index on the server using settings included in the beginning of the stream

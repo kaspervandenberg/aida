@@ -26,15 +26,14 @@
 		<parameter name="fromPath" type="tns:string">
 			<documentation>
 				URL for the file or directory to index. 
-				See <a href="http://jcifs.samba.org/src/docs/api/jcifs/smb/SmbFile.html">
-				http://jcifs.samba.org/src/docs/api/jcifs/smb/SmbFile.html</a> 
+				See http://jcifs.samba.org/src/docs/api/jcifs/smb/SmbFile.html
 				for detailed syntax.  SMB URLs have the following syntax: 
-				<code>smb://[[[domain;]username[:password]@]server[:port]/[[share/[dir/]file]]][?[param=value[param2=value2[...]]]</code>
-				Examples: <code>smb://usersnyc;miallen:mypass@angus/tmp/</code>,
-				<code>smb://Administrator:P%40ss@msmith1/c/WINDOWS/Desktop/foo.txt</code>, 
-				<code>smb://angus.foo.net/d/jcifs/pipes.doc</code>, 
-				<code>smb://192.168.1.15/ADMIN$/</code> and
-				<code>smb://domain;username:password@server/share/path/to/file.txt</code>
+				smb://[[[domain;]username[:password]@]server[:port]/[[share/[dir/]file]]][?[param=value[param2=value2[...]]]
+				Examples: smb://usersnyc;miallen:mypass@angus/tmp/,
+				smb://Administrator:P%40ss@msmith1/c/WINDOWS/Desktop/foo.txt, 
+				smb://angus.foo.net/d/jcifs/pipes.doc, 
+				smb://192.168.1.15/ADMIN$/ and
+				smb://domain;username:password@server/share/path/to/file.txt
 			</documentation>
 		</parameter>	
 		<parameter name="config" type="tns:string">

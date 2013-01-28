@@ -20,8 +20,8 @@
 	<operation name="indexFromSamba">
 		<documentation>
 			Index file(s) from a Windows share (Samba or CIFS) into an index on the 
-			server using <code>config</code> as settings. Analogue to 
-			<code>indexFromSRB</code>-operation.
+			server using config as settings. Analogue to 
+			indexFromSRB-operation.
 		</documentation>
 		<parameter name="fromPath" type="tns:string">
 			<documentation>

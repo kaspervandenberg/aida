@@ -4,14 +4,12 @@
  */
 package nl.maastro.eureca.aida.index;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
+import java.net.URLEncoder;
+import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,13 +17,18 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.EnumSet;
 import javax.xml.rpc.ServiceException;
 import nl.maastro.vocab.axis.services.IndexWS.Indexer;
 import nl.maastro.vocab.axis.services.IndexWS.IndexerServiceLocator;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -37,7 +40,8 @@ public class BasicClient {
 	private enum Properties {
 		indexLocation(new IndexerServiceLocator().getIndexWSAddress()),
 		indexConfigXmlFileName("indexconfig.xml"),
-		indexName("vocabTest");
+		indexName("vocabTest"),
+		encoding("ULRENCODE");
 		
 		private Properties(final Object defaultValue_) {
 			defaultValue = defaultValue_;
@@ -55,26 +59,57 @@ public class BasicClient {
 		indexer = initIndexer();
 		indexConfigTxt = getIndexConfig();
 	}
-
-	public void Index(Path fileName) {
-		try {
-			BufferedReader reader = Files.newBufferedReader(fileName, Charset.defaultCharset());
-			CharBuffer buffer = CharBuffer.allocate(1024);
-			StringBuilder data = new StringBuilder();
-
-			while (reader.read(buffer) != -1) {
-				data.append(buffer);
+	
+	private static enum Encoding {
+		NONE {
+			public String encode(final String input) {
+				return input;
 			}
+		},
+
+		URLENCODE {
+			public String encode(final String input) {
+				try {
+					return URLEncoder.encode(input, "UTF-8");
+				} catch (UnsupportedEncodingException ex) {
+					throw new Error(ex);
+				}
+			}
+		},
+		
+		BASE64 {
+			public String encode(final String input) {
+				return new Base64(true).encodeAsString(input.getBytes());
+			}
+		},
+		
+		URIQUERY {
+			public String encode(final String input) {
+				try {
+					return URIUtil.encodeWithinQuery(input, "UTF-8");
+				} catch (URIException ex) {
+					throw new Error(ex);
+				}
+			}
+		};
+
+		public abstract String encode(final String input);
+	}
+
+	public void addToIndex(Path fileName) {
+		try {
+			final Encoding enc = Encoding.valueOf(getProperty(Properties.encoding));
+			final String data = enc.encode(IOUtils.toString(fileName.toUri()));
 			
 			try {
-				indexer.addToIndexWithConfig(
-						data.toString(), 
+				System.out.println(indexer.addToIndexWithConfig(
+						data, 
 						fileName.getFileName().toString(), 
 						getProperty(Properties.indexName),
-						indexConfigTxt);
+						indexConfigTxt));
 			} catch (RemoteException ex) {
 				throw new Error(String.format(
-						"Remote exception when adding %s to index", fileName.toString()));
+						"Remote exception when adding %s to index", fileName.toString()), ex);
 			}
 		} catch (IOException ex) {
 			throw new Error(String.format(
@@ -116,22 +151,12 @@ public class BasicClient {
 	private String getIndexConfig() {
 		String fileName = getProperty(Properties.indexConfigXmlFileName); 
 		
-		InputStream is = BasicClient.class.getResourceAsStream(fileName);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-		CharBuffer buffer = CharBuffer.allocate(1024);
-		StringBuilder result = new StringBuilder();
-		
 		try {
-			while (reader.read(buffer) != -1) {
-				result.append(buffer);
-			}
+			return IOUtils.toString(getClass().getResourceAsStream(fileName));
 		} catch (IOException ex) {
 			throw new Error(String.format(
 					"Error while reading %s config file", fileName), ex);
 		}
-
-		return result.toString();
-	
 	} 
 	
 	private static void checkArguments(String[] args) {
@@ -158,17 +183,21 @@ public class BasicClient {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
+		System.out.println("Starting ...");
 		BasicClient.checkArguments(args);
 		
 		final BasicClient client = new BasicClient();
+		System.out.println("Indexing ...");
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
 			Path path = Paths.get(arg);
 			try {
-				Files.walkFileTree(path, null, Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
+				Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS),
+						Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
 					@Override
 					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-						client.Index(file);
+						System.out.println(file.toString());
+						client.addToIndex(file);
 						return FileVisitResult.CONTINUE;
 					}
 				});

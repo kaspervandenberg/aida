@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : indexconfig.xml
+    Description: Example config file
+    -->
+
+<config xmlns='http://aid.org/'
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xsi:schemaLocation='http://aid.org/ file:config.xsd'
+        >
+
+<!-- You usually only have to change the following three items-->
+
+
+  <Name>VocabTest</Name>
+  <DataPath>datadir</DataPath>
+  <IndexOverwrite>true</IndexOverwrite>
+
+
+
+
+
+
+
+  <IndexAnalyzer>STANDARD</IndexAnalyzer>
+
+  <SRBused>false</SRBused>
+  <MergeFactor>300</MergeFactor>
+  <MaxBufferedDocs>30</MaxBufferedDocs>
+
+  <DocType FileType="medline">
+    <FileExtension>med</FileExtension>
+    <DocTypeAnalyzer>STANDARD</DocTypeAnalyzer>
+    <Field Name="AU">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"Author field of Medline"</Description>
+    </Field>
+    <Field Name="TI">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>YES</Termvector>
+      <Description>"Title field of Medline"</Description>
+    </Field>
+    <Field Name="AB">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>YES</Termvector>
+      <Description>"Abstract field of Medline"</Description>
+    </Field>
+    <Field Name="FAU">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"First Author field of Medline"</Description>
+    </Field>
+    <Field Name="MH">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"MESH Heading field of Medline"</Description>
+    </Field>
+    <Field Name="PMID">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"PMID field of Medline"</Description>
+    </Field>
+    <Field Name="SO">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"SO field of Medline"</Description>
+    </Field>
+  </DocType>
+
+  <DocType FileType="txt">
+    <FileExtension>txt</FileExtension>
+    <DocTypeAnalyzer>STANDARD</DocTypeAnalyzer>
+    <Field Name="path">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"path"</Description>
+    </Field>
+    <Field Name="content">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>YES</Termvector>
+      <Description>"content"</Description>
+    </Field>
+    <Field Name="title">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>YES</Termvector>
+      <Description>"title"</Description>
+    </Field>
+    <Field Name="summary">
+      <Index>TOKENIZED</Index>
+      <Store>false</Store>
+      <Termvector>NO</Termvector>
+      <Description>"summary"</Description>
+    </Field>
+  </DocType>
+
+  <DocType FileType="pdf">
+    <FileExtension>pdf</FileExtension>
+    <DocTypeAnalyzer>STANDARD</DocTypeAnalyzer>
+    <Field Name="path">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"path"</Description>
+    </Field>
+    <Field Name="content">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>YES</Termvector>
+      <Description>"content"</Description>
+    </Field>
+    <Field Name="title">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>YES</Termvector>
+      <Description>"title"</Description>
+    </Field>
+    <Field Name="summary">
+      <Index>TOKENIZED</Index>
+      <Store>false</Store>
+      <Termvector>NO</Termvector>
+      <Description>"summary"</Description>
+    </Field>
+  </DocType>
+
+  <DocType FileType="msword">
+    <DocTypeAnalyzer>STANDARD</DocTypeAnalyzer>
+    <FileExtension>doc</FileExtension>
+    <Field Name="path">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>NO</Termvector>
+      <Description>"path"</Description>
+    </Field>
+    <Field Name="content">
+      <Index>TOKENIZED</Index>
+      <Store>true</Store>
+      <Termvector>YES</Termvector>
+      <Description>"content"</Description>
+    </Field>
+    <Field Name="summary">
+      <Index>TOKENIZED</Index>
+      <Store>false</Store>
+      <Termvector>NO</Termvector>
+      <Description>"summary"</Description>
+    </Field>
+  </DocType>
+
+</config>

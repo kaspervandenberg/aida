@@ -4,7 +4,7 @@
   <service name="IndexWS" provider="java:RPC">
     <documentation>Service for indexing things. An example configfile can be found here: http://staff.science.uva.nl/~emeij/indexconfig.xml</documentation>
     <parameter name="className" value="indexer.Indexer"/>
-    <parameter name="allowedMethods" value="indexFromSRB,indexFromRemote,addToIndex,addToIndexWithConfig,streamContent,indexWithTCP,indexWithSOAP,indexWithSwA"/>
+    <parameter name="allowedMethods" value="indexFromSRB,indexFromSamba,indexFromRemote,addToIndex,addToIndexWithConfig,streamContent,indexWithTCP,indexWithSOAP,indexWithSwA"/>
     <operation name="indexFromRemote">
       <documentation>Use this method to add a single document to an index. Config holds the configfile contents, </documentation>
       <parameter name="config" type="tns:string"/>

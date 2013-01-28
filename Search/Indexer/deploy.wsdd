@@ -37,6 +37,11 @@
 				<code>smb://domain;username:password@server/share/path/to/file.txt</code>
 			</documentation>
 		</parameter>	
+		<parameter name="config" type="tns:string">
+			<documentation>
+				String containing the contents of indexconfig.xml
+			</documentation>
+		</parameter>	
 	</operation>
     <operation name="addToIndex">
       <documentation>Use this method to add a single file to a named index using a default config</documentation>

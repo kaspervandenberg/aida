@@ -10,7 +10,7 @@ import java.util.logging.SimpleFormatter;
 import nl.uva.science.wsdtf.utilities.Options;
 import nl.uva.science.wsdtf.utilities.Constants;
 import nl.uva.science.wsdtf.protocols.Connection;
-import nl.uva.science.wsdtf.protocols.GridFTPConnection;
+//import nl.uva.science.wsdtf.protocols.GridFTPConnection;
 import nl.uva.science.wsdtf.protocols.HTTPConnection;
 //import nl.uva.science.wsdtf.protocols.JStyxConnection;
 import nl.uva.science.wsdtf.protocols.RTSPConnection;
@@ -181,9 +181,11 @@ public abstract class StreamClient implements Runnable {
                 logger.severe("There is no STYX client implementation");
                 return null;
             case Constants.GridFTP:
-                connection[0] = new GridFTPConnection(options);
-                logger.finest("Getting new GFtp connection @ port"+options.port);
-                return connection;
+				logger.severe("Grid FTP connection is broken");
+				return null;
+//                connection[0] = new GridFTPConnection(options);
+//                logger.finest("Getting new GFtp connection @ port"+options.port);
+//                return connection;
                 
             case Constants.HTTP:
                 connection[0] = new HTTPConnection(options);

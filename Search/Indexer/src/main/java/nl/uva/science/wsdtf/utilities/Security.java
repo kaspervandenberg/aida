@@ -1,6 +1,10 @@
 package nl.uva.science.wsdtf.utilities;
 
-import org.globus.gsi.GlobusCredential;
+import java.io.File;
+import java.io.FileInputStream;
+//import org.globus.gsi.GlobusCredential;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.globus.gsi.GlobusCredentialException;
 import org.globus.gsi.gssapi.GlobusGSSCredentialImpl;
 import org.globus.common.CoGProperties;
@@ -12,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.io.FileNotFoundException;
+import org.gridforum.jgss.ExtendedGSSCredential;
+import org.gridforum.jgss.ExtendedGSSManager;
 
 /**
  * 
@@ -24,18 +30,39 @@ public class Security {
 			CoGProperties cog = CoGProperties.getDefault();			
 			path = cog.getProxyFile();//"/tmp/x509up_u1000";
 		}
-		GlobusGSSCredentialImpl cred = null;
-		try {
-			GlobusCredential gcred = new GlobusCredential(path);
-			cred = new GlobusGSSCredentialImpl(gcred,GSSCredential.DEFAULT_LIFETIME);
-		} catch (GlobusCredentialException ex) {
-			ex.printStackTrace();
-			System.err.println("Try runing: 'grid-proxy-init'");
-			System.exit(-1);
-		} catch (GSSException ex) {		
-			ex.printStackTrace();
-			System.err.println("Try runing: 'grid-proxy-init'");
-			System.exit(-1);				
+		// TODO check whether the changes to upgrade to new Globus security, are correctly implemented.  Diff with git commit #b75a83c20c69
+		GSSCredential cred = null;
+		{
+			FileInputStream in = null;
+			try {
+				File f = new File(path);
+				byte[] data = new byte[(int)f.length()];
+				in = new FileInputStream(f);
+				in.read(data);
+				in.close();
+				cred = ((ExtendedGSSManager)ExtendedGSSManager.getInstance())
+						.createCredential(data,
+							ExtendedGSSCredential.IMPEXP_OPAQUE,
+							GSSCredential.DEFAULT_LIFETIME,
+							null,
+							GSSCredential.INITIATE_AND_ACCEPT);
+			} catch (FileNotFoundException ex) {
+				Logger.getLogger(Security.class.getName()).log(Level.SEVERE, null, ex);
+				System.exit(-1);
+			} catch (IOException ex) {
+				Logger.getLogger(Security.class.getName()).log(Level.SEVERE, null, ex);
+				System.exit(-1);
+			}catch (GSSException ex) {		
+			   ex.printStackTrace();
+			   System.err.println("Try runing: 'grid-proxy-init'");
+			   System.exit(-1);				
+		   } finally {
+				try {
+					in.close();
+				} catch (IOException ex) {
+					Logger.getLogger(Security.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
 		}
 		return cred;
 	}

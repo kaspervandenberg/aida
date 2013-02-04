@@ -8,20 +8,30 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-		<version>3.0</version>
+				<version>3.0</version>
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
         </configuration>
       </plugin>
+			
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-		<version>2.13</version>
+				<version>2.13</version>
         <configuration>
           <skip>false</skip>
+					<workingDirectory>${java.io.tmpdir}</workingDirectory>
         </configuration>
       </plugin>
     </plugins>
+
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<targetPath>${java.io.tmpdir}</targetPath>
+			</testResource>
+		</testResources>
+				
   </build>
 <!--  <repositories>
     <repository>
@@ -62,16 +72,6 @@
 
   <dependencies>
 		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-web-api</artifactId>
-			<version>6.0</version>
-			<!-- provides javax.xml.*, javax.activation -->
-			<!-- used in indexer.Indexer, indexer.config.*, c
-						onfig.aid.org.impl.runtime.*, and 
-						nl.uva.science.wsdtf.utilities -->
-		</dependency>
-    
-		<dependency>
 			<groupId>javax.xml.parsers</groupId>
 			<artifactId>jaxp-api</artifactId>
 			<version>1.4.5</version>
@@ -85,6 +85,14 @@
 			<version>1.4</version>
 			<!-- provides org.apache.axis. -->
 			<!-- used in Iindexer.Indexer -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.axis</groupId>
+			<artifactId>axis-jaxrpc</artifactId>
+			<version>1.4</version>
+			<!-- provides javax.xml.rpc -->
+			<!-- used in indexer.Indexer -->
 		</dependency>
 		
 		<dependency>

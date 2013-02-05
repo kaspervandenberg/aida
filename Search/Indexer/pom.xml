@@ -4,6 +4,12 @@
   <groupId>org.vle.aid</groupId>
   <artifactId>indexer</artifactId>
   <version>0.70</version>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<test.workingDirectory>${java.io.tmpdir}</test.workingDirectory>
+	</properties>
+
   <build>
     <plugins>
       <plugin>
@@ -16,65 +22,41 @@
       </plugin>
 			
       <plugin>
+				<!--
+					Run tests
+				-->
         <artifactId>maven-surefire-plugin</artifactId>
 				<version>2.13</version>
         <configuration>
           <skip>false</skip>
-					<workingDirectory>${java.io.tmpdir}</workingDirectory>
+					<!--
+						Change the working directory, since the tests require some files in 
+						their working directory and produce some clutter in that directory.
+					-->
+					<workingDirectory>${test.workingDirectory}</workingDirectory>
         </configuration>
       </plugin>
     </plugins>
 
 		<testResources>
+			<!-- 
+				The tests expect their resources in their working directory.
+				Therefore they are copied.
+			-->
 			<testResource>
-				<directory>src/test/resources</directory>
-				<targetPath>${java.io.tmpdir}</targetPath>
+				<directory>${project.build.testSourceDirectory}</directory>
+				<targetPath>${test.workingDirectory}</targetPath>
 			</testResource>
 		</testResources>
-				
   </build>
-<!--  <repositories>
-    <repository>
-      <releases />
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>AID</id>
-      <name>My Target</name>
-      <url>http://staff.science.uva.nl/~emeij/maven</url>
-    <repository>
-      <releases />
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>mygrid-repository</id>
-      <name>myGrid Repository</name>
-      <url>http://www.mygrid.org.uk/maven/repository</url>
-    </repository>
-    <repository>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots />
-      <id>mygrid-snapshot-repository</id>
-      <name>myGrid Snapshot Repository</name>
-      <url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
-    </repository>
-      <releases />
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>mobycentral</id>
-      <name>MobyCentral Repository</name>
-      <url>http://mobycentral.icapture.ubc.ca/maven</url>
-  </repositories> -->
-
 
   <dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
+			<!-- provides javax.servlet -->
+			<!-- used in nl.uva.science.wsdtf.protocols.HTTPStreamer -->
 		</dependency>
 		
 		<dependency>
@@ -111,7 +93,6 @@
 		<dependency>
       <groupId>pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
-      <?ignore old version <version>0.7.1</version> ?>
 			<version>0.7.3</version>
 			<!-- provides org.pdfbox -->
 			<!-- newer versions available via org.apache.pdfbox -->
@@ -143,8 +124,8 @@
 					nl.uva.science.wsdtf.utilities.*, and 
 					nl.uva.science.wsdtf.protocols.* -->
 		</dependency>
-		
 
+  </dependencies>
 
 
 <!--
@@ -201,9 +182,6 @@
     </repository>
   </distributionManagement>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 </project>
 
 <!-- vim: set tabstop=2 shiftwidth=2 : -->

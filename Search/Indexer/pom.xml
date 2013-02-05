@@ -4,6 +4,12 @@
   <groupId>org.vle.aid</groupId>
   <artifactId>indexer</artifactId>
   <version>0.70</version>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<test.workingDirectory>${java.io.tmpdir}</test.workingDirectory>
+	</properties>
+
   <build>
     <plugins>
       <plugin>
@@ -16,19 +22,30 @@
       </plugin>
 			
       <plugin>
+				<!--
+					Run tests
+				-->
         <artifactId>maven-surefire-plugin</artifactId>
 				<version>2.13</version>
         <configuration>
           <skip>false</skip>
-					<workingDirectory>${java.io.tmpdir}</workingDirectory>
+					<!--
+						Change the working directory, since the tests require some files in 
+						their working directory and produce some clutter in that directory.
+					-->
+					<workingDirectory>${test.workingDirectory}</workingDirectory>
         </configuration>
       </plugin>
     </plugins>
 
 		<testResources>
+			<!-- 
+				The tests expect their resources in their working directory.
+				Therefore they are copied.
+			-->
 			<testResource>
 				<directory>${project.build.testSourceDirectory}</directory>
-				<targetPath>${java.io.tmpdir}</targetPath>
+				<targetPath>${test.workingDirectory}</targetPath>
 			</testResource>
 		</testResources>
   </build>
@@ -38,6 +55,8 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
+			<!-- provides javax.servlet -->
+			<!-- used in nl.uva.science.wsdtf.protocols.HTTPStreamer -->
 		</dependency>
 		
 		<dependency>
@@ -109,17 +128,77 @@
   </dependencies>
 
 	<profiles>
+		<!--
+			Installs Indexer webservices into the AXIS installation on
+			vocab.maastro.nl
+			activate with: $ mvn -P deploy_on_Vocab -Dvocab.tomcat.admin.user={…} -Dvocab.tomcat.admin.password={…} install
+		-->
 		<profile>
 			<id>deploy_on_Vocab</id>
 			<properties>
+				
+				<!--
+					Location of AXIS servlet as installed within Tomcat
+				-->
 				<axis.home>${env.CATALINA_BASE}/webapps/axis</axis.home>
+
+				<!--
+					Classpath of AXIS; where its libraries and webservice jars should go.
+				-->
 				<axis.lib>${axis.home}/WEB-INF/lib</axis.lib>
-				<axis.manager.port>80</axis.manager.port>
+
+				<!--
+					Port on which the AXIS servlet listens
+				-->
+				<axis.admin.port>80</axis.admin.port>
+
+				<!--
+					Hostname where to reach the AXIS servlet; this will often be 
+					'localhost' since the execution 'install into AXIS:jars' copies
+					the jars and thus runs local compared to the vocab server.
+				-->
 				<axis.host>localhost</axis.host>
-				<axis.admin.servlet>/axis/services/AdminService</axis.admin.servlet>
+
+				<!--
+					The context under which AXIS is installed in Tomcat.
+				-->
+				<axis.context>/axis</axis.context>
+
+				<!--
+					Forms, together with ${axis.host} and ${axis.admin.port}, the URL to 
+					which AXIS::Adminclient should connect.  This is the default context
+					of AXIS.
+				-->
+				<axis.admin.servlet>${axis.context}/services/AdminService</axis.admin.servlet>
+
+				<!--
+					Port on which the Tomcat manager servlet listens.  Per default this 
+					is equal to AXIS' port
+				-->
+				<tomcat.manager.port>${axis.admin.port}</tomcat.manager.port>
+
+				<!--
+					Hostname where to reach the Tomcat manager servlet
+				-->
+				<tomcat.manager.host>${axis.host}</tomcat.manager.host>
+
+				<!--
+					Forms, together with ${tomcat.manager.host} and ${tomcat.manger.port}
+					the URL where the Tomcat manager servlet can be reached.
+				-->
+				<tomcat.manager.servlet>/manager</tomcat.manager.servlet>
+				
 			</properties>
+
+			<!--
+				Extra goals to achieve when 'install'ing on the vocab server.
+			-->
 			<build>
 				<plugins>
+					<!--
+						Copy this project's jar and the jars it depends on into AXIS' 
+						classpath.
+					-->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-dependency-plugin</artifactId>
@@ -148,6 +227,9 @@
 						</executions>
 					</plugin>
 
+					<!--
+						Invoke AXIS AdminClient to deploy the webservice.
+					-->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
@@ -164,65 +246,99 @@
 									<arguments>
 										<argument>-classpath</argument><classpath/>
 										<argument>org.apache.axis.client.AdminClient</argument>
-										<argument>-p</argument><argument>${axis.manager.port}</argument>
+										<argument>-p</argument><argument>${axis.admin.port}</argument>
 										<argument>${project.build.scriptSourceDirectory}/deploy.wsdd</argument>
 									</arguments>
 								</configuration>
 							</execution>
 						</executions>
 					</plugin>
-<?scratch
-java -cp $(JARS=(lib/axis.jar $CATALINA_HOME/webapps/axis/WEB-INF/lib/*.jar); IFS=:; echo "${JARS[*]}") org.apache.axis.client.AdminClient -p 80 src/main/scripts/deploy.wsdd
-?>
 
-
-<?ignore "Not working; use AdminClient via java"
-					<plugin>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<version>1.7</version>
-						<executions>
-							<phase>install</phase>
-							<configuration>
-								<tasks>
-									<axis-admin port="${axis.manager.port}" hostname="${axis.host}"
-											failonerror="true" servletpath="${axis.admin.servlet}"
-											debug="true" xmlfile="${project.build.scriptSourceDirectory}/deploy.wsdd" />
-								</tasks>
-							</configuration>
-						</executions>
-					</plugin>
-?>					
-					
-		
-<?ignore "Not working; try antrun plugin instead"		
+					<!--
+						Restart AXIS to update its classpath.
+					-->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>axistools-maven-plugin</artifactId>
-						<version>1.4</version>
+						<artifactId>tomcat-maven-plugin</artifactId>
+						<version>1.1</version>
 						<executions>
 							<execution>
-								<id>deploy webservice</id>
+								<id>install into AXIS:reload</id>
 								<phase>install</phase>
 								<goals>
-									<goal>admin</goal>
+									<goal>reload</goal>
 								</goals>
 								<configuration>
-									<inputFiles>
-										<inputFile>${basedir}/main/webapp/WEB-INF/services/deploy.wsdd</inputFile>
-									</inputFiles>
+									<path>${axis.context}</path>
+									<url>http://${tomcat.manager.host}:${tomcat.manager.port}${tomcat.manager.servlet}/text</url>
+									<!--
+										Specify the username of vocab's tomcat script administrator
+										when invoking maven (using "-Dvocab.tomcat.admin.user={…})
+										or in settings.xml
+										NOTE: script administrator is a different user than the
+										user of the gui, see tomcat's tomcat-users.xml.
+									-->
+									<username>${vocab.tomcat.admin.user}</username>
+									
+									<!--
+										Specify the password of vocab's tomcat script administrator
+										when invoking maven (using "-Dvocab.tomcat.admin.password={…})
+										or in settings.xml
+										NOTE: script administrator is a different user than the
+										user of the gui, see tomcat's tomcat-users.xml.
+									-->
+									<password>${vocab.tomcat.admin.password}</password>
+									
+									<!--
+										We do not deploy a project packaged as war, instead we
+										deploy something in the classpath of a servlet.
+										Thus should the tomcat mojo not check the packaging.
+									-->
+									<ignorePackaging>true</ignorePackaging>
+									
+									<charset>${project.build.sourceEncoding}</charset>
+								</configuration>	
+							</execution>
+						</executions>
+					</plugin>	
+
+					<!--
+						Check that the required properties have been defined
+					-->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<version>1.2</version>
+						<executions>
+							<execution>
+								<id>enfore-properties</id>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<requireProperty>
+											<property>env.CATALINA_BASE</property>
+											<message>Source AIDA::System/setEnvironment to define CATALINA_BASE.</message>
+										</requireProperty>
+
+										<requireProperty>
+											<property>vocab.tomcat.admin.user</property>
+										</requireProperty>
+										
+										<requireProperty>
+											<property>vocab.tomcat.admin.password</property>
+										</requireProperty>
+									</rules>
 								</configuration>
 							</execution>
 						</executions>
 					</plugin>
-?>
 				</plugins>
 			</build>
 		</profile>
 	</profiles>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 </project>
 
 <!-- vim: set tabstop=2 shiftwidth=2 : -->

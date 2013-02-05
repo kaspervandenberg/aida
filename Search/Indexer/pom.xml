@@ -126,7 +126,7 @@
 						<version>2.6</version>
 						<executions>
 							<execution>
-								<id>install into Axis</id>
+								<id>install into AXIS:jars</id>
 								<phase>install</phase>
 								<goals>
 									<goal>copy</goal>
@@ -149,6 +149,35 @@
 					</plugin>
 
 					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.2.1</version>
+						<executions>
+							<execution>
+								<id>install into AXIS:deploy</id>
+								<phase>install</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>java</executable>
+									<arguments>
+										<argument>-classpath</argument><classpath/>
+										<argument>org.apache.axis.client.AdminClient</argument>
+										<argument>-p</argument><argument>${axis.manager.port}</argument>
+										<argument>${project.build.scriptSourceDirectory}/deploy.wsdd</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+<?scratch
+java -cp $(JARS=(lib/axis.jar $CATALINA_HOME/webapps/axis/WEB-INF/lib/*.jar); IFS=:; echo "${JARS[*]}") org.apache.axis.client.AdminClient -p 80 src/main/scripts/deploy.wsdd
+?>
+
+
+<?ignore "Not working; use AdminClient via java"
+					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<version>1.7</version>
 						<executions>
@@ -162,6 +191,8 @@
 							</configuration>
 						</executions>
 					</plugin>
+?>					
+					
 		
 <?ignore "Not working; try antrun plugin instead"		
 					<plugin>

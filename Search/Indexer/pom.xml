@@ -27,48 +27,11 @@
 
 		<testResources>
 			<testResource>
-				<directory>src/test/resources</directory>
+				<directory>${project.build.testSourceDirectory}</directory>
 				<targetPath>${java.io.tmpdir}</targetPath>
 			</testResource>
 		</testResources>
-				
   </build>
-<!--  <repositories>
-    <repository>
-      <releases />
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>AID</id>
-      <name>My Target</name>
-      <url>http://staff.science.uva.nl/~emeij/maven</url>
-    <repository>
-      <releases />
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>mygrid-repository</id>
-      <name>myGrid Repository</name>
-      <url>http://www.mygrid.org.uk/maven/repository</url>
-    </repository>
-    <repository>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots />
-      <id>mygrid-snapshot-repository</id>
-      <name>myGrid Snapshot Repository</name>
-      <url>http://www.mygrid.org.uk/maven/snapshot-repository</url>
-    </repository>
-      <releases />
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>mobycentral</id>
-      <name>MobyCentral Repository</name>
-      <url>http://mobycentral.icapture.ubc.ca/maven</url>
-  </repositories> -->
-
 
   <dependencies>
 		<dependency>
@@ -111,7 +74,6 @@
 		<dependency>
       <groupId>pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
-      <?ignore old version <version>0.7.1</version> ?>
 			<version>0.7.3</version>
 			<!-- provides org.pdfbox -->
 			<!-- newer versions available via org.apache.pdfbox -->
@@ -144,58 +106,18 @@
 					nl.uva.science.wsdtf.protocols.* -->
 		</dependency>
 
-
-
-
-<!--
-		<dependency>
-			<groupId>msv</groupId>
-			<artifactId>msv</artifactId>
-			<version>20050913</version>
-		</dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.3.1</version>
-      <scope>test</scope>
-    </dependency>
-    
-		<dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
-      <version>2.2.6</version>
-    </dependency>
-    
-		<dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-xjc</artifactId>
-      <version>2.2.6</version>
-    </dependency>
-
-		<dependency>
-      <groupId>stax</groupId>
-      <artifactId>stax</artifactId>
-      <version>1.2.0</version>
-    </dependency>
-    
-		<dependency>
-      <groupId>uk.org.mygrid.taverna.baclava</groupId>
-      <artifactId>baclava-core</artifactId>
-      <version>1.6.0.0</version>
-    </dependency>
-    
-		<dependency>
-      <groupId>uk.org.mygrid.taverna.processors</groupId>
-      <artifactId>taverna-java-processor</artifactId>
-      <version>1.6.0.0</version>
-    </dependency> -->
-		
   </dependencies>
 
 	<profiles>
 		<profile>
 			<id>deploy_on_Vocab</id>
+			<properties>
+				<axis.home>${env.CATALINA_BASE}/webapps/axis</axis.home>
+				<axis.lib>${axis.home}/WEB-INF/lib</axis.lib>
+				<axis.manager.port>80</axis.manager.port>
+				<axis.host>localhost</axis.host>
+				<axis.admin.servlet>/axis/services/AdminService</axis.admin.servlet>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -220,25 +142,52 @@
 											<overWrite>true</overWrite>
 										</artifactItem>
 									</artifactItems>
-									<outputDirectory>${axis.home}/WEB-INF/lib</outputDirectory>
+									<outputDirectory>${axis.lib}</outputDirectory>
 								</configuration>
 							</execution>	
 						</executions>
 					</plugin>
+
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
+						<executions>
+							<phase>install</phase>
+							<configuration>
+								<tasks>
+									<axis-admin port="${axis.manager.port}" hostname="${axis.host}"
+											failonerror="true" servletpath="${axis.admin.servlet}"
+											debug="true" xmlfile="${project.build.scriptSourceDirectory}/deploy.wsdd" />
+								</tasks>
+							</configuration>
+						</executions>
+					</plugin>
+		
+<?ignore "Not working; try antrun plugin instead"		
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>axistools-maven-plugin</artifactId>
+						<version>1.4</version>
+						<executions>
+							<execution>
+								<id>deploy webservice</id>
+								<phase>install</phase>
+								<goals>
+									<goal>admin</goal>
+								</goals>
+								<configuration>
+									<inputFiles>
+										<inputFile>${basedir}/main/webapp/WEB-INF/services/deploy.wsdd</inputFile>
+									</inputFiles>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+?>
 				</plugins>
 			</build>
 		</profile>
 	</profiles>
-
-<?ignore repository invallid
-  <distributionManagement>
-    <repository>
-      <id>AID</id>
-      <name>My Target</name>
-      <url>file:///home/emeij/public_html/maven</url>
-    </repository>
-  </distributionManagement>
-?>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

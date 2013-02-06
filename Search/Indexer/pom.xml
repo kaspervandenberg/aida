@@ -124,55 +124,9 @@
 					nl.uva.science.wsdtf.utilities.*, and 
 					nl.uva.science.wsdtf.protocols.* -->
 		</dependency>
-
   </dependencies>
 
 
-<!--
-		<dependency>
-			<groupId>msv</groupId>
-			<artifactId>msv</artifactId>
-			<version>20050913</version>
-		</dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.3.1</version>
-      <scope>test</scope>
-    </dependency>
-    
-		<dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
-      <version>2.2.6</version>
-    </dependency>
-    
-		<dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-xjc</artifactId>
-      <version>2.2.6</version>
-    </dependency>
-
-		<dependency>
-      <groupId>stax</groupId>
-      <artifactId>stax</artifactId>
-      <version>1.2.0</version>
-    </dependency>
-    
-		<dependency>
-      <groupId>uk.org.mygrid.taverna.baclava</groupId>
-      <artifactId>baclava-core</artifactId>
-      <version>1.6.0.0</version>
-    </dependency>
-    
-		<dependency>
-      <groupId>uk.org.mygrid.taverna.processors</groupId>
-      <artifactId>taverna-java-processor</artifactId>
-      <version>1.6.0.0</version>
-    </dependency> -->
-		
-  </dependencies>
 
   <distributionManagement>
     <repository>

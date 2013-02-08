@@ -1,13 +1,15 @@
 package indexer;
 
 import java.io.File;
+import java.io.FileReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.SimpleAnalyzer;
-import org.apache.lucene.analysis.StopAnalyzer;
-import org.apache.lucene.analysis.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
+import org.apache.lucene.analysis.core.StopAnalyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.util.Version;
 
 /**
  *
@@ -62,9 +64,9 @@ public class AnalyzerFactory {
     try {
       if (Code.equalsIgnoreCase("STOP")) {
         if (stopfileForStop == null)
-          result = new StopAnalyzer();
+          result = new StopAnalyzer(Version.LUCENE_41);
         else 
-          result = new StopAnalyzer(stopfileForStop);
+          result = new StopAnalyzer(Version.LUCENE_41, new FileReader(stopfileForStop));
         return result;
       }
       
@@ -73,20 +75,20 @@ public class AnalyzerFactory {
         //InputStream in = this.getClass().getResourceAsStream("standardstopwords.cfg");
         
         if (stopfileForStandard == null)
-          result = new StandardAnalyzer();
+          result = new StandardAnalyzer(Version.LUCENE_41);
         else 
-          result = new StandardAnalyzer(stopfileForStandard);
+          result = new StandardAnalyzer(Version.LUCENE_41, new FileReader(stopfileForStandard));
         
         return result;
       }     
       
       if (Code.equalsIgnoreCase("WHITESPACE")) {
-        result = new WhitespaceAnalyzer();
+        result = new WhitespaceAnalyzer(Version.LUCENE_41);
         return result;  
       }
       
       if (Code.equalsIgnoreCase("SIMPLE")) {
-        result = new SimpleAnalyzer();
+        result = new SimpleAnalyzer(Version.LUCENE_41);
         return result;
       } else {
         String className = new String(Code + "Analyzer");
@@ -99,7 +101,7 @@ public class AnalyzerFactory {
         log.severe(ex.toString());
     }
     
-    return new StandardAnalyzer();
+    return new StandardAnalyzer(Version.LUCENE_41);
   }
     
 }

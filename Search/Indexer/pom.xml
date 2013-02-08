@@ -124,7 +124,6 @@
 					nl.uva.science.wsdtf.utilities.*, and 
 					nl.uva.science.wsdtf.protocols.* -->
 		</dependency>
-
   </dependencies>
 
 	<profiles>
@@ -187,7 +186,6 @@
 					the URL where the Tomcat manager servlet can be reached.
 				-->
 				<tomcat.manager.servlet>/manager</tomcat.manager.servlet>
-				
 			</properties>
 
 			<!--

@@ -2,12 +2,13 @@
 
 source ~/aida.git/System/setEnvironment.sh
 
+# Config settings, change if needed
 INDEXNAME=Zylab_test
 INDEXCONFIG=${AIDA_HOME}/System/indexconfig.xml
 TMP=~/tmp
 
-
-
+# Classpath to use if no maven is present; doesn't work with current 
+# deploy_on_Vocab branch due to lacking lib-directory, use maven instead.
 INDEXERCLASSPATH=\
 $(JARS=(\
 ${AIDA_HOME}/Search/Indexer/dist/Indexer.jar \
@@ -15,10 +16,12 @@ ${AIDA_HOME}/Search/Indexer/lib/*.jar); \
  IFS=:; \
 echo "${JARS[*]}")
 
+# Options presented to user
 PROMPT_MOVE="Move away & preserve" 
 PROMPT_PURGE="Purge" 
 PROMPT_KEEP="Keep"
 
+# Messages to inform user
 INFORM_EXISTS="Index exists"
 INFORM_NOTEXISTS="Index ${INDEXDIR}/${INDEXNAME} does not exist"
 INFORM_MOVING="Moving index — ${INDEXNAME} — to ${TMP}"
@@ -71,7 +74,13 @@ function create {
 			mv ${TMP}/${INDEXNAME} ${INDEXDIR}/${INDEXNAME}
 			echo -e ${INFORM_RELOAD_APPEAR}
 		else
-			java -cp "${INDEXERCLASSPATH}" indexer.Indexer "${INDEXCONFIG}"
+			if mvn -v > /dev/null; then
+				# Maven available use it to invoke Indexer with correct classpath etc.
+				mvn exec:java -Dexec.mainClass="indexer.Indexer" -Dexec.args="${INDEXCONFIG}"
+			else
+				# No maven; try regular java and hope classpath works.
+				java -cp "${INDEXERCLASSPATH}" indexer.Indexer "${INDEXCONFIG}"
+			fi
 			echo -e ${INFORM_RELOAD_APPEAR}
 		fi
 	else

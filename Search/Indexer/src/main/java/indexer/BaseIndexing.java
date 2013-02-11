@@ -112,6 +112,10 @@ public class BaseIndexing {
     }
   }
 
+  public File getIndexdir() {
+	  return indexWriterUtil.getIndexdir();
+  }
+
   private void assertIsDirectory(File f) {
 	if(!f.exists()) {
 		f.mkdirs();

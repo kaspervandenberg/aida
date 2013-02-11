@@ -154,7 +154,7 @@ public class Indexer {
       
       if (success) 
         return "Indexing finished, added " 
-                + BI.added + " files to " + BI.indexdir
+                + BI.added + " files to " + BI.getIndexdir().getPath()
                 + " (was unable to index " + BI.failed + " files)"
                 ;
       else 

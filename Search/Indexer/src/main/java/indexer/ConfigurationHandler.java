@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import org.apache.lucene.document.Field;
 
 
 /**
@@ -493,44 +491,6 @@ public class ConfigurationHandler {
       /* DEFAULT VALUE */
       return 10;
   }
-
-  /**
-   * Gets all defined fields for a doctype
-   *
-   * @param    Doc        Document type
-   * @return              name
-   */
-  @Deprecated
-  public String[] getFields(String Doc) {
-    
-    DocType doc; 
-    FieldType field; 
-
-    List<FieldType> fields = null;
-    List<DocType> docs = CT.getDocType();
-    
-    for(Iterator it = docs.iterator(); it.hasNext();) {
-      doc = (DocType)it.next();
-      if(doc.getFileType().equals(Doc)){
-        fields = doc.getField();
-        break;
-      }
-    }
-    
-    String[] result = new String[fields.size()+2];
-    int cnt = 2;
-    result[0] = "id";
-    result[1] = "content";
-    
-    for(Iterator it = fields.iterator(); it.hasNext();) {
-      field = (FieldType)it.next();
-      result[cnt] = field.getName();
-      cnt++;
-    }
-    
-    return result;
-
-  }
   
   /**
    * Gets the value of the GlobalAnalyzer property.
@@ -544,139 +504,6 @@ public class ConfigurationHandler {
       /* DEFAULT VALUE */
       return "STANDARD";
   }
-  
-  
-
-  /**
-   * Gets the value of the Index from Field of DocType
-   * ....repetion of code here ... not very neat
-   *
-   * @param    Doc        Document type
-   * @param    FieldName  Name of the field
-   * @return              Field.Index
-   */
-  @Deprecated
-  public Field.Index getFieldIndexValue(String Doc, String FieldName) {
-    DocType doc; FieldType field; String result=null;
-    List<FieldType> fields = null;
-    List<DocType> docs = CT.getDocType();
-    for(Iterator it = docs.iterator(); it.hasNext();) {
-      doc = (DocType)it.next();
-      if(doc.getFileType().equals(Doc)){
-        fields = doc.getField();
-        break;
-      }
-    }
-    for(Iterator it = fields.iterator(); it.hasNext();) {
-      field = (FieldType)it.next();
-      if (field.getName().equals(FieldName)) {
-        result = field.getIndex().value();
-        break;
-      }
-    }
-    if(result==null)
-      /* DEFAULT VALUE */
-      return Field.Index.TOKENIZED;
-    else
-      if(result.equalsIgnoreCase("UN_TOKENIZED"))
-        return Field.Index.UN_TOKENIZED;
-      if(result.equalsIgnoreCase("NO"))
-        return Field.Index.NO;
-      if(result.equalsIgnoreCase("NO_NORMS"))
-        return Field.Index.NO_NORMS;
-      if(result.equalsIgnoreCase("TOKENIZED"))
-        return Field.Index.TOKENIZED;
-
-      return Field.Index.TOKENIZED;
-  }
-
-  /**
-   * Gets the value of the Store from Field of DocType
-   * ....repetion of code here ... not very neat
-   *
-   * @param    Doc        Document type
-   * @param    FieldName  Name of the field
-   * @return              Field.Store
-   */
-  @Deprecated
-  public Field.Store getFieldStoreValue(String Doc, String FieldName) {
-    DocType doc; FieldType field; String result=null;
-    List<FieldType> fields = null;
-    List<DocType> docs = CT.getDocType();
-    
-    try {
-      for(Iterator it = docs.iterator(); it.hasNext();) {
-        doc = (DocType)it.next();
-        if(doc.getFileType().equals(Doc)){
-          fields = doc.getField();
-          break;
-        }
-      }
-      for(Iterator it = fields.iterator(); it.hasNext();) {
-        field = (FieldType)it.next();
-        if (field.getName().equals(FieldName)) {
-          result = field.isStore().toString();
-          break;
-        }
-      }
-      
-      if (result==null)
-        /* DEFAULT VALUE */
-        return Field.Store.YES;
-      else
-        if (result.equalsIgnoreCase("true"))
-          return Field.Store.YES;
-        else 
-          return Field.Store.NO;
-    } catch(Exception ex) {
-      System.err.println(ex.toString());
-      return Field.Store.YES;
-    }
-  }
-
-  /**
-   * Gets the value of the TermVector from Field of DocType
-   * ....repetion of code here ... not very neat
-   *
-   * @param    Doc        Document type
-   * @param    FieldName  Name of the field
-   * @return              Field.TermVector
-   */
-  @Deprecated
-  public Field.TermVector getTermVectorValue(String Doc, String FieldName) {
-    DocType doc; 
-    FieldType field; 
-    String result = null;
-    List<FieldType> fields = null;
-    List<DocType> docs = CT.getDocType();
-    
-    for(Iterator it = docs.iterator(); it.hasNext();) {
-      doc = (DocType)it.next();
-      if(doc.getFileType().equals(Doc)) {
-        fields = doc.getField();
-        break;
-      }
-    }
-    
-    for(Iterator it = fields.iterator(); it.hasNext();) {
-      field = (FieldType)it.next();
-      if (field.getName().equals(FieldName)) {
-        result = field.getTermvector().value();
-        break;
-      }
-    }
-    
-    if(result==null)
-      /* DEFAULT VALUE */
-      return Field.TermVector.NO;
-    else
-      if(result.equalsIgnoreCase("NO"))
-        return Field.TermVector.NO;
-      if(result.equalsIgnoreCase("YES"))
-        return Field.TermVector.YES;
-
-      return Field.TermVector.NO;
-}
 
   
   /**

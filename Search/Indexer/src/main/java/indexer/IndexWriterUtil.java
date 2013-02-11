@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
@@ -86,15 +87,11 @@ public class IndexWriterUtil {
 			if (log.isLoggable(Level.FINE)) {
 			  log.fine("Indexdir: " + indexdir);
 			}
+			return indexdir;
 			
-
 		} catch (IOException ex) {
 			throw new RuntimeException("IOException ", ex);
 		}
-		
-		
-		
-		throw new UnsupportedOperationException("Not yet implemented.");
 	}
 
 	public File getCacheDir() {

@@ -75,7 +75,7 @@ public class MedlineHandler extends DocHandler {
           try {
             adder.addFieldToDocument(TYPE, "content", sb.toString());
             adder.addFieldToDocument(TYPE, "path", file.getPath());
-            adder.addFieldToDocument(TYPE, "url", file.toURL().toString());
+            adder.addFieldToDocument(TYPE, "url", file.toURI().toString());
             adder.writeDocument(TYPE, writer);
             sb.delete(0, sb.capacity());
             changeS("NONE", str);

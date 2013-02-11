@@ -21,19 +21,15 @@ import org.textmining.text.extraction.WordExtractor;
  */
 public class MswordHandler extends DocHandler {
   private final String TYPE= "msword";
-  private ConfigurationHandler cfg;
-  private IndexAdder ia;
-  private List<String> fieldList;
+  private final ConfigurationHandler cfg;
+  private final IndexAdder ia;
+  private final ConfigurationHandler.FieldTypeCache fields;
   
   /** Creates a new instance of MSWordHandler */
   public MswordHandler(ConfigurationHandler cfg) {
     this.cfg = cfg;
     ia = new IndexAdder(cfg);
-    this.fieldList = new Vector<String>();
-    String[] fields = cfg.getFields(TYPE);
-    for (int x=0; x<fields.length; x++) {
-      fieldList.add(fields[x]);
-    }
+	fields = this.cfg.getFields(TYPE, true);
   }
   
   public String[] getFieldNames() {
@@ -53,12 +49,12 @@ public class MswordHandler extends DocHandler {
       
       // Add the summary as an UnIndexed field, so that it is stored and returned
       // with hit documents for display.
-      if (fieldList.contains("summary"))
+      if (fields.contains("summary"))
         ia.addFieldToDocument(TYPE, "summary", summary );
       
-      if (fieldList.contains("path"))
+      if (fields.contains("path"))
         ia.addFieldToDocument(TYPE, "path", file.getPath());
-      ia.addFieldToDocument(TYPE, "url", file.toURL().toString());
+      ia.addFieldToDocument(TYPE, "url", file.toURI().toString());
       
       ia.writeDocument(TYPE, writer);
       

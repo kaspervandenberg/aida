@@ -39,7 +39,7 @@ public class ConfigurationHandler {
 	 * 
 	 * @see ConfigurationHandler#convertToLuceneFieldType(indexer.config.FieldType) 
 	 */
-	private static class FieldTypeCache  {
+	public static class FieldTypeCache  {
 		/**
 		 * {@link DocType} to whose fields this {@code FieldTypeCache} provides 
 		 * access.
@@ -145,6 +145,27 @@ public class ConfigurationHandler {
 			} else {
 				return ConfigurationHandler.DEFAULT_FT;
 			}
+		}
+
+		/**
+		 * Check whether {@code fieldName} is one of {@link #document}'s 
+		 * configured fields.
+		 * 
+		 * <p><i>NOTE: Even when this {@code FieldTypeCache} does not contain
+		 * a field {@link #get(java.lang.String)} will succeed and return
+		 * {@link ConfigurationHandler#DEFAULT_FT}.</i></p>
+		 * 
+		 * @param fieldName	the name of the field to check.
+		 * 
+		 * @return	<ul><li> {@code true}, {@code fieldName} ∈ 
+		 * 		{@link #fieldConfig} ∪ {@link ConfigurationHandler#ALL_DEFAULT_FIELDS};
+		 * 			or</li>
+		 * 		<li>{@code false}, the named field is not among the configured 
+		 * 			fields of {@link #document}.</li></ul>
+		 */
+		public boolean contains(final String fieldName) {
+			return (fieldConfig.containsKey(fieldName) || 
+					ALL_DEFAULT_FIELDS.containsKey(fieldName));
 		}
 		
 		/**
@@ -295,6 +316,10 @@ public class ConfigurationHandler {
 		protected abstract org.apache.lucene.document.FieldType initFieldType(); 
 	}
 	
+	/**
+	 * All fieldnames ∈ {@link DefaultFields} mapped to their 
+	 * {@link org.apache.lucene.document.FieldType}.
+	 */
 	private final static Map<String, org.apache.lucene.document.FieldType> ALL_DEFAULT_FIELDS;
 	static {
 		Map<String, org.apache.lucene.document.FieldType> result =
@@ -672,7 +697,26 @@ public class ConfigurationHandler {
    * @see #convertToLuceneFieldType(indexer.config.FieldType) 
    */
   public org.apache.lucene.document.FieldType getFieldType(String doc, String field) {
-	return documentTypes.get(doc).get(field);
+	return getFields(doc, true).get(field);
+  }
+
+  /**
+   * Retrieve the configured fields for 
+   * {@link #CONFIGURATIONFILE}{@code /<DocType>[./<FileType>=={doc}]}.
+   * 
+   * @param doc	{@code <FileType>} value of the DocType whose fields to retrieve.
+   * 
+   * @param notUsed	distinguishes this method's signature from the String array 
+   * 		returning variant of {@link #getFields(java.lang.String)}.
+   * 
+   * @return <ul><li>a {@link FieldTypeCache} as configured in 
+   * 		{@link #CONFIGURATIONFILE}; or</li>
+   * 	<li>the default {@code FieldTypeCache} created with 
+   * 		{@link FieldTypeCache#createEmpty()}, when {@code fileType} is not 
+   * 		configured.</li></ul> 
+   */
+  public FieldTypeCache getFields(String doc, boolean notUsed) {
+	 return documentTypes.get(doc); 
   }
 
   /**

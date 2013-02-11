@@ -29,21 +29,14 @@ public class PdfHandler extends DocHandler {
   private final ConfigurationHandler cfg;
   private final String TYPE= "pdf";
   private final IndexAdder ia;
+  private final ConfigurationHandler.FieldTypeCache fields;
   private final char FILE_SEPARATOR = System.getProperty("file.separator").charAt(0);
-  private List<String> fieldList;
 
   /** Creates a new instance of PdfHandler */
   public PdfHandler(ConfigurationHandler cfg) {
     this.cfg = cfg;
     ia = new IndexAdder(cfg);
-    
-    this.fieldList = new Vector<String>();
-    
-
-    String[] fields = cfg.getFields(TYPE);
-    for (int x=0; x<fields.length; x++) {
-      fieldList.add(fields[x]);
-    }
+	fields = this.cfg.getFields(TYPE, true);
   }
 
   public String[] getFieldNames(){
@@ -56,11 +49,12 @@ public class PdfHandler extends DocHandler {
   public void addDocumentToIndex(IndexWriter writer, File file)  
           throws DocumentHandlerException {
     
-    if (fieldList.contains("path"))
+    if (fields.contains("path"))
       ia.addFieldToDocument(TYPE, "path", file.getPath());
     
     // standaard velden
       ia.addFieldToDocument(TYPE, "id", file.getName());
+	  // TODO Use URI analogue to MswordHandler
       ia.addFieldToDocument(TYPE, "url", file.getPath().replace(FILE_SEPARATOR, '/'));
 
     // Add the last modified date of the file a field named "modified".  Use a
@@ -126,7 +120,7 @@ public class PdfHandler extends DocHandler {
 
         PDDocumentInformation info = pdfDocument.getDocumentInformation();
         if( info.getAuthor() != null ) {
-          if (fieldList.contains("author"))
+          if (fields.contains("author"))
             ia.addFieldToDocument(TYPE, "author", info.getAuthor());
         }
 
@@ -136,17 +130,17 @@ public class PdfHandler extends DocHandler {
           //and throws a nasty RuntimeException, so we will check and
           //verify that this does not happen
           if( date.getTime() >= 0 ) {
-            if (fieldList.contains("creationDate"))
+            if (fields.contains("creationDate"))
               ia.addFieldToDocument(TYPE, "creationDate", DateTools.dateToString( date, DateTools.Resolution.DAY )) ;
           }
 
         }
 
         if( info.getCreator() != null )
-          if (fieldList.contains("creator"))
+          if (fields.contains("creator"))
             ia.addFieldToDocument(TYPE, "creator", info.getCreator());  
         if( info.getKeywords() != null )
-          if (fieldList.contains("keywords"))
+          if (fields.contains("keywords"))
             ia.addFieldToDocument(TYPE, "keywords", info.getKeywords() );
         if( info.getModificationDate() != null ) {
           Date date = info.getModificationDate().getTime();
@@ -155,25 +149,25 @@ public class PdfHandler extends DocHandler {
           //verify that this does not happen
 
           if( date.getTime() >= 0 ) {
-            if (fieldList.contains("modificationDate"))
+            if (fields.contains("modificationDate"))
               ia.addFieldToDocument(TYPE, "modificationDate", DateTools.dateToString( date, DateTools.Resolution.MINUTE));
           }
         }
 
         if ( info.getProducer() != null )                
-          if (fieldList.contains("producer"))
+          if (fields.contains("producer"))
             ia.addFieldToDocument(TYPE, "producer", info.getProducer()  );
 
         if( info.getSubject() != null )
-          if (fieldList.contains("subject"))
+          if (fields.contains("subject"))
             ia.addFieldToDocument(TYPE, "subject", info.getSubject()  );
 
         if( info.getTitle() != null )
-          if (fieldList.contains("title"))
+          if (fields.contains("title"))
             ia.addFieldToDocument(TYPE, "title", info.getTitle()  );
 
         if( info.getTrapped() != null )
-          if (fieldList.contains("trapped"))
+          if (fields.contains("trapped"))
             ia.addFieldToDocument(TYPE, "trapped", info.getTrapped() );
 
         int summarySize = Math.min( contents.length(), 1000 );
@@ -181,7 +175,7 @@ public class PdfHandler extends DocHandler {
 
         // Add the summary as an UnIndexed field, so that it is stored and returned
         // with hit documents for display.
-        if (fieldList.contains("summary"))
+        if (fields.contains("summary"))
           ia.addFieldToDocument(TYPE, "summary", summary );    
         
       } catch( CryptographyException e ) {

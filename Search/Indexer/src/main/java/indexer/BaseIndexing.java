@@ -9,15 +9,20 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.Lock;
+import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.util.Version;
 
 public class BaseIndexing {
   
   public String datadir;
-  public String indexdir;
+  public FSDirectory indexdir;
   public final File cachedir;
   private ConfigurationHandler cfg;
   private HandlerFactory hf;
-  private String BASE;
+  private File BASE;
   public int added = 0;
   public int failed = 0;
   
@@ -38,7 +43,7 @@ public class BaseIndexing {
     
     this.cfg = cfg;
     
-    BASE = Utilities.getINDEXDIR();
+    BASE = new File(Utilities.getINDEXDIR());
     hf = new HandlerFactory(cfg);
 
     if (name == null || name.length() == 0)
@@ -46,20 +51,36 @@ public class BaseIndexing {
     if (dataPath == null || dataPath.length() == 0)
       dataPath = cfg.getDataPath();
 
-    indexdir = BASE + name;
-    datadir = dataPath; 
+	try {
+	    indexdir = FSDirectory.open(new File(BASE, name));
+		
+	    datadir = dataPath; 
 
-    // test whether the index is locked
-    if (new File(indexdir, "indexlock").exists())
-      throw new RuntimeException("Index is locked.");
+		try {
+			// test whether the index is locked
+			new Lock.With(indexdir.makeLock("indexlock"), 1000) {
+			  public Object doBody() {
+				  // No code needed, just check acquiring lcok succeeds.
+				  return null;
+			  }
+			}.run();
+		} catch (LockObtainFailedException ex) {
+			throw new RuntimeException("Index is locked.", ex);
+		} catch (IOException ex) {
+			throw new RuntimeException("IO exception, Index is locked", ex);
+		}
+		
 
-    if (log.isLoggable(Level.FINE)) {
-      log.fine("Indexdir: " + indexdir);
-      log.fine("Datadir: " + datadir);
-    }
-    
-    cachedir = new File(indexdir, "cache");
-    
+		if (log.isLoggable(Level.FINE)) {
+		  log.fine("Indexdir: " + indexdir);
+		  log.fine("Datadir: " + datadir);
+		}
+		
+		cachedir = new File(indexdir.getDirectory(), "cache");
+
+	} catch (IOException ex) {
+		throw new RuntimeException("IOException ", ex);
+	}
   }
 
   /** Adds Documents to the index */
@@ -67,24 +88,24 @@ public class BaseIndexing {
 
     AnalyzerFactory af = new AnalyzerFactory(cfg);
 
-    // Switch to true if this is a fresh index
-    boolean overwrite = cfg.OverWrite();
-    if (overwrite == false) {
-      if (! new File(indexdir).exists())
-        overwrite = true;
-    }
+	IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_41, af.getGlobalAnalyzer());
+	// TODO Using defeault merge policy, check whether this is adequate
+	// below is the lucene 2.1 settings to merge policy converted to 4.1
+	// LogByteSizeMergePolicy mergePolicy = new LogByteSizeMergePolicy();
+	// mergePolicy.setUseCompoundFile(true);
+	// mergePolicy.setMergeFactor(cfg.getMergeFactor());
+	// config.setMergePolicy(mergePolicy);
+	config.setOpenMode(
+			cfg.OverWrite() ?
+				IndexWriterConfig.OpenMode.CREATE : 
+				IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+	config.setMaxBufferedDocs(cfg.getMaxBufferedDocs());
+    IndexWriter writer = new IndexWriter(indexdir, config);
 
-    IndexWriter writer = new IndexWriter(indexdir, af.getGlobalAnalyzer(), overwrite);
-    writer.setUseCompoundFile(true);
-    writer.setMergeFactor(cfg.getMergeFactor());
-    writer.setMaxBufferedDocs(cfg.getMaxBufferedDocs());
-
-    if (!cachedir.exists())
-      if (!cachedir.mkdirs()) 
-        throw new RuntimeException("Error creating cachedir " + cachedir.getAbsolutePath());
+	assertIsDirectory(cachedir);
 
     indexDocs(writer, new File(datadir));
-    writer.optimize();
+    writer.forceMerge(added);
     writer.close();    
     return true;
   }
@@ -128,6 +149,16 @@ public class BaseIndexing {
         }
       }
     }
+  }
+
+  private void assertIsDirectory(File f) {
+	if(!f.exists()) {
+		f.mkdirs();
+	}
+	
+	if((!f.exists()) || (!f.isDirectory())) {
+		throw new RuntimeException(String.format("Error creating directory %s", f.toString()));
+	}
   }
 
 }

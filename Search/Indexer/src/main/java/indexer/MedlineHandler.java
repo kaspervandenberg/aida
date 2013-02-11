@@ -91,7 +91,6 @@ public class MedlineHandler extends DocHandler {
       changeS("NONE", str);
 
       in.close();
-      writer.optimize();
 
       } catch (Exception e) {
         throw new DocumentHandlerException(e.toString());

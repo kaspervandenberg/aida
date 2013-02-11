@@ -105,7 +105,6 @@ public class BaseIndexing {
 	assertIsDirectory(cachedir);
 
     indexDocs(writer, new File(datadir));
-    writer.forceMerge(added);
     writer.close();    
     return true;
   }

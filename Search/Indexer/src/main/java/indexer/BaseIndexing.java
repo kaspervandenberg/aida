@@ -17,12 +17,12 @@ import org.apache.lucene.util.Version;
 
 public class BaseIndexing {
   
-  public String datadir;
-  public FSDirectory indexdir;
-  public final File cachedir;
+  public File datadir;
+  private IndexWriterUtil indexWriterUtil;
+//  public FSDirectory indexdir;
+//  public final File cachedir;
   private ConfigurationHandler cfg;
   private HandlerFactory hf;
-  private File BASE;
   public int added = 0;
   public int failed = 0;
   
@@ -43,68 +43,30 @@ public class BaseIndexing {
     
     this.cfg = cfg;
     
-    BASE = new File(Utilities.getINDEXDIR());
     hf = new HandlerFactory(cfg);
 
-    if (name == null || name.length() == 0)
-      name = cfg.getName();
-    if (dataPath == null || dataPath.length() == 0)
-      dataPath = cfg.getDataPath();
-
-	try {
-	    indexdir = FSDirectory.open(new File(BASE, name));
-		
-	    datadir = dataPath; 
-
-		try {
-			// test whether the index is locked
-			new Lock.With(indexdir.makeLock("indexlock"), 1000) {
-			  public Object doBody() {
-				  // No code needed, just check acquiring lcok succeeds.
-				  return null;
-			  }
-			}.run();
-		} catch (LockObtainFailedException ex) {
-			throw new RuntimeException("Index is locked.", ex);
-		} catch (IOException ex) {
-			throw new RuntimeException("IO exception, Index is locked", ex);
-		}
-		
-
+	indexWriterUtil = (name == null || name.length() == 0) ?
+			new IndexWriterUtil(cfg) :
+			new IndexWriterUtil(cfg, name);
+	
+    datadir = (dataPath == null || dataPath.length() == 0) ?
+			new File(cfg.getDataPath()) :
+			new File(dataPath);
+	
 		if (log.isLoggable(Level.FINE)) {
-		  log.fine("Indexdir: " + indexdir);
+		  log.fine("Indexdir: " + indexWriterUtil.getIndexdir());
 		  log.fine("Datadir: " + datadir);
 		}
 		
-		cachedir = new File(indexdir.getDirectory(), "cache");
-
-	} catch (IOException ex) {
-		throw new RuntimeException("IOException ", ex);
-	}
   }
 
   /** Adds Documents to the index */
   public boolean addDocuments() throws IOException{
+    IndexWriter writer = indexWriterUtil.createIndexWriter();
 
-    AnalyzerFactory af = new AnalyzerFactory(cfg);
+	assertIsDirectory(indexWriterUtil.getCacheDir());
 
-	IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_41, af.getGlobalAnalyzer());
-	// TODO Using defeault merge policy, check whether this is adequate
-	// below is the lucene 2.1 settings to merge policy converted to 4.1
-	// LogByteSizeMergePolicy mergePolicy = new LogByteSizeMergePolicy();
-	// mergePolicy.setUseCompoundFile(true);
-	// mergePolicy.setMergeFactor(cfg.getMergeFactor());
-	// config.setMergePolicy(mergePolicy);
-	config.setOpenMode(
-			cfg.OverWrite() ?
-				IndexWriterConfig.OpenMode.CREATE : 
-				IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-	config.setMaxBufferedDocs(cfg.getMaxBufferedDocs());
-    IndexWriter writer = new IndexWriter(indexdir, config);
-
-	assertIsDirectory(cachedir);
-
-    indexDocs(writer, new File(datadir));
+    indexDocs(writer, datadir);
     writer.close();    
     return true;
   }
@@ -135,7 +97,7 @@ public class BaseIndexing {
           if (dh != null) {
             try {
               dh.addDocumentToIndex(writer, file);
-              dh.copyDocumentToCache(file, new File(cachedir, file.getName()));
+              dh.copyDocumentToCache(file, new File(indexWriterUtil.getCacheDir(), file.getName()));
               added++;
             } catch (DocumentHandlerException e) {
               if (log.isLoggable(Level.SEVERE))

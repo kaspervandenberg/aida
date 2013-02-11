@@ -29,7 +29,7 @@ public class MswordHandler extends DocHandler {
   public MswordHandler(ConfigurationHandler cfg) {
     this.cfg = cfg;
     ia = new IndexAdder(cfg);
-	fields = this.cfg.getFields(TYPE, true);
+	fields = this.cfg.getFields(TYPE);
   }
   
   public String[] getFieldNames() {

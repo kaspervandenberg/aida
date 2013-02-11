@@ -524,7 +524,7 @@ public class ConfigurationHandler {
    * @see #convertToLuceneFieldType(indexer.config.FieldType) 
    */
   public org.apache.lucene.document.FieldType getFieldType(String doc, String field) {
-	return getFields(doc, true).get(field);
+	return getFields(doc).get(field);
   }
 
   /**
@@ -533,16 +533,13 @@ public class ConfigurationHandler {
    * 
    * @param doc	{@code <FileType>} value of the DocType whose fields to retrieve.
    * 
-   * @param notUsed	distinguishes this method's signature from the String array 
-   * 		returning variant of {@link #getFields(java.lang.String)}.
-   * 
    * @return <ul><li>a {@link FieldTypeCache} as configured in 
    * 		{@link #CONFIGURATIONFILE}; or</li>
    * 	<li>the default {@code FieldTypeCache} created with 
    * 		{@link FieldTypeCache#createEmpty()}, when {@code fileType} is not 
    * 		configured.</li></ul> 
    */
-  public FieldTypeCache getFields(String doc, boolean notUsed) {
+  public FieldTypeCache getFields(String doc) {
 	 return documentTypes.get(doc); 
   }
 

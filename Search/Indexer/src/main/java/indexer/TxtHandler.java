@@ -22,7 +22,7 @@ public class TxtHandler extends DocHandler {
   public TxtHandler(ConfigurationHandler config) {
     cfg = config;
     ia = new IndexAdder(cfg);
-	fields = cfg.getFields(TYPE, true);
+	fields = cfg.getFields(TYPE);
   }
   
   public String[] getFieldNames(){

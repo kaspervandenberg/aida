@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>nl.maastro.eureka.aida</groupId>
+  <artifactId>search</artifactId>
+  <version>0.72-SNAPSHOT</version>
+  <packaging>war</packaging>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<test.workingDirectory>${java.io.tmpdir}</test.workingDirectory>
+	</properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
+			</plugin>
+			
+      <plugin>
+				<!--
+					Run tests
+				-->
+        <artifactId>maven-surefire-plugin</artifactId>
+				<version>2.13</version>
+        <configuration>
+          <skip>false</skip>
+					<workingDirectory>${test.workingDirectory}</workingDirectory>
+        </configuration>
+      </plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>xmlbeans-maven-plugin</artifactId>
+				<version>2.3.3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>xmlbeans</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+  <dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<!-- provides javax.servlet -->
+			<!-- used in olg.vle.aid.client/* -->
+		</dependency>
+
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+			<!-- provides org.apache.axis. -->
+			<!-- used in org.vle.aid.client.* -->
+		</dependency>
+
+		<dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>2.1.0</version>
+			<!--
+				used in org.vle.aid.client.*, org.aid.vle.lucene.*, 
+				org.apache.lucene.aid.LuceneFilter,
+				org.apache.lucene.analysis.WhitespaceStopLowercaseAnalyzer
+			-->
+    </dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-highlighter</artifactId>
+			<version>2.1.0</version>
+			<!-- provides org.apache.lucene.search.highlight -->
+			<!-- used in org.vle.aid.lucene.tools.Snippet -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+			<version>2.5.0</version>
+			<!-- used in org.vle.aid.client.result, org.vle.aid.lucene.SearcherWS -->
+		</dependency>
+
+		<dependency>
+			<groupId>jdbm</groupId>
+			<artifactId>jdbm</artifactId>
+			<version>1.0</version>
+			<!-- provides jdbm -->
+			<!--
+				used in org.vle.aid.lucene.tools.getSpellSuggestionsWS,
+				org.vle.aid.lucene.tools.getSynonymsWS, 
+				org.vle.aid.lucene.tools.cmdLineUpdateSynonyms
+			-->
+		</dependency>
+    
+		<dependency>
+			<groupId>org.swinglabs</groupId>
+			<artifactId>pdf-renderer</artifactId>
+			<version>1.0.5</version>
+			<!-- provides com.sun.pdfview -->
+			<!-- used in src.main.java.org.vle.aid.lucene.tools.Thumbnails -->
+		</dependency>
+
+		<dependency>
+			<groupId>com.aliasi</groupId>
+			<artifactId>lingpipe</artifactId>
+			<version>2.2.0</version>
+			<!-- 
+				used in org.vle.aid.lucene.tools.getSpellSuggestionsWS,
+				org.vle.aid.lucene.tools.cmdLineCreateModel
+			-->
+		</dependency>
+  </dependencies>
+		
+	<repositories>
+		<repository>
+			<id>Kasper's Dropbox (public)</id>
+			<url>http://dl.dropbox.com/u/69100636/mvn-repository/releases</url>
+			<!-- Contains Lingpipe -->
+		</repository>
+	</repositories>
+</project>
+
+<!-- vim: set tabstop=2 shiftwidth=2 : -->

@@ -76,7 +76,10 @@ function create {
 		else
 			if mvn -v > /dev/null; then
 				# Maven available use it to invoke Indexer with correct classpath etc.
-				mvn exec:java -Dexec.mainClass="indexer.Indexer" -Dexec.args="${INDEXCONFIG}"
+				(
+					cd ${AIDA_HOME}/Search/Indexer
+					mvn exec:java -Dexec.mainClass="indexer.Indexer" -Dexec.args="${INDEXCONFIG}"
+				)
 			else
 				# No maven; try regular java and hope classpath works.
 				java -cp "${INDEXERCLASSPATH}" indexer.Indexer "${INDEXCONFIG}"

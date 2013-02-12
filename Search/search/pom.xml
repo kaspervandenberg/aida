@@ -39,87 +39,103 @@
 					<workingDirectory>${test.workingDirectory}</workingDirectory>
         </configuration>
       </plugin>
-    </plugins>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>xmlbeans-maven-plugin</artifactId>
+				<version>2.3.3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>xmlbeans</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 
   <dependencies>
-<?ignore
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 			<!-- provides javax.servlet -->
-			<!-- used in nl.uva.science.wsdtf.protocols.HTTPStreamer -->
+			<!-- used in olg.vle.aid.client/* -->
 		</dependency>
-		
-		<dependency>
-			<groupId>javax.xml.parsers</groupId>
-			<artifactId>jaxp-api</artifactId>
-			<version>1.4.5</version>
-			<!-- used in indexer.Indexer, and 
-						config.org.aid.impl.runtime.MarshallerImpl -->
-		</dependency>
-		
+
 		<dependency>
 			<groupId>axis</groupId>
 			<artifactId>axis</artifactId>
 			<version>1.4</version>
 			<!-- provides org.apache.axis. -->
-			<!-- used in Iindexer.Indexer -->
+			<!-- used in org.vle.aid.client.* -->
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.axis</groupId>
-			<artifactId>axis-jaxrpc</artifactId>
-			<version>1.4</version>
-			<!-- provides javax.xml.rpc -->
-			<!-- used in indexer.Indexer -->
-		</dependency>
-		
 		<dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
       <version>2.1.0</version>
-			<!-- used in indexer.* -->
+			<!--
+				used in org.vle.aid.client.*, org.aid.vle.lucene.*, 
+				org.apache.lucene.aid.LuceneFilter,
+				org.apache.lucene.analysis.WhitespaceStopLowercaseAnalyzer
+			-->
     </dependency>
-    
-		<dependency>
-      <groupId>pdfbox</groupId>
-      <artifactId>pdfbox</artifactId>
-			<version>0.7.3</version>
-			<!-- provides org.pdfbox -->
-			<!-- newer versions available via org.apache.pdfbox -->
-			<!-- perhaps replace it for Tika -->
-			<!-- used in indexer.PdfHandler, and indexer.DocConverter -->
-    </dependency>
-    
-		<dependency>
-      <groupId>org.textmining</groupId>
-      <artifactId>tm-extractors</artifactId>
-      <version>0.4</version>
-			<!-- used in indexer.MswordHandler -->
-    </dependency>
-    
-		<dependency> 
-      <groupId>org.dspace</groupId>
-      <artifactId>jargon</artifactId>
-      <version>1.4.25</version>
-			<!-- provides edu.sdsc.grid.io.{srb,local} -->
-			<!-- used in indexer.SRBhandler -->
-    </dependency>
-    
-		<dependency>
-			<groupId>org.jglobus</groupId>
-			<artifactId>JGlobus-Core</artifactId>
-			<version>2.0.4</version>
-			<!-- provides org.globus -->
-			<!-- used in nl.uva.science.wsdtf.StreamClient, 
-					nl.uva.science.wsdtf.utilities.*, and 
-					nl.uva.science.wsdtf.protocols.* -->
-		</dependency>
-?>
-  </dependencies>
 
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-highlighter</artifactId>
+			<version>2.1.0</version>
+			<!-- provides org.apache.lucene.search.highlight -->
+			<!-- used in org.vle.aid.lucene.tools.Snippet -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.xmlbeans</groupId>
+			<artifactId>xmlbeans</artifactId>
+			<version>2.5.0</version>
+			<!-- used in org.vle.aid.client.result, org.vle.aid.lucene.SearcherWS -->
+		</dependency>
+
+		<dependency>
+			<groupId>jdbm</groupId>
+			<artifactId>jdbm</artifactId>
+			<version>1.0</version>
+			<!-- provides jdbm -->
+			<!--
+				used in org.vle.aid.lucene.tools.getSpellSuggestionsWS,
+				org.vle.aid.lucene.tools.getSynonymsWS, 
+				org.vle.aid.lucene.tools.cmdLineUpdateSynonyms
+			-->
+		</dependency>
+    
+		<dependency>
+			<groupId>org.swinglabs</groupId>
+			<artifactId>pdf-renderer</artifactId>
+			<version>1.0.5</version>
+			<!-- provides com.sun.pdfview -->
+			<!-- used in src.main.java.org.vle.aid.lucene.tools.Thumbnails -->
+		</dependency>
+
+		<dependency>
+			<groupId>com.aliasi</groupId>
+			<artifactId>lingpipe</artifactId>
+			<version>2.2.0</version>
+			<!-- 
+				used in org.vle.aid.lucene.tools.getSpellSuggestionsWS,
+				org.vle.aid.lucene.tools.cmdLineCreateModel
+			-->
+		</dependency>
+  </dependencies>
+		
+	<repositories>
+		<repository>
+			<id>Kasper's Dropbox (public)</id>
+			<url>http://dl.dropbox.com/u/69100636/mvn-repository/releases</url>
+			<!-- Contains Lingpipe -->
+		</repository>
+	</repositories>
 </project>
 
 <!-- vim: set tabstop=2 shiftwidth=2 : -->

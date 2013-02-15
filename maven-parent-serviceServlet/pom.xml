@@ -1,0 +1,66 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.adaptivedisclosure.aida</groupId>
+	<artifactId>maven-parent-serviceServlet</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<name>AIDA parent of services and servlets</name>
+	<description>
+		Common entries for AIDA combined AXIS services and tomcat servlets.
+	</description>
+	<packaging>pom</packaging>
+    
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<test.workingDirectory>${java.io.tmpdir}</test.workingDirectory>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>Kasper's Dropbox (public)</id>
+			<url>http://dl.dropbox.com/u/69100636/mvn-repository/releases</url>
+			<!-- Contains Lingpipe -->
+		</repository>
+	</repositories>
+
+	<build>
+		<plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
+			</plugin>
+
+			<plugin>
+				<!--
+					Run tests
+				-->
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.13</version>
+				<configuration>
+					<skip>false</skip>
+					<workingDirectory>${test.workingDirectory}</workingDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>xmlbeans-maven-plugin</artifactId>
+					<version>2.3.3</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>
+<!-- vim: set shiftwidth=2 tabstop=2 : -->

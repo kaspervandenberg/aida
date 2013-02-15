@@ -4,6 +4,7 @@
   <groupId>org.adaptivedisclosure.aida</groupId>
   <artifactId>indexer</artifactId>
   <version>0.72-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>

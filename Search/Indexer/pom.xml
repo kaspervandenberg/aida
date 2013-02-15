@@ -101,25 +101,6 @@
 					nl.uva.science.wsdtf.protocols.* -->
 		</dependency>
   </dependencies>
-
-	<profiles>
-		<!--
-			Installs Indexer webservices into the AXIS installation on
-			vocab.maastro.nl
-			activate with: $ mvn -P deploy_on_Vocab -Dvocab.tomcat.admin.user={…} -Dvocab.tomcat.admin.password={…} install
-		-->
-		<profile>
-			<id>deploy_on_Vocab</id>
-
-			<!--
-				Extra goals to achieve when 'install'ing on the vocab server.
-			-->
-			<build>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
 </project>
 
 <!-- vim: set tabstop=2 shiftwidth=2 : -->

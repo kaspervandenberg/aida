@@ -8,12 +8,10 @@
 
 package org.vle.aid.client;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import javax.servlet.ServletException;
 import javax.xml.rpc.ServiceException;
 
-import java.io.PrintWriter;
 import java.io.*;
 import java.util.logging.Logger;
 
@@ -24,7 +22,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 
 /**
  *
@@ -109,7 +110,8 @@ public final class searchClient extends HttpServlet {
             
             File indexDir = new File("/scratch/emeij/indexes/");
             File listIndexes[] = indexDir.listFiles();
-            reader = IndexReader.open("/scratch/emeij/indexes/" + "baseline");
+			Directory baselineIndex = FSDirectory.open(new File("/scratch/emeij/indexes/" + "baseline"));
+            reader = DirectoryReader.open(baselineIndex);
             
             response.setContentType("text/html;charset=UTF-8");
 

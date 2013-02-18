@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.adaptivedisclosure.aida</groupId>
   <artifactId>search</artifactId>
-  <version>0.73-SNAPSHOT</version>
+  <version>0.74-SNAPSHOT</version>
   <packaging>war</packaging>
 	
 	<parent>
@@ -50,7 +50,7 @@
 		<dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
-      <version>2.1.0</version>
+      <version>4.1.0</version>
 			<!--
 				used in org.vle.aid.client.*, org.aid.vle.lucene.*, 
 				org.apache.lucene.aid.LuceneFilter,
@@ -61,10 +61,19 @@
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-highlighter</artifactId>
-			<version>2.1.0</version>
+			<version>4.1.0</version>
 			<!-- provides org.apache.lucene.search.highlight -->
 			<!-- used in org.vle.aid.lucene.tools.Snippet -->
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queries</artifactId>
+			<version>4.1.0</version>
+			<!-- Provides additional org.apache.lucene.search.filters -->
+			<!-- used in org.apache.lucene.aid.LuceneFilter -->
+		</dependency>
+			
 
 		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>

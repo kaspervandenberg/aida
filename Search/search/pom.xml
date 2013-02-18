@@ -53,8 +53,7 @@
       <version>4.1.0</version>
 			<!--
 				used in org.vle.aid.client.*, org.aid.vle.lucene.*, 
-				org.apache.lucene.aid.LuceneFilter,
-				org.apache.lucene.analysis.WhitespaceStopLowercaseAnalyzer
+				org.apache.lucene.aid.LuceneFilter
 			-->
     </dependency>
 

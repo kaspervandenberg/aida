@@ -129,11 +129,8 @@ public final class searchClient extends HttpServlet {
                     "Choose an index" + 
                     "</option>");
             for (int k = 0; k < listIndexes.length; ++k) {
-
-                // TODO: static boolean indexExists(Directory directory)
-                // Returns true if an index exists at the specified directory.
-                if (listIndexes[k].isDirectory()) {
-                
+				Directory dir = FSDirectory.open(listIndexes[k]);
+                if (DirectoryReader.indexExists(dir)) {
                     if (index == null || !index.equals(listIndexes[k].getName())) {
                         out.println("<option>" + listIndexes[k].getName() + "</option>");
                     } else {

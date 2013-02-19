@@ -15,6 +15,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Terms;
+import org.apache.lucene.sandbox.queries.regex.JakartaRegexpCapabilities;
 import org.apache.lucene.sandbox.queries.regex.JavaUtilRegexCapabilities;
 import org.apache.lucene.sandbox.queries.regex.RegexTermsEnum;
 import org.apache.lucene.store.Directory;
@@ -80,7 +81,7 @@ public class termFinderWS {
 		RegexTermsEnum termsWithPrefix = new RegexTermsEnum(
 				terms.iterator(null),
 				new Term(field, String.format("%s.*", prefix)),
-				new JavaUtilRegexCapabilities()); 
+				new JakartaRegexpCapabilities()); 
 
 		int n = 0;
 		while (termsWithPrefix.next() != null) {

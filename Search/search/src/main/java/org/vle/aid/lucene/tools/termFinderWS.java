@@ -5,12 +5,22 @@
 
 package org.vle.aid.lucene.tools;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.Fields;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.sandbox.queries.regex.JakartaRegexpCapabilities;
+import org.apache.lucene.sandbox.queries.regex.JavaUtilRegexCapabilities;
+import org.apache.lucene.sandbox.queries.regex.RegexTermsEnum;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.BytesRef;
 
 /**
  *
@@ -23,6 +33,8 @@ public class termFinderWS {
     private int defaultCount = 10;
     private int maxCount = 100;
     
+	private static final int MAX_DOCS = 1000;
+
     /** logger for Commons logging. */
     private transient Logger log =
 	 Logger.getLogger(termFinderWS.class.getName());
@@ -51,7 +63,7 @@ public class termFinderWS {
         result = new String[intCount][];
         
         log.fine("Checking for env. var. INDEXDIR");
-        String indexLocation = System.getenv("INDEXDIR");
+        File indexLocation = new File(System.getenv("INDEXDIR"));
         
         if (indexLocation == null) {
             log.severe("***INDEXDIR not found!!!***");
@@ -60,29 +72,31 @@ public class termFinderWS {
             log.fine("Found INDEXDIR: " + indexLocation);
         }        
         
-        reader = IndexReader.open(indexLocation + System.getProperty("file.separator") + index);
-        TermEnum enumerator = reader.terms(new Term(field, prefix));
-        
-        try {
-            String prefixText = prefix;
-            String prefixField = field;
-            int n = 0;
-            do {
-                Term term = enumerator.term();
-                if (term != null && term.text().startsWith(prefix) && n<intCount) {
-                    result[n] = new String[3];
-                    result[n][0] = term.text();
-                    result[n][1] = term.field();
-                    result[n][2] = Integer.toString(enumerator.docFreq());
-                    n++;
-                } else {
-                    break;
-                }
-            } while (enumerator.next());
-        } finally {
-          enumerator.close();
-        }
-    
+		
+		Directory luceneIndexDir = FSDirectory.open(new File(indexLocation, index));
+        reader = DirectoryReader.open(luceneIndexDir);
+		
+		Fields fields = MultiFields.getFields(reader);
+		Terms terms = fields.terms(field);
+		RegexTermsEnum termsWithPrefix = new RegexTermsEnum(
+				terms.iterator(null),
+				new Term(field, String.format("%s.*", prefix)),
+				new JakartaRegexpCapabilities()); 
+
+		int n = 0;
+		while (termsWithPrefix.next() != null) {
+			BytesRef term = termsWithPrefix.term();
+			if (term != null && term.utf8ToString().startsWith(prefix) && n<intCount) {
+				result[n] = new String[3];
+				result[n][0] = term.utf8ToString();
+				result[n][1] = field;
+				result[n][2] = Integer.toString(termsWithPrefix.docFreq());
+				n++;
+			} else {
+				break;
+			}
+		}
+			
         return result;
     }
 }

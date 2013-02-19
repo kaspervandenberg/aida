@@ -23,7 +23,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 
 /**
  *
@@ -159,7 +161,8 @@ public final class synonymClient extends HttpServlet {
                     "> Choose an index" + "</option>");
             
             for (int k = 0; k < listIndexes.length; ++k) {
-                if (IndexReader.indexExists(listIndexes[k])) {
+				Directory dir = FSDirectory.open(listIndexes[k]);
+                if (DirectoryReader.indexExists(dir)) {
                     if (index == null || !index.equals(listIndexes[k].getName())) {
                         writer.println("      <option id=index\""+k+"\"><label for=\"index" + k + "\">" + listIndexes[k].getName() + "</label></option>");
                     } else {

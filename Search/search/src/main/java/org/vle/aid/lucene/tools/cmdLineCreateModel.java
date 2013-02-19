@@ -27,6 +27,11 @@ import java.io.File;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 
 /**
  *
@@ -49,106 +54,115 @@ public class cmdLineCreateModel {
     System.out.println("Started: " + start.toString());
 
     File LUCENE_INDEX = new File(args[0]);
-    if (LUCENE_INDEX == null || !LUCENE_INDEX.exists() || !LUCENE_INDEX.canRead() || !reader.indexExists(LUCENE_INDEX)) {
-      throw new IllegalArgumentException("can't read index dir " + LUCENE_INDEX);
-    }
-
-    String field = args[1];
-
-    File MODEL_FILE_DIR = new File(LUCENE_INDEX.toString() +
-            System.getProperty("file.separator") +
-            "spellCheck");
-
-    // true if created
-    if (MODEL_FILE_DIR.mkdir()) {
-      System.out.println(MODEL_FILE_DIR.toString() + " succesfully created");
-    } else {
-      System.out.println(MODEL_FILE_DIR.toString() + " exists");
-    }
-
-    File MODEL_FILE = new File(MODEL_FILE_DIR.toString().concat(System.getProperty("file.separator") + "SpellCheck.model"));
+	if (LUCENE_INDEX == null || !LUCENE_INDEX.exists() || !LUCENE_INDEX.canRead()) {
+		throw new IllegalArgumentException("can't read index dir " + LUCENE_INDEX);
+	}
+	try {
+		Directory luceneIndexDir = FSDirectory.open(LUCENE_INDEX);
+    	if (!DirectoryReader.indexExists(luceneIndexDir)) {
+      		throw new IllegalArgumentException("can't read index dir " + LUCENE_INDEX);
+	    }
 
 
-    // chekc if modelfile exists. if so, read LM form that file to construct a new NGramProcessLM 
-    // Not possible
+		String field = args[1];
 
-    try {
-      reader = IndexReader.open(LUCENE_INDEX);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+		File MODEL_FILE_DIR = new File(LUCENE_INDEX, "spellCheck");
 
-    System.out.println("     CONFIGURATION:");
-    System.out.println("     Model File: " + MODEL_FILE);
-    System.out.println("     N-gram Length: " + NGRAM_LENGTH);
+		// true if created
+		if (MODEL_FILE_DIR.mkdir()) {
+		  System.out.println(MODEL_FILE_DIR.toString() + " succesfully created");
+		} else {
+		  System.out.println(MODEL_FILE_DIR.toString() + " exists");
+		}
 
-    FixedWeightEditDistance fixedEdit =
-            new FixedWeightEditDistance(MATCH_WEIGHT,
-            DELETE_WEIGHT,
-            INSERT_WEIGHT,
-            SUBSTITUTE_WEIGHT,
-            TRANSPOSE_WEIGHT);
+		File MODEL_FILE = new File(MODEL_FILE_DIR, "SpellCheck.model");
 
-    NGramProcessLM lm = new NGramProcessLM(NGRAM_LENGTH);
-    TokenizerFactory tokenizerFactory = new IndoEuropeanTokenizerFactory();
-    TrainSpellChecker sc = new TrainSpellChecker(lm, fixedEdit, tokenizerFactory);
 
-    try {
+		// chekc if modelfile exists. if so, read LM form that file to construct a new NGramProcessLM 
+		// Not possible
 
-      System.out.println("Started creating Language Model for: " + LUCENE_INDEX);
-      System.out.println("Writing model to file=" + MODEL_FILE);
+		try {
+		  reader = DirectoryReader.open(luceneIndexDir);
+		} catch (IOException e) {
+		  e.printStackTrace();
+		}
 
-      //for (int i = 0; i < reader.numDocs(); i++) {
-      // For speed's sake:
-      for (int i = 0; i < 50000; i++) {
+		System.out.println("     CONFIGURATION:");
+		System.out.println("     Model File: " + MODEL_FILE);
+		System.out.println("     N-gram Length: " + NGRAM_LENGTH);
 
-        if (i % 5 == 0) {
-          System.out.println("currently: " + i + " of 50000");
-        }
-        //System.out.println("currently: " + i + " of " + reader.numDocs());
+		FixedWeightEditDistance fixedEdit =
+				new FixedWeightEditDistance(MATCH_WEIGHT,
+				DELETE_WEIGHT,
+				INSERT_WEIGHT,
+				SUBSTITUTE_WEIGHT,
+				TRANSPOSE_WEIGHT);
 
-        // Sanity check
-        if (!reader.isDeleted(i)) {
+		NGramProcessLM lm = new NGramProcessLM(NGRAM_LENGTH);
+		TokenizerFactory tokenizerFactory = new IndoEuropeanTokenizerFactory();
+		TrainSpellChecker sc = new TrainSpellChecker(lm, fixedEdit, tokenizerFactory);
 
-          Document doc = reader.document(i);
-          List<Field> fields = doc.getFields();
+		try {
 
-          for (Iterator<Field> it = fields.iterator(); it.hasNext();) {
-            Field f = it.next();
+		  System.out.println("Started creating Language Model for: " + LUCENE_INDEX);
+		  System.out.println("Writing model to file=" + MODEL_FILE);
 
-            String field_name = f.name();
-            String field_value = f.stringValue();
+		  //for (int i = 0; i < reader.numDocs(); i++) {
+		  // For speed's sake:
+		  for (int i = 0; i < 50000; i++) {
 
-            // skip empty names or values. should never happen. 
-            if (field_name == null) {
-              continue;
-            }
-            if (field_value == null) {
-              continue;
-            }
-            if (field_name.equals("")) {
-              continue;
-            }
-            if (field_value.equals("")) {
-              continue;
-            }
-            if (!field_name.equalsIgnoreCase(field)) {
-              continue;
-            }
+			if (i % 5 == 0) {
+			  System.out.println("currently: " + i + " of 50000");
+			}
+			//System.out.println("currently: " + i + " of " + reader.numDocs());
 
-            sc.train(field_value);
-            sc.pruneTokens(2);
-            sc.pruneLM(2);
-          }
-        }
-      }
+			// Sanity check
+			org.apache.lucene.util.Bits liveDocs = MultiFields.getLiveDocs(reader);
+			if (liveDocs.get(i)) {
 
-      writeModel(sc, MODEL_FILE);
-      reader.close();
+			  Document doc = reader.document(i);
+			  List<IndexableField> fields = doc.getFields();
 
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+			  for (Iterator<IndexableField> it = fields.iterator(); it.hasNext();) {
+				IndexableField f = it.next();
+
+				String field_name = f.name();
+				String field_value = f.stringValue();
+
+				// skip empty names or values. should never happen. 
+				if (field_name == null) {
+				  continue;
+				}
+				if (field_value == null) {
+				  continue;
+				}
+				if (field_name.equals("")) {
+				  continue;
+				}
+				if (field_value.equals("")) {
+				  continue;
+				}
+				if (!field_name.equalsIgnoreCase(field)) {
+				  continue;
+				}
+
+				sc.train(field_value);
+				sc.pruneTokens(2);
+				sc.pruneLM(2);
+			  }
+			}
+		  }
+
+		  writeModel(sc, MODEL_FILE);
+		  reader.close();
+
+		} catch (IOException e) {
+		  e.printStackTrace();
+		}
+		
+	} catch (IOException ex) {
+		throw new RuntimeException(String.format("Error when opening %s", LUCENE_INDEX), ex);
+	}
     Date end = new Date();
     System.out.print((end.getTime() - start.getTime()) / 1000);
     System.out.println(" seconds.");

@@ -6,9 +6,9 @@ package org.apache.lucene.aid;
  *
  */
 
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.Term;
 import java.io.IOException;
 import java.io.File;
@@ -16,47 +16,63 @@ import java.io.FileReader;
 import java.io.LineNumberReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.Vector;
-import java.util.BitSet;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.lucene.queries.TermsFilter;
+import org.apache.lucene.util.Bits;
 
 /**
  * Class to store and load Lucene filters, which can be used to filter search results. 
  * 
+ * @deprecated
+ * Wrapper arround Lucene's {@link TermsFilter}; prefer using {@code TermsFilter}
+ * directely.
+ * 
  * @author Edgar Meij
+ * @author Kasper van den Berg
  */
+@Deprecated
 public class LuceneFilter extends Filter {
 	
 	static final long serialVersionUID = 0122334;
     
     private String[] IDs;
     private String field;
+
+	private TermsFilter wrapped;
     
     /** Creates a new instance of LuceneFilter */
     public LuceneFilter(String[] IDs, String field) {
         this.IDs = IDs;
         this.field = field;
+		this.wrapped = buildTermsFilter(this.IDs, this.field);
     }
     
     /** Creates a new instance of LuceneFilter, using default field "id" */
     public LuceneFilter(String[] IDs) {
-        this.IDs = IDs;
-        this.field = "id";
+		this(IDs, "id");
     }
 
     /** Creates a new empty instance of LuceneFilter */
     public LuceneFilter() {
-        this.IDs = null;
-        this.field = "id";
+		this(null, "id");
     }    
+    
+	@Override
+	public DocIdSet getDocIdSet(AtomicReaderContext context, Bits acceptDocs) throws IOException {
+		return this.wrapped.getDocIdSet(context, acceptDocs);
+	}
     
     /** Sets new IDs to the filter **/
     public void setField(String field) {
         this.field = field;
+		this.wrapped = buildTermsFilter(this.IDs, this.field);
     }        
     
     /** Sets new IDs to the filter **/
     public void setFilter(String[] IDs) {
         this.IDs = IDs;
+		this.wrapped = buildTermsFilter(this.IDs, this.field);
     }    
     
     /** Gets IDs of the filter **/
@@ -114,7 +130,7 @@ public class LuceneFilter extends Filter {
         
         FileReader freader = null;
         LineNumberReader lnr = null;     
-        Vector<String> idList = new Vector<String>();
+        List<String> idList = new ArrayList<String>();
                 
         try {
             freader = new FileReader(fileName);
@@ -135,38 +151,25 @@ public class LuceneFilter extends Filter {
                 freader.close();
         }
         
-        this.setFilter( (String[]) idList.toArray(new String[0]));
+        this.setFilter( idList.toArray(new String[0]));
     }    
     
-    public BitSet bits(IndexReader reader) throws IOException {
-        
-        BitSet bits = new BitSet(reader.maxDoc());
-        String[] IDs = this.IDs;
-        int[] docs = new int[1];
-        int[] freqs = new int[1];
-        
-        if (IDs != null) {
-            for (int i=0; i<IDs.length; i++) {
-                String ID = IDs[i];
-
-                if (ID != null) {
-                    TermDocs termDocs = 
-                        reader.termDocs(new Term(field, ID));
-
-                    int count = termDocs.read(docs, freqs);
-                    if (count == 1) {
-                        bits.set(docs[0]);
-                    }
-
-                }
-            }
-        } else {
-            bits.set(0,reader.maxDoc());
-        }
-        
-        return bits;
-        
-    }
+	/**
+	 * Create a {@link TermsFilter} that matches any {@code field}–{@code v}-term
+	 * foreach {@code v} ∈ {@code values[]}.
+	 * 
+	 * @param values array of 'text of word' as used in {@link Term#Term(String, String) }
+	 * @param field name of a Field as used in {@link Term#Term(String, String) }. 
+	 * 
+	 * @return	a {@link TermsFilter} that matches any value ∈ {@code values[]}
+	 */
+	private static TermsFilter buildTermsFilter(String values[], String field) {
+		List<Term> terms = new ArrayList<Term>(values.length);
+		for (String id : values) {
+			terms.add(new Term(field, id));
+		}
+		return new TermsFilter(terms);
+	}
     
     public static void main (String[] args) {
         
@@ -184,5 +187,5 @@ public class LuceneFilter extends Filter {
         
         
     }
-    
+
 }

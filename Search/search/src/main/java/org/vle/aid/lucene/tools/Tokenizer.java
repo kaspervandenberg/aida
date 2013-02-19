@@ -7,19 +7,20 @@ package org.vle.aid.lucene.tools;
 
 import java.util.*;
 import java.io.*;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Query;
 
-import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.util.Version;
 
 public class Tokenizer {
   
   public static String[] queryToArray(String in) {
     
     HashSet<String> terms = new HashSet<String>();
-    QueryParser qp = new QueryParser("field", new KeywordAnalyzer());
+    QueryParser qp = new QueryParser(Version.LUCENE_41, "field", new KeywordAnalyzer());
     
     try {
       //Query q = qp.parse(QueryParser.escape(in));

@@ -12,12 +12,12 @@ package org.vle.aid.lucene;
 
 
 import org.apache.lucene.index.*;
-import org.apache.lucene.index.IndexReader.FieldOption;
 import java.util.*;
 import java.io.*;
-import java.util.Iterator;
 import java.util.logging.Logger;
 import java.io.IOException;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 
 /**
  *
@@ -100,23 +100,24 @@ public class getFields {
 		IndexReader reader = null;
 		
 		try {
-			reader = IndexReader.open(indexLocation);	
+			Directory indexDir = FSDirectory.open(new File(indexLocation));
+			reader = DirectoryReader.open(indexDir);	
 			// No 1.5 on Mac os x...
 			// Collection <String> fieldsCollection = reader.getFieldNames();
-			Collection fieldsCollection = reader.getFieldNames(FieldOption.ALL);
+			FieldInfos fieldInfos = MultiFields.getMergedFieldInfos(reader);	
+			
 			numDocs = reader.numDocs();
 			reader.close();
 			
 			log.fine("Index " + indexLocation + 
-					" has got " + fieldsCollection.size() + " fields");
+					" has got " + fieldInfos.size() + " fields");
 			
 			// Iterate over found fields
-			java.util.Iterator it = fieldsCollection.iterator();
+			java.util.Iterator<FieldInfo> it = fieldInfos.iterator();
 			
 			while (it.hasNext()) {
-				String fld = (String)it.next();
-				if (!fld.equalsIgnoreCase("")) 
-                                  fields.add(fld);
+				FieldInfo fld = it.next();
+				fields.add(fld.name);
 			}
 			
         } catch (ArrayIndexOutOfBoundsException aoe) {

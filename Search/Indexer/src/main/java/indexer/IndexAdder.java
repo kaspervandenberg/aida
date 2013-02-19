@@ -41,18 +41,7 @@ public class IndexAdder {
    * @todo Find quicker way of accessing configuration options
    */          
   public void addFieldToDocument(String DocumentType, String name, String value) {
-    
-    // Check the defined fields in the config file
-    String[] fields = cfg.getFields(DocumentType);
-    
-    for (int x=0; x<fields.length; x++) {
-      if (fields[x].equalsIgnoreCase(name)){
-        Field.Store store = cfg.getFieldStoreValue(DocumentType, name);
-        Field.Index index = cfg.getFieldIndexValue(DocumentType, name);
-        Field.TermVector tv = cfg.getTermVectorValue(DocumentType, name);      
-        doc.add(new Field(name, value, store, index, tv));
-      }
-    }
+	  doc.add(new Field(name, value, cfg.getFieldType(DocumentType, name)));
   }
   
   /**

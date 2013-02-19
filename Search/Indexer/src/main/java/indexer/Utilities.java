@@ -14,7 +14,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.FSDirectory;
 
 /**
  *
@@ -108,7 +110,7 @@ public class Utilities {
     int cnt = 0;
     
     try {
-      IndexReader r = IndexReader.open(index);
+	  DirectoryReader r = DirectoryReader.open(FSDirectory.open(new File(index)));
       cnt = r.numDocs();
       r.close();
     } catch (IOException e) {

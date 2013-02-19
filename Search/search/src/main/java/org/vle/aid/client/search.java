@@ -22,14 +22,16 @@ import org.apache.axis.client.Service;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.analysis.WordlistLoader;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.analysis.util.WordlistLoader;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 
 //import java.util.HashMap;
 import java.util.Enumeration;
 import java.util.logging.Logger;
+import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.util.Version;
 
 /**
  *
@@ -262,22 +264,20 @@ public class search extends HttpServlet {
                     if (stopwordsFile == null || !stopwordsFile.exists() || !stopwordsFile.canRead()) {
                         // throw new IllegalArgumentException("can't read stopword file " + stopwords);
                         log.info("Can't read default stopwords file: " + stopwordsFile.toString());
-                        analyzer = new StandardAnalyzer();
+                        analyzer = new StandardAnalyzer(Version.LUCENE_41);
                     } else {
                         // No 1.5 on Mac os x...
                         // HashSet <String> stopSet = new HashSet <String> ();
-                        HashSet stopSet = new HashSet();
-                        stopSet = WordlistLoader.getWordSet(stopwordsFile);
+						CharArraySet stopSet = new CharArraySet(Version.LUCENE_41, 100, true);
+                        stopSet = WordlistLoader.getWordSet(
+								new FileReader(stopwordsFile), Version.LUCENE_41);
 
-                        String[] stopwords = new String[stopSet.size()];
-                        stopSet.toArray(stopwords);
-
-                        analyzer = new StandardAnalyzer(stopwords);                                       
+                        analyzer = new StandardAnalyzer(Version.LUCENE_41, stopSet);                                       
                     }
 
                     // TODO: get analzer from index-configfile
                     MultiFieldQueryParser mfqParser = 
-                            new MultiFieldQueryParser(selectedFields, analyzer);
+                            new MultiFieldQueryParser(Version.LUCENE_41, selectedFields, analyzer);
 
                     if (operator.equalsIgnoreCase("or"))
                         mfqParser.setDefaultOperator(MultiFieldQueryParser.OR_OPERATOR);

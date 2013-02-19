@@ -18,6 +18,8 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.logging.Logger;
 import java.io.IOException;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 
 /**
  *
@@ -93,7 +95,8 @@ public class getDocLength {
             double sd = 0;
 		
             try {
-                reader = IndexReader.open(indexLocation);
+				Directory indexDir = FSDirectory.open(new File(indexLocation));
+                reader = DirectoryReader.open(indexDir);
                 numDocs = reader.numDocs();
                 
                 for (int i=0; i<numDocs; i++) {

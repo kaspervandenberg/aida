@@ -28,6 +28,11 @@ import java.text.StringCharacterIterator;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 
 /**
  *
@@ -76,20 +81,25 @@ public class getSynonymsWS {
       log.fine("Found INDEXDIR: " + indexLocation);
     }
 
-    if (!reader.indexExists(location)) {
-      log.severe("No index: " + location.toString());
-      return false;
-    } else {
-      log.fine("Index found: " + location.toString());
-      try {
-        reader = IndexReader.open(location);
-      } catch (IOException e) {
-        log.severe(e.toString());
-        return false;
-      }
+	try {
+		Directory luceneIndexDir = FSDirectory.open(location);
+    	if (!DirectoryReader.indexExists(luceneIndexDir)) {
+		  log.severe("No index: " + location.toString());
+		  return false;
+		} else {
+		  log.fine("Index found: " + location.toString());
+		  try {
+			reader = DirectoryReader.open(luceneIndexDir);
+		  } catch (IOException e) {
+			log.severe(e.toString());
+			return false;
+		  }
 
-      return true;
-    }
+		  return true;
+		}
+	} catch (IOException ex) {
+		throw new RuntimeException(String.format("Error when opening %s", location), ex);
+	}
   }
 
   /**
@@ -188,15 +198,16 @@ public class getSynonymsWS {
     for (int i = 0; i < reader.numDocs(); i++) {
       // for (int i = 0; i < 10000; i++) {
       // Sanity check
-      if (!reader.isDeleted(i)) {
+	  org.apache.lucene.util.Bits liveDocs = MultiFields.getLiveDocs(reader);
+	  if (liveDocs.get(i)) {
         String done = (String) Lucenehashtable.get(String.valueOf(i));
 
         if (done == null) {
           Document doc = reader.document(i);
-          List<Field> fields = doc.getFields();
+          List<IndexableField> fields = doc.getFields();
 
-          for (Iterator<Field> it = fields.iterator(); it.hasNext();) {
-            Field f = it.next();
+          for (Iterator<IndexableField> it = fields.iterator(); it.hasNext();) {
+            IndexableField f = it.next();
 
             String field_name = f.name();
             String field_value = f.stringValue();

@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.adaptivedisclosure.aida</groupId>
   <artifactId>search</artifactId>
-  <version>0.73-SNAPSHOT</version>
-	<packaging>jar</packaging>
+  <version>0.75-SNAPSHOT</version>
+  <packaging>war</packaging>
 	
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
@@ -13,8 +13,8 @@
 		<relativePath>../../maven-parent-serviceServlet</relativePath>
 	</parent>
 
-  <build>
-    <plugins>
+	<build>
+		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>xmlbeans-maven-plugin</artifactId>
@@ -30,7 +30,7 @@
 		</plugins>
 	</build>
 
-  <dependencies>
+	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -48,22 +48,43 @@
 		</dependency>
 
 		<dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <version>2.1.0</version>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>4.1.0</version>
 			<!--
 				used in org.vle.aid.client.*, org.aid.vle.lucene.*, 
-				org.apache.lucene.aid.LuceneFilter,
-				org.apache.lucene.analysis.WhitespaceStopLowercaseAnalyzer
+				org.apache.lucene.aid.LuceneFilter
 			-->
-    </dependency>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-highlighter</artifactId>
-			<version>2.1.0</version>
+			<version>4.1.0</version>
 			<!-- provides org.apache.lucene.search.highlight -->
 			<!-- used in org.vle.aid.lucene.tools.Snippet -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queries</artifactId>
+			<version>4.1.0</version>
+			<!-- Provides additional org.apache.lucene.search.filters -->
+			<!-- used in org.apache.lucene.aid.LuceneFilter -->
+		</dependency>
+			
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>4.1.0</version>
+			<!-- used in org.vcle.aid.client.search -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>4.1.0</version>
+			<!-- used in org.vcle.aid.client.search -->
 		</dependency>
 
 		<dependency>
@@ -102,7 +123,8 @@
 				org.vle.aid.lucene.tools.cmdLineCreateModel
 			-->
 		</dependency>
-  </dependencies>
+	</dependencies>
 </project>
 
 <!-- vim: set tabstop=2 shiftwidth=2 : -->
+

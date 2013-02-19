@@ -11,13 +11,15 @@ package org.vle.aid.lucene.tools;
 
 import java.io.*;
 
+import java.util.logging.Level;
 import org.apache.lucene.analysis.standard.*;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.search.*;
-import org.apache.lucene.queryParser.*;
+import org.apache.lucene.queryparser.classic.*;
 import org.apache.lucene.search.highlight.*;
 
 import java.util.logging.Logger;
+import org.apache.lucene.util.Version;
 
 /**
  *
@@ -46,11 +48,11 @@ public class Snippet {
     this.analyzer = a;
     this.FIELD_NAME = field;
     
-    QueryParser parser = new QueryParser(field, a);
+    QueryParser parser = new QueryParser(Version.LUCENE_41, field, a);
     
     try {
       this.query = parser.parse(q);
-    } catch (org.apache.lucene.queryParser.ParseException ex) {
+    } catch (org.apache.lucene.queryparser.classic.ParseException ex) {
       ex.printStackTrace();
     }
     
@@ -79,7 +81,12 @@ public class Snippet {
     TokenStream tokenStream = analyzer.tokenStream(FIELD_NAME, new StringReader(text));
     
     // Return 2 best fragments and seperate with a "..."
-    String result = highlighter.getBestFragments(tokenStream, text, 2, "...");
-    return result;
+	try {
+	    String result = highlighter.getBestFragments(tokenStream, text, 2, "...");
+    	return result;
+	} catch (InvalidTokenOffsetsException ex) {
+		log.log(Level.WARNING, "Invallid token offset, when highlighting search results.", ex);
+		return text;
+	}
   }
 }

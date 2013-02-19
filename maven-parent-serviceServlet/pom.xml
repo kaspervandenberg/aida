@@ -9,7 +9,7 @@
 		Common entries for AIDA combined AXIS services and tomcat servlets.
 	</description>
 	<packaging>pom</packaging>
-    
+		
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<test.workingDirectory>${java.io.tmpdir}</test.workingDirectory>
@@ -25,14 +25,14 @@
 
 	<build>
 		<plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.0</version>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

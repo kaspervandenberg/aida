@@ -4,7 +4,7 @@
   <groupId>org.adaptivedisclosure.aida</groupId>
   <artifactId>search</artifactId>
   <version>0.75-SNAPSHOT</version>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
 	
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>

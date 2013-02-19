@@ -24,6 +24,11 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import java.util.Date;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 
 /**
  *
@@ -58,76 +63,85 @@ public class cmdLineUpdateSynonyms {
     System.out.println("Started: " + start.toString());
 
     File index = new File(args[0]);
-    if (index == null || !index.exists() || !index.canRead() || !reader.indexExists(index)) {
+    if (index == null || !index.exists() || !index.canRead()) {
       throw new IllegalArgumentException("can't read index dir " + index);
     }
 
-    try {
-      reader = IndexReader.open(index);
-      openJDBM(index.toString());
-      openJDBMdocID(index.toString());
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+	try {
+		Directory luceneIndexDir = FSDirectory.open(index);
+    	if (!DirectoryReader.indexExists(luceneIndexDir)) {
+      		throw new IllegalArgumentException("can't read index dir " + index);
+	    }
+		try {
+		  reader = DirectoryReader.open(luceneIndexDir);
+		  openJDBM(index.toString());
+		  openJDBMdocID(index.toString());
+		} catch (IOException e) {
+		  e.printStackTrace();
+		}
 
-    System.out.println("Starting processing " + index);
-    try {
-      for (int i = 0; i < reader.numDocs(); i++) {
+		System.out.println("Starting processing " + index);
+		try {
+		  for (int i = 0; i < reader.numDocs(); i++) {
 
-        if (i % 5 == 0) {
-          System.out.println("currently: " + i + " of " + reader.numDocs());
-        }
+			if (i % 5 == 0) {
+			  System.out.println("currently: " + i + " of " + reader.numDocs());
+			}
 
-        // Sanity check
-        if (!reader.isDeleted(i)) {
+			// Sanity check
+			org.apache.lucene.util.Bits liveDocs = MultiFields.getLiveDocs(reader);
+			if (liveDocs.get(i)) {
 
-          String done = (String) Lucenehashtable.get(String.valueOf(i));
+			  String done = (String) Lucenehashtable.get(String.valueOf(i));
 
-          if (done == null) {
+			  if (done == null) {
 
-            Document doc = reader.document(i);
-            List<Field> fields = doc.getFields();
+				Document doc = reader.document(i);
+				List<IndexableField> fields = doc.getFields();
 
-            for (Iterator<Field> it = fields.iterator(); it.hasNext();) {
-              Field f = it.next();
-              String field_name = f.name();
-              String field_value = f.stringValue();
+				for (Iterator<IndexableField> it = fields.iterator(); it.hasNext();) {
+				  IndexableField f = it.next();
+				  String field_name = f.name();
+				  String field_value = f.stringValue();
 
-              // skip empty names or values. should never happen. 
-              if (field_name == null) {
-                continue;
-              }
-              if (field_value == null) {
-                continue;
-              }
-              if (field_name.equals("")) {
-                continue;
-              }
-              if (field_value.equals("")) {
-                continue;
-              }
+				  // skip empty names or values. should never happen. 
+				  if (field_name == null) {
+					continue;
+				  }
+				  if (field_value == null) {
+					continue;
+				  }
+				  if (field_name.equals("")) {
+					continue;
+				  }
+				  if (field_value.equals("")) {
+					continue;
+				  }
 
-              extractSynonyms(field_value);
+				  extractSynonyms(field_value);
 
-              // Store that this doc has already been done
-              Lucenehashtable.put(String.valueOf(i), "true");
-              Lucenerecman.commit();
-            }
-          } else {
-            if (i % 5 == 0) {
-              System.out.println(i + " already scanned");
-            }
-          }
-        }
-      }
+				  // Store that this doc has already been done
+				  Lucenehashtable.put(String.valueOf(i), "true");
+				  Lucenerecman.commit();
+				}
+			  } else {
+				if (i % 5 == 0) {
+				  System.out.println(i + " already scanned");
+				}
+			  }
+			}
+		  }
 
-      reader.close();
-      recman.close();
-      Lucenerecman.close();
+		  reader.close();
+		  recman.close();
+		  Lucenerecman.close();
 
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+		} catch (IOException e) {
+		  e.printStackTrace();
+		}
+	} catch (IOException ex) {
+		throw new RuntimeException(String.format("Error when opening %s", index), ex);
+	}
 
     System.out.println("Done. Added " + newAcronyms / 2 + " new synonyms. " +
             alreadyStored / 2 + " were already stored for index: " + index);

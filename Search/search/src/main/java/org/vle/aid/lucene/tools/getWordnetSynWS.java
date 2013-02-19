@@ -7,31 +7,25 @@
 
 package org.vle.aid.lucene.tools;
 
-import java.io.IOException;
 import java.lang.NullPointerException;
 
 import java.io.*;
 import java.io.File;
 import java.util.logging.Logger;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.HashSet;
-import org.apache.lucene.analysis.WordlistLoader;
+import org.apache.lucene.analysis.util.WordlistLoader;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.*;
-import org.apache.lucene.document.Document;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.index.*;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.*;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.*;
-import org.apache.lucene.search.Hits;
+import org.apache.lucene.queryparser.classic.*;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.Searcher;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 
 public class getWordnetSynWS {
     
@@ -39,12 +33,14 @@ public class getWordnetSynWS {
     private transient Logger log =
 	 Logger.getLogger("getWordnetSynWS.class.getName()"); 
     
+	private static final int MAX_DOCS = 1000;
+	
     private String indexLocation;
     private String stopwords;
     private IndexReader reader;
     private IndexSearcher searcher;
     private Analyzer analyzer;
-    private Hits hits;
+    private TopDocs hits;
     
     public String[] getWordnetSynonyms (String term) {
         
@@ -63,15 +59,15 @@ public class getWordnetSynWS {
             log.fine("Found INDEXDIR: " + indexLocation);
         }
         
-        String location = indexLocation + System.getProperty("file.separator") +
-                "wordnet" + System.getProperty("file.separator") + "lucene-wordnet-index";
+        File location = new File(new File(indexLocation,"wordnet"),"lucene-wordnet-index");
         
         try {        
-            if (!reader.indexExists(location)) {
+			Directory luceneIndexDir = FSDirectory.open(location);
+			if (!DirectoryReader.indexExists(luceneIndexDir)) {
                 log.severe("No Wordnet index found: " + location);
             } else {
                 log.fine("Wordnet index found: " + location);
-                reader = IndexReader.open(location);
+                reader = DirectoryReader.open(luceneIndexDir);
             }    
         } catch (NullPointerException e) {
             log.severe("No Wordnet index found: " + location);
@@ -88,30 +84,24 @@ public class getWordnetSynWS {
             if (stopwordsFile == null || !stopwordsFile.exists() || !stopwordsFile.canRead()) {
                 // throw new IllegalArgumentException("can't read stopword file " + stopwords);
                 log.fine("Can't read default stopwords file: " + stopwords + ", safely ingnoring stopwords");
-                analyzer = new StandardAnalyzer();
+                analyzer = new StandardAnalyzer(Version.LUCENE_41);
 
             } else {
                 // No 1.5 on Mac os x...
                 // HashSet <String> stopSet = new HashSet <String> ();
-                HashSet stopSet = new HashSet();
-                stopSet = WordlistLoader.getWordSet(stopwordsFile);
-
-
-                String[] stopwords = new String[stopSet.size()];
-                stopSet.toArray(stopwords);
-
-                analyzer = new StandardAnalyzer(stopwords);                                       
+                CharArraySet stopSet = WordlistLoader.getWordSet(new FileReader(stopwordsFile), Version.LUCENE_41);
+                analyzer = new StandardAnalyzer(Version.LUCENE_41, stopSet);                                       
             }
 
-            QueryParser parser = new QueryParser("word", analyzer);
+            QueryParser parser = new QueryParser(Version.LUCENE_41, "word", analyzer);
             Query queryTerms = parser.parse(term);
-            hits = searcher.search(queryTerms);      
+            hits = searcher.search(queryTerms, MAX_DOCS);      
       
-            if (hits.length() == 0) {
+            if (hits.totalHits == 0) {
                 log.info("No synonyms found for term '" + term + "'.");
                 return null;
             } else {
-                return hits.doc(0).getValues("syn");
+                return searcher.doc(hits.scoreDocs[0].doc).getValues("syn");
             }
             
         } catch (ParseException e) {

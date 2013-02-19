@@ -13,19 +13,19 @@ package org.vle.aid.lucene;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.*;
-import org.apache.lucene.index.TermFreqVector;
-import org.apache.lucene.index.TermPositions;
-import org.apache.lucene.queryParser.*;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Hits;
 
 import java.io.File;
 
-import java.util.*;
-import java.util.Iterator;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.logging.Logger;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 
 
 /**
@@ -33,6 +33,7 @@ import java.util.logging.Logger;
  * @author emeij
  */
 public class getTermVector {
+	private static final int MAX_RESULTS = 1000;
     
     /** Creates a new instance of getTermVector */
     public getTermVector() {
@@ -43,7 +44,7 @@ public class getTermVector {
 	 Logger.getLogger("getTermVector.class.getName()");  
     
     private IndexReader reader = null;
-    private String[] terms;
+//    private String[] terms;
     private int[] freqs;
     
     // TODO: implement getTermPositions(int index)
@@ -60,7 +61,6 @@ public class getTermVector {
 
         // TODO: get ID field from convention or config file
         String UIfield = "PMID";
-        TermFreqVector tv = null;
         
         log.fine("Checking for env. var. INDEXDIR");
         String indexLocation = System.getenv("INDEXDIR");
@@ -75,39 +75,42 @@ public class getTermVector {
         try {
             // Open index
             // TODO: get index params from config file
-            
-            reader = IndexReader.open(indexLocation + System.getProperty("file.separator") + index);
+			File indexLoc = new File(indexLocation, index);
+            Directory indexDirectory = FSDirectory.open(indexLoc);
+            reader = DirectoryReader.open(indexDirectory);
             IndexSearcher searcher = new IndexSearcher(reader);
             
             // TODO: Get analyzer type from index configfile
-            Analyzer analyzer = new StandardAnalyzer(new File(indexLocation + System.getProperty("file.separator") + "stopwords.txt"));
+            Analyzer analyzer = new StandardAnalyzer(
+					Version.LUCENE_41,
+					new FileReader(new File(indexLocation, "stopwords.txt")));
             
             
-            QueryParser parser = new QueryParser(UIfield, analyzer);
+            QueryParser parser = new QueryParser(Version.LUCENE_41, UIfield, analyzer);
             Query queryTerm = parser.parse(UI);
             
-            Hits result = searcher.search(queryTerm);
-            searcher.close();
+            TopDocs result = searcher.search(queryTerm, MAX_RESULTS);
             
             // Check whether given UI exists in index
-            if (result.length() == 0) {
+            if (result.totalHits == 0) {
                 log.info("No documents with UI: " + UI + " in index " + index);
                 reader.close();
                 return null;
             } else {
                 
-                int doc_id = result.id(0);
-                tv  = reader.getTermFreqVector(doc_id, field);
-                terms = new String[tv.size()];
-                terms = tv.getTerms();
+                int doc_id = result.scoreDocs[0].doc;
+                Terms tv  = reader.getTermVector(doc_id, field);
+				
+                ArrayList<String> terms = new ArrayList<String>((int)tv.size());
+				TermsEnum iTerms = tv.iterator(null);
                 
-                for (int k = 0; k < terms.length; ++k) {
-                    // Debugging:
-                    log.info("TERM: " + terms[k]);
-                }                
+				while(iTerms.next() != null) {
+					terms.add(iTerms.term().utf8ToString());
+                    log.info(String.format("TERM: %s", terms.get(terms.size() -1)));
+				}
 
                 reader.close();
-                return terms;
+                return terms.toArray(new String[terms.size()]);
             }
             
             
@@ -132,14 +135,13 @@ public class getTermVector {
 
         // TODO: get ID field from convention or config file
         String UIfield = "PMID";
-        TermFreqVector tv = null;
         
         log.fine("Checking for env. var. INDEXDIR");
-        String indexLocation = System.getenv("INDEXDIR");
+        File indexLocation = new File(System.getenv("INDEXDIR"));
         
-        if (indexLocation == null) {
+        if (indexLocation == null || !indexLocation.exists() || !indexLocation.isDirectory()) {
             log.severe("***INDEXDIR not found!!!***");
-            indexLocation = "";
+            indexLocation = new File("");
         } else {
             log.fine("Found INDEXDIR: " + indexLocation);
         }
@@ -147,31 +149,34 @@ public class getTermVector {
         try {
             // Open index
             // TODO: get index params from config file
-            reader = IndexReader.open(indexLocation + System.getProperty("file.separator") + index);
+			Directory indexDir = FSDirectory.open(new File(indexLocation, index));
+            reader = DirectoryReader.open(indexDir);
             IndexSearcher searcher = new IndexSearcher(reader);
             
             // TODO: Get analyzer type from index configfile
-            Analyzer analyzer = new StandardAnalyzer(new File(indexLocation + System.getProperty("file.separator") + "stopwords.txt"));
+            Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_41, 
+					new FileReader(new File(indexLocation, "stopwords.txt")));
             
-            QueryParser parser = new QueryParser(UIfield, analyzer);
+            QueryParser parser = new QueryParser(Version.LUCENE_41, UIfield, analyzer);
             Query queryTerm = parser.parse(UI);
             
-            Hits result = searcher.search(queryTerm);
-            searcher.close();
+            TopDocs result = searcher.search(queryTerm, MAX_RESULTS);
             
             // Check whether given UI exists in index
-            if (result.length() == 0) {
+            if (result.totalHits == 0) {
                 log.info("No documents with UI: " + UI + " in index " + index);
                 reader.close();
                 return null;
             } else {
                 
-                int doc_id = result.id(0);
-                tv  = reader.getTermFreqVector(doc_id, field);
-                freqs = new int[tv.size()];
-                freqs = tv.getTermFrequencies();
+                int doc_id = result.scoreDocs[0].doc;
+                Terms tv  = reader.getTermVector(doc_id, field);
+                freqs = new int[tv.getDocCount()];
+//                freqs = tv.getTermFrequencies();
+				TermsEnum iter = tv.iterator(null);
                 
-                for (int k = 0; k < freqs.length; ++k) {
+                for (int k = 0; k < freqs.length && iter.next() != null; ++k) {
+					freqs[k] = iter.docFreq();
                     // Debugging:
                     log.info("TERMFREQ: " + freqs[k]);
                 }                

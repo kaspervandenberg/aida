@@ -136,7 +136,6 @@ public class jason extends HttpServlet {
           e.printStackTrace(pw);
           String reason = sw.toString();
           pw.close();
-          log.severe(e.toString());
           out.print("{'success':false, 'errors':{'reason':'"+reason.replaceAll("\\n", "<br/>")+"'}}");
         }
         

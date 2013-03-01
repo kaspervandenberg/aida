@@ -17,9 +17,9 @@ import org.vle.aid.ResultType;
  *
  * @author emeij
  */
-public class SearcherWSTest extends TestCase {
+public class SearcherWSTest_Basic extends TestCase {
     
-    public SearcherWSTest(String testName) {
+    public SearcherWSTest_Basic(String testName) {
         super(testName);
     }            
 

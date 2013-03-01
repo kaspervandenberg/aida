@@ -804,6 +804,7 @@ public class SearcherWSTest {
 	private File fIndex;
 	private FSDirectory index;
 	private final IndexedDocuments storedDocs;
+	private SearcherWS searcher;
 
 	/**
 	 * Interesting configurations to test {@link SearcherWS} with.
@@ -846,6 +847,9 @@ public class SearcherWSTest {
 			fIndex = assertCreateTmpPath();
 			index = FSDirectory.open(fIndex);
 			storedDocs.setupIndex(index);
+			
+			searcher = new SearcherWS();
+			searcher.setIndexLocation(fIndex);
 		} catch (IOException ex) {
 			String msg = String.format(
 					"Unable to open index %s in path %s",
@@ -878,13 +882,11 @@ public class SearcherWSTest {
 		assumeThat(query, matchesAnyStoredDocument);
 
 		Query q = createTermQuery(field, query);
-		TopDocs topDocs = SearcherWS._search(index, q, TEST_MAXDOCS);
+		TopDocs topDocs = searcher._search(q);
 		Set<Documents> result = IndexedDocuments.toDocumentSet(index, topDocs);
 		
-		for (Documents doc : storedDocs.allDocuments()) {
-			if(storedDocs.documentMatcher(doc, field, Queries.MatchStrategy.ANY).matches(query)) {
-				assertThat(result, hasItem(doc));
-			}
+		for (Documents doc : storedDocs.hittingDocs(query, field, Queries.MatchStrategy.ANY)) {
+			assertThat(result, hasItem(doc));
 		}
 	}
 
@@ -900,23 +902,17 @@ public class SearcherWSTest {
 	@Theory
 	public void testUnderscoreSearch_precision_queryTermNotInDocs_resultsNotContainDoc(
 			final Fields field, final Queries query) throws IOException {
-		EnumSet<Documents> hittingDocs = EnumSet.noneOf(Documents.class);
-		for (Documents doc : storedDocs.allDocuments()) {
-			if(storedDocs.documentMatcher(doc, Queries.MatchStrategy.ANY).matches(query)) {
-				hittingDocs.add(doc);
-			}
-		}
-		EnumSet<Documents> NotHittingDocs = EnumSet.complementOf(hittingDocs);
+		EnumSet<Documents> NotHittingDocs = EnumSet.complementOf(
+				storedDocs.hittingDocs(query, Queries.MatchStrategy.ANY));
 				
 		Query q= createTermQuery(field, query);
-		TopDocs topDocs = SearcherWS._search(index, q, TEST_MAXDOCS);
+		TopDocs topDocs = searcher._search(q);
 		Set<Documents> result = IndexedDocuments.toDocumentSet(index, topDocs);
 		
 		for (Documents doc : NotHittingDocs) {
 			assertThat(result, not(hasItem(doc)));
 		}
 	}
-
 
 	/**
 	 * Create a Lucene {@link org.apache.lucene.search.Query} for documents with 

@@ -28,9 +28,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>xmlbeans-maven-plugin</artifactId>
-<?ignore "version is defined in parent pom"				
-				<version>2.3.3</version>
-?>
 				<executions>
 					<execution>
 						<goals>

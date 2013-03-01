@@ -21,11 +21,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -38,6 +46,7 @@ import org.junit.After;
 import org.junit.Before;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
+import static org.junit.matchers.JUnitMatchers.hasItem;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
@@ -102,6 +111,58 @@ public class SearcherWSTest {
 	 * {@link Queries}.
 	 */
 	public static class IndexedDocuments implements SelfDescribing {
+		private enum AuxFields {
+			_ID {
+				@Override
+				public IndexableField genField(final Documents doc) {
+					return new TextField(this.name(), doc.name(), Field.Store.YES);
+				}
+			};
+
+			public static Iterable<IndexableField> prependAll(
+					final Documents doc,
+					final Iterable<IndexableField> chained_) {
+				return new Iterable<IndexableField>() {
+					@Override
+					public Iterator<IndexableField> iterator() {
+						return new Iterator<IndexableField>() {
+							private final Iterator<AuxFields> iAux = Arrays.asList(AuxFields.values()).iterator();
+							private final Iterator<IndexableField> iChained = chained_.iterator();
+							private boolean iteratingChained = false;
+
+							@Override
+							public boolean hasNext() {
+								return (iAux.hasNext() || iChained.hasNext());
+							}
+
+							@Override
+							public IndexableField next() {
+								if(iAux.hasNext()) {
+									return iAux.next().genField(doc);
+								} else {
+									iteratingChained = true;
+									return iChained.next();
+								}
+							}
+
+							@Override
+							public void remove() {
+								if(iteratingChained) {
+									iChained.remove();
+								} else {
+									throw new UnsupportedOperationException("AuxFields is a fixed collection of fields");
+								}
+							}
+						};
+					}
+				};
+			}
+			
+			public abstract IndexableField genField(final Documents doc);
+		} 
+		
+		private final static Set<String> ID_FIELD = 
+				Collections.singleton(AuxFields._ID.name());
 		private final String name;
 		private final Map<Documents, Map<Fields, Set<FieldContents>>> toIndex;
 		
@@ -250,8 +311,44 @@ public class SearcherWSTest {
 				writer.addDocuments(this.asLuceneDocIter());
 			} catch (IOException ex) {
 				final String msg = "IOException when adding documents to index";
-				Logger.getLogger(SearcherWSTest.class.getName()).log(Level.SEVERE, msg, ex);
-				fail(msg);
+//				Logger.getLogger(SearcherWSTest.class.getName()).log(Level.SEVERE, msg, ex);
+				throw new RuntimeException(msg, ex);
+			}
+		}
+
+		/**
+		 * Convert the indexes from {@code searchResults} to {@link Documents}
+		 * using {@code indexDir} as index.
+		 * 
+		 * @param indexDir	the index that was searched to produce 
+		 * 		{@code searchResults}.
+		 * @param searchResults	result of a {@link IndexSearcher#search(org.apache.lucene.search.Query, int) }
+		 * 		call.
+		 * 
+		 * @return all {@link Documents} in {@code searchResults}
+		 */
+		public static Set<Documents> toDocumentSet(
+				final Directory indexDir, final TopDocs searchResults) {
+			Set<Documents> result = EnumSet.noneOf(Documents.class);
+			try (DirectoryReader reader = DirectoryReader.open(indexDir)) {
+				for (ScoreDoc scoreDoc : searchResults.scoreDocs) {
+					try {
+						Document luceneDoc = reader.document(scoreDoc.doc, ID_FIELD);
+						String idValue = luceneDoc.getField(AuxFields._ID.name()).stringValue();
+						result.add(Documents.valueOf(idValue));
+					} catch (IOException | NullPointerException ex) {
+						final String msg = String.format(
+								"Error retrieving field %s for document #%d",
+								AuxFields._ID.name(),
+								scoreDoc.doc);
+						Logger.getLogger(SearcherWSTest.class.getName()).log(Level.SEVERE, msg, ex);
+						// Continue reading other documents
+					}
+				}
+				return result;
+			} catch (IOException ex) {
+				final String msg = "Error reading index: converting search results";
+				throw new RuntimeException(msg, ex);
 			}
 		}
 
@@ -292,7 +389,8 @@ public class SearcherWSTest {
 		 * @return	{@link Iterable} over all {@link #concat}-ed fields. 
 		 */
 		public Iterable<IndexableField> asLuceneFieldIter(final Documents doc) {
-			return new Iterable<IndexableField>() {
+			return AuxFields.prependAll(doc, 
+					new Iterable<IndexableField>() {
 				@Override
 				public Iterator<IndexableField> iterator() {
 					return new Iterator<IndexableField>() {
@@ -309,7 +407,7 @@ public class SearcherWSTest {
 						@Override public void remove() { iField.remove(); }
 					};
 				}
-			};
+			});
 		}
 
 		/**
@@ -492,15 +590,17 @@ public class SearcherWSTest {
 		 * Return a Hamcrest {@link Matcher} that matches when a query 'hits'
 		 * the document {@code doc}.
 		 * 
-		 * @param doc
-		 * @param strategy
-		 * @return 
+		 * @param doc	the document id
+		 * @param strategy	{@link Queries.MatchStrategy} used to determine 
+		 * 		whether a query hits.
+		 * 
+		 * @return {@link Matcher} that can be used in unit tests.
 		 */
 		public Matcher<Queries> documentMatcher(
 				final Documents doc, final Queries.MatchStrategy strategy) {
 			if(toIndex.containsKey(doc)) {
 
-				Set<FieldContents> con = new HashSet<>();
+				Set<FieldContents> con = EnumSet.noneOf(FieldContents.class);
 				for (FieldContents value : contentsOf(doc)) {
 					con.add(value);
 				}
@@ -511,14 +611,44 @@ public class SearcherWSTest {
 			}
 		}
 
+		/**
+		 * Return a Hamcrest {@link Matcher} that matches when a query 'hits'
+		 * any document stored in this {@link IndexedDocuments}.
+		 * 
+		 * @param strategy	{@link Queries.MatchStrategy} used to determine 
+		 * 		whether a query hits.
+		 * 
+		 * @return {@link Matcher} that can be used in unit tests.
+		 */
 		public Matcher<Queries> allDocsMatcher(final Queries.MatchStrategy strategy) {
-				Set<FieldContents> con = new HashSet<>();
+				Set<FieldContents> con = EnumSet.noneOf(FieldContents.class);
 				for (FieldContents value : allContents()) {
 					con.add(value);
 				}
 				Set<FieldContents>docContents = Collections.unmodifiableSet(con);
 				return Queries.matchFieldContents(docContents, strategy);
-			
+		}
+
+		/**
+		 * Return a Hamcrest {@link Matcher} that matches when a query 'hits'
+		 * {@code field} of any document stored in this {@link IndexedDocuments}.
+		 * 
+		 * @param field 	{@link Fields} identifier of field to match on
+		 * @param strategy	{@link Queries.MatchStrategy} used to determine 
+		 * 		whether a query hits.
+		 * 
+		 * @return {@link Matcher} that can be used in unit tests.
+		 */
+		public Matcher<Queries> allDocsMatcher(
+				final Fields field, final Queries.MatchStrategy strategy) {
+			Set<FieldContents> con = EnumSet.noneOf(FieldContents.class);
+			for(Documents doc :  allDocuments()) {
+				if(toIndex.get(doc).containsKey(field)) {
+					con.addAll(toIndex.get(doc).get(field));
+				}
+			}
+			Set<FieldContents>docContents = Collections.unmodifiableSet(con);
+			return Queries.matchFieldContents(docContents, strategy);
 		}
 		
 		@Override
@@ -535,9 +665,12 @@ public class SearcherWSTest {
 	 */
 	public enum Queries {
 		Q1("one", EnumSet.of(FieldContents.V1)),
-		Q2("o", EnumSet.of(FieldContents.V1, FieldContents.V2)),
+		// Lucene searches on whole words not parts of words
+//		Q2("o", EnumSet.of(FieldContents.V1, FieldContents.V2)),
 		Q3("two", EnumSet.of(FieldContents.V2)),
-		Q4("unexisting", Collections.<FieldContents>emptySet());
+		Q4("unexisting", EnumSet.noneOf(FieldContents.class)),
+		// Query for a word part of a term
+		Q5("nederlandse", EnumSet.of(FieldContents.V3));
 
 		public enum MatchStrategy {
 			ANY {
@@ -609,7 +742,8 @@ public class SearcherWSTest {
 	@DataPoints
 	static public IndexedDocuments docStoreConfigs[] = {
 		builder("empty").build(),
-		builder("one_doc_one_field").of(Documents.D1).with(Fields.F1).value(FieldContents.V1).build()
+		builder("one_doc_one_field").of(Documents.D1).with(Fields.F1).value(FieldContents.V1).build(),
+		builder("two_word_term").of(Documents.D2).with(Fields.F3).value(FieldContents.V3).build()
 	};
 
 	/**
@@ -619,6 +753,12 @@ public class SearcherWSTest {
 	@DataPoints
 	static public Queries allQueries[] = Queries.values();
 		
+	/**
+	 * All items of {@link Fields}. Extend {@code Fields} with new items to test
+	 * {@link SearcherWS} with additional fields.
+	 */
+	@DataPoints
+	static public Fields allFields[] = Fields.values();
 	
 	
 	public SearcherWSTest(final IndexedDocuments storedDocs_) {
@@ -631,13 +771,11 @@ public class SearcherWSTest {
 			fIndex = assertCreateTmpPath();
 			index = FSDirectory.open(fIndex);
 			storedDocs.setupIndex(index);
-			
 		} catch (IOException ex) {
 			String msg = String.format(
 					"Unable to open index %s in path %s",
 					fIndex.getName(),
 					fIndex.getParent().toString());
-			fail(msg);
 			throw new RuntimeException(msg, ex);
 		}
 	}
@@ -651,17 +789,45 @@ public class SearcherWSTest {
 	 * Test recall of {@link SearcherWS#_search(Directory,
 	 * org.apache.lucene.search.Query, int)}-method, of class {@link SearcherWS}.
 	 * 
+	 * If a document matches a query, {@code SearcherWS} should return that 
+	 * document.
+	 * 
+	 * @throws IOException	when {@link SearcherWS#_search(org.apache.lucene.store.Directory, org.apache.lucene.search.Query, int) }
+	 * 		throws it
 	 * 
 	 */
 	@Theory
 	public void testUnderscoreSearch_recall_queryTermInDocs_resultsContainDoc(
-			final Queries query) {
-		// TODO review the generated test code and remove the default call to fail.
+			final Fields field, final Queries query) throws IOException {
 		Matcher<Queries> matchesAnyStoredDocument =
-				storedDocs.allDocsMatcher(Queries.MatchStrategy.ANY);
+				storedDocs.allDocsMatcher(field, Queries.MatchStrategy.ANY);
 		assumeThat(query, matchesAnyStoredDocument);
 
-		fail("The test case is a prototype.");
+		Query q = createTermQuery(field, query);
+		TopDocs topDocs = SearcherWS._search(index, q, 1000);
+		Set<Documents> result = IndexedDocuments.toDocumentSet(index, topDocs);
+		
+		for (Documents doc : storedDocs.allDocuments()) {
+			Set<FieldContents> contents = storedDocs.toIndex.get(doc).get(field);
+			if(contents != null && Queries.matchFieldContents(contents, Queries.MatchStrategy.ANY).matches(query)) {
+				assertThat(result, hasItem(doc));
+			}
+		}
+	}
+
+	/**
+	 * Create a Lucene {@link org.apache.lucene.search.Query} for documents with 
+	 * {@code field} containing {@code query}'s {@link Queries#queryText}.
+	 * 
+	 * @param field	{@link Fields#name()} to use as {@code fld} in 
+	 * 		{@link org.apache.lucene.index.Term#Term(java.lang.String, java.lang.String) }
+	 * @param query {@code text} for 
+	 * 		{@link org.apache.lucene.index.Term#Term(java.lang.String, java.lang.String) }
+	 * 
+	 * @return a Lucene {@link org.apache.lucene.search.TermQuery}
+	 */
+	private static Query createTermQuery(Fields field, Queries query) {
+		return new TermQuery(new Term(field.name(), query.queryText));
 	}
 
 	private static void deleteIfExists(File file) {

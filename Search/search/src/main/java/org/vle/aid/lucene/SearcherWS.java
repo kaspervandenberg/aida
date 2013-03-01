@@ -243,7 +243,7 @@ public class SearcherWS {
 	return _search(indexDir, query, numMaxHits);
   }
   
-  private ResultType makeXML(TopDocs hits, int intMaxHits) throws IOException {
+  ResultType makeXML(TopDocs hits, int intMaxHits) throws IOException {
     xmlOpts.setSavePrettyPrint();
     xmlOpts.setSavePrettyPrintIndent(2);
     xmlOpts.setSaveUseOpenFrag();

@@ -213,18 +213,34 @@ public class SearcherWS {
     }
   }
   
+/**
+ * Call lucene and search for {@code query} in {@code indexDir}.
+ * 
+ * @see SearcherWSTest
+ * 
+ * @param indexDir		the Lucene index {@link Directory} to search in.
+ * @param query			the query to search for.
+ * @param numMaxHits	the number of maximum hits to limit 
+ * 		{@link IndexSearcher#search(Query, int)}.
+ * 
+ * @return	the {@link TopDocs} that {@link IndexSearcher#search(Query, int)} returns.
+ * 
+ * @throws IOException	 When {@code indexDir} does not contain an index.
+ */
+	static TopDocs _search(Directory indexDir, Query query, int numMaxHits) throws IOException {
+		if (DirectoryReader.indexExists(indexDir)) {
+			IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(indexDir));
+			TopDocs result = searcher.search(query, numMaxHits);
+
+	    	return result;
+		} else {
+    		throw new IOException("No index found in " + indexDir.toString());
+		}
+  }
+		  
   private TopDocs _search (Query query) throws IOException {
     Directory indexDir = FSDirectory.open(indexLocation); 
-    if (DirectoryReader.indexExists(indexDir)) {
-      searcher = new IndexSearcher(DirectoryReader.open(indexDir));
-	} else {
-      throw new IOException("No index found in " + indexLocation);
-	}
-
-	TopDocs result = searcher.search(query, numMaxHits);
-
-    return result;
-
+	return _search(indexDir, query, numMaxHits);
   }
   
   private ResultType makeXML(TopDocs hits, int intMaxHits) throws IOException {

@@ -15,10 +15,22 @@
 
   <build>
     <plugins>
+			
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+			
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>xmlbeans-maven-plugin</artifactId>
+<?ignore "version is defined in parent pom"				
 				<version>2.3.3</version>
+?>
 				<executions>
 					<execution>
 						<goals>
@@ -122,6 +134,20 @@
 				used in org.vle.aid.lucene.tools.getSpellSuggestionsWS,
 				org.vle.aid.lucene.tools.cmdLineCreateModel
 			-->
+		</dependency>
+		
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>test</scope>
+    </dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+			<scope>test</scope>
 		</dependency>
   </dependencies>
 </project>

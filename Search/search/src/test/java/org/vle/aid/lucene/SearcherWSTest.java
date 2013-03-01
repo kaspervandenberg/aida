@@ -588,6 +588,33 @@ public class SearcherWSTest {
 
 		/**
 		 * Return a Hamcrest {@link Matcher} that matches when a query 'hits'
+		 * the {@code field} of document {@code doc}.
+		 * 
+		 * @param doc	the document id
+		 * @param field	the field id
+		 * @param strategy	{@link Queries.MatchStrategy} used to determine 
+		 * 		whether a query hits.
+		 * 
+		 * @return {@link Matcher} that can be used in unit tests.
+		 */
+		public Matcher<Queries> documentMatcher(
+				final Documents doc, final Fields field,
+				final Queries.MatchStrategy strategy) {
+			if(toIndex.containsKey(doc) && toIndex.get(doc).containsKey(field)) {
+
+				Set<FieldContents> con = EnumSet.noneOf(FieldContents.class);
+				for (FieldContents value : contentsOf(doc, field)) {
+					con.add(value);
+				}
+				Set<FieldContents>docContents = Collections.unmodifiableSet(con);
+				return Queries.matchFieldContents(docContents, strategy);
+			} else {
+				return CoreMatchers.<Queries>not(CoreMatchers.<Queries>anything());
+			}
+		}
+
+		/**
+		 * Return a Hamcrest {@link Matcher} that matches when a query 'hits'
 		 * the document {@code doc}.
 		 * 
 		 * @param doc	the document id
@@ -808,8 +835,7 @@ public class SearcherWSTest {
 		Set<Documents> result = IndexedDocuments.toDocumentSet(index, topDocs);
 		
 		for (Documents doc : storedDocs.allDocuments()) {
-			Set<FieldContents> contents = storedDocs.toIndex.get(doc).get(field);
-			if(contents != null && Queries.matchFieldContents(contents, Queries.MatchStrategy.ANY).matches(query)) {
+			if(storedDocs.documentMatcher(doc, field, Queries.MatchStrategy.ANY).matches(query)) {
 				assertThat(result, hasItem(doc));
 			}
 		}

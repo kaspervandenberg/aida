@@ -587,6 +587,53 @@ public class SearcherWSTest {
 		}
 
 		/**
+		 * The set of {@link Documents} that have at least one 
+		 * {@link Fields fields} that matches {@code query}.
+		 * 
+		 * @param query	{@link Queries} id
+		 * @param matchStrat	strategy that defines whether any matching 
+		 * 		{@link FieldContents} is sufficient for the query to match or
+		 * 		the document's field must have all the query's
+		 * 		{@code FieldContents}.
+		 * 		
+		 * @return a {@link EnumSet} of matching documents.
+		 */
+		public EnumSet<Documents> hittingDocs(
+				final Queries query, final Queries.MatchStrategy matchStrat) {
+			EnumSet<Documents> result = EnumSet.noneOf(Documents.class);
+			for (Documents doc : allDocuments()) {
+				if(documentMatcher(doc, matchStrat).matches(query)) {
+					result.add(doc);
+				}
+			}
+			return result;
+		}
+
+		/**
+		 * The set of {@link Documents} that have {@code field} that matches
+		 * {@code query}.
+		 * 
+		 * @param query	{@link Queries} id
+		 * @param matchStrat	strategy that defines whether any matching 
+		 * 		{@link FieldContents} is sufficient for the query to match or
+		 * 		the document's field must have all the query's
+		 * 		{@code FieldContents}.
+		 * 		
+		 * @return a {@link EnumSet} of matching documents.
+		 */
+		public EnumSet<Documents> hittingDocs(
+				final Queries query, final Fields field,
+				final Queries.MatchStrategy matchStrat) {
+			EnumSet<Documents> result = EnumSet.noneOf(Documents.class);
+			for (Documents doc : allDocuments()) {
+				if(documentMatcher(doc, field, matchStrat).matches(query)) {
+					result.add(doc);
+				}
+			}
+			return result;
+		}
+
+		/**
 		 * Return a Hamcrest {@link Matcher} that matches when a query 'hits'
 		 * the {@code field} of document {@code doc}.
 		 * 
@@ -869,6 +916,7 @@ public class SearcherWSTest {
 			assertThat(result, not(hasItem(doc)));
 		}
 	}
+
 
 	/**
 	 * Create a Lucene {@link org.apache.lucene.search.Query} for documents with 

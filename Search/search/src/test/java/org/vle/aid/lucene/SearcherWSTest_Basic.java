@@ -14,6 +14,7 @@ import org.vle.aid.ResultDocument;
 import org.vle.aid.ResultType;
 
 /**
+ * See {@link SearcherWSTest} for more exhaustive tests of SearcherWS
  *
  * @author emeij
  */

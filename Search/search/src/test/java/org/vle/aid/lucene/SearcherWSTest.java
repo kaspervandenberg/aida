@@ -8,6 +8,7 @@ import java.nio.file.FileSystems;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,7 +45,9 @@ import org.junit.runner.RunWith;
 import static org.vle.aid.lucene.SearcherWSTest.IndexedDocuments.builder;
 
 /**
- *
+ * Test whether {@link SearcherWS} returns the expected results.  See also
+ * {@link SearcherWSTest_Basic} which contains legacy tests.
+ * 
  * @author Kasper van den Berg <kasper@kaspervandenberg.net> 
  */
 @RunWith(Theories.class)
@@ -118,15 +121,27 @@ public class SearcherWSTest {
 			
 			IdBuilder(final String name_) {
 				name = name_;
-				structure = new HashMap<>();
+				structure = new EnumMap<>(Documents.class);
 			}
 
+			/**
+			 * Build an {@link IndexedDocuments} object from this
+			 * specification.
+			 *
+			 * @return a configured {@link IndexedDocuments}-object.
+			 */
 			public IndexedDocuments build() {
 				return new IndexedDocuments(
 						name,
-						Collections.unmodifiableMap(new HashMap<>(structure)));
+						Collections.unmodifiableMap(new EnumMap<>(structure)));
 			}
 			
+			/**
+			 * Configure document with id {@code doc}.
+			 *
+			 * @param doc	{@link Documents} item to identify the document to
+			 * configure with
+			 */
 			public DocBuilder of(Documents doc) {
 				return new DocBuilder(this, doc);
 			}
@@ -140,7 +155,7 @@ public class SearcherWSTest {
 			DocBuilder(IdBuilder container_, Documents doc_) {
 				container = container_;
 				doc = doc_;
-				docStructure = new HashMap<>();
+				docStructure = new EnumMap<>(Fields.class);
 			}
 			
 			public IndexedDocuments build() {
@@ -159,7 +174,7 @@ public class SearcherWSTest {
 
 			private void addThis() {
 				container.structure.put(doc,
-						Collections.unmodifiableMap(new HashMap(docStructure)));
+						Collections.unmodifiableMap(new EnumMap(docStructure)));
 			}
 		}
 
@@ -698,4 +713,4 @@ public class SearcherWSTest {
 
 }
 
-/* vim: set shiftwidth=4 tabstop=4 noexpandtab : */
+/* vim: set shiftwidth=4 tabstop=4 noexpandtab fo=ctwan ai : */

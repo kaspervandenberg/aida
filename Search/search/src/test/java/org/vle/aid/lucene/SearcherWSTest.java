@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -47,6 +46,7 @@ import org.junit.Before;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.not;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
@@ -753,6 +753,7 @@ public class SearcherWSTest {
 		}
 	}
 	
+	private final static int TEST_MAXDOCS = 1000;
 	private File fIndex;
 	private FSDirectory index;
 	private final IndexedDocuments storedDocs;
@@ -821,7 +822,6 @@ public class SearcherWSTest {
 	 * 
 	 * @throws IOException	when {@link SearcherWS#_search(org.apache.lucene.store.Directory, org.apache.lucene.search.Query, int) }
 	 * 		throws it
-	 * 
 	 */
 	@Theory
 	public void testUnderscoreSearch_recall_queryTermInDocs_resultsContainDoc(
@@ -831,13 +831,42 @@ public class SearcherWSTest {
 		assumeThat(query, matchesAnyStoredDocument);
 
 		Query q = createTermQuery(field, query);
-		TopDocs topDocs = SearcherWS._search(index, q, 1000);
+		TopDocs topDocs = SearcherWS._search(index, q, TEST_MAXDOCS);
 		Set<Documents> result = IndexedDocuments.toDocumentSet(index, topDocs);
 		
 		for (Documents doc : storedDocs.allDocuments()) {
 			if(storedDocs.documentMatcher(doc, field, Queries.MatchStrategy.ANY).matches(query)) {
 				assertThat(result, hasItem(doc));
 			}
+		}
+	}
+
+	/**
+	 * Test precision of {@link SearcherWS#_search(Directory, Query, int).
+	 *
+	 * If a document does not match a query {@code SearcherWS} should not return
+	 * that document.
+	 * 
+	 * @throws IOException	when {@link SearcherWS#_search(org.apache.lucene.store.Directory, org.apache.lucene.search.Query, int) }
+	 * 		throws it
+	 */
+	@Theory
+	public void testUnderscoreSearch_precision_queryTermNotInDocs_resultsNotContainDoc(
+			final Fields field, final Queries query) throws IOException {
+		EnumSet<Documents> hittingDocs = EnumSet.noneOf(Documents.class);
+		for (Documents doc : storedDocs.allDocuments()) {
+			if(storedDocs.documentMatcher(doc, Queries.MatchStrategy.ANY).matches(query)) {
+				hittingDocs.add(doc);
+			}
+		}
+		EnumSet<Documents> NotHittingDocs = EnumSet.complementOf(hittingDocs);
+				
+		Query q= createTermQuery(field, query);
+		TopDocs topDocs = SearcherWS._search(index, q, TEST_MAXDOCS);
+		Set<Documents> result = IndexedDocuments.toDocumentSet(index, topDocs);
+		
+		for (Documents doc : NotHittingDocs) {
+			assertThat(result, not(hasItem(doc)));
 		}
 	}
 

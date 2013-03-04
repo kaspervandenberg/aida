@@ -4,6 +4,8 @@ package org.vle.aid.lucene;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.nio.file.FileSystems;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,8 +18,16 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -51,7 +61,11 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
+import org.vle.aid.ResultType;
 import static org.vle.aid.lucene.SearcherWSTest.IndexedDocuments.builder;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * Test whether {@link SearcherWS} returns the expected results.  See also
@@ -912,6 +926,86 @@ public class SearcherWSTest {
 		for (Documents doc : NotHittingDocs) {
 			assertThat(result, not(hasItem(doc)));
 		}
+	}
+
+	@Theory
+	public void testMakeXML_wellFormedXML(final Fields field, final Queries query) throws IOException, InterruptedException {
+		Query q=createTermQuery(field, query);
+		TopDocs topDocs = searcher._search(q);
+		final ResultType xml = searcher.makeXML(topDocs, TEST_MAXDOCS);
+
+		final PipedOutputStream src = new PipedOutputStream();
+		final PipedInputStream snk = new PipedInputStream(src);
+		
+		ExecutorService executor = Executors.newFixedThreadPool(2);
+		
+		Future<?> saveXml = executor.submit(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					xml.save(src);
+					src.close();
+				} catch (IOException ex) {
+					throw new RuntimeException("Error saving XML", ex);
+				}
+			}
+		});
+		
+		Future<?> parseXml = executor.submit(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					factory.setValidating(false);
+					factory.setNamespaceAware(true);
+
+					DocumentBuilder builder = factory.newDocumentBuilder();
+					builder.setErrorHandler(new ErrorHandler() {
+
+						@Override
+						public void warning(SAXParseException exception) throws SAXException {
+							throw exception;
+						}
+
+						@Override
+						public void error(SAXParseException exception) throws SAXException {
+							throw exception;
+						}
+
+						@Override
+						public void fatalError(SAXParseException exception) throws SAXException {
+							throw exception;
+						}
+					});
+					builder.parse(snk);
+					snk.close();
+							
+				} catch (SAXException ex) {
+					throw new RuntimeException("XML not vallid", ex);
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				} catch (ParserConfigurationException ex) {
+					throw new Error("Error configuring XML parser", ex);
+				}
+			}
+		});
+		
+		try {
+			// Check for exceptions via Future.get().
+
+			
+			saveXml.get();
+			parseXml.get();
+			executor.shutdown();
+		} catch (ExecutionException ex) {
+			Throwable cause = ex.getCause();
+			if(cause instanceof RuntimeException) {
+				throw (RuntimeException)cause;
+			} else  {
+				throw new Error("Unexpected exception when reading/writing XML", cause);
+			}
+		}
+		
 	}
 
 	/**

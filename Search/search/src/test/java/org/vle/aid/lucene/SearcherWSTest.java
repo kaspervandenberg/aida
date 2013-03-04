@@ -22,12 +22,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -57,6 +61,9 @@ import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.core.IsEqual.equalTo;
+import org.hamcrest.xml.HasXPath;
+import static org.hamcrest.xml.HasXPath.*;
 import org.junit.Assert;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
@@ -64,6 +71,7 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 import org.vle.aid.ResultType;
 import static org.vle.aid.lucene.SearcherWSTest.IndexedDocuments.builder;
+import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -835,6 +843,23 @@ public class SearcherWSTest {
 	}
 
 	/**
+	 * XPath expressions used to test XML output of {@link SearcherWS}.
+	 * 
+	 * @see {@link HasXPath#hasXPath(java.lang.String, org.hamcrest.Matcher) }
+	 */
+	private enum XpathExpr {
+		DOC_ID(String.format(
+				"doc/field[@name=\"%s\"]/value",
+				IndexedDocuments.AuxFields._ID.name()));
+
+		private XpathExpr(final String expr_) {
+			expr = expr_;
+		}
+
+		public final String expr;
+	}
+
+	/**
 	 * Fail test when receiving a {@link SAXParseException}
 	 */
 	private static class SAXExceptionHandler implements ErrorHandler {
@@ -1053,7 +1078,33 @@ public class SearcherWSTest {
 		}
 	}
 
-//	public void testMakeXML_recall(final Fields)
+	/**
+	 * Test recall of {@link SearcherWS#makeXML(org.apache.lucene.search.TopDocs, int) }-method,
+	 * of class {@link SearcherWS}.
+	 * 
+	 * If a document matches a query, {@code SearcherWS} should return that 
+	 * document.
+	 * 
+	 * @throws IOException	<ul><li>when {@link SearcherWS#_search(org.apache.lucene.search.Query) }
+	 * 		throws it; or</li>
+	 * 		<li>when {@link SearcherWS#makeXML(org.apache.lucene.search.TopDocs, int)}
+	 * 		throws it.</li></ul>
+	 */
+	@Theory
+	public void testMakeXML_recall(final Queries query) throws IOException {
+		Matcher<Queries> matchesAnyStoredDocument =
+				storedDocs.allDocsMatcher(query.field, Queries.MatchStrategy.ANY);
+		assumeThat(query, matchesAnyStoredDocument);
+
+		Query q = query.createTermQuery();
+		TopDocs topDocs = searcher._search(q);
+		ResultType xmlResult = searcher.makeXML(topDocs, TEST_MAXDOCS);
+		Node xmlNode = xmlResult.getDomNode();
+
+		for(Documents expectedDoc : storedDocs.hittingDocs(query, query.field, Queries.MatchStrategy.ANY)) {
+			assertThat(xmlNode, hasXPath(XpathExpr.DOC_ID.expr, equalTo(expectedDoc.name())));
+		}
+	}
 
 	private static void deleteIfExists(File file) {
 		if (file != null && file.exists()) {

@@ -27,11 +27,6 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -849,8 +844,9 @@ public class SearcherWSTest {
 	 */
 	private enum XpathExpr {
 		DOC_ID(String.format(
-				"doc/field[@name=\"%s\"]/value",
-				IndexedDocuments.AuxFields._ID.name()));
+				"doc/field[@name=\"%s\"]",
+				IndexedDocuments.AuxFields._ID.name())),
+		DOC_ID_VALUE(DOC_ID.expr + "/value");
 
 		private XpathExpr(final String expr_) {
 			expr = expr_;
@@ -1102,7 +1098,36 @@ public class SearcherWSTest {
 		Node xmlNode = xmlResult.getDomNode();
 
 		for(Documents expectedDoc : storedDocs.hittingDocs(query, query.field, Queries.MatchStrategy.ANY)) {
-			assertThat(xmlNode, hasXPath(XpathExpr.DOC_ID.expr, equalTo(expectedDoc.name())));
+			assertThat(xmlNode, hasXPath(XpathExpr.DOC_ID_VALUE.expr, equalTo(expectedDoc.name())));
+		}
+	}
+
+	/**
+	 * Test precision of {@link SearcherWS#makeXML(org.apache.lucene.search.TopDocs, int).
+	 *
+	 * If a document does not match a query {@code SearcherWS} should not return
+	 * that document.
+	 * 
+	 * @throws IOException	<ul><li>when {@link SearcherWS#_search(org.apache.lucene.search.Query) }
+	 * 		throws it; or</li>
+	 * 		<li>when {@link SearcherWS#makeXML(org.apache.lucene.search.TopDocs, int)}
+	 * 		throws it.</li></ul>
+	 */
+	@Theory
+	public void testMakeXML_precision(final Queries query) throws IOException {
+		EnumSet<Documents> notHittingDocs = EnumSet.complementOf(
+				storedDocs.hittingDocs(query, Queries.MatchStrategy.ANY));
+		
+		Query q = query.createTermQuery();
+		TopDocs topDocs = searcher._search(q);
+		ResultType xmlResult = searcher.makeXML(topDocs, TEST_MAXDOCS);
+		Node xmlNode = xmlResult.getDomNode();
+
+		for(Documents notExpectedDoc : notHittingDocs) {
+			String xpath = String.format("%s[/value=\"%s\"]",
+					XpathExpr.DOC_ID.expr,
+					notExpectedDoc.name());
+			assertThat(xmlNode, not(hasXPath(xpath)));
 		}
 	}
 

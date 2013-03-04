@@ -932,26 +932,27 @@ public class SearcherWSTest {
 	 * Test whether {@link SearcherWS#makeXML(org.apache.lucene.search.TopDocs, int) 
 	 * returns well formed XML.
 	 * 
+	 * @throws SAXParseException	the test has failed, XML output is not well formed
 	 * @throws IOException	<ul><li>when {@link SearcherWS#_search(org.apache.lucene.search.Query) } throws it; or</li>
 	 * 						<li>when {@link SearcherWS#makeXML(org.apache.lucene.search.TopDocs, int) throws it</li></ul>
-	 * @throws InterruptedException 
+	 * @throws InterruptedException when writing XML was interrupted
+	 * 
 	 */
 	@Theory
-	public void testMakeXML_wellFormedXML(final Fields field, final Queries query) throws IOException, InterruptedException {
+	public void testMakeXML_wellFormedXML(final Fields field, final Queries query) 
+			throws IOException, InterruptedException, SAXParseException {
 		Query q=createTermQuery(field, query);
 		TopDocs topDocs = searcher._search(q);
 		final ResultType xml = searcher.makeXML(topDocs, TEST_MAXDOCS);
 
-		final PipedOutputStream src = new PipedOutputStream();
-		final PipedInputStream snk = new PipedInputStream(src);
-		
-		ExecutorService executor = Executors.newFixedThreadPool(2);
+		final PipedInputStream snk = new PipedInputStream();
 		
 		// Writing and parsing XML via pipe should be done simultaneously
+		ExecutorService executor = Executors.newCachedThreadPool();
 		Future<?> saveXml = executor.submit(new Runnable() {
 			@Override
 			public void run() {
-				try {
+				try (PipedOutputStream src = new PipedOutputStream(snk)) {
 					xml.save(src);
 					src.close();
 				} catch (IOException ex) {
@@ -960,60 +961,55 @@ public class SearcherWSTest {
 			}
 		});
 		
-		// Writing and parsing XML via pipe should be done simultaneously
-		Future<?> parseXml = executor.submit(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-					factory.setValidating(false);
-					factory.setNamespaceAware(true);
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setValidating(false);
+		factory.setNamespaceAware(true);
 
-					DocumentBuilder builder = factory.newDocumentBuilder();
-					builder.setErrorHandler(new ErrorHandler() {
+		try {
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			builder.setErrorHandler(new ErrorHandler() {
 
-						@Override
-						public void warning(SAXParseException exception) throws SAXException {
-							throw exception;
-						}
+				@Override
+				public void warning(SAXParseException exception) throws SAXParseException {
+					String msg = String.format("XML not well formed: %s", exception.getMessage());
+					fail(msg);
+				}
 
-						@Override
-						public void error(SAXParseException exception) throws SAXException {
-							throw exception;
-						}
+				@Override
+				public void error(SAXParseException exception) throws SAXParseException {
+					String msg = String.format("XML not well formed: %s", exception.getMessage());
+					fail(msg);
+				}
 
-						@Override
-						public void fatalError(SAXParseException exception) throws SAXException {
-							throw exception;
-						}
-					});
-					builder.parse(snk);
-					snk.close();
-							
-				} catch (SAXException ex) {
-					throw new RuntimeException("XML not vallid", ex);
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				} catch (ParserConfigurationException ex) {
-					throw new Error("Error configuring XML parser", ex);
+				@Override
+				public void fatalError(SAXParseException exception) throws SAXParseException {
+					String msg = String.format("XML not well formed: %s", exception.getMessage());
+					fail(msg);
+				}
+			});
+			try {
+				builder.parse(snk);
+			} catch (SAXParseException ex) {
+				throw ex;
+			} catch (SAXException ex) {
+				throw new Error("Unexpected exception when parsing", ex);
+			}
+			snk.close();
+			
+			try {
+				// Check for exceptions via Future.get().
+				saveXml.get();
+				executor.shutdown();
+			} catch (ExecutionException ex) {
+				Throwable cause = ex.getCause();
+				if(cause instanceof RuntimeException) {
+					throw (RuntimeException)cause;
+				} else  {
+					throw new Error("Unexpected exception when writing XML", cause);
 				}
 			}
-		});
-		
-		try {
-			// Check for exceptions via Future.get().
-
-			
-			saveXml.get();
-			parseXml.get();
-			executor.shutdown();
-		} catch (ExecutionException ex) {
-			Throwable cause = ex.getCause();
-			if(cause instanceof RuntimeException) {
-				throw (RuntimeException)cause;
-			} else  {
-				throw new Error("Unexpected exception when reading/writing XML", cause);
-			}
+		} catch (ParserConfigurationException ex) {
+			throw new Error("error creating XML parser", ex);
 		}
 		
 	}

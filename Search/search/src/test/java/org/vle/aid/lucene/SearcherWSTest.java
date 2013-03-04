@@ -753,13 +753,13 @@ public class SearcherWSTest {
 	 * query is expected to match.
 	 */
 	public enum Queries {
-		Q1("one", EnumSet.of(FieldContents.V1)),
+		Q1("one", Fields.F1, EnumSet.of(FieldContents.V1)),
 		// Lucene searches on whole words not parts of words
-//		Q2("o", EnumSet.of(FieldContents.V1, FieldContents.V2)),
-		Q3("two", EnumSet.of(FieldContents.V2)),
-		Q4("unexisting", EnumSet.noneOf(FieldContents.class)),
+//		Q2("o", Fields.F1, EnumSet.of(FieldContents.V1, FieldContents.V2)),
+		Q3("two", Fields.F1, EnumSet.of(FieldContents.V2)),
+		Q4("unexisting", Fields.F1, EnumSet.noneOf(FieldContents.class)),
 		// Query for a word part of a term
-		Q5("nederlandse", EnumSet.of(FieldContents.V3));
+		Q5("nederlandse", Fields.F1, EnumSet.of(FieldContents.V3));
 
 		public enum MatchStrategy {
 			ANY {
@@ -785,6 +785,7 @@ public class SearcherWSTest {
 		}
 		
 		public final String queryText;
+		public final Fields field;
 		public final Set<FieldContents> foundIn;
 
 		public static Matcher<Queries> matchFieldContents(
@@ -809,8 +810,24 @@ public class SearcherWSTest {
 			};
 		}
 				
-		private Queries(String queryText_, Set<FieldContents> foundIn_) {
+		/**
+		 * Create a Lucene {@link org.apache.lucene.search.Query} for documents with 
+		 * {@code field} containing {@code query}'s {@link Queries#queryText}.
+		 * 
+		 * @param field	{@link Fields#name()} to use as {@code fld} in 
+		 * 		{@link org.apache.lucene.index.Term#Term(java.lang.String, java.lang.String) }
+		 * @param query {@code text} for 
+		 * 		{@link org.apache.lucene.index.Term#Term(java.lang.String, java.lang.String) }
+		 * 
+		 * @return a Lucene {@link org.apache.lucene.search.TermQuery}
+		 */
+		private Query createTermQuery() {
+			return new TermQuery(new Term(field.name(), queryText));
+		}
+
+		private Queries(String queryText_, Fields field_, Set<FieldContents> foundIn_) {
 			queryText = queryText_;
+			field = field_;
 			foundIn = Collections.unmodifiableSet(foundIn_);
 		}
 	}
@@ -880,7 +897,7 @@ public class SearcherWSTest {
 	static public IndexedDocuments docStoreConfigs[] = {
 		builder("empty").build(),
 		builder("one_doc_one_field").of(Documents.D1).with(Fields.F1).value(FieldContents.V1).build(),
-		builder("two_word_term").of(Documents.D2).with(Fields.F3).value(FieldContents.V3).build()
+		builder("two_word_term").of(Documents.D1).with(Fields.F1).value(FieldContents.V3).build()
 	};
 
 	/**
@@ -937,16 +954,16 @@ public class SearcherWSTest {
 	 */
 	@Theory
 	public void testUnderscoreSearch_recall_queryTermInDocs_resultsContainDoc(
-			final Fields field, final Queries query) throws IOException {
+			final Queries query) throws IOException {
 		Matcher<Queries> matchesAnyStoredDocument =
-				storedDocs.allDocsMatcher(field, Queries.MatchStrategy.ANY);
+				storedDocs.allDocsMatcher(query.field, Queries.MatchStrategy.ANY);
 		assumeThat(query, matchesAnyStoredDocument);
 
-		Query q = createTermQuery(field, query);
+		Query q = query.createTermQuery();
 		TopDocs topDocs = searcher._search(q);
 		Set<Documents> result = IndexedDocuments.toDocumentSet(index, topDocs);
 		
-		for (Documents doc : storedDocs.hittingDocs(query, field, Queries.MatchStrategy.ANY)) {
+		for (Documents doc : storedDocs.hittingDocs(query, query.field, Queries.MatchStrategy.ANY)) {
 			assertThat(result, hasItem(doc));
 		}
 	}
@@ -962,11 +979,11 @@ public class SearcherWSTest {
 	 */
 	@Theory
 	public void testUnderscoreSearch_precision_queryTermNotInDocs_resultsNotContainDoc(
-			final Fields field, final Queries query) throws IOException {
+			final Queries query) throws IOException {
 		EnumSet<Documents> NotHittingDocs = EnumSet.complementOf(
 				storedDocs.hittingDocs(query, Queries.MatchStrategy.ANY));
 				
-		Query q= createTermQuery(field, query);
+		Query q= query.createTermQuery();
 		TopDocs topDocs = searcher._search(q);
 		Set<Documents> result = IndexedDocuments.toDocumentSet(index, topDocs);
 		
@@ -986,9 +1003,9 @@ public class SearcherWSTest {
 	 * 
 	 */
 	@Theory
-	public void testMakeXML_wellFormedXML(final Fields field, final Queries query) 
+	public void testMakeXML_wellFormedXML(final Queries query) 
 			throws IOException, InterruptedException, SAXParseException {
-		Query q=createTermQuery(field, query);
+		Query q = query.createTermQuery();
 		TopDocs topDocs = searcher._search(q);
 		final ResultType xml = searcher.makeXML(topDocs, TEST_MAXDOCS);
 
@@ -1041,20 +1058,7 @@ public class SearcherWSTest {
 		}
 	}
 
-	/**
-	 * Create a Lucene {@link org.apache.lucene.search.Query} for documents with 
-	 * {@code field} containing {@code query}'s {@link Queries#queryText}.
-	 * 
-	 * @param field	{@link Fields#name()} to use as {@code fld} in 
-	 * 		{@link org.apache.lucene.index.Term#Term(java.lang.String, java.lang.String) }
-	 * @param query {@code text} for 
-	 * 		{@link org.apache.lucene.index.Term#Term(java.lang.String, java.lang.String) }
-	 * 
-	 * @return a Lucene {@link org.apache.lucene.search.TermQuery}
-	 */
-	private static Query createTermQuery(Fields field, Queries query) {
-		return new TermQuery(new Term(field.name(), query.queryText));
-	}
+//	public void testMakeXML_recall(final Fields)
 
 	private static void deleteIfExists(File file) {
 		if (file != null && file.exists()) {

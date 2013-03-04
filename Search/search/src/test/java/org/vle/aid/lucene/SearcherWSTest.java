@@ -57,6 +57,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
+import org.junit.Assert;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
@@ -813,6 +814,52 @@ public class SearcherWSTest {
 			foundIn = Collections.unmodifiableSet(foundIn_);
 		}
 	}
+
+	/**
+	 * Fail test when receiving a {@link SAXParseException}
+	 */
+	private static class SAXExceptionHandler implements ErrorHandler {
+		private enum Level {
+			warning,
+			error,
+			fatalError
+		}
+
+		private static final String MSG_FORMAT = "XML not well formed (%s): %s";
+
+		private static SAXExceptionHandler instance = null;
+
+		public static SAXExceptionHandler getInstance() {
+			if(instance == null) {
+				instance = new SAXExceptionHandler();
+			}
+			return instance;
+		}
+		
+		private SAXExceptionHandler() {
+			// No code needed
+		}
+		
+		private void failTest(Level l, SAXParseException ex) {
+			final String msg = String.format(MSG_FORMAT, l.name(), ex.toString());
+			fail(msg);
+		}
+
+		@Override
+		public void warning(SAXParseException exception) {
+			failTest(Level.warning, exception);
+		}
+
+		@Override
+		public void error(SAXParseException exception) {
+			failTest(Level.error, exception);
+		}
+
+		@Override
+		public void fatalError(SAXParseException exception) {
+			failTest(Level.fatalError, exception);
+		}
+	}
 	
 	private final static int TEST_MAXDOCS = 1000;
 	private File fIndex;
@@ -967,26 +1014,7 @@ public class SearcherWSTest {
 
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			builder.setErrorHandler(new ErrorHandler() {
-
-				@Override
-				public void warning(SAXParseException exception) throws SAXParseException {
-					String msg = String.format("XML not well formed: %s", exception.getMessage());
-					fail(msg);
-				}
-
-				@Override
-				public void error(SAXParseException exception) throws SAXParseException {
-					String msg = String.format("XML not well formed: %s", exception.getMessage());
-					fail(msg);
-				}
-
-				@Override
-				public void fatalError(SAXParseException exception) throws SAXParseException {
-					String msg = String.format("XML not well formed: %s", exception.getMessage());
-					fail(msg);
-				}
-			});
+			builder.setErrorHandler(SAXExceptionHandler.getInstance());
 			try {
 				builder.parse(snk);
 			} catch (SAXParseException ex) {
@@ -1011,7 +1039,6 @@ public class SearcherWSTest {
 		} catch (ParserConfigurationException ex) {
 			throw new Error("error creating XML parser", ex);
 		}
-		
 	}
 
 	/**

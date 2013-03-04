@@ -753,13 +753,15 @@ public class SearcherWSTest {
 	 * query is expected to match.
 	 */
 	public enum Queries {
-		Q1("one", Fields.F1, EnumSet.of(FieldContents.V1)),
+		Q1(FieldContents.V1.value, Fields.F1, EnumSet.of(FieldContents.V1)),
 		// Lucene searches on whole words not parts of words
 //		Q2("o", Fields.F1, EnumSet.of(FieldContents.V1, FieldContents.V2)),
-		Q3("two", Fields.F1, EnumSet.of(FieldContents.V2)),
+		Q3(FieldContents.V2.value, Fields.F1, EnumSet.of(FieldContents.V2)),
 		Q4("unexisting", Fields.F1, EnumSet.noneOf(FieldContents.class)),
 		// Query for a word part of a term
-		Q5("nederlandse", Fields.F1, EnumSet.of(FieldContents.V3));
+		Q5("nederlandse", Fields.F1, EnumSet.of(FieldContents.V3)),
+		// Query for a term in a different field than the indexed documents
+		Q6(FieldContents.V1.value, Fields.F2, EnumSet.of(FieldContents.V1));
 
 		public enum MatchStrategy {
 			ANY {
@@ -906,14 +908,6 @@ public class SearcherWSTest {
 	 */
 	@DataPoints
 	static public Queries allQueries[] = Queries.values();
-		
-	/**
-	 * All items of {@link Fields}. Extend {@code Fields} with new items to test
-	 * {@link SearcherWS} with additional fields.
-	 */
-	@DataPoints
-	static public Fields allFields[] = Fields.values();
-	
 	
 	public SearcherWSTest(final IndexedDocuments storedDocs_) {
 		storedDocs = storedDocs_;

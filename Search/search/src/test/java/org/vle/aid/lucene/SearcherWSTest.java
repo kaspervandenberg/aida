@@ -1010,13 +1010,14 @@ public class SearcherWSTest {
 		final ResultType xml = searcher.makeXML(topDocs, TEST_MAXDOCS);
 
 		final PipedInputStream snk = new PipedInputStream();
+		final PipedOutputStream src = new PipedOutputStream(snk);
 		
 		// Writing and parsing XML via pipe should be done simultaneously
 		ExecutorService executor = Executors.newCachedThreadPool();
 		Future<?> saveXml = executor.submit(new Runnable() {
 			@Override
 			public void run() {
-				try (PipedOutputStream src = new PipedOutputStream(snk)) {
+				try  {
 					xml.save(src);
 					src.close();
 				} catch (IOException ex) {

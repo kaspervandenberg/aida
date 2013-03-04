@@ -885,7 +885,7 @@ public class SearcherWSTest {
 	 * If a document matches a query, {@code SearcherWS} should return that 
 	 * document.
 	 * 
-	 * @throws IOException	when {@link SearcherWS#_search(org.apache.lucene.store.Directory, org.apache.lucene.search.Query, int) }
+	 * @throws IOException	when {@link SearcherWS#_search(org.apache.lucene.search.Query) }
 	 * 		throws it
 	 */
 	@Theory
@@ -910,7 +910,7 @@ public class SearcherWSTest {
 	 * If a document does not match a query {@code SearcherWS} should not return
 	 * that document.
 	 * 
-	 * @throws IOException	when {@link SearcherWS#_search(org.apache.lucene.store.Directory, org.apache.lucene.search.Query, int) }
+	 * @throws IOException	when {@link SearcherWS#_search(org.apache.lucene.search.Query) }
 	 * 		throws it
 	 */
 	@Theory
@@ -928,6 +928,14 @@ public class SearcherWSTest {
 		}
 	}
 
+	/**
+	 * Test whether {@link SearcherWS#makeXML(org.apache.lucene.search.TopDocs, int) 
+	 * returns well formed XML.
+	 * 
+	 * @throws IOException	<ul><li>when {@link SearcherWS#_search(org.apache.lucene.search.Query) } throws it; or</li>
+	 * 						<li>when {@link SearcherWS#makeXML(org.apache.lucene.search.TopDocs, int) throws it</li></ul>
+	 * @throws InterruptedException 
+	 */
 	@Theory
 	public void testMakeXML_wellFormedXML(final Fields field, final Queries query) throws IOException, InterruptedException {
 		Query q=createTermQuery(field, query);
@@ -939,6 +947,7 @@ public class SearcherWSTest {
 		
 		ExecutorService executor = Executors.newFixedThreadPool(2);
 		
+		// Writing and parsing XML via pipe should be done simultaneously
 		Future<?> saveXml = executor.submit(new Runnable() {
 			@Override
 			public void run() {
@@ -951,6 +960,7 @@ public class SearcherWSTest {
 			}
 		});
 		
+		// Writing and parsing XML via pipe should be done simultaneously
 		Future<?> parseXml = executor.submit(new Runnable() {
 			@Override
 			public void run() {

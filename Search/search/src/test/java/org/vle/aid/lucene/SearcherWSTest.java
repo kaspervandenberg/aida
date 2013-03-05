@@ -119,8 +119,8 @@ public class SearcherWSTest {
 
 		public <T> Matcher<T> containedIn(Class<T> itemType) {
 			if (Node.class.isAssignableFrom(itemType)) {
-				String xpath = String.format("%s[/value=\"%s\"]",
-						XpathExpr.DOC_ID.expr,
+				String xpath = String.format("%s[.=\"%s\"]",
+						XpathExpr.DOC_ID_VALUE.expr,
 						this.name());
 				return (Matcher<T>)hasXPath(xpath);
 			} else if (Iterable.class.isAssignableFrom(itemType)) {

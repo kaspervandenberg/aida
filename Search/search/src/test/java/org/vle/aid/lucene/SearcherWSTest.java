@@ -273,6 +273,18 @@ public class SearcherWSTest {
 		assertThat(xmlResult, matchers.containsAllExpectedResultsOf(Node.class, query));
 	}
 
+	@Theory
+	public void testSearch_precision(final Queries query) throws SAXException, IOException {
+		assumeTrue(indexDirEnvValid());
+		
+		String queryStr = query.queryText;
+		String resultStr = searcher.search(index.getDirectory().getName(),
+				queryStr, Integer.valueOf(TEST_MAXDOCS).toString(), query.field.name());
+		Node xmlResult = XMLUtil.getInstance().toXmlNode(resultStr);
+		
+		assertThat(xmlResult, matchers.containsNoUnexpectedResultsOf(Node.class, query));
+	}
+
 	private static boolean indexDirEnvValid() {
 		try {
 			File indexDir = indexDirEnv();

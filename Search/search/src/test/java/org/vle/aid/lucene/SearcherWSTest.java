@@ -1209,6 +1209,23 @@ public class SearcherWSTest {
 		}
 	}
 
+	@Theory
+	public void testSearch_recall(final Queries query) throws SAXException, IOException {
+		Matcher<Queries> matchesAnyStoredDocument =
+				storedDocs.allDocsMatcher(query.field, Queries.MatchStrategy.ANY);
+		assumeThat(query, matchesAnyStoredDocument);
+		assumeTrue(indexDirEnvValid());
+		
+		String queryStr = query.queryText;
+		String resultStr = searcher.search(index.getDirectory().getName(),
+				queryStr, Integer.valueOf(TEST_MAXDOCS).toString(), query.field.name());
+		Node xmlResult = toXmlNode(resultStr);
+		
+		for(Documents doc : storedDocs.hittingDocs(query, query.field, Queries.MatchStrategy.ANY)) {
+			assertThat(xmlResult, doc.containedIn(Node.class));
+		}
+	}
+
 	private static Node toXmlNode(final String xmlContents) {
 		DocumentBuilder xmlDocBuilder = createXmlDocBuilder(true);
 		InputStream resultStream = new ByteArrayInputStream(xmlContents.getBytes(Charset.defaultCharset()));

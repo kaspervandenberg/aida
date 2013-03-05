@@ -933,7 +933,8 @@ public class SearcherWSTest {
 	 */
 	private enum XpathExpr {
 		DOC_ID(String.format(
-				"doc/field[@name=\"%s\"]",
+				".//doc/field[@name=\"%s\"]",
+//				"(aid:result|.)/doc/field[@name=\"%s\"]",
 				IndexedDocuments.AuxFields._ID.name())),
 		DOC_ID_VALUE(DOC_ID.expr + "/value");
 
@@ -1227,7 +1228,7 @@ public class SearcherWSTest {
 	}
 
 	private static Node toXmlNode(final String xmlContents) {
-		DocumentBuilder xmlDocBuilder = createXmlDocBuilder(true);
+		DocumentBuilder xmlDocBuilder = createXmlDocBuilder(false);
 		InputStream resultStream = new ByteArrayInputStream(xmlContents.getBytes(Charset.defaultCharset()));
 		Node result;
 		try {

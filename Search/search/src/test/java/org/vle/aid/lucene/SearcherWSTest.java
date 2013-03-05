@@ -2,11 +2,16 @@
  */
 package org.vle.aid.lucene;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,7 +61,6 @@ import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.core.IsEqual.equalTo;
 import org.hamcrest.xml.HasXPath;
 import static org.hamcrest.xml.HasXPath.*;
 import org.junit.Assert;
@@ -112,6 +116,19 @@ public class SearcherWSTest {
 		D1,
 		D2,
 		D3;
+
+		public <T> Matcher<T> containedIn(Class<T> itemType) {
+			if (Node.class.isAssignableFrom(itemType)) {
+				String xpath = String.format("%s[/value=\"%s\"]",
+						XpathExpr.DOC_ID.expr,
+						this.name());
+				return (Matcher<T>)hasXPath(xpath);
+			} else if (Iterable.class.isAssignableFrom(itemType)) {
+				return (Matcher<T>)hasItem(this);
+			}
+			throw new Error(new IllegalArgumentException(
+					String.format("contained in not supported for %s", itemType.getName())));
+		}
 
 		public static Set<FieldContents> combinedContents(Map<Fields, Set<FieldContents>> fields) {
 			Set<FieldContents> result = EnumSet.noneOf(FieldContents.class);
@@ -605,6 +622,78 @@ public class SearcherWSTest {
 		}
 
 		/**
+		 * Return a {@link Iterable} of {@link Matcher} that matches if 
+		 * {@code item} contains all elements of {@code docs} and that can be 
+		 * used in {@link CoreMatchers#allOf(java.lang.Iterable)} and 
+		 * {@link CoreMatchers#anyOf(java.lang.Iterable) }.
+		 * 
+		 * @param <T>	the class of items the matchers can operate on.  See 
+		 * 		{@link Documents#containedIn(java.lang.Class) } for supported 
+		 * 		values.
+		 * @param itemType idem to {@code <T>}
+		 * @param docs	the set of documents to match
+		 * 
+		 * @return 	an Iterable that calls {@link Documents#containedIn(java.lang.Class) }
+		 * 		on each element of {@code docs}
+		 */
+		public <T> Iterable<Matcher<? extends T>> containingAll(
+				final Iterable<Documents> docs, final Class<T> itemType) {
+			return new Iterable<Matcher<? extends T>>() {
+				@Override
+				public Iterator<Matcher<? extends T>> iterator() {
+					return new Iterator<Matcher<? extends T>>() {
+						private final Iterator<Documents> iDocs = docs.iterator();
+
+						@Override public boolean hasNext() { return iDocs.hasNext(); }
+
+						@Override public Matcher<T> next() { return iDocs.next().containedIn(itemType); }
+
+						@Override public void remove() { iDocs.remove(); }
+					};
+				}
+			};
+		}
+		
+		/**
+		 * Return a {@link Matcher} that matches when {@code item} contains
+		 * all {@link Documents} expected as result for {@code query}. 
+		 * 
+		 * @param <T>	the class of items the matchers can operate on.  See 
+		 * 		{@link Documents#containedIn(java.lang.Class) } for supported 
+		 * 		values.
+		 * @param itemType idem to {@code <T>}
+		 * @param query	the {@link Queries lucene query} whose {@link #hittingDocs(org.vle.aid.lucene.SearcherWSTest.Queries, org.vle.aid.lucene.SearcherWSTest.Fields, org.vle.aid.lucene.SearcherWSTest.Queries.MatchStrategy) }
+		 * 		to expect.
+		 * 
+		 * @return a matcher for items of type {@code <T>}
+		 */
+		public <T> Matcher<T> containsAllExpectedResultsOf(Class<T> itemtype, Queries query) {
+			return CoreMatchers.allOf(containingAll(
+					hittingDocs(query, query.field, Queries.MatchStrategy.ANY),
+					itemtype));
+		}
+		
+		/**
+		 * Return a {@link Matcher} that matches when {@code item} does not 
+		 * contain any{@link Documents} not expected as result for {@code query}. 
+		 * 
+		 * @param <T>	the class of items the matchers can operate on.  See 
+		 * 		{@link Documents#containedIn(java.lang.Class) } for supported 
+		 * 		values.
+		 * @param itemType idem to {@code <T>}
+		 * @param query	the {@link Queries lucene query} whose complement of 
+		 * 		{@link #hittingDocs(org.vle.aid.lucene.SearcherWSTest.Queries, org.vle.aid.lucene.SearcherWSTest.Fields, org.vle.aid.lucene.SearcherWSTest.Queries.MatchStrategy) }
+		 * 		not to expect.
+		 * 
+		 * @return a matcher for items of type {@code <T>}
+		 */
+		public <T> Matcher<T> containsNoUnexpectedResultsOf(Class<T> itemtype, Queries query) {
+			return CoreMatchers.not(CoreMatchers.anyOf(containingAll(
+					hittingDocs(query, query.field, Queries.MatchStrategy.ANY),
+					itemtype)));
+		}
+		
+		/**
 		 * The set of {@link Documents} that have at least one 
 		 * {@link Fields fields} that matches {@code query}.
 		 * 
@@ -902,6 +991,7 @@ public class SearcherWSTest {
 	}
 	
 	private final static int TEST_MAXDOCS = 1000;
+	private final static String INDEXDIR_ENV = "INDEXDIR";
 	private File fIndex;
 	private FSDirectory index;
 	private final IndexedDocuments storedDocs;
@@ -979,7 +1069,7 @@ public class SearcherWSTest {
 		Set<Documents> result = IndexedDocuments.toDocumentSet(index, topDocs);
 		
 		for (Documents doc : storedDocs.hittingDocs(query, query.field, Queries.MatchStrategy.ANY)) {
-			assertThat(result, hasItem(doc));
+			assertThat(result, doc.containedIn(Set.class));
 		}
 	}
 
@@ -1003,7 +1093,7 @@ public class SearcherWSTest {
 		Set<Documents> result = IndexedDocuments.toDocumentSet(index, topDocs);
 		
 		for (Documents doc : NotHittingDocs) {
-			assertThat(result, not(hasItem(doc)));
+			assertThat(result, not(doc.containedIn(Set.class)));
 		}
 	}
 
@@ -1041,36 +1131,27 @@ public class SearcherWSTest {
 			}
 		});
 		
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setValidating(false);
-		factory.setNamespaceAware(true);
-
 		try {
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			builder.setErrorHandler(SAXExceptionHandler.getInstance());
-			try {
-				builder.parse(snk);
-			} catch (SAXParseException ex) {
-				throw ex;
-			} catch (SAXException ex) {
-				throw new Error("Unexpected exception when parsing", ex);
+			DocumentBuilder builder = createXmlDocBuilder(false);
+			builder.parse(snk);
+		} catch (SAXParseException ex) {
+			throw ex;
+		} catch (SAXException ex) {
+			throw new Error("Unexpected exception when parsing", ex);
+		}
+		snk.close();
+		
+		try {
+			// Check for exceptions via Future.get().
+			saveXml.get();
+			executor.shutdown();
+		} catch (ExecutionException ex) {
+			Throwable cause = ex.getCause();
+			if(cause instanceof RuntimeException) {
+				throw (RuntimeException)cause;
+			} else  {
+				throw new Error("Unexpected exception when writing XML", cause);
 			}
-			snk.close();
-			
-			try {
-				// Check for exceptions via Future.get().
-				saveXml.get();
-				executor.shutdown();
-			} catch (ExecutionException ex) {
-				Throwable cause = ex.getCause();
-				if(cause instanceof RuntimeException) {
-					throw (RuntimeException)cause;
-				} else  {
-					throw new Error("Unexpected exception when writing XML", cause);
-				}
-			}
-		} catch (ParserConfigurationException ex) {
-			throw new Error("error creating XML parser", ex);
 		}
 	}
 
@@ -1094,11 +1175,11 @@ public class SearcherWSTest {
 
 		Query q = query.createTermQuery();
 		TopDocs topDocs = searcher._search(q);
-		ResultType xmlResult = searcher.makeXML(topDocs, TEST_MAXDOCS);
-		Node xmlNode = xmlResult.getDomNode();
+		ResultType result = searcher.makeXML(topDocs, TEST_MAXDOCS);
+		Node xmlResult = toXmlNode(result);
 
-		for(Documents expectedDoc : storedDocs.hittingDocs(query, query.field, Queries.MatchStrategy.ANY)) {
-			assertThat(xmlNode, hasXPath(XpathExpr.DOC_ID_VALUE.expr, equalTo(expectedDoc.name())));
+		for(Documents doc : storedDocs.hittingDocs(query, query.field, Queries.MatchStrategy.ANY)) {
+			assertThat(xmlResult, doc.containedIn(Node.class));
 		}
 	}
 
@@ -1120,15 +1201,61 @@ public class SearcherWSTest {
 		
 		Query q = query.createTermQuery();
 		TopDocs topDocs = searcher._search(q);
-		ResultType xmlResult = searcher.makeXML(topDocs, TEST_MAXDOCS);
-		Node xmlNode = xmlResult.getDomNode();
+		ResultType result = searcher.makeXML(topDocs, TEST_MAXDOCS);
+		Node xmlResult = toXmlNode(result);
 
-		for(Documents notExpectedDoc : notHittingDocs) {
-			String xpath = String.format("%s[/value=\"%s\"]",
-					XpathExpr.DOC_ID.expr,
-					notExpectedDoc.name());
-			assertThat(xmlNode, not(hasXPath(xpath)));
+		for(Documents doc : notHittingDocs) {
+			assertThat(xmlResult, not(doc.containedIn(Node.class)));
 		}
+	}
+
+	private static Node toXmlNode(final String xmlContents) {
+		DocumentBuilder xmlDocBuilder = createXmlDocBuilder(true);
+		InputStream resultStream = new ByteArrayInputStream(xmlContents.getBytes(Charset.defaultCharset()));
+		Node result;
+		try {
+			result = xmlDocBuilder.parse(resultStream);
+			return result;
+		} catch (SAXException | IOException ex) {
+			throw new Error("Error parsing XML file", ex);
+		}
+	}
+
+	private static Node toXmlNode(final ResultType xmlContents) {
+		return xmlContents.getDomNode();
+	}
+	
+	private static DocumentBuilder createXmlDocBuilder(final boolean validating) {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setValidating(validating);
+		factory.setNamespaceAware(true);
+
+		try {
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			builder.setErrorHandler(SAXExceptionHandler.getInstance());
+			return builder;
+		} catch (ParserConfigurationException ex) {
+			throw new Error("error creating XML parser", ex);
+		}
+	}
+
+	private static boolean indexDirEnvValid() {
+		try {
+			File indexDir = indexDirEnv();
+			return indexDir.exists();
+		} catch (InvalidPathException | IllegalStateException ex) {
+			return false;
+		}
+	}
+
+	private static File indexDirEnv() throws InvalidPathException {
+		String s_indexDir = System.getenv(INDEXDIR_ENV);
+		if (s_indexDir != null) {
+			Path p_indexDir = FileSystems.getDefault().getPath(s_indexDir);
+			return p_indexDir.toFile();
+		}
+		throw new IllegalStateException(String.format(
+				"Environment var %s is not set.",INDEXDIR_ENV));
 	}
 
 	private static void deleteIfExists(File file) {
@@ -1142,9 +1269,8 @@ public class SearcherWSTest {
 	}
 
 	private static File assertCreateTmpPath() {
-		String indexDir_env = System.getenv("INDEXDIR");
-		File aidaIndexes = (indexDir_env != null) ? 
-				FileSystems.getDefault().getPath(indexDir_env).toFile() :
+		File aidaIndexes = (indexDirEnvValid()) ? 
+				indexDirEnv() :
 				FileUtils.getTempDirectory();
 		UUID uuid = UUID.randomUUID();
 		StringBuilder indexName = new StringBuilder()

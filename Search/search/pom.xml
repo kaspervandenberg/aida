@@ -31,9 +31,9 @@
 				<configuration>
 					<skip>false</skip>
 					<workingDirectory>${test.workingDirectory}</workingDirectory>
-					<systemPropertyVariables>
+					<environmentVariables>
 						<INDEXDIR>${test.workingDirectory}/indexes</INDEXDIR>
-					</systemPropertyVariables>
+					</environmentVariables>
 				</configuration>
 			</plugin>
 				

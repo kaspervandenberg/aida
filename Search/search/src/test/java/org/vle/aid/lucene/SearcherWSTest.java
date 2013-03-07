@@ -56,12 +56,14 @@ public class SearcherWSTest {
 	private File fIndex;
 	private FSDirectory index;
 	private final IndexedDocuments storedDocs;
+	private final Queries query;
 	private SearcherWS searcher;
 	private Matchers matchers;
+	private Matcher<Queries> matchesAnyStoredDocument;
 
 	/**
 	 * Interesting configurations to test {@link SearcherWS} with.
-	 * 
+	 *
 	 * Add any configuration of {@link Documents}, {@link Fields}, and 
 	 * {@link FieldContents} you like to test {@code SearcherWS} with.  The 
 	 * tests should succeed with arbitrary configurations.  Extend the 
@@ -82,8 +84,10 @@ public class SearcherWSTest {
 	@DataPoints
 	static public Queries allQueries[] = Queries.values();
 	
-	public SearcherWSTest(final IndexedDocuments storedDocs_) {
+	public SearcherWSTest(final IndexedDocuments storedDocs_,
+			final Queries query_) {
 		storedDocs = storedDocs_;
+		query = query_;
 	}
 
 	@Before
@@ -96,6 +100,8 @@ public class SearcherWSTest {
 			
 			searcher = new SearcherWS();
 			searcher.setIndexLocation(fIndex);
+			matchesAnyStoredDocument =
+					matchers.allDocsMatcher(query.field, Queries.MatchStrategy.ANY);
 		} catch (IOException ex) {
 			String msg = String.format(
 					"Unable to open index %s in path %s",
@@ -121,10 +127,8 @@ public class SearcherWSTest {
 	 * 		throws it
 	 */
 	@Theory
-	public void testUnderscoreSearch_recall_queryTermInDocs_resultsContainDoc(
-			final Queries query) throws IOException {
-		Matcher<Queries> matchesAnyStoredDocument =
-				matchers.allDocsMatcher(query.field, Queries.MatchStrategy.ANY);
+	public void testUnderscoreSearch_recall_queryTermInDocs_resultsContainDoc()
+			throws IOException {
 		assumeThat(query, matchesAnyStoredDocument);
 
 		Query q = query.createTermQuery();
@@ -144,8 +148,8 @@ public class SearcherWSTest {
 	 * 		throws it
 	 */
 	@Theory
-	public void testUnderscoreSearch_precision_queryTermNotInDocs_resultsNotContainDoc(
-			final Queries query) throws IOException {
+	public void testUnderscoreSearch_precision_queryTermNotInDocs_resultsNotContainDoc()
+			throws IOException {
 		Query q= query.createTermQuery();
 		TopDocs topDocs = searcher._search(q);
 		Set<Documents> result = IndexedDocuments.toDocumentSet(index, topDocs);
@@ -164,7 +168,7 @@ public class SearcherWSTest {
 	 * 
 	 */
 	@Theory
-	public void testMakeXML_wellFormedXML(final Queries query) 
+	public void testMakeXML_wellFormedXML() 
 			throws IOException, InterruptedException, SAXParseException {
 		Query q = query.createTermQuery();
 		TopDocs topDocs = searcher._search(q);
@@ -224,9 +228,7 @@ public class SearcherWSTest {
 	 * 		throws it.</li></ul>
 	 */
 	@Theory
-	public void testMakeXML_recall(final Queries query) throws IOException {
-		Matcher<Queries> matchesAnyStoredDocument =
-				matchers.allDocsMatcher(query.field, Queries.MatchStrategy.ANY);
+	public void testMakeXML_recall() throws IOException {
 		assumeThat(query, matchesAnyStoredDocument);
 
 		Query q = query.createTermQuery();
@@ -249,7 +251,7 @@ public class SearcherWSTest {
 	 * 		throws it.</li></ul>
 	 */
 	@Theory
-	public void testMakeXML_precision(final Queries query) throws IOException {
+	public void testMakeXML_precision() throws IOException {
 		Query q = query.createTermQuery();
 		TopDocs topDocs = searcher._search(q);
 		ResultType result = searcher.makeXML(topDocs, TEST_MAXDOCS);
@@ -259,9 +261,7 @@ public class SearcherWSTest {
 	}
 
 	@Theory
-	public void testSearch_recall(final Queries query) throws SAXException, IOException {
-		Matcher<Queries> matchesAnyStoredDocument =
-				matchers.allDocsMatcher(query.field, Queries.MatchStrategy.ANY);
+	public void testSearch_recall() throws SAXException, IOException {
 		assumeThat(query, matchesAnyStoredDocument);
 		assumeTrue(indexDirEnvValid());
 		
@@ -274,7 +274,7 @@ public class SearcherWSTest {
 	}
 
 	@Theory
-	public void testSearch_precision(final Queries query) throws SAXException, IOException {
+	public void testSearch_precision() throws SAXException, IOException {
 		assumeTrue(indexDirEnvValid());
 		
 		String queryStr = query.queryText;

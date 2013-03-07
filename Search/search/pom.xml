@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>search</artifactId>
-	<version>0.76-SNAPSHOT</version>
+	<version>0.77-SNAPSHOT</version>
 	<packaging>war</packaging>
 	
 	<parent>
@@ -24,7 +24,19 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-			
+
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.13</version>
+				<configuration>
+					<skip>false</skip>
+					<workingDirectory>${test.workingDirectory}</workingDirectory>
+					<systemPropertyVariables>
+						<INDEXDIR>${test.workingDirectory}/indexes</INDEXDIR>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+				
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>xmlbeans-maven-plugin</artifactId>
@@ -165,6 +177,19 @@
 			<scope>test</scope>
 			<!--
 				Used in org.vle.aid.lucene.SearcherWSTest
+			-->
+		</dependency>
+
+		<dependency>
+			<groupId>com.sudhir.utils</groupId>
+			<artifactId>jsonmatchers</artifactId>
+			<version>1.1-SNAPSHOT</version>
+			<scope>test</scope>
+			<!--
+				Used in org.vle.aid.lucene.SearcherWSTest
+			-->
+			<!--
+				Not found in central repo, installed in Kasper's Dropbox.
 			-->
 		</dependency>
 	</dependencies>

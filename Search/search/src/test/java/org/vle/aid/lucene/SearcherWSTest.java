@@ -288,7 +288,8 @@ public class SearcherWSTest {
 	private static boolean indexDirEnvValid() {
 		try {
 			File indexDir = indexDirEnv();
-			return indexDir.exists();
+			return true;
+//			return indexDir.exists();
 		} catch (InvalidPathException | IllegalStateException ex) {
 			return false;
 		}

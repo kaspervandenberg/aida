@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>search</artifactId>
-	<version>0.77-SNAPSHOT</version>
+	<version>0.78-SNAPSHOT</version>
 	<packaging>war</packaging>
 	
 	<parent>
@@ -12,6 +12,31 @@
 		<version>0.1-SNAPSHOT</version>
 		<relativePath>../../maven-parent-serviceServlet</relativePath>
 	</parent>
+
+	<profiles>
+		<profile>
+			<id>test_Vocab</id>
+			<properties>
+				<!--
+					Host on which services are deployed.
+				-->
+				<target.host>vocab.maastro.nl</target.host>
+
+				<!--
+					Port on which tomcat services listen.
+				-->
+				<target.port>80</target.port>
+
+				<!--
+					URL of Search/search webservice.
+					Used when testing Search/search.
+				-->
+				<target.search.url>
+					HTTP://${target.host}:${target.port}/search/
+				</target.search.url>
+			</properties>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
@@ -34,6 +59,9 @@
 					<environmentVariables>
 						<INDEXDIR>${test.workingDirectory}/indexes</INDEXDIR>
 					</environmentVariables>
+					<systemProperties>
+						<target.search.url>${target.search.url}</target.search.url>
+					</systemProperties>
 				</configuration>
 			</plugin>
 				
@@ -181,6 +209,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20090211</version>
+			<scope>test</scope>
+			<!--
+				Used in org.vle.aid.lucene.BugAida3Test, and 
+				org.vle.aid.lucene.SearcherWSTest indirectly. 
+			-->
+		</dependency>
+
+		<dependency>
 			<groupId>com.sudhir.utils</groupId>
 			<artifactId>jsonmatchers</artifactId>
 			<version>1.1</version>
@@ -192,6 +231,14 @@
 				Not found in central repo, installed in Kasper's Dropbox.
 			-->
 		</dependency>
+		
+		<dependency>
+	  	<groupId>org.apache.httpcomponents</groupId>
+		  <artifactId>httpclient</artifactId>
+		  <version>4.2.3</version>
+		  <scope>test</scope>
+			<!-- Used in org.vle.aid.lucene.BugAida3Test. -->
+	 	</dependency>
 	</dependencies>
 </project>
 

@@ -14,12 +14,13 @@ import org.vle.aid.ResultDocument;
 import org.vle.aid.ResultType;
 
 /**
+ * See {@link SearcherWSTest} for more exhaustive tests of SearcherWS
  *
  * @author emeij
  */
-public class SearcherWSTest extends TestCase {
+public class SearcherWSTest_Basic extends TestCase {
     
-    public SearcherWSTest(String testName) {
+    public SearcherWSTest_Basic(String testName) {
         super(testName);
     }            
 

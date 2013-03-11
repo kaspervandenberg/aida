@@ -213,21 +213,45 @@ public class SearcherWS {
     }
   }
   
-  private TopDocs _search (Query query) throws IOException {
-    Directory indexDir = FSDirectory.open(indexLocation); 
-    if (DirectoryReader.indexExists(indexDir)) {
-      searcher = new IndexSearcher(DirectoryReader.open(indexDir));
-	} else {
-      throw new IOException("No index found in " + indexLocation);
+/**
+ * Call lucene and search for {@code query} in {@code indexDir}.
+ * 
+ * Side effect set {@link #searcher}
+ * 
+ * @see SearcherWSTest
+ * 
+ * @param indexDir		the Lucene index {@link Directory} to search in.
+ * @param query			the query to search for.
+ * @param numMaxHits	the number of maximum hits to limit 
+ * 		{@link IndexSearcher#search(Query, int)}.
+ * 
+ * @return	the {@link TopDocs} that {@link IndexSearcher#search(Query, int)} returns.
+ * 
+ * @throws IOException	 When {@code indexDir} does not contain an index.
+ */
+TopDocs _search (Query query) throws IOException {
+	if(indexLocation == null || !indexLocation.exists()) {
+		throw new Error(
+				new IllegalStateException("Set indexLocation before calling _search"));
 	}
+	
+    Directory indexDir = FSDirectory.open(indexLocation); 
+	if (DirectoryReader.indexExists(indexDir)) {
+		searcher = new IndexSearcher(DirectoryReader.open(indexDir));
+		TopDocs result = searcher.search(query, numMaxHits);
 
-	TopDocs result = searcher.search(query, numMaxHits);
-
-    return result;
-
+	return result;
+	} else {
+	throw new IOException("No index found in " + indexDir.toString());
+	}
   }
   
-  private ResultType makeXML(TopDocs hits, int intMaxHits) throws IOException {
+  ResultType makeXML(TopDocs hits, int intMaxHits) throws IOException {
+	if(searcher == null) {
+		throw new Error(
+				new IllegalStateException("Set searcher before calling makeXML"));
+	}  
+	
     xmlOpts.setSavePrettyPrint();
     xmlOpts.setSavePrettyPrintIndent(2);
     xmlOpts.setSaveUseOpenFrag();

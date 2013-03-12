@@ -9,15 +9,20 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.Lock;
+import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.util.Version;
 
 public class BaseIndexing {
   
-  public String datadir;
-  public String indexdir;
-  public final File cachedir;
+  public File datadir;
+  private IndexWriterUtil indexWriterUtil;
+//  public FSDirectory indexdir;
+//  public final File cachedir;
   private ConfigurationHandler cfg;
   private HandlerFactory hf;
-  private String BASE;
   public int added = 0;
   public int failed = 0;
   
@@ -38,53 +43,30 @@ public class BaseIndexing {
     
     this.cfg = cfg;
     
-    BASE = Utilities.getINDEXDIR();
     hf = new HandlerFactory(cfg);
 
-    if (name == null || name.length() == 0)
-      name = cfg.getName();
-    if (dataPath == null || dataPath.length() == 0)
-      dataPath = cfg.getDataPath();
-
-    indexdir = BASE + name;
-    datadir = dataPath; 
-
-    // test whether the index is locked
-    if (new File(indexdir, "indexlock").exists())
-      throw new RuntimeException("Index is locked.");
-
-    if (log.isLoggable(Level.FINE)) {
-      log.fine("Indexdir: " + indexdir);
-      log.fine("Datadir: " + datadir);
-    }
-    
-    cachedir = new File(indexdir, "cache");
-    
+	indexWriterUtil = (name == null || name.length() == 0) ?
+			new IndexWriterUtil(cfg) :
+			new IndexWriterUtil(cfg, name);
+	
+    datadir = (dataPath == null || dataPath.length() == 0) ?
+			new File(cfg.getDataPath()) :
+			new File(dataPath);
+	
+		if (log.isLoggable(Level.FINE)) {
+		  log.fine("Indexdir: " + indexWriterUtil.getIndexdir());
+		  log.fine("Datadir: " + datadir);
+		}
+		
   }
 
   /** Adds Documents to the index */
   public boolean addDocuments() throws IOException{
+    IndexWriter writer = indexWriterUtil.createIndexWriter();
 
-    AnalyzerFactory af = new AnalyzerFactory(cfg);
+	assertIsDirectory(indexWriterUtil.getCacheDir());
 
-    // Switch to true if this is a fresh index
-    boolean overwrite = cfg.OverWrite();
-    if (overwrite == false) {
-      if (! new File(indexdir).exists())
-        overwrite = true;
-    }
-
-    IndexWriter writer = new IndexWriter(indexdir, af.getGlobalAnalyzer(), overwrite);
-    writer.setUseCompoundFile(true);
-    writer.setMergeFactor(cfg.getMergeFactor());
-    writer.setMaxBufferedDocs(cfg.getMaxBufferedDocs());
-
-    if (!cachedir.exists())
-      if (!cachedir.mkdirs()) 
-        throw new RuntimeException("Error creating cachedir " + cachedir.getAbsolutePath());
-
-    indexDocs(writer, new File(datadir));
-    writer.optimize();
+    indexDocs(writer, datadir);
     writer.close();    
     return true;
   }
@@ -115,7 +97,7 @@ public class BaseIndexing {
           if (dh != null) {
             try {
               dh.addDocumentToIndex(writer, file);
-              dh.copyDocumentToCache(file, new File(cachedir, file.getName()));
+              dh.copyDocumentToCache(file, new File(indexWriterUtil.getCacheDir(), file.getName()));
               added++;
             } catch (DocumentHandlerException e) {
               if (log.isLoggable(Level.SEVERE))
@@ -128,6 +110,20 @@ public class BaseIndexing {
         }
       }
     }
+  }
+
+  public File getIndexdir() {
+	  return indexWriterUtil.getIndexdir();
+  }
+
+  private void assertIsDirectory(File f) {
+	if(!f.exists()) {
+		f.mkdirs();
+	}
+	
+	if((!f.exists()) || (!f.isDirectory())) {
+		throw new RuntimeException(String.format("Error creating directory %s", f.toString()));
+	}
   }
 
 }

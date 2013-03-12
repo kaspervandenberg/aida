@@ -8,9 +8,6 @@ package indexer;
 import java.util.Iterator;
 import java.util.List;
 import junit.framework.TestCase;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 
 /**
  *
@@ -101,16 +98,6 @@ public class ConfigurationHandlerTest extends TestCase {
   }
 
   /**
-   * Test of getFields method, of class ConfigurationHandler.
-   */
-  public String[] testGetFields(String Doc) {
-    //System.out.println("getFields");
-    
-    return cfg.getFields(Doc);
-    //assertEquals(expResult, result);
-  }
-
-  /**
    * Test of getGlobalAnalyzer method, of class ConfigurationHandler.
    */
   public void testGetGlobalAnalyzer() {
@@ -119,50 +106,6 @@ public class ConfigurationHandlerTest extends TestCase {
     String expResult = "STANDARD";
     String result = cfg.getGlobalAnalyzer();
     assertEquals(expResult, result);
-  }
-
-  /**
-   * Test of getFieldIndexValue method, of class ConfigurationHandler.
-   */
-  public String testGetFieldIndexValue(String Doc, String FieldName) {
-    ////System.out.println("getFieldIndexValue");
-    
-    Index result = cfg.getFieldIndexValue(Doc, FieldName);
-    return "FIV of " + Doc + ", " + FieldName + ": " + result.toString();
-    //assertEquals(expResult, result);
-  }
-
-  /**
-   * Test of getFieldStoreValue method, of class ConfigurationHandler.
-   */
-  public String testGetFieldStoreValue(String Doc, String FieldName) {
-    ////System.out.println("getFieldStoreValue");
-    
-    Store result = cfg.getFieldStoreValue(Doc, FieldName);
-     return "FSV of " + Doc + ", " + FieldName + ": " + result.toString();
-    //assertEquals(expResult, result);
-  }
-
-  /**
-   * Test of getTermVectorValue method, of class ConfigurationHandler.
-   */
-  public String testGetTermVectorValue(String Doc, String FieldName) {
-    ////System.out.println("getTermVectorValue");
-    
-    TermVector result = cfg.getTermVectorValue(Doc, FieldName);
-    return "TV of " + Doc + ", " + FieldName + ": " + result.toString();
-    //assertEquals(expResult, result);
-  }
-
-  /**
-   * Test of getFieldDescription method, of class ConfigurationHandler.
-   */
-  public String testGetFieldDescription(String Doc, String FieldName) {
-    ////System.out.println("getFieldDescription");
-    
-    String result = cfg.getFieldDescription(Doc, FieldName);
-    return "Description of " + Doc + ", " + FieldName + ": " + result;
-    //assertEquals(expResult, result);
   }
 
   /**
@@ -178,7 +121,7 @@ public class ConfigurationHandlerTest extends TestCase {
   /**
    * Test of getDocumentExtensions method, of class ConfigurationHandler.
    */
-  public List<String> testGetDocumentExtensions(String Doc) {
+  public List<String> getDocumentExtensions(String Doc) {
     //System.out.println("getDocumentExtensions");
     
     return cfg.getDocumentExtensions(Doc);
@@ -197,20 +140,11 @@ public class ConfigurationHandlerTest extends TestCase {
     while (it.hasNext()) {
       String doc = it.next();
       
-      List<String> extensions = testGetDocumentExtensions(doc);
+      List<String> extensions = getDocumentExtensions(doc);
       // loop over extensions
       Iterator<String> extit = extensions.iterator();
       while (extit.hasNext()) {
         testGetDocType(extit.next(), doc);
-      }
-      
-      String[] f = testGetFields(doc);
-      // loop over fields
-      for (String i : f) {
-        testGetFieldDescription(doc, i);
-        testGetTermVectorValue(doc, i);
-        testGetFieldStoreValue(doc, i);
-        testGetFieldIndexValue(doc, i);
       }
     }
 

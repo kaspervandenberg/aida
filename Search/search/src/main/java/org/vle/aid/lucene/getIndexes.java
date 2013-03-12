@@ -10,12 +10,15 @@
 
 package org.vle.aid.lucene;
 
+import java.io.IOException;
+import java.util.logging.Level;
 import org.apache.lucene.index.*;
 
 import java.util.*;
-import java.util.Iterator;
 import java.util.logging.Logger;
 import java.io.File;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 
 /**
  *
@@ -36,20 +39,26 @@ public class getIndexes {
     if (indexLocation == null)
       indexLocation = defaultIndexLocation;
 
-    // No 1.5 on Mac os x...
-    // Collection  <String> resultList = new ArrayList <String> ();
-    Collection resultList = new ArrayList ();
+     Collection  <String> resultList = new ArrayList <String> ();
 
     IndexReader reader = null;
     File indexDir = new File(indexLocation);
     File listIndexes[] = indexDir.listFiles();
 
     for (int k = 0; k < listIndexes.length; ++k) {
-      if (reader.indexExists(listIndexes[k]))
-        resultList.add(listIndexes[k].getName());
+			try {
+				Directory indexDirectory = FSDirectory.open(listIndexes[k]);	
+				if (DirectoryReader.indexExists(indexDirectory))
+				  resultList.add(listIndexes[k].getName());
+			} catch (IOException ex) {
+				Logger.getLogger(getIndexes.class.getName()).log(
+						Level.SEVERE,
+						String.format("Unable to open index %s", listIndexes[k]),
+						ex);
+			}
     }
 
-    return (String[]) resultList.toArray(new String[0]);
+    return resultList.toArray(new String[0]);
   }
     
   public String listIndexesJason(String indexLocation) {

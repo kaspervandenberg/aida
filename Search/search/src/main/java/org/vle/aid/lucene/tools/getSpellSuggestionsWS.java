@@ -18,12 +18,11 @@ import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
 import com.aliasi.tokenizer.TokenizerFactory;
 import com.aliasi.util.Streams;
 
+import java.util.logging.Level;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Query;
@@ -39,6 +38,13 @@ import java.util.Properties;
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
 import jdbm.htree.HTree;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 
 public class getSpellSuggestionsWS {
 
@@ -55,13 +61,14 @@ public class getSpellSuggestionsWS {
   CompiledSpellChecker compiledSC;
 
   // Just for DEBUG:
-  static final StandardAnalyzer LUCENE_TOKENIZER = new StandardAnalyzer();
+  static final StandardAnalyzer LUCENE_TOKENIZER = new StandardAnalyzer(Version.LUCENE_41);
   static final double MATCH_WEIGHT = -0.0;
   static final double DELETE_WEIGHT = -2.0;
   static final double INSERT_WEIGHT = -1.0;
   static final double SUBSTITUTE_WEIGHT = -2.0;
   static final double TRANSPOSE_WEIGHT = -2.0;
   private static final int NGRAM_LENGTH = 5;
+  private static final int MAX_DOCS = 1000;
   RecordManager Lucenerecman;
   HTree Lucenehashtable;
 
@@ -108,28 +115,36 @@ public class getSpellSuggestionsWS {
    * @return boolean successful
    */
   private boolean openIndex(File location) {
+		try {
+			if (indexLocation == null) {
+			  log.severe("***INDEXDIR not found!!!***");
+			  indexLocation = "";
+			} else {
+			  log.fine("Found INDEXDIR: " + indexLocation);
+			}
 
-    if (indexLocation == null) {
-      log.severe("***INDEXDIR not found!!!***");
-      indexLocation = "";
-    } else {
-      log.fine("Found INDEXDIR: " + indexLocation);
-    }
+			Directory indexDir = FSDirectory.open(location);
+			if (!DirectoryReader.indexExists(indexDir)) {
+			  log.severe("No index: " + location.toString());
+			  return false;
+			} else {
+			  log.fine("Index found: " + location.toString());
+			  try {
+				reader = DirectoryReader.open(indexDir);
+			  } catch (IOException e) {
+				log.severe(e.toString());
+				return false;
+			  }
 
-    if (!reader.indexExists(location)) {
-      log.severe("No index: " + location.toString());
-      return false;
-    } else {
-      log.fine("Index found: " + location.toString());
-      try {
-        reader = IndexReader.open(location);
-      } catch (IOException e) {
-        log.severe(e.toString());
-        return false;
-      }
-
-      return true;
-    }
+			  return true;
+			}
+		} catch (IOException ex) {
+			Logger.getLogger(getSpellSuggestionsWS.class.getName()).log(
+					Level.SEVERE,
+					String.format("Error opening index %s", location),
+					ex);
+			return false;
+		}
   }
 
   /**
@@ -196,17 +211,18 @@ public class getSpellSuggestionsWS {
 
 
         // Sanity check
-        if (!reader.isDeleted(i)) {
+		org.apache.lucene.util.Bits liveDocs = MultiFields.getLiveDocs(reader);
+		if (liveDocs.get(i)) {
 
           // Not possible in the current implementation
           // String done = (String) Lucenehashtable.get(String.valueOf(i));
 
           if (true) {
             Document doc = reader.document(i);
-            List<Field> fields = doc.getFields();
+            List<IndexableField> fields = doc.getFields();
 
-            for (Iterator<Field> it = fields.iterator(); it.hasNext();) {
-              Field f = it.next();
+            for (Iterator<IndexableField> it = fields.iterator(); it.hasNext();) {
+              IndexableField f = it.next();
               String field_name = f.name();
               String field_value = f.stringValue();
 
@@ -314,7 +330,7 @@ public class getSpellSuggestionsWS {
     }
 
     IndexSearcher searcher = new IndexSearcher(reader);
-    QueryParser parser = new QueryParser(field, LUCENE_TOKENIZER);
+    QueryParser parser = new QueryParser(Version.LUCENE_41, field, LUCENE_TOKENIZER);
     String bestAlternative;
 
     try {
@@ -322,8 +338,8 @@ public class getSpellSuggestionsWS {
       compiledSC = readModel(modelFile);
 
       Query origQuery = parser.parse(term);
-      Hits hits = searcher.search(origQuery);
-      log.info("Found " + hits.length() + " document(s) that matched query '" + term + "':");
+      TopDocs hits = searcher.search(origQuery, MAX_DOCS);
+      log.info("Found " + hits.totalHits + " document(s) that matched query '" + term + "':");
 
       // compute alternative spelling
       bestAlternative = compiledSC.didYouMean(term);
@@ -334,8 +350,8 @@ public class getSpellSuggestionsWS {
       } else {
         try {
           Query alternativeQuery = parser.parse(bestAlternative);
-          Hits hits2 = searcher.search(alternativeQuery);
-          log.info("Found " + hits2.length() + " document(s) matching best alt='" + bestAlternative + "':");
+          TopDocs hits2 = searcher.search(alternativeQuery, NGRAM_LENGTH);
+          log.info("Found " + hits2.totalHits + " document(s) matching best alt='" + bestAlternative + "':");
 
         } catch (ParseException e) {
           log.info("Best alternative not a valid query.");

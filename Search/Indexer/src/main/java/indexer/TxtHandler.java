@@ -12,8 +12,9 @@ import java.util.Vector;
  */
 public class TxtHandler extends DocHandler {
   private final String TYPE= "txt";
-  private ConfigurationHandler cfg;
-  private IndexAdder ia;
+  private final ConfigurationHandler cfg;
+  private final IndexAdder ia;
+  private final ConfigurationHandler.FieldTypeCache fields;
   private List<String> fieldList;
   //private boolean indexDocs = true;
   
@@ -21,12 +22,7 @@ public class TxtHandler extends DocHandler {
   public TxtHandler(ConfigurationHandler config) {
     cfg = config;
     ia = new IndexAdder(cfg);
-    this.fieldList = new Vector<String>();
-
-    String[] fields = cfg.getFields(TYPE);
-    for (int x=0; x<fields.length; x++) {
-      fieldList.add(fields[x]);
-    }
+	fields = cfg.getFields(TYPE);
   }
   
   public String[] getFieldNames(){
@@ -40,7 +36,7 @@ public class TxtHandler extends DocHandler {
       ia.addFieldToDocument(TYPE, "id", file.getName());
       ia.addFieldToDocument(TYPE, "content", Utilities.cleanString(text));
       ia.addFieldToDocument(TYPE, "path", file.getPath());
-      ia.addFieldToDocument(TYPE, "url", file.toURL().toString());
+      ia.addFieldToDocument(TYPE, "url", file.toURI().toString());
       
       //int summarySize = Math.min( text.length(), 1000 );
       //String summary = text.substring( 0, summarySize );

@@ -20,30 +20,35 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.logging.Logger;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
 import org.vle.aid.lucene.tools.Snippet;
-import org.apache.lucene.analysis.WordlistLoader;
+import org.apache.lucene.analysis.util.WordlistLoader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.MultiTermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 import org.apache.xmlbeans.XmlOptions;
 import org.vle.aid.FieldType;
 import org.vle.aid.ResultDocument;
@@ -59,12 +64,12 @@ import org.vle.aid.lucene.tools.Thumbnails;
  */
 public class SearcherWS {
 
-  protected Analyzer analyzer;
-  protected IndexSearcher searcher;
+  private Analyzer analyzer;
+  private IndexSearcher searcher;
   
-  private String indexLocation;
+  private File indexLocation;
   private String index;
-  private String[] stopwords   = null;
+  private CharArraySet stopwords = new CharArraySet(Version.LUCENE_41, 100, true);
   private XmlOptions xmlOpts   = new XmlOptions();
 
   /** logger for Commons logging. */
@@ -99,71 +104,154 @@ public class SearcherWS {
    * @return
    */
   public String getIndexLocation() {
-    return indexLocation;
+    return indexLocation.getPath();
   }
 
+  @Deprecated
   public void setIndexLocation(String indexLocation) {
-    this.indexLocation = indexLocation;
+    this.indexLocation = new File(indexLocation);
     log.info("indexLocation: " +indexLocation);
+  }
+
+  public void setIndexLocation(File indexLocation_) {
+	  this.indexLocation = indexLocation_;
+    log.info(String.format("indexLocation: %s", indexLocation.getPath()));
   }
   
   public void setIndexLocationRelative(String dir) {
 
-    String INDEXDIR = System.getenv("INDEXDIR");
+    File INDEXDIR = new File(System.getenv("INDEXDIR"));
 
     if (INDEXDIR == null) {
         log.severe("***INDEXDIR not found!!!***");
-        INDEXDIR = "";
+        INDEXDIR = new File("");
     } else {
         log.info("Found INDEXDIR: " + INDEXDIR);
     }
     
     this.index = dir;
-    setIndexLocation(INDEXDIR + File.separator + dir);
+    setIndexLocation(new File(INDEXDIR,dir));
   }
 
+  /**
+   * @return array of stopwords that the {@link StandardAnalyzer} uses.
+   * @deprecated	prefer {@link #getStopwords(boolean) }, which returns an
+   * 	{@link CharArraySet}.
+   */
+  @Deprecated
   public String[] getStopwords() {
-    return stopwords;
+	  String result[] = new String[this.stopwords.size()];
+	  return this.stopwords.toArray(result);
   }
 
+  /**
+   * Replace the stopwords that {@link #analyzer} uses with {@code stopwords}.
+   * And replace {@link #analyzer} with one that uses these stopwords.
+   * 
+   * @param stopwords	array of stopwords to use
+   * 
+   * @deprecated	prefer {@link #setStopwords(org.apache.lucene.analysis.util.CharArraySet) },
+   * 	which uses an {@link CharArraySet}.
+   */
+  @Deprecated
   public void setStopwords(String[] stopwords) {
-    this.stopwords = stopwords;
+	  Collection<String> c = Arrays.asList(stopwords);
+	  this.setStopwords(new CharArraySet(Version.LUCENE_41, c, true));
   }
-  
+
+  /**
+   * Retrieve the stopwords used (as in {@link StandardAnalyzer#StandardAnalyzer(org.apache.lucene.util.Version, org.apache.lucene.analysis.util.CharArraySet) }
+   * 
+   * @param notused
+   * 
+   * @return the {@link CharArraySet} containing the stopwords.
+   */
+  public CharArraySet getStopwords(boolean notused) {
+	  return this.stopwords;
+  }
+
+  /**
+   * Replace stopwords that {@link #analyzer} uses with {@code newStopwords}.
+   * And replace {@link #analyzer} with one that uses these stopwords.
+   * 
+   * @param newStopwords 	<ul><li>the stop words to replace the previous set of 
+   * 			stopwords with; or</li>
+   * 		<li>{@code null} replace the analyser with a {@link StandardAnalyzer}
+   * 		without any stopwords.</li></ul>
+   */
+  public void setStopwords(CharArraySet newStopwords) {
+  	  if(newStopwords != null) {
+		  if(this.stopwords != newStopwords) {
+			  this.stopwords.retainAll(newStopwords);
+			  this.stopwords.addAll(newStopwords);
+			  this.analyzer = new StandardAnalyzer(Version.LUCENE_41, this.stopwords);
+		  }
+	  } else {
+		  this.analyzer = new StandardAnalyzer(Version.LUCENE_41);
+	  }
+  }
+
+  /**
+   * Read stopwords from file ({@code stopwords.txt}) in {@link #indexLocation}.
+   * 
+   * @throws IOException 
+   */
   public void setStopwords() throws IOException {
 
-    File stopwordsFile = new File(indexLocation + File.separator + "stopwords.txt");
+    File stopwordsFile = new File(indexLocation, "stopwords.txt");
     
     if (stopwordsFile == null || !stopwordsFile.exists() || !stopwordsFile.canRead()) {
       // throw new IllegalArgumentException("can't read stopword file " + stopwords);
       log.info("Can't read default stopwords file: " + stopwordsFile.getAbsolutePath());
-      analyzer = new StandardAnalyzer();
+	  setStopwords((CharArraySet)null);
     } else {
       // No 1.5 on Mac os x...
       // HashSet <String> stopSet = new HashSet <String> ();
-      HashSet stopSet = new HashSet();
-      stopSet = WordlistLoader.getWordSet(stopwordsFile);
-      String[] tmp = new String[stopSet.size()];
-      stopSet.toArray(tmp);
-      setStopwords(tmp);
-      analyzer = new StandardAnalyzer(stopwords);
+      CharArraySet stopSet = new CharArraySet(Version.LUCENE_41, 100, true);
+      stopSet = WordlistLoader.getWordSet(new FileReader(stopwordsFile), Version.LUCENE_41);
+	  setStopwords(stopSet);
     }
   }
   
-  private Hits _search (Query query) throws IOException {
-    
-    if (IndexReader.indexExists(indexLocation))
-      searcher = new IndexSearcher(indexLocation);
-    else
-      throw new IOException("No index found in " + indexLocation);
-    
-    Hits h = searcher.search(query);
+/**
+ * Call lucene and search for {@code query} in {@code indexDir}.
+ * 
+ * Side effect set {@link #searcher}
+ * 
+ * @see SearcherWSTest
+ * 
+ * @param indexDir		the Lucene index {@link Directory} to search in.
+ * @param query			the query to search for.
+ * @param numMaxHits	the number of maximum hits to limit 
+ * 		{@link IndexSearcher#search(Query, int)}.
+ * 
+ * @return	the {@link TopDocs} that {@link IndexSearcher#search(Query, int)} returns.
+ * 
+ * @throws IOException	 When {@code indexDir} does not contain an index.
+ */
+TopDocs _search (Query query) throws IOException {
+	if(indexLocation == null || !indexLocation.exists()) {
+		throw new Error(
+				new IllegalStateException("Set indexLocation before calling _search"));
+	}
+	
+    Directory indexDir = FSDirectory.open(indexLocation); 
+	if (DirectoryReader.indexExists(indexDir)) {
+		searcher = new IndexSearcher(DirectoryReader.open(indexDir));
+		TopDocs result = searcher.search(query, numMaxHits);
 
-    return h;
-
+	return result;
+	} else {
+	throw new IOException("No index found in " + indexDir.toString());
+	}
   }
   
-  private ResultType makeXML(Hits hits, int intMaxHits) throws IOException {
+  ResultType makeXML(TopDocs hits, int intMaxHits) throws IOException {
+	if(searcher == null) {
+		throw new Error(
+				new IllegalStateException("Set searcher before calling makeXML"));
+	}  
+	
     xmlOpts.setSavePrettyPrint();
     xmlOpts.setSavePrettyPrintIndent(2);
     xmlOpts.setSaveUseOpenFrag();
@@ -176,15 +264,15 @@ public class SearcherWS {
 
     // Create a new instance of ResultType and set the values of its child elements.
     ResultType result = resultDoc.addNewResult();
-    log.info("hits: " + hits.length());
+    log.info("hits: " + hits.totalHits);
 
-    for (int i = 0; i < Math.min(intMaxHits, hits.length()); i++) {
+    for (int i = 0; i < Math.min(intMaxHits, hits.totalHits); i++) {
       
       org.vle.aid.Document doc = result.addNewDoc();
-      List<Field> fields = hits.doc(i).getFields();
+      List<IndexableField> fields = searcher.doc(hits.scoreDocs[i].doc).getFields();
       
-      for (Iterator<Field> it = fields.iterator(); it.hasNext();) {
-        Field f = it.next();
+      for (Iterator<IndexableField> it = fields.iterator(); it.hasNext();) {
+        IndexableField f = it.next();
         FieldType fieldType = doc.addNewField();
 
         fieldType.setName(f.name());
@@ -197,14 +285,14 @@ public class SearcherWS {
       // Add Lucene Document ID
       FieldType fieldType = doc.addNewField();
       fieldType.setName("LuceneDocID");
-      fieldType.setValue(String.valueOf(hits.id(i)));
+      fieldType.setValue(String.valueOf(hits.scoreDocs[i].doc));
 
       doc.setRank(i + 1);
-      doc.setScore(new BigDecimal(hits.score(i)));
+      doc.setScore(new BigDecimal(hits.scoreDocs[i].score));
       log.info("doc: " + doc.getUrl());
     }
 
-    result.setTotal((int)hits.length());
+    result.setTotal(hits.totalHits);
 
     return result;
   }
@@ -238,7 +326,7 @@ public class SearcherWS {
       setStopwords();          
 
       MultiFieldQueryParser parser =
-              new MultiFieldQueryParser(defaultField, analyzer);
+              new MultiFieldQueryParser(Version.LUCENE_41, defaultField, analyzer);
 
       if (operator.equalsIgnoreCase("or"))
           parser.setDefaultOperator(MultiFieldQueryParser.OR_OPERATOR);
@@ -246,7 +334,7 @@ public class SearcherWS {
           parser.setDefaultOperator(MultiFieldQueryParser.AND_OPERATOR);
 
       Query queryTerms = parser.parse(queryString);
-      Hits hits = this._search(queryTerms);
+      TopDocs hits = this._search(queryTerms);
 
       ResultType result = makeXML(hits, intMaxHits);
       result.setQuery(queryTerms.toString());
@@ -256,7 +344,7 @@ public class SearcherWS {
       result.setTime(new BigDecimal(duration));
 
       log.info("Query: " + queryString + ", index: " + index + ", " +
-          hits.length() + " documents, time taken: " + duration + " seconds");
+          hits.totalHits + " documents, time taken: " + duration + " seconds");
 
       ByteArrayOutputStream destStream = new ByteArrayOutputStream();
       result.save(destStream, xmlOpts);
@@ -272,15 +360,6 @@ public class SearcherWS {
       e.printStackTrace(pw);
       log.severe(sw.toString());
       return e.toString();
-    } finally {
-      try {
-        if (searcher != null) {
-          searcher.close();
-        }
-      } catch(IOException e) {
-        log.severe("IOException during closing: " + e);
-        return e.toString();
-      }
     }
   }
 
@@ -316,29 +395,30 @@ public class SearcherWS {
         queryString = queryString.replaceAll("(%3F)", "?");
         // queryString = QueryParser.escape(queryString);
 
-        QueryParser parser = new QueryParser(defaultField, analyzer);
+        QueryParser parser = new QueryParser(Version.LUCENE_41, defaultField, analyzer);
         parser.setDefaultOperator(QueryParser.OR_OPERATOR);
         queryTerms = parser.parse(queryString);
         newQueryString = queryTerms.toString();
         
-        if (IndexReader.indexExists(indexLocation))
-          searcher = new IndexSearcher(indexLocation);
+		Directory indexDir = FSDirectory.open(indexLocation);
+        if (DirectoryReader.indexExists(indexDir))
+          searcher = new IndexSearcher(DirectoryReader.open(indexDir));
         else
           throw new IOException("No index found in " + indexLocation);
     
-        Hits hits = searcher.search(queryTerms);
+        TopDocs hits = searcher.search(queryTerms, numMaxHits);
         queryTerms = searcher.rewrite(queryTerms);        
 
         snip = new Snippet(queryTerms, searcher, analyzer, "content");
 
-        log.info("Received JSON request: \""+ queryString +"\", hits: " + hits.length());
+        log.info("Received JSON request: \""+ queryString +"\", hits: " + hits.totalHits);
         json += "\t\"types\": {\"Result\" : {\"pluralLabel\": \"Results\"}},\n";
-        json += "\t\"hits\" : \""+hits.length()+"\",\n";
+        json += "\t\"hits\" : \""+hits.totalHits+"\",\n";
         json += "\t\"query\" : \"" + newQueryString + "\",\n";
         json += "\n\t\"items\" : [";
 
 
-        for (int i = (start); i < Math.min((start + count), hits.length()); i++) {
+        for (int i = (start); i < Math.min((start + count), hits.totalHits); i++) {
 
           HashMap values_map = new HashMap();
           json += "\n\t{\n\t\t\"type\" : \"Result\", ";
@@ -351,12 +431,12 @@ public class SearcherWS {
           boolean _haspath = false;
           String id = "";
 
-          json += "\n\t\t\"score\" : \"" + hits.score(i) + "\",";
+          json += "\n\t\t\"score\" : \"" + hits.scoreDocs[i].score + "\",";
 
           // first iteration looks for duplicate fields
-          List<Field> fields = hits.doc(i).getFields();
-          for (Iterator<Field> it = fields.iterator(); it.hasNext();) {
-            Field f = it.next();
+		  List<IndexableField> fields = searcher.doc(hits.scoreDocs[i].doc).getFields();
+          for (Iterator<IndexableField> it = fields.iterator(); it.hasNext();) {
+            IndexableField f = it.next();
 
             if (values_map.containsKey(f.name())) {
               Vector v = (Vector) values_map.get(f.name());
@@ -469,7 +549,7 @@ public class SearcherWS {
           json = json.substring(0,json.length()-1) + "\n\t},"; //cut off trailing \",\"
         }
 
-        if (hits.length() == 0)
+        if (hits.totalHits == 0)
           json = "{ \"hits\" : \"0\",        \n \"items\": []}";
         else
           json = json.substring(0,json.length()-1) + "\n]}";//cut off trailing \",\"
@@ -491,15 +571,6 @@ public class SearcherWS {
       } catch(IOException e) {
           log.severe("IOException: " + e);
           json = "{\"success\":false, \"errors\":{\"reason\":\""+e.toString().replaceAll("\\n", "<br/>")+"\"}}";
-      } finally {
-        try {
-          if (searcher != null) {
-            searcher.close();
-          }
-        } catch(IOException e) {
-          log.severe("IOException during closing: " + e);
-          json = "{\"success\":false, \"errors\":{\"reason\":\""+e.toString().replaceAll("\\n", "<br/>")+"\"}}";
-        }
       }
       
       
@@ -527,7 +598,7 @@ public class SearcherWS {
         String newQueryString;
         MultiTermQuery MqueryTerms;
         Query queryTerms;
-        Hits hits;
+        TopDocs hits;
 
         // TODO: debug several escaped characters
         queryString = queryString.replaceAll("(%3F)", "?");
@@ -542,7 +613,7 @@ public class SearcherWS {
               newQueryString = MqueryTerms.toString();
               hits = this._search(MqueryTerms);
           } else {
-              QueryParser parser = new QueryParser(defaultField, analyzer);
+              QueryParser parser = new QueryParser(Version.LUCENE_41, defaultField, analyzer);
               queryTerms = parser.parse(queryString);
               hits = this._search(queryTerms);
               newQueryString = queryTerms.toString();
@@ -556,7 +627,7 @@ public class SearcherWS {
           result.setTime(new BigDecimal(duration));
 
           log.info("Query: " + newQueryString + ", index: " + index + ", " +
-              hits.length() + " documents, time taken: " + duration + " seconds");
+              hits.totalHits + " documents, time taken: " + duration + " seconds");
 
           ByteArrayOutputStream destStream = new ByteArrayOutputStream();
           result.save(destStream, xmlOpts);
@@ -572,15 +643,6 @@ public class SearcherWS {
           e.printStackTrace(pw);
           log.severe(sw.toString());
           return e.toString();
-      } finally {
-        try {
-          if (searcher != null) {
-            searcher.close();
-          }
-        } catch(IOException e) {
-          log.severe("IOException during closing: " + e);
-          return e.toString();
-        }
       }
     }
 
@@ -692,17 +754,18 @@ public class SearcherWS {
         properties = readConfigFile(configFile);
 
         try {
-            if (IndexReader.indexExists((String)properties.get("indexDir")))
-                cmdLineSearcher = new IndexSearcher((String)properties.get("indexDir"));
-            else
+			Directory indexDir = FSDirectory.open(new File((String)properties.get("indexDir")));
+            if (DirectoryReader.indexExists(indexDir)) {
+                cmdLineSearcher = new IndexSearcher(DirectoryReader.open(indexDir));
+			} else
                 throw new IllegalArgumentException("can't read index: " + (String)properties.get("indexDir"));
 
             File stopwords = new File((String)properties.get("stopwords"));
             if (stopwords == null || !stopwords.exists() || !stopwords.canRead()) {
                 System.err.println("can't read stopword file " + stopwords);
-                cmdLineAnalyzer = new StandardAnalyzer();
+                cmdLineAnalyzer = new StandardAnalyzer(Version.LUCENE_41);
             } else {
-                cmdLineAnalyzer = new StandardAnalyzer(stopwords);
+                cmdLineAnalyzer = new StandardAnalyzer(Version.LUCENE_41, new FileReader(stopwords));
             }
 
             BufferedReader input =
@@ -729,25 +792,25 @@ public class SearcherWS {
                     queryID = lineParts[0];
                     queryString = lineParts[1];
                     Query queryTerms;
-                    Hits hits = null;
+                    TopDocs hits = null;
                     float score = 0f;
                     String docID = null;
                     String results = "";
 
                     try {
-                        QueryParser parser = new QueryParser("content", cmdLineAnalyzer);
+                        QueryParser parser = new QueryParser(Version.LUCENE_41, "content", cmdLineAnalyzer);
                         queryTerms = parser.parse(queryString);
                         System.err.println("Searching for: " + queryTerms.toString("content"));
-                        hits = cmdLineSearcher.search(queryTerms);
+                        hits = cmdLineSearcher.search(queryTerms, intMaxHits);
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
 
-                    for (int i = 0; i < Math.min(intMaxHits, hits.length()); i++) {
+                    for (int i = 0; i < hits.totalHits; i++) {
                         Document doc = null;
 
-                        score = hits.score(i);
-                        doc = hits.doc(i);
+                        score = hits.scoreDocs[i].score;
+                        doc = cmdLineSearcher.doc(hits.scoreDocs[i].doc);
                         docID = doc.get("PMID");
 
                         if (docID == null)

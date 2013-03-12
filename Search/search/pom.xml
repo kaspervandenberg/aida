@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.adaptivedisclosure.aida</groupId>
-  <artifactId>search</artifactId>
-  <version>0.73-SNAPSHOT</version>
-  <packaging>war</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.adaptivedisclosure.aida</groupId>
+	<artifactId>search</artifactId>
+	<version>0.79-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
@@ -13,12 +13,72 @@
 		<relativePath>../../maven-parent-serviceServlet</relativePath>
 	</parent>
 
-  <build>
-    <plugins>
+	<profiles>
+		<profile>
+			<id>test_remote_Vocab</id>
+			<properties>
+				<!--
+					Host on which services are deployed.
+				-->
+				<target.host>vocab.maastro.nl</target.host>
+
+				<!--
+					Port on which tomcat services listen.
+				-->
+				<target.port>80</target.port>
+
+				<!--
+					URL of Search/search webservice.
+					Used when testing Search/search.
+				-->
+				<target.search.url>
+					HTTP://${target.host}:${target.port}/search/
+				</target.search.url>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<artifactId>maven-surefire-plugin</artifactId>
+							<configuration>
+								<systemProperties>
+									<target.search.url>${target.search.url}</target.search.url>
+								</systemProperties>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
+
+	<build>
+		<plugins>
+			
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.13</version>
+				<configuration>
+					<skip>false</skip>
+					<workingDirectory>${test.workingDirectory}</workingDirectory>
+					<environmentVariables>
+						<INDEXDIR>${test.workingDirectory}/indexes</INDEXDIR>
+					</environmentVariables>
+				</configuration>
+			</plugin>
+				
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>xmlbeans-maven-plugin</artifactId>
-				<version>2.3.3</version>
 				<executions>
 					<execution>
 						<goals>
@@ -30,7 +90,7 @@
 		</plugins>
 	</build>
 
-  <dependencies>
+	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -48,22 +108,43 @@
 		</dependency>
 
 		<dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <version>2.1.0</version>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>4.1.0</version>
 			<!--
 				used in org.vle.aid.client.*, org.aid.vle.lucene.*, 
-				org.apache.lucene.aid.LuceneFilter,
-				org.apache.lucene.analysis.WhitespaceStopLowercaseAnalyzer
+				org.apache.lucene.aid.LuceneFilter
 			-->
-    </dependency>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-highlighter</artifactId>
-			<version>2.1.0</version>
+			<version>4.1.0</version>
 			<!-- provides org.apache.lucene.search.highlight -->
 			<!-- used in org.vle.aid.lucene.tools.Snippet -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queries</artifactId>
+			<version>4.1.0</version>
+			<!-- Provides additional org.apache.lucene.search.filters -->
+			<!-- used in org.apache.lucene.aid.LuceneFilter -->
+		</dependency>
+			
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>4.1.0</version>
+			<!-- used in org.vcle.aid.client.search -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>4.1.0</version>
+			<!-- used in org.vcle.aid.client.search -->
 		</dependency>
 
 		<dependency>
@@ -84,7 +165,7 @@
 				org.vle.aid.lucene.tools.cmdLineUpdateSynonyms
 			-->
 		</dependency>
-    
+		
 		<dependency>
 			<groupId>org.swinglabs</groupId>
 			<artifactId>pdf-renderer</artifactId>
@@ -102,7 +183,74 @@
 				org.vle.aid.lucene.tools.cmdLineCreateModel
 			-->
 		</dependency>
-  </dependencies>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<version>1.3</version>
+			<scope>test</scope>
+			<!-- used in org.vle.aid.lucene.SearcherWSTest -->
+			<!-- provides CoreMatchers -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>1.3</version>
+			<scope>test</scope>
+			<!-- used in org.vle.aid.lucene.SearcherWSTest -->
+			<!-- provides xml.Matcher.* -->
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+			<scope>test</scope>
+			<!--
+				Used in org.vle.aid.lucene.SearcherWSTest
+			-->
+		</dependency>
+
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20090211</version>
+			<scope>test</scope>
+			<!--
+				Used in org.vle.aid.lucene.BugAida3Test, and 
+				org.vle.aid.lucene.SearcherWSTest indirectly. 
+			-->
+		</dependency>
+
+		<dependency>
+			<groupId>com.sudhir.utils</groupId>
+			<artifactId>jsonmatchers</artifactId>
+			<version>1.1</version>
+			<scope>test</scope>
+			<!--
+				Used in org.vle.aid.lucene.SearcherWSTest
+			-->
+			<!--
+				Not found in central repo, installed in Kasper's Dropbox.
+			-->
+		</dependency>
+		
+		<dependency>
+	  	<groupId>org.apache.httpcomponents</groupId>
+		  <artifactId>httpclient</artifactId>
+		  <version>4.2.3</version>
+		  <scope>test</scope>
+			<!-- Used in org.vle.aid.lucene.BugAida3Test. -->
+	 	</dependency>
+	</dependencies>
 </project>
 
 <!-- vim: set tabstop=2 shiftwidth=2 : -->

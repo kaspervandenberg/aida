@@ -3,8 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>search</artifactId>
-	<version>0.78-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<version>0.79-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
@@ -15,7 +15,7 @@
 
 	<profiles>
 		<profile>
-			<id>test_Vocab</id>
+			<id>test_remote_Vocab</id>
 			<properties>
 				<!--
 					Host on which services are deployed.
@@ -35,6 +35,20 @@
 					HTTP://${target.host}:${target.port}/search/
 				</target.search.url>
 			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<artifactId>maven-surefire-plugin</artifactId>
+							<configuration>
+								<systemProperties>
+									<target.search.url>${target.search.url}</target.search.url>
+								</systemProperties>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
 		</profile>
 	</profiles>
 
@@ -59,9 +73,6 @@
 					<environmentVariables>
 						<INDEXDIR>${test.workingDirectory}/indexes</INDEXDIR>
 					</environmentVariables>
-					<systemProperties>
-						<target.search.url>${target.search.url}</target.search.url>
-					</systemProperties>
 				</configuration>
 			</plugin>
 				

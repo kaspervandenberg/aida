@@ -5,6 +5,7 @@
 package indexer;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -71,11 +72,25 @@ public class BaseIndexing {
     return true;
   }
 
-  /** Does the actual indexing
-   * @param       writer          IndexWriter to use
-   * @param       file            File to index
-   */
-  private void indexDocs(IndexWriter writer, File file) {
+	/** Does the actual indexing
+	 * @param       writer          IndexWriter to use
+	 * @param       file            File to index
+	 */
+	private void indexDocs(IndexWriter writer, File file) {
+		// TODO Integrate Tica config with 'indexconfig.xml'
+		TikaConfig tc = TikaConfig.getDefaultConfig();
+		  
+		Tika ticaParser = new  Tika(); 
+		Metadata metadata = new Metadata();
+		try {
+			// TODO Extract metadata and content in a single pass
+			// TODO Extract summary
+			ticaParser.parse(new FileInputStream(file), metadata);
+			String content = ParseUtils.getStringContent(file, tc);
+		} catch (/*TODO specify Exception*/ Exception ex) {
+			// TODO Handle exeption
+		}
+	 
     if (file.canRead()) {
       if (file.isDirectory()) {
         String[] files = file.list();
@@ -127,3 +142,6 @@ public class BaseIndexing {
   }
 
 }
+
+/* vim: set shiftwidth=4 tabstop=4 noexpandtab fo=ctwan ai : */
+

@@ -269,7 +269,7 @@ TopDocs _search (Query query) throws IOException {
     for (int i = 0; i < Math.min(intMaxHits, hits.totalHits); i++) {
       
       org.vle.aid.Document doc = result.addNewDoc();
-      List<IndexableField> fields = searcher.doc(i).getFields();
+      List<IndexableField> fields = searcher.doc(hits.scoreDocs[i].doc).getFields();
       
       for (Iterator<IndexableField> it = fields.iterator(); it.hasNext();) {
         IndexableField f = it.next();
@@ -434,7 +434,7 @@ TopDocs _search (Query query) throws IOException {
           json += "\n\t\t\"score\" : \"" + hits.scoreDocs[i].score + "\",";
 
           // first iteration looks for duplicate fields
-		  List<IndexableField> fields = searcher.doc(i).getFields();
+		  List<IndexableField> fields = searcher.doc(hits.scoreDocs[i].doc).getFields();
           for (Iterator<IndexableField> it = fields.iterator(); it.hasNext();) {
             IndexableField f = it.next();
 

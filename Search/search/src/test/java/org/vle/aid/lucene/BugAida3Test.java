@@ -24,9 +24,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.notNullValue;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -128,7 +129,9 @@ public class BugAida3Test {
 	@BeforeClass
 	public static void setupClass() {
 		try {
-			if(PROP_SEARCH_VALUE.isEmpty()) {
+			assumeThat(PROP_SEARCH_VALUE, is(notNullValue()));
+			assumeTrue(!PROP_SEARCH_VALUE.isEmpty());
+			if(PROP_SEARCH_VALUE == null || PROP_SEARCH_VALUE.isEmpty()) {
 				fail(String.format(
 						"Define the property %s to specify the search webservice to call for testing.",
 						PROP_SEARCH_KEY));

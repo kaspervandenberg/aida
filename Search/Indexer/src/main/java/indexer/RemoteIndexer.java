@@ -29,7 +29,7 @@ public class RemoteIndexer {
         cfg = new ConfigurationHandler(configFile);
         adder = new IndexAdder(cfg);
         
-		writer = new IndexWriterUtil(cfg, INDEXNAME).createIndexWriter();
+		writer = new IndexWriterUtil(cfg, INDEXNAME).getIndexWriter();
     }
         
     
@@ -51,6 +51,6 @@ public class RemoteIndexer {
 //            writer.optimize();
         writer.commit();
         writer.close();
-		writer = new IndexWriterUtil(cfg, INDEXNAME).createIndexWriter();
+		writer = new IndexWriterUtil(cfg, INDEXNAME).getIndexWriter();
     }
 }

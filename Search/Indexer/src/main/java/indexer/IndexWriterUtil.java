@@ -55,6 +55,14 @@ public class IndexWriterUtil {
 		indexdir = initIndexDir(indexName);
 	}
 
+	@Override
+	protected void finalize() throws Throwable {
+		closeIndexWriter();
+		super.finalize();
+	}
+
+	
+
 	/**
 	 * @return an (possibly shared) {@link IndexWriter}
 	 */

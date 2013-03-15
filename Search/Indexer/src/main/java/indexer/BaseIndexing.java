@@ -207,6 +207,9 @@ public class BaseIndexing {
 					file.getPath(),
 					indexWriterUtil.getIndexdir().getName());
 			throw new Error(msg, ex);
+		} finally {
+			// TODO Close IndexWriter later
+			indexWriterUtil.closeIndexWriter();
 		}
 	}
 

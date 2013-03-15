@@ -35,7 +35,15 @@ public class IndexWriterUtil {
 	 */
 	private final ConfigurationHandler config;
 
+	/**
+	 * File system directory where index is stored.
+	 */
 	private final FSDirectory indexdir;
+
+	/**
+	 * Used to add {@link org.apache.lucene.document.Document}s to the index.
+	 */
+	private IndexWriter indexWriter = null;
 
 	public IndexWriterUtil(final ConfigurationHandler config_) {
 		this(config_, config_.getName());
@@ -47,7 +55,90 @@ public class IndexWriterUtil {
 		indexdir = initIndexDir(indexName);
 	}
 
-	public IndexWriter createIndexWriter() {
+	/**
+	 * @return an (possibly shared) {@link IndexWriter}
+	 */
+	public IndexWriter getIndexWriter() {
+		if(indexWriter == null) {
+			indexWriter = createIndexWriter();
+		}
+		return indexWriter;
+	}
+
+	/**
+	 * Close the {@link IndexWriter}.
+	 * 
+	 * Creating an index writer is expensive, prefer {@link IndexWriter#commit()}.
+	 * Closing the {@code IndexWriter} is required to prevent loss of data.
+	 * Call {@code closeIndexWriter()} when finished writing to the index.
+	 */
+	public void closeIndexWriter() {
+		if(indexWriter != null) {
+			try {
+				indexWriter.close();
+			} catch (IOException ex) {
+				String msg = String.format(
+						"Error closing index %s, reattempt to close it.",
+						getIndexdir().getName());
+				log.log(Level.SEVERE, msg, ex);
+
+				try {
+					indexWriter.close();
+				} catch (IOException ex2) {
+					String msg2 = String.format(
+							"Error closing index %s (second attempt), release locks data might be lost.",
+							getIndexdir().getName());
+					log.log(Level.SEVERE, msg2, ex2);
+				} finally {
+					try {
+						if(IndexWriter.isLocked(indexdir)) {
+							IndexWriter.unlock(indexdir);
+						}
+					} catch (IOException ex3) {
+						String msg3 = String.format(
+								"Error closing index %s, releasing lock.",
+								getIndexdir().getName());
+						log.log(Level.SEVERE, msg3, ex3);
+					}
+				}
+			}
+		}
+		indexWriter = null;
+	}
+	
+	public File getIndexdir() {
+		return indexdir.getDirectory();
+	}
+	
+	public File getCacheDir() {
+		File cachedir = new File(indexdir.getDirectory(), "cache");
+		assertIsDirectory(cachedir);
+		return cachedir;
+	}
+
+	public void handleOutOfMememoryError(OutOfMemoryError ex) {
+		log.log(Level.WARNING, "IndexWriterUtil attempt to recover from OutOfMemoryError", ex);
+		closeIndexWriter();
+	}
+
+	private FSDirectory initIndexDir(String indexName) {
+		File base = new File(Utilities.getINDEXDIR());
+		
+		try {
+			FSDirectory indexdir = FSDirectory.open(new File(base, indexName));
+			assertCanLock(indexdir);
+
+			if (log.isLoggable(Level.FINE)) {
+			  log.fine("Indexdir: " + indexdir);
+			}
+			return indexdir;
+			
+		} catch (IOException ex) {
+			throw new RuntimeException("IOException ", ex);
+		}
+	}
+
+	private IndexWriter createIndexWriter() {
 		AnalyzerFactory af = new AnalyzerFactory(config);
 		
 		IndexWriterConfig iwconfig = new IndexWriterConfig(Version.LUCENE_41, af.getGlobalAnalyzer());
@@ -71,33 +162,6 @@ public class IndexWriterUtil {
 			Logger.getLogger(IndexWriterUtil.class.getName()).log(Level.SEVERE, null, ex);
 			throw new RuntimeException("Exception occured when creating IndexWriter", ex);
 		}
-	}
-
-	public File getIndexdir() {
-		return indexdir.getDirectory();
-	}
-	
-	private FSDirectory initIndexDir(String indexName) {
-		File base = new File(Utilities.getINDEXDIR());
-		
-		try {
-			FSDirectory indexdir = FSDirectory.open(new File(base, indexName));
-			assertCanLock(indexdir);
-
-			if (log.isLoggable(Level.FINE)) {
-			  log.fine("Indexdir: " + indexdir);
-			}
-			return indexdir;
-			
-		} catch (IOException ex) {
-			throw new RuntimeException("IOException ", ex);
-		}
-	}
-
-	public File getCacheDir() {
-		File cachedir = new File(indexdir.getDirectory(), "cache");
-		assertIsDirectory(cachedir);
-		return cachedir;
 	}
 
 	private static void assertCanLock(Directory indexdir) throws RuntimeException {
@@ -125,5 +189,6 @@ public class IndexWriterUtil {
 			throw new RuntimeException(String.format("Error creating directory %s", f.toString()));
 		}
   	}
+
 
 }

@@ -5,20 +5,51 @@
 package indexer;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.Lock;
-import org.apache.lucene.store.LockObtainFailedException;
-import org.apache.lucene.util.Version;
+import org.apache.tika.Tika;
+import org.apache.tika.config.TikaConfig;
+import org.apache.tika.metadata.Metadata;
 
 public class BaseIndexing {
+	public enum FixedFields {
+		ID,
+		CONTENT,
+		MEDIA_TYPE("mediaType");
+
+		public final String fieldName;
+
+		private FixedFields() {
+			fieldName = this.name().toLowerCase();
+		}
+
+		private FixedFields(final String fieldName_) {
+			fieldName = fieldName_;
+		}
+	}
   
   public File datadir;
+	private final TikaConfig tc = TikaConfig.getDefaultConfig();
+	private final AnalyzerFactory analyzerFactory;
+
   private IndexWriterUtil indexWriterUtil;
+  private IndexWriter indexWriter;
 //  public FSDirectory indexdir;
 //  public final File cachedir;
   private ConfigurationHandler cfg;
@@ -44,6 +75,7 @@ public class BaseIndexing {
     this.cfg = cfg;
     
     hf = new HandlerFactory(cfg);
+	analyzerFactory = new AnalyzerFactory(cfg);
 
 	indexWriterUtil = (name == null || name.length() == 0) ?
 			new IndexWriterUtil(cfg) :
@@ -62,55 +94,121 @@ public class BaseIndexing {
 
   /** Adds Documents to the index */
   public boolean addDocuments() throws IOException{
-    IndexWriter writer = indexWriterUtil.createIndexWriter();
+    IndexWriter writer = indexWriterUtil.getIndexWriter();
 
 	assertIsDirectory(indexWriterUtil.getCacheDir());
 
-    indexDocs(writer, datadir);
-    writer.close();    
+    indexDocs(datadir);
+    indexWriterUtil.getIndexWriter().commit();
     return true;
   }
 
-  /** Does the actual indexing
-   * @param       writer          IndexWriter to use
-   * @param       file            File to index
+  /**
+   * Add the visited file to the Lucene Index of {@link #indexWriter}.
+   * 
+   * Use {@link Tika} to detect the file type an parse the file into a stream. 
+   * Use an {@link Analyzer} as returned by 
+   * {@link AnalyzerFactory#getAnalyzer(String)}.
+   *
+   * @author Kasper van den Berg <kasper@kaspervandenberg.net>
    */
-  private void indexDocs(IndexWriter writer, File file) {
-    if (file.canRead()) {
-      if (file.isDirectory()) {
-        String[] files = file.list();
-        // an IO error could occur
-        if (files != null) {
-          for (int i = 0; i < files.length; i++) {
-            indexDocs(writer, new File(file, files[i]));
-            //log.info("done");
-          }  
-        }  
-      } else {  
-        if (!file.getName().startsWith(".")) {
-          
-          if (log.isLoggable(Level.FINE))
-            log.fine("Adding " + file);  
-          
-          DocHandler dh = hf.getHandler(file.getName());
-          
-          if (dh != null) {
-            try {
-              dh.addDocumentToIndex(writer, file);
-              dh.copyDocumentToCache(file, new File(indexWriterUtil.getCacheDir(), file.getName()));
-              added++;
-            } catch (DocumentHandlerException e) {
-              if (log.isLoggable(Level.SEVERE))
-                log.severe("" + e.getMessage());
-              failed++;
-            }
-          } else {
-            failed++;
-          }
-        }
-      }
-    }
+  private class TikaIndexAdder extends SimpleFileVisitor<Path> {
+		@Override
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+			Document doc = new Document();
+			doc.add(new StringField(
+					FixedFields.ID.fieldName, file.toFile().getName(), Store.YES));
+		  
+			Tika ticaParser = new  Tika(); 
+			Metadata metadata = new Metadata();
+			metadata.add(Metadata.RESOURCE_NAME_KEY, file.toFile().getName());
+		
+			Analyzer analyzer;
+			
+			try {
+				String mediaType = ticaParser.detect(file.toFile());
+				
+				doc.add(new StringField(
+						FixedFields.MEDIA_TYPE.fieldName, mediaType, Store.YES));
+
+				// Todo AnalyzerFactory uses filename extension, change it to use
+				// Mime type
+				analyzer = analyzerFactory.getAnalyzer(mediaType);
+			} catch (IOException ex) {
+				// Fall back to global analyzer and omit media type field.
+				String msg = String.format(
+						"Error Indexing: while detecting file type of %s",
+						file.toString());
+				log.log(Level.WARNING, msg, ex);
+				
+				analyzer = analyzerFactory.getGlobalAnalyzer();
+			}
+			
+			try {
+				Reader content = ticaParser.parse(
+						new FileInputStream(file.toFile()), metadata);
+
+				TokenStream tokenStream = analyzer.tokenStream(
+						FixedFields.CONTENT.fieldName, content);
+				doc.add(new TextField(FixedFields.CONTENT.fieldName, tokenStream));
+			} catch (IOException ex) {
+				// Skip this file
+				String msg = String.format(
+						"Error indexing: while parsing file %s",
+						file.toString());
+				log.log(Level.WARNING, msg, ex);
+
+				return FileVisitResult.CONTINUE;
+			}
+			
+			try {
+				indexWriterUtil.getIndexWriter().addDocument(doc, analyzer);
+			} catch (OutOfMemoryError ex) {
+				indexWriterUtil.handleOutOfMememoryError(ex);
+				throw ex;
+			} catch (CorruptIndexException ex) {
+				String msg =  String.format(
+						"Lucene index %s corrupt, rebuild index",
+						indexWriterUtil.getIndexdir().getName());
+				log.log(Level.SEVERE, msg, ex);
+				throw ex;
+			} catch (IOException ex) {
+				// Skip this file continue, with next
+				String msg = String.format(
+						"Error indexing: while writing to index %s file %s",
+						indexWriterUtil.getIndexdir().getName(),
+						file.toString());
+				log.log(Level.SEVERE, msg, ex);
+				return FileVisitResult.CONTINUE;
+			}
+			
+			return FileVisitResult.CONTINUE;
+		}
+
+		@Override
+		public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+			log.log(Level.WARNING, String.format(
+					"Error indexing file %s into index %s",
+					file,
+					indexWriterUtil.getIndexdir().getName()), exc);
+			return FileVisitResult.CONTINUE;
+		}
   }
+
+	/** Does the actual indexing
+	 * @param       file            File to index
+	 */
+	private void indexDocs(File file) {
+		// TODO Integrate Tica config with 'indexconfig.xml'
+		try {
+			Files.walkFileTree(file.toPath(), new TikaIndexAdder());
+		} catch (IOException ex) {
+			String msg = String.format("Failed to index %s into index %s",
+					file.getPath(),
+					indexWriterUtil.getIndexdir().getName());
+			throw new Error(msg, ex);
+		}
+	}
 
   public File getIndexdir() {
 	  return indexWriterUtil.getIndexdir();
@@ -125,5 +223,7 @@ public class BaseIndexing {
 		throw new RuntimeException(String.format("Error creating directory %s", f.toString()));
 	}
   }
-
 }
+
+/* vim: set shiftwidth=4 tabstop=4 noexpandtab fo=ctwan ai : */
+

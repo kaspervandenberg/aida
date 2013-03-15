@@ -94,8 +94,6 @@ public class BaseIndexing {
 
   /** Adds Documents to the index */
   public boolean addDocuments() throws IOException{
-    IndexWriter writer = indexWriterUtil.getIndexWriter();
-
 	assertIsDirectory(indexWriterUtil.getCacheDir());
 
     indexDocs(datadir);

@@ -22,14 +22,14 @@ public class RemoteIndexer {
     private final IndexAdder adder;
     private final ConfigurationHandler cfg;
 	private final String INDEXNAME = "RemoteIndex";
-    private IndexWriter writer;
+    private IndexWriterUtil writer;
     
     /** Creates a new instance of RemoteIndexer */
     public RemoteIndexer(String configFile) {
         cfg = new ConfigurationHandler(configFile);
         adder = new IndexAdder(cfg);
         
-		writer = new IndexWriterUtil(cfg, INDEXNAME).getIndexWriter();
+		writer = new IndexWriterUtil(cfg, INDEXNAME);
     }
         
     
@@ -42,15 +42,15 @@ public class RemoteIndexer {
     }
     
     public void addDocToIndex(){
-        adder.writeDocument("pdf",writer);
+        adder.writeDocument("pdf",writer.getIndexWriter());
     }
     
     
     public void closeWriter() throws IOException{
 //        System.out.println("Index has "+writer.docCount()+" docs");
 //            writer.optimize();
-        writer.commit();
-        writer.close();
-		writer = new IndexWriterUtil(cfg, INDEXNAME).getIndexWriter();
+        writer.getIndexWriter().commit();
+        writer.getIndexWriter().close();
+		writer = new IndexWriterUtil(cfg, INDEXNAME);
     }
 }

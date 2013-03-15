@@ -4,6 +4,7 @@
  */
 package indexer;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,7 +28,7 @@ import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
 
-public class BaseIndexing {
+public class BaseIndexing implements AutoCloseable {
 	public enum FixedFields {
 		ID,
 		CONTENT,
@@ -90,6 +91,10 @@ public class BaseIndexing {
 		  log.fine("Datadir: " + datadir);
 		}
 		
+  }
+
+  public void close() {
+	  indexWriterUtil.closeIndexWriter();
   }
 
   /** Adds Documents to the index */

@@ -112,10 +112,9 @@ public class Indexer {
 
     String datafile = Utilities.createTemporaryFile(filedata, filename, true);
 
-    BaseIndexing BI = new BaseIndexing(cfg, null, datafile);
     boolean success = false;
 
-    try {
+    try (BaseIndexing BI = new BaseIndexing(cfg, null, datafile)) {
       success = BI.addDocuments();
     } catch(IOException e) {
       if (log.isLoggable(Level.SEVERE))
@@ -138,32 +137,28 @@ public class Indexer {
   */
   public String indexFromCFG(String configfile, String name, String dataPath) {
        
-    if (new File(configfile).exists()) {
-      
-      BaseIndexing BI = new BaseIndexing(configfile, name, dataPath);
-      boolean success = false;
+  		if (new File(configfile).exists()) {
+			try (BaseIndexing BI = new BaseIndexing(configfile, name, dataPath)) {
+				boolean success = BI.addDocuments();
 
-      try {
-        success = BI.addDocuments();
-      } catch (IOException e) {
-        if (log.isLoggable(Level.SEVERE)) {
-          log.severe(" caught a " + e.getClass() + "\n with message: " + e.getMessage());
-        }
-        return "Indexing failed: " + e.getClass() + e.getMessage();
-      }
-      
-      if (success) 
-        return "Indexing finished, added " 
-                + BI.added + " files to " + BI.getIndexdir().getPath()
-                + " (was unable to index " + BI.failed + " files)"
-                ;
-      else 
-        return "Indexing failed";
-      
-    } else {
-      return "Configuration file not found";
-    }  
-  }
+				if (success) {
+					return "Indexing finished, added " 
+						+ BI.added + " files to " + BI.getIndexdir().getPath()
+						+ " (was unable to index " + BI.failed + " files)"
+					;
+				} else  {
+					return "Indexing failed";
+				}
+			} catch (IOException e) {
+				if (log.isLoggable(Level.SEVERE)) {
+					log.severe(" caught a " + e.getClass() + "\n with message: " + e.getMessage());
+				}
+				return "Indexing failed: " + e.getClass() + e.getMessage();
+			}
+		} else {
+    		return "Configuration file not found";
+		}  
+	}
     
     /**
      * Index file(s) on the server into an index on the server using default settings

@@ -3,6 +3,7 @@
  */
 package indexer;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.WeakHashMap;
@@ -25,7 +26,7 @@ import org.apache.lucene.util.Version;
  * 
  * @author Kasper van den Berg <kasper@kaspervandenberg.net>
  */
-public class IndexWriterUtil {
+public class IndexWriterUtil implements AutoCloseable {
 
 	private static final transient Logger log =
 			Logger.getLogger(IndexWriterUtil.class.getCanonicalName());
@@ -61,8 +62,10 @@ public class IndexWriterUtil {
 		super.finalize();
 	}
 
+	public void close() throws IOException {
+		closeIndexWriter();
+	}
 	
-
 	/**
 	 * @return an (possibly shared) {@link IndexWriter}
 	 */

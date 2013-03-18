@@ -23,6 +23,20 @@
 				<targetPath>${test.workingDirectory}</targetPath>
 			</testResource>
 		</testResources>
+
+		<plugins>
+			<plugin>
+				<!--
+					Run tests
+				-->
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.13</version>
+				<configuration>
+				<skip>false</skip>
+					<workingDirectory>${test.workingDirectory}</workingDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
   </build>
 
   <dependencies>

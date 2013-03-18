@@ -164,8 +164,6 @@ public class IndexWriterUtil implements AutoCloseable {
 		File dest = new File(getCacheDir(), file.toFile().getName());
 		try {
 			Utilities.copy(src, dest);
-			System.out.println(String.format("Copied %s to cache at %s",
-					src.getPath(), dest.getPath()));
 		} catch (IOException ex) {
 			String msg = String.format(
 					"Unable to copy %s to cache %s",

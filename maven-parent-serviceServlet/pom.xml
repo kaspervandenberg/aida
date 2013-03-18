@@ -48,7 +48,7 @@
 				<version>2.13</version>
 				<configuration>
 					<skip>false</skip>
-					<workingDirectory>${test.workingDirectory}</workingDirectory>
+<?ignore					<workingDirectory>${test.workingDirectory}</workingDirectory> ?>
 				</configuration>
 			</plugin>
 		</plugins>

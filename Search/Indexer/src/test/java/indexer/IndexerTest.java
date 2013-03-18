@@ -36,8 +36,8 @@ public class IndexerTest extends TestCase {
     Indexer instance = new Indexer();
     String dataPath = "datadir" + File.separator + "Grant Update 1-2.doc";
     System.out.println(instance.index(indexdir, dataPath));
-    assertEquals(Utilities.getDocsInIndex(indexdir), 1);
-    assertEquals(Utilities.getDocsInCache(indexdir), 1);
+    assertEquals(1, Utilities.getDocsInIndex(indexdir));
+    assertEquals(1, Utilities.getDocsInCache(indexdir));
   }
   
   /**
@@ -47,8 +47,8 @@ public class IndexerTest extends TestCase {
     Indexer instance = new Indexer();
     String dataPath = "datadir" + File.separator + "dp1LSAintro.pdf";
     System.out.println(instance.index(indexdir, dataPath));
-    assertEquals(Utilities.getDocsInIndex(indexdir), 1);
-    assertEquals(Utilities.getDocsInCache(indexdir), 1);
+    assertEquals(1, Utilities.getDocsInIndex(indexdir));
+    assertEquals(1, Utilities.getDocsInCache(indexdir));
   }
   
   /**
@@ -58,8 +58,8 @@ public class IndexerTest extends TestCase {
     Indexer instance = new Indexer();
     String dataPath = "datadir" + File.separator + "wonder.txt";
     System.out.println(instance.index(indexdir, dataPath));
-    assertEquals(Utilities.getDocsInIndex(indexdir), 1);
-    assertEquals(Utilities.getDocsInCache(indexdir), 1);
+    assertEquals(1, Utilities.getDocsInIndex(indexdir));
+    assertEquals(1, Utilities.getDocsInCache(indexdir));
   }
   
   /**
@@ -69,15 +69,15 @@ public class IndexerTest extends TestCase {
     Indexer instance = new Indexer();
     String dataPath = "datadir" + File.separator + "100.med";
     System.out.println(instance.index(indexdir, dataPath));
-    assertEquals(Utilities.getDocsInIndex(indexdir), 143);
-    assertEquals(Utilities.getDocsInCache(indexdir), 1);
+    assertEquals(143, Utilities.getDocsInIndex(indexdir));
+    assertEquals(1, Utilities.getDocsInCache(indexdir));
   }
   
   public void testIndexAll() {
     Indexer instance = new Indexer();
     String dataPath = "datadir" + File.separator;
     System.out.println(instance.index(indexdir, dataPath));
-    assertEquals(Utilities.getDocsInIndex(indexdir), 186);
+    assertEquals(186, Utilities.getDocsInIndex(indexdir));
     
     if (deleteAfterwards)
       assertEquals(Utilities.deleteDir(new File(indexdir)), true);

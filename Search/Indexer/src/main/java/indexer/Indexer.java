@@ -156,7 +156,7 @@ public class Indexer {
 				return "Indexing failed: " + e.getClass() + e.getMessage();
 			}
 		} else {
-    		return "Configuration file not found";
+			return String.format("Configuration file %s not found", new File(configfile).getAbsolutePath());
 		}  
 	}
     

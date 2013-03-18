@@ -13,17 +13,6 @@
 	</parent>
 
   <build>
-		<testResources>
-			<!-- 
-				The tests expect their resources in their working directory.
-				Therefore they are copied.
-			-->
-			<testResource>
-				<directory>${project.build.testSourceDirectory}</directory>
-				<targetPath>${test.workingDirectory}</targetPath>
-			</testResource>
-		</testResources>
-
 		<plugins>
 			<plugin>
 				<!--
@@ -33,9 +22,9 @@
 				<version>2.13</version>
 				<configuration>
 					<skip>false</skip>
-					<workingDirectory>${test.workingDirectory}</workingDirectory>
+					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
 					<environmentVariables>
-						<INDEXDIR>${test.workingDirectory}/indexes</INDEXDIR>
+						<INDEXDIR>${project.build.testOutputDirectory}/indexes</INDEXDIR>
 					</environmentVariables>
 				</configuration>
 			</plugin>

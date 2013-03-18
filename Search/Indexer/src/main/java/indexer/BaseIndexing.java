@@ -118,42 +118,44 @@ public class BaseIndexing implements AutoCloseable {
   private class TikaIndexAdder extends SimpleFileVisitor<Path> {
 		@Override
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-			Document doc = new Document();
-			doc.add(new StringField(
-					FixedFields.ID.fieldName, file.toFile().getName(), Store.YES));
-		  
-			Tika ticaParser = new  Tika(); 
-			Metadata metadata = new Metadata();
-			metadata.add(Metadata.RESOURCE_NAME_KEY, file.toFile().getName());
-		
-			Analyzer analyzer;
+			
+			Tika tikaParser = new  Tika(); 
+			VisitedDocument doc = new VisitedDocument(file);
+			doc.storeFilename();
+			Analyzer analyzer = doc.detectAndStoreMediaType(tikaParser);
 			
 			try {
-				String mediaType = ticaParser.detect(file.toFile());
-				
-				doc.add(new StringField(
-						FixedFields.MEDIA_TYPE.fieldName, mediaType, Store.YES));
-
-				// Todo AnalyzerFactory uses filename extension, change it to use
-				// Mime type
-				analyzer = analyzerFactory.getAnalyzer(mediaType);
-			} catch (IOException ex) {
-				// Fall back to global analyzer and omit media type field.
-				String msg = String.format(
-						"Error Indexing: while detecting file type of %s",
-						file.toString());
-				log.log(Level.WARNING, msg, ex);
-				
-				analyzer = analyzerFactory.getGlobalAnalyzer();
-			}
-			
-			try {
-				Reader content = ticaParser.parse(
-						new FileInputStream(file.toFile()), metadata);
-
-				TokenStream tokenStream = analyzer.tokenStream(
-						FixedFields.CONTENT.fieldName, content);
-				doc.add(new TextField(FixedFields.CONTENT.fieldName, tokenStream));
+				doc.storeContent(tikaParser, analyzer);
+				try {
+					indexWriterUtil.getIndexWriter().addDocument(doc.getDocument(), analyzer);
+					indexWriterUtil.getIndexWriter().commit();
+					indexWriterUtil.copyToCache(file);
+					indexWriterUtil.closeIndexWriter();
+					
+				} catch (OutOfMemoryError ex) {
+					indexWriterUtil.handleOutOfMememoryError(ex);
+					
+					failed++;
+					throw ex;
+				} catch (CorruptIndexException ex) {
+					String msg =  String.format(
+							"Lucene index %s corrupt, rebuild index",
+							indexWriterUtil.getIndexdir().getName());
+					log.log(Level.SEVERE, msg, ex);
+					
+					failed++;
+					throw ex;
+				} catch (IOException ex) {
+					// Skip this file continue, with next
+					String msg = String.format(
+							"Error indexing: while writing to index %s file %s",
+							indexWriterUtil.getIndexdir().getName(),
+							file.toString());
+					log.log(Level.SEVERE, msg, ex);
+					
+					failed++;
+					return FileVisitResult.CONTINUE;
+				}
 			} catch (IOException ex) {
 				// Skip this file
 				String msg = String.format(
@@ -161,30 +163,11 @@ public class BaseIndexing implements AutoCloseable {
 						file.toString());
 				log.log(Level.WARNING, msg, ex);
 
+				failed++;
 				return FileVisitResult.CONTINUE;
 			}
 			
-			try {
-				indexWriterUtil.getIndexWriter().addDocument(doc, analyzer);
-			} catch (OutOfMemoryError ex) {
-				indexWriterUtil.handleOutOfMememoryError(ex);
-				throw ex;
-			} catch (CorruptIndexException ex) {
-				String msg =  String.format(
-						"Lucene index %s corrupt, rebuild index",
-						indexWriterUtil.getIndexdir().getName());
-				log.log(Level.SEVERE, msg, ex);
-				throw ex;
-			} catch (IOException ex) {
-				// Skip this file continue, with next
-				String msg = String.format(
-						"Error indexing: while writing to index %s file %s",
-						indexWriterUtil.getIndexdir().getName(),
-						file.toString());
-				log.log(Level.SEVERE, msg, ex);
-				return FileVisitResult.CONTINUE;
-			}
-			
+			added++;
 			return FileVisitResult.CONTINUE;
 		}
 
@@ -196,7 +179,58 @@ public class BaseIndexing implements AutoCloseable {
 					indexWriterUtil.getIndexdir().getName()), exc);
 			return FileVisitResult.CONTINUE;
 		}
-  }
+
+		private class VisitedDocument {
+			private final Document doc = new Document();
+			private final Metadata metadata = new Metadata();
+			private final Path file;
+
+			public VisitedDocument(Path file_) {
+				file = file_;
+			}
+			
+			public void storeFilename() {
+				doc.add(new StringField(
+						FixedFields.ID.fieldName, file.toFile().getName(), Store.YES));
+				metadata.add(Metadata.RESOURCE_NAME_KEY, file.toFile().getName());
+			}
+
+			public Analyzer detectAndStoreMediaType(Tika parser) {
+				try {
+					String mediaType = parser.detect(file.toFile());
+					
+					doc.add(new StringField(
+							FixedFields.MEDIA_TYPE.fieldName, mediaType, Store.YES));
+
+					// Todo AnalyzerFactory uses filename extension, change it to use
+					// Mime type
+					return analyzerFactory.getAnalyzer(mediaType);
+				} catch (IOException ex) {
+					// Fall back to global analyzer and omit media type field.
+					String msg = String.format(
+							"Error Indexing: while detecting file type of %s",
+							file.toString());
+					log.log(Level.WARNING, msg, ex);
+					
+					return analyzerFactory.getGlobalAnalyzer();
+				}
+			}
+
+			public void storeContent(Tika parser, Analyzer analyzer)
+					throws IOException {
+				Reader content = parser.parse(
+						new FileInputStream(file.toFile()), metadata);
+
+				TokenStream tokenStream = analyzer.tokenStream(
+						FixedFields.CONTENT.fieldName, content);
+				doc.add(new TextField(FixedFields.CONTENT.fieldName, tokenStream));
+			}
+
+			public Document getDocument() {
+				return doc;
+			}
+		}
+	}
 
 	/** Does the actual indexing
 	 * @param       file            File to index

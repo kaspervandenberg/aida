@@ -6,6 +6,7 @@ package indexer;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,6 +47,11 @@ public class IndexWriterUtil implements AutoCloseable {
 	 */
 	private IndexWriter indexWriter = null;
 
+	/**
+	 * Used to count the number of documents in the index
+	 */
+	private DirectoryReader dirReader = null;
+
 	public IndexWriterUtil(final ConfigurationHandler config_) {
 		this(config_, config_.getName());
 	}
@@ -85,6 +91,16 @@ public class IndexWriterUtil implements AutoCloseable {
 	 */
 	public void closeIndexWriter() {
 		if(indexWriter != null) {
+			try {
+				if(dirReader == null || !dirReader.isCurrent()) {
+					dirReader = DirectoryReader.open(indexWriter, true);
+				}
+			} catch (IOException ex) {
+				String msg = String.format(
+						"Error creating a DirectoryReader for index %s",
+						getIndexdir().getName());
+				log.log(Level.WARNING, msg, ex);
+			}
 			try {
 				indexWriter.close();
 			} catch (IOException ex) {
@@ -130,6 +146,17 @@ public class IndexWriterUtil implements AutoCloseable {
 	public void handleOutOfMememoryError(OutOfMemoryError ex) {
 		log.log(Level.WARNING, "IndexWriterUtil attempt to recover from OutOfMemoryError", ex);
 		closeIndexWriter();
+	}
+
+	public int getDocsInIndexCount() throws IOException {
+		while(dirReader == null || !dirReader.isCurrent()) {
+			if(indexWriter != null) {
+				dirReader = DirectoryReader.open(indexWriter, true);
+			} else {
+				dirReader = DirectoryReader.open(indexdir);
+			}
+		}
+		return dirReader.numDocs();
 	}
 
 	private FSDirectory initIndexDir(String indexName) {

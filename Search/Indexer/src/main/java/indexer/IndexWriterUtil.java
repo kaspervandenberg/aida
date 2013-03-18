@@ -63,11 +63,6 @@ public class IndexWriterUtil implements AutoCloseable {
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
-		closeIndexWriter();
-		super.finalize();
-	}
-
 	public void close() throws IOException {
 		closeIndexWriter();
 	}

@@ -93,9 +93,10 @@ public class BaseIndexing implements AutoCloseable {
 		
   }
 
-  public void close() {
-	  indexWriterUtil.closeIndexWriter();
-  }
+	@Override
+	public void close() {
+		indexWriterUtil.closeIndexWriter();
+	}
 
   /** Adds Documents to the index */
   public boolean addDocuments() throws IOException{
@@ -130,7 +131,6 @@ public class BaseIndexing implements AutoCloseable {
 					indexWriterUtil.getIndexWriter().addDocument(doc.getDocument(), analyzer);
 					indexWriterUtil.getIndexWriter().commit();
 					indexWriterUtil.copyToCache(file);
-					indexWriterUtil.closeIndexWriter();
 					
 				} catch (OutOfMemoryError ex) {
 					indexWriterUtil.handleOutOfMememoryError(ex);
@@ -244,9 +244,6 @@ public class BaseIndexing implements AutoCloseable {
 					file.getPath(),
 					indexWriterUtil.getIndexdir().getName());
 			throw new Error(msg, ex);
-		} finally {
-			// TODO Close IndexWriter later
-			indexWriterUtil.closeIndexWriter();
 		}
 	}
 

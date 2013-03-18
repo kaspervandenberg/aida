@@ -159,6 +159,22 @@ public class IndexWriterUtil implements AutoCloseable {
 		return dirReader.numDocs();
 	}
 
+	public void copyToCache(Path file) {
+		File src = file.toFile();
+		File dest = new File(getCacheDir(), file.toFile().getName());
+		try {
+			Utilities.copy(src, dest);
+			System.out.println(String.format("Copied %s to cache at %s",
+					src.getPath(), dest.getPath()));
+		} catch (IOException ex) {
+			String msg = String.format(
+					"Unable to copy %s to cache %s",
+					src.getPath(),
+					dest.getPath());
+			log.log(Level.SEVERE, msg, ex);
+		}
+	}
+	
 	private FSDirectory initIndexDir(String indexName) {
 		File base = new File(Utilities.getINDEXDIR());
 		
@@ -186,10 +202,11 @@ public class IndexWriterUtil implements AutoCloseable {
 		// mergePolicy.setUseCompoundFile(true);
 		// mergePolicy.setMergeFactor(cfg.getMergeFactor());
 		// config.setMergePolicy(mergePolicy);
-		iwconfig.setOpenMode(
-				config.OverWrite() ?
-					IndexWriterConfig.OpenMode.CREATE : 
-					IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+//		iwconfig.setOpenMode(
+//				config.OverWrite() ?
+//					IndexWriterConfig.OpenMode.CREATE : 
+//					IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+		iwconfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 		iwconfig.setMaxBufferedDocs(config.getMaxBufferedDocs());
 		
 		IndexWriter writer;

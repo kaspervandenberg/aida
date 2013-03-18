@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>search</artifactId>
-	<version>0.79-SNAPSHOT</version>
+	<version>0.80-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
 		<artifactId>maven-parent-serviceServlet</artifactId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.2</version>
 		<relativePath>../../maven-parent-serviceServlet</relativePath>
 	</parent>
 

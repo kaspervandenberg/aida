@@ -32,8 +32,11 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.13</version>
 				<configuration>
-				<skip>false</skip>
+					<skip>false</skip>
 					<workingDirectory>${test.workingDirectory}</workingDirectory>
+					<environmentVariables>
+						<INDEXDIR>${test.workingDirectory}/indexes</INDEXDIR>
+					</environmentVariables>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -78,9 +78,14 @@
 		</dependency>
     
 		<dependency>
-      <groupId>pdfbox</groupId>
+<?ignore "try newer version"
+			<groupId>pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
 			<version>0.7.3</version>
+?>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>1.7.1</version>
 			<!-- provides org.pdfbox -->
 			<!-- newer versions available via org.apache.pdfbox -->
 			<!-- perhaps replace it for Tika -->

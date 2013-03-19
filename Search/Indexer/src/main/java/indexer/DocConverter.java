@@ -30,13 +30,13 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
 import java.util.List;
-import org.pdfbox.util.PDFTextStripper;
-import org.pdfbox.pdmodel.PDDocument;
-import org.pdfbox.exceptions.CryptographyException;
-import org.pdfbox.exceptions.InvalidPasswordException;
-import org.pdfbox.pdmodel.PDPage;
-import org.pdfbox.util.PDFTextStripper;
-import org.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.util.PDFTextStripper;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.InvalidPasswordException;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.util.PDFTextStripper;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 
 //import org.textmining.text.extraction.WordExtractor;
 

@@ -7,34 +7,29 @@ package indexer;
 
 import java.util.Iterator;
 import java.util.List;
-import junit.framework.TestCase;
+//import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
  * @author emeij
  */
-public class ConfigurationHandlerTest extends TestCase {
+public class ConfigurationHandlerTest {
   
   ConfigurationHandler cfg = null;
     
-    public ConfigurationHandlerTest(String testName) {
-        super(testName);
+    public ConfigurationHandlerTest() {
         this.cfg = new ConfigurationHandler("indexconfig.xml");
     }            
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
   /**
    * Test of getName method, of class ConfigurationHandler.
    */
+	@Test
   public void testGetName() {
     //System.out.println("getName");
     String expResult = "My_index";
@@ -45,6 +40,7 @@ public class ConfigurationHandlerTest extends TestCase {
   /**
    * Test of OverWrite method, of class ConfigurationHandler.
    */
+	@Test
   public void testOverWrite() {
     //System.out.println("OverWrite");
     
@@ -56,6 +52,7 @@ public class ConfigurationHandlerTest extends TestCase {
   /**
    * Test of getCreator method, of class ConfigurationHandler.
    */
+	@Test
   public void testGetCreator() {
     //System.out.println("getCreator");
     
@@ -67,6 +64,7 @@ public class ConfigurationHandlerTest extends TestCase {
   /**
    * Test of getDataPath method, of class ConfigurationHandler.
    */
+	@Test
   public void testGetDataPath() {
     //System.out.println("getDataPath");
     
@@ -78,6 +76,7 @@ public class ConfigurationHandlerTest extends TestCase {
   /**
    * Test of getMergeFactor method, of class ConfigurationHandler.
    */
+	@Test
   public void testGetMergeFactor() {
     //System.out.println("getMergeFactor");
     
@@ -89,6 +88,7 @@ public class ConfigurationHandlerTest extends TestCase {
   /**
    * Test of getMaxBufferedDocs method, of class ConfigurationHandler.
    */
+	@Test
   public void testGetMaxBufferedDocs() {
     //System.out.println("getMaxBufferedDocs");
     
@@ -100,6 +100,7 @@ public class ConfigurationHandlerTest extends TestCase {
   /**
    * Test of getGlobalAnalyzer method, of class ConfigurationHandler.
    */
+	@Test
   public void testGetGlobalAnalyzer() {
     //System.out.println("getGlobalAnalyzer");
     
@@ -130,6 +131,7 @@ public class ConfigurationHandlerTest extends TestCase {
   /**
    * Test of getDocumentTypes method, of class ConfigurationHandler.
    */
+  @Test
   public void testGetDocumentTypes() {
     //System.out.println("getDocumentTypes");
     

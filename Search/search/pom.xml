@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
 		<artifactId>maven-parent-serviceServlet</artifactId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.2</version>
 		<relativePath>../../maven-parent-serviceServlet</relativePath>
 	</parent>
 

@@ -6,6 +6,7 @@ package indexer;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,6 +47,11 @@ public class IndexWriterUtil implements AutoCloseable {
 	 */
 	private IndexWriter indexWriter = null;
 
+	/**
+	 * Used to count the number of documents in the index
+	 */
+	private DirectoryReader dirReader = null;
+
 	public IndexWriterUtil(final ConfigurationHandler config_) {
 		this(config_, config_.getName());
 	}
@@ -57,11 +63,6 @@ public class IndexWriterUtil implements AutoCloseable {
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
-		closeIndexWriter();
-		super.finalize();
-	}
-
 	public void close() throws IOException {
 		closeIndexWriter();
 	}
@@ -85,6 +86,16 @@ public class IndexWriterUtil implements AutoCloseable {
 	 */
 	public void closeIndexWriter() {
 		if(indexWriter != null) {
+			try {
+				if(dirReader == null || !dirReader.isCurrent()) {
+					dirReader = DirectoryReader.open(indexWriter, true);
+				}
+			} catch (IOException ex) {
+				String msg = String.format(
+						"Error creating a DirectoryReader for index %s",
+						getIndexdir().getName());
+				log.log(Level.WARNING, msg, ex);
+			}
 			try {
 				indexWriter.close();
 			} catch (IOException ex) {
@@ -132,6 +143,31 @@ public class IndexWriterUtil implements AutoCloseable {
 		closeIndexWriter();
 	}
 
+	public int getDocsInIndexCount() throws IOException {
+		while(dirReader == null || !dirReader.isCurrent()) {
+			if(indexWriter != null) {
+				dirReader = DirectoryReader.open(indexWriter, true);
+			} else {
+				dirReader = DirectoryReader.open(indexdir);
+			}
+		}
+		return dirReader.numDocs();
+	}
+
+	public void copyToCache(Path file) {
+		File src = file.toFile();
+		File dest = new File(getCacheDir(), file.toFile().getName());
+		try {
+			Utilities.copy(src, dest);
+		} catch (IOException ex) {
+			String msg = String.format(
+					"Unable to copy %s to cache %s",
+					src.getPath(),
+					dest.getPath());
+			log.log(Level.SEVERE, msg, ex);
+		}
+	}
+	
 	private FSDirectory initIndexDir(String indexName) {
 		File base = new File(Utilities.getINDEXDIR());
 		
@@ -159,10 +195,11 @@ public class IndexWriterUtil implements AutoCloseable {
 		// mergePolicy.setUseCompoundFile(true);
 		// mergePolicy.setMergeFactor(cfg.getMergeFactor());
 		// config.setMergePolicy(mergePolicy);
-		iwconfig.setOpenMode(
-				config.OverWrite() ?
-					IndexWriterConfig.OpenMode.CREATE : 
-					IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+//		iwconfig.setOpenMode(
+//				config.OverWrite() ?
+//					IndexWriterConfig.OpenMode.CREATE : 
+//					IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+		iwconfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 		iwconfig.setMaxBufferedDocs(config.getMaxBufferedDocs());
 		
 		IndexWriter writer;

@@ -14,16 +14,22 @@
 	</parent>
 
   <build>
-		<testResources>
-			<!-- 
-				The tests expect their resources in their working directory.
-				Therefore they are copied.
-			-->
-			<testResource>
-				<directory>${project.build.testSourceDirectory}</directory>
-				<targetPath>${test.workingDirectory}</targetPath>
-			</testResource>
-		</testResources>
+		<plugins>
+			<plugin>
+				<!--
+					Run tests
+				-->
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.13</version>
+				<configuration>
+					<skip>false</skip>
+					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+					<environmentVariables>
+						<INDEXDIR>${project.build.testOutputDirectory}/indexes</INDEXDIR>
+					</environmentVariables>
+				</configuration>
+			</plugin>
+		</plugins>
   </build>
 
   <dependencies>
@@ -73,20 +79,18 @@
 		</dependency>
     
 		<dependency>
-      <groupId>pdfbox</groupId>
+<?ignore "try newer version"
+			<groupId>pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
 			<version>0.7.3</version>
+?>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>1.7.1</version>
 			<!-- provides org.pdfbox -->
 			<!-- newer versions available via org.apache.pdfbox -->
 			<!-- perhaps replace it for Tika -->
 			<!-- used in indexer.PdfHandler, and indexer.DocConverter -->
-    </dependency>
-    
-		<dependency>
-      <groupId>org.textmining</groupId>
-      <artifactId>tm-extractors</artifactId>
-      <version>0.4</version>
-			<!-- used in indexer.MswordHandler -->
     </dependency>
     
 		<dependency> 
@@ -111,6 +115,13 @@
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-parsers</artifactId>
 			<version>1.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
 		</dependency>
   </dependencies>
 </project>

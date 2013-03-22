@@ -28,6 +28,28 @@
 					</environmentVariables>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<!--
+					Generate Java codee from XML Schema's.
+				-->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>xjc</id>
+						<goals>
+							<goal>
+								xjc
+							</goal>
+						</goals>
+						<configuration>
+							<packageName>indexer.config</packageName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
   </build>
 

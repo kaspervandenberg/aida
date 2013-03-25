@@ -80,12 +80,20 @@ public class IndexerTest {
   }
 
 	@Test
+	public void testIndexZylab() throws IOException {
+		String dataPath = "datadir" + File.separator + "{C2212583-3E6D-4AB2-8F80-2C8934833CAB}.xml";
+		System.out.println(instance.index(indexdir, dataPath));
+		assertEquals("In index", 1, iwUtil.getDocsInIndexCount());
+		assertEquals("In cache", 1, Utilities.getDocsInCache(indexdir));
+	}
+
+	@Test
   public void testIndexAll() throws IOException {
     String dataPath = "datadir" + File.separator;
     System.out.println(instance.index(indexdir, dataPath));
 // TODO issue AIDA-8 medline files can consist of multiple documents
 //    assertEquals("In index", 186, iwUtil.getDocsInIndexCount());
-	assertEquals("In index: ", 5,iwUtil.getDocsInIndexCount());
+	assertEquals("In index: ", 6, iwUtil.getDocsInIndexCount());
     
     if (deleteAfterwards)
       assertEquals(Utilities.deleteDir(new File(indexdir)), true);

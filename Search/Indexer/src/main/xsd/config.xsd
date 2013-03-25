@@ -4,8 +4,12 @@
     Document   : config.xsd
     Created on : February 28, 2006, 9:58 AM
     Author     : mgjansen
+
+		Modified	 : March 22, 2013
+		By				 : Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
+
     Description:
-        Purpose of XML Schema document follows.
+				Syntax for configuring the indexer.
 -->
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -17,12 +21,13 @@
    
     <xsd:element name="config" type="aid:configType"/>
     
-    <xsd:complexType name="configType">
+	<xsd:complexType name="configType">
      <xsd:sequence>
      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
      <xsd:element name="IndexOverwrite"  type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
      <xsd:element name="IndexAnalyzer"  type="xsd:string" minOccurs="0" maxOccurs="1"/>
      <xsd:element name="DataPath"  type="xsd:string" minOccurs="1" maxOccurs="1"/>
+	 <xsd:element name="FileReference" type="aid:FileRefType" minOccurs="0" maxOccurs="unbounded"/>
      <xsd:element name="SRBused"  type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
      <xsd:element name="MergeFactor"  type="xsd:integer" minOccurs="0" maxOccurs="1"/>
      <xsd:element name="MaxBufferedDocs"  type="xsd:integer" minOccurs="0" maxOccurs="1"/>
@@ -30,6 +35,29 @@
 </xsd:sequence>
 <xsd:attribute name="Creator" type="xsd:string"/>
 <xsd:attribute name="MetaData" type="xsd:string"/>
+</xsd:complexType>
+
+<!--
+	Reference to a file which the indexer has to resolve to a different location.
+	
+	For example Zylab's XmlFields files refer to the file of which that 
+	XmlFields-file contains the data.  When the data files and metadata files are
+	moved or mounted on a different path.  The metadata files contain references 
+	to the wrong location.
+
+	See nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml.java
+-->
+<xsd:complexType name="FileRefType">
+	<xsd:sequence>
+		<!--
+			The path (or URL) as encountered in the file refering to an other file.
+		-->
+		<xsd:element name="referenced_path" type="xsd:anyURI"/>
+		<!--
+			The path (or URL) to which this should be resolved.
+		-->
+		<xsd:element name="resolution" type="xsd:anyURI"/>
+	</xsd:sequence>
 </xsd:complexType>
 
 <xsd:complexType name="docType">
@@ -75,3 +103,6 @@
  </xsd:simpleType>
  
 </xsd:schema>
+
+<!-- vim: set tabstop=2 shiftwidth=2 : -->
+

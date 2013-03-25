@@ -3,6 +3,8 @@ package nl.maastro.eureca.aida.indexer.tika.parser;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
@@ -89,8 +91,16 @@ public class ZylabMetadataXml extends AbstractParser {
 		 * 		files.
 		 * 
 		 * @return {@link java.net.URL} that allows reading its contents.
+		 * 
+		 * @throws	MalformedURLException	when {@code reference} cannot be 
+		 * 		translated to an URL (not distinguished from 
+		 * 		{@link URISyntaxException}).
+		 * @throws	URISyntaxException	when {@code reference} cannot be 
+		 * 		translated to an URL (not distinguished from
+		 * 		{@link MalformedURLException}).
 		 */
-		public URL resolve(final FileRef reference);
+		public URL resolve(final FileRef reference)
+				throws MalformedURLException, URISyntaxException;
 	}
 
 	/**
@@ -98,6 +108,12 @@ public class ZylabMetadataXml extends AbstractParser {
 	 * via the {@link org.apache.tika.parser.ParseContext}
 	 */
 	public interface ContentsParser extends Parser { }
+
+	public static final MediaType ZYLAB_METADATA =
+			MediaType.application("zylabMetadata+xml");
+
+	private static final Set<MediaType> SUPPORTED_TYPE =
+			Collections.singleton(ZYLAB_METADATA);
 
 	/**
 	 * Tika {@link org.apache.tika.metadata.Parser} to parse the file the 
@@ -111,9 +127,6 @@ public class ZylabMetadataXml extends AbstractParser {
 	 */
 	private final FileRefResolver defaultResolver;
 	
-	private static final Set<MediaType> SUPPORTED_TYPE =
-			Collections.singleton(MediaType.application("zylabMetadata+xml"));
-
 	/**
 	 * Create a parser using {@link org.apache.tika.parser.DefaultParser} to 
 	 * parse the file the metadata is about (unless an other is specified in 
@@ -178,19 +191,19 @@ public class ZylabMetadataXml extends AbstractParser {
 
 		FileRefResolver resolver = context.get(FileRefResolver.class, defaultResolver);
 		if(resolver != null) {
-			URL aboutDoc = resolver.resolve(metadataHandler.getAboutDocument());
-			if(aboutDoc != null) {
+			try {
+				URL aboutDoc = resolver.resolve(metadataHandler.getAboutDocument());
 				try (InputStream aboutDocStream = aboutDoc.openStream()) {
 					// Parse document this metadata is about
 					Parser contentsParser = context.get(ContentsParser.class, defaultContentsParser);
 					contentsParser.parse(aboutDocStream, handler, metadata, context);
 				}
-			} else {
+			} catch (URISyntaxException | MalformedURLException ex) {
 				String msg = String.format("Document metadata file %s is about not found (ref: %s, %s)",
 						metadata.get(Metadata.RESOURCE_NAME_KEY),
 						metadataHandler.getAboutDocument().refPath,
 						metadataHandler.getAboutDocument().refName);
-				throw new ReferencedDocumentNotFound(msg);
+				throw new ReferencedDocumentNotFound(msg, ex);
 			}
 		} else {
 			String msg = String.format(

@@ -34,13 +34,15 @@ public class ZylabMetadataXmlDetector implements Detector {
 			input.mark(MAX_READ + 4);
 			try { 
 				Charset cs = getEncodingDetector().detect(input, metadata);
-				InputStreamReader reader = new InputStreamReader(input, cs);
-				CharBuffer buff = CharBuffer.allocate(MAX_READ);
-				reader.read(buff);
-				StringBuilder strBuf = new StringBuilder(buff);
-				
-				if(strBuf.toString().contains(ZYLAB_TAG)) {
-					return ZylabMetadataXml.ZYLAB_METADATA;
+				if(cs != null) {
+					InputStreamReader reader = new InputStreamReader(input, cs);
+					CharBuffer buff = CharBuffer.allocate(MAX_READ);
+					reader.read(buff);
+					StringBuilder strBuf = new StringBuilder(buff);
+					
+					if(strBuf.toString().contains(ZYLAB_TAG)) {
+						return ZylabMetadataXml.ZYLAB_METADATA;
+					}
 				}
 			} finally {
 				input.reset();

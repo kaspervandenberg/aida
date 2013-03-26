@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.Scanner;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.detect.EncodingDetector;
 import org.apache.tika.metadata.Metadata;
@@ -35,12 +36,10 @@ public class ZylabMetadataXmlDetector implements Detector {
 			try { 
 				Charset cs = getEncodingDetector().detect(input, metadata);
 				if(cs != null) {
-					InputStreamReader reader = new InputStreamReader(input, cs);
-					CharBuffer buff = CharBuffer.allocate(MAX_READ);
-					reader.read(buff);
-					StringBuilder strBuf = new StringBuilder(buff);
+					Scanner scanner = new Scanner(input, cs.name());
+					String firstXmlTag = scanner.findWithinHorizon("<\\w.*\\w>", MAX_READ);
 					
-					if(strBuf.toString().contains(ZYLAB_TAG)) {
+					if(firstXmlTag != null && firstXmlTag.contains(ZYLAB_TAG)) {
 						return ZylabMetadataXml.ZYLAB_METADATA;
 					}
 				}

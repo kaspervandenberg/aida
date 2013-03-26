@@ -5,9 +5,9 @@ import java.io.IOException;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXmlDetector;
 import org.apache.tika.detect.DefaultDetector;
-//import org.apache.tika.detect.Detector;
+import org.apache.tika.detect.Detector;
 import org.apache.tika.parser.AutoDetectParser;
-//import org.hamcrest.Matchers;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -16,7 +16,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.isA;
 
 /**
  *
@@ -105,7 +104,7 @@ public class IndexerTest {
 		assertThat(
 				"Zylab detector not available",
 				d.getDetectors(),
-				hasItem(isA(ZylabMetadataXmlDetector.class)));
+				hasItem(Matchers.<Detector>instanceOf(ZylabMetadataXmlDetector.class)));
 	}
 
 	@Test

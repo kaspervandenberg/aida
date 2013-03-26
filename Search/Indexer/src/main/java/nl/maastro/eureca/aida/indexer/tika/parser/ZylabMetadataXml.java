@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
+import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
@@ -119,13 +120,13 @@ public class ZylabMetadataXml extends AbstractParser {
 	 * Tika {@link org.apache.tika.metadata.Parser} to parse the file the 
 	 * metadata is about.
 	 */
-	private final ContentsParser defaultContentsParser;
+	private Parser defaultContentsParser = null;
 
 	/**
 	 * Used to convert Zylab's local path–name-reference to a file that AIDA 
 	 * can access.
 	 */
-	private final FileRefResolver defaultResolver;
+	private FileRefResolver defaultResolver = null;
 	
 	/**
 	 * Create a parser using {@link org.apache.tika.parser.DefaultParser} to 
@@ -140,8 +141,6 @@ public class ZylabMetadataXml extends AbstractParser {
 	 * will throw a {@link InvallidParseContext}-exception.</p>
 	 */
 	public ZylabMetadataXml() {
-		defaultContentsParser = (ContentsParser)new org.apache.tika.parser.DefaultParser(); 
-		defaultResolver = null;
 	}
 
 	/**
@@ -165,7 +164,7 @@ public class ZylabMetadataXml extends AbstractParser {
 	 * 		the {@code ParseContext}.</li></ul>
 	 */
 	public ZylabMetadataXml(Parser contentsParser_, FileRefResolver resolver_) {
-		this.defaultContentsParser = (ContentsParser)contentsParser_;
+		this.defaultContentsParser = contentsParser_;
 		defaultResolver = resolver_;
 	}
 
@@ -189,30 +188,46 @@ public class ZylabMetadataXml extends AbstractParser {
 		reader.parse(iSource);
 		stream.close();
 
-		FileRefResolver resolver = context.get(FileRefResolver.class, defaultResolver);
-		if(resolver != null) {
-			try {
-				URL aboutDoc = resolver.resolve(metadataHandler.getAboutDocument());
-				try (InputStream aboutDocStream = aboutDoc.openStream()) {
-					// Parse document this metadata is about
-					Parser contentsParser = context.get(ContentsParser.class, defaultContentsParser);
-					contentsParser.parse(aboutDocStream, handler, metadata, context);
-				}
-			} catch (URISyntaxException | MalformedURLException ex) {
-				String msg = String.format("Document metadata file %s is about not found (ref: %s, %s)",
-						metadata.get(Metadata.RESOURCE_NAME_KEY),
-						metadataHandler.getAboutDocument().refPath,
-						metadataHandler.getAboutDocument().refName);
-				throw new ReferencedDocumentNotFound(msg, ex);
+		try {
+			URL aboutDoc = getResolver(context).resolve(metadataHandler.getAboutDocument());
+			try (InputStream aboutDocStream = aboutDoc.openStream()) {
+				// Parse document this metadata is about
+				getParser(context).parse(aboutDocStream, handler, metadata, context);
 			}
-		} else {
-			String msg = String.format(
-					"Specify FileRefResolver in parse context when parsing %s (parsed file %s)",
-					SUPPORTED_TYPE.iterator().next().toString(),
-					metadata.get(Metadata.RESOURCE_NAME_KEY));
-			throw new InvallidParseContext(msg);
+		} catch (URISyntaxException | MalformedURLException ex) {
+			String msg = String.format("Document metadata file %s is about not found (ref: %s, %s)",
+					metadata.get(Metadata.RESOURCE_NAME_KEY),
+					metadataHandler.getAboutDocument().refPath,
+					metadataHandler.getAboutDocument().refName);
+			throw new ReferencedDocumentNotFound(msg, ex);
 		}
 	}
-	
+
+	private Parser getParser(ParseContext context) {
+		Parser result = context.get(ContentsParser.class);
+		if (result != null) {
+			return result;
+		}
+		if (defaultContentsParser == null) {
+			// Use get parser from TikaConfig; using TikaConfig from context 
+			// (or defaultconfig if context has no TikaConfig)
+			defaultContentsParser = context.get(
+					TikaConfig.class,
+					TikaConfig.getDefaultConfig()).getParser();
+		}
+		return defaultContentsParser;
+		
+	}
+
+	private FileRefResolver getResolver(ParseContext context) {
+		FileRefResolver result = context.get(FileRefResolver.class);
+		if(result != null) {
+			return result;
+		}
+		if(defaultResolver == null) {
+			defaultResolver = new ReferenceResolver();
+		}
+		return defaultResolver;
+	}
 }
 /* vim: set shiftwidth=4 tabstop=4 noexpandtab fo=ctwan ai : */

@@ -2,11 +2,20 @@ package indexer;
 
 import java.io.File;
 import java.io.IOException;
+import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
+import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXmlDetector;
+import org.apache.tika.detect.DefaultDetector;
+import org.apache.tika.detect.Detector;
+import org.apache.tika.parser.AutoDetectParser;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasKey;
 
 /**
  *
@@ -78,6 +87,25 @@ public class IndexerTest {
     assertEquals("In index", 143, iwUtil.getDocsInIndexCount());
     assertEquals("In cache", 1, Utilities.getDocsInCache(indexdir));
   }
+
+	@Test
+	public void testParserRegistered() {
+		AutoDetectParser p = new AutoDetectParser();
+		assertThat(
+				"Zylab parser not available",
+				p.getParsers(),
+				hasKey(ZylabMetadataXml.ZYLAB_METADATA));
+	}
+
+	@Test
+	public void testDetectorRegistered() {
+		DefaultDetector d = new DefaultDetector();
+				
+		assertThat(
+				"Zylab detector not available",
+				d.getDetectors(),
+				hasItem(Matchers.<Detector>instanceOf(ZylabMetadataXmlDetector.class)));
+	}
 
 	@Test
 	public void testIndexZylab() throws IOException {

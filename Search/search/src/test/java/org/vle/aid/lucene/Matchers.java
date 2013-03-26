@@ -8,12 +8,16 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Set;
-import org.hamcrest.CoreMatchers;
+//import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.vle.aid.lucene.IndexedDocuments.Documents;
 import org.vle.aid.lucene.IndexedDocuments.Fields;
 import org.vle.aid.lucene.IndexedDocuments.FieldContents;
 import org.vle.aid.lucene.IndexedDocuments.Queries;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.anything;
 
 /**
  * Matchers that operate on {@link IndexedDocuments}
@@ -42,11 +46,11 @@ public class Matchers {
 	 * @return 	an Iterable that calls {@link Documents#containedIn(java.lang.Class) }
 	 * 		on each element of {@code docs}
 	 */
-	public static <T> Iterable<Matcher<? extends T>> containingAll(final Iterable<Documents> docs, final Class<T> itemType) {
-		return new Iterable<Matcher<? extends T>>() {
+	public static <T> Iterable<Matcher<? super T>> containingAll(final Iterable<Documents> docs, final Class<T> itemType) {
+		return new Iterable<Matcher<? super T>>() {
 			@Override
-			public Iterator<Matcher<? extends T>> iterator() {
-				return new Iterator<Matcher<? extends T>>() {
+			public Iterator<Matcher<? super T>> iterator() {
+				return new Iterator<Matcher<? super T>>() {
 					private final Iterator<Documents> iDocs = docs.iterator();
 
 					@Override
@@ -83,7 +87,7 @@ public class Matchers {
 	 * @return a matcher for items of type {@code <T>}
 	 */
 	public <T> Matcher<T> containsAllExpectedResultsOf(Class<T> itemtype, Queries query) {
-		return CoreMatchers.allOf(containingAll(
+		return allOf(containingAll(
 				hittingDocs(query, query.field, IndexedDocuments.Queries.MatchStrategy.ANY), itemtype));
 	}
 
@@ -103,7 +107,7 @@ public class Matchers {
 	 * @return a matcher for items of type {@code <T>}
 	 */
 	public <T> Matcher<T> containsNoUnexpectedResultsOf(Class<T> itemtype, IndexedDocuments.Queries query) {
-		return CoreMatchers.not(CoreMatchers.anyOf(containingAll(EnumSet.complementOf(
+		return not(anyOf(containingAll(EnumSet.complementOf(
 				hittingDocs(query, query.field, IndexedDocuments.Queries.MatchStrategy.ANY)),
 				itemtype)));
 	}
@@ -172,7 +176,7 @@ public class Matchers {
 			Set<FieldContents> docContents = Collections.unmodifiableSet(con);
 			return Queries.matchFieldContents(docContents, strategy);
 		} else {
-			return CoreMatchers.<Queries>not(CoreMatchers.<Queries>anything());
+			return (Matcher<Queries>)(Matcher<?>)not(anything());
 		}
 	}
 
@@ -195,7 +199,7 @@ public class Matchers {
 			Set<FieldContents> docContents = Collections.unmodifiableSet(con);
 			return Queries.matchFieldContents(docContents, strategy);
 		} else {
-			return CoreMatchers.<Queries>not(CoreMatchers.<Queries>anything());
+			return (Matcher<Queries>)(Matcher<?>)not(anything());
 		}
 	}
 

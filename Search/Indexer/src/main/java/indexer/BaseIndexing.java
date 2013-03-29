@@ -60,7 +60,7 @@ public class BaseIndexing implements AutoCloseable {
   
   /** logger for Commons logging. */
   private transient Logger log =
-    Logger.getLogger("BaseIndexing.class.getName()");
+    Logger.getLogger(BaseIndexing.class.getName());
 
   /** Creates a new instance of BaseIndexing
    * @param       configFile      path to the configurationfile

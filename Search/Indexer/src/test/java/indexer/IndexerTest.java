@@ -2,6 +2,9 @@ package indexer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXmlDetector;
 import org.apache.tika.detect.DefaultDetector;
@@ -16,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasKey;
+import org.junit.BeforeClass;
 
 /**
  *
@@ -28,6 +32,12 @@ public class IndexerTest {
   File index;
   Indexer instance;
   IndexWriterUtil iwUtil;
+  
+  	@BeforeClass
+	public static void setUpClass() throws IOException {
+		Logger.getLogger("").addHandler(new FileHandler("indexer-test.log"));
+		Logger.getLogger(indexer.BaseIndexing.class.getName()).setLevel(Level.ALL);
+	}
   
 	@Before
     public void setUp() throws Exception {

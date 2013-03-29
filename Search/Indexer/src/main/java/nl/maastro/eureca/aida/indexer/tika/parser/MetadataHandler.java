@@ -55,7 +55,7 @@ class MetadataHandler extends DefaultHandler {
 	 */
 	private static enum XmlAttributes {
 		ATTR_PATH("path"),
-		ATTR_NAME("Name"),
+		ATTR_NAME("name"),
 		ATTR_KEY("key"),
 		ATTR_DOC_DATE("date"),
 		ATTR_ID("id");

@@ -176,11 +176,16 @@ public class ReferenceResolver implements ZylabMetadataXml.FileRefResolver {
 		 */
 		public static URI toURI(final ZylabMetadataXml.FileRef ref)
 				throws URISyntaxException {
-			StringBuilder buildPath = new StringBuilder(ref.refPath);
-			if(!(ref.refPath.endsWith("/") || ref.refPath.endsWith("\\"))) {
+			if(ref == null) {
+				throw new NullPointerException("null reference");
+			}
+			
+			StringBuilder buildPath = ref.refPath != null ?
+					new StringBuilder(ref.refPath) : new StringBuilder();
+			if((ref.refPath == null) || !(ref.refPath.endsWith("/") || ref.refPath.endsWith("\\"))) {
 				buildPath.append("/");
 			}
-			buildPath.append(ref.refName);
+			buildPath.append(ref.refName != null ? ref.refName : "");
 			return toURI(buildPath.toString());
 		}
 	}

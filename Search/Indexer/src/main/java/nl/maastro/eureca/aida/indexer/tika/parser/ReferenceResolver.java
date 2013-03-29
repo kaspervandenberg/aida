@@ -2,15 +2,22 @@
 package nl.maastro.eureca.aida.indexer.tika.parser;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -19,11 +26,15 @@ import java.util.regex.Pattern;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class ReferenceResolver implements ZylabMetadataXml.FileRefResolver {
-	private enum OS {
+	private static enum OS {
 		WINDOWS {
 			@Override public String replaceSeparators(final String s) { return s.replaceAll("\\\\", "/"); } },
 		UNIX {
-			@Override public String replaceSeparators(final String s) { return s; } };
+			@Override public String replaceSeparators(final String s) { return s; } },
+		UNKNOWN {
+			@Override public String replaceSeparators(final String s) {
+				throw new UnsupportedOperationException("Not replacing unknown separators.."); 
+			} };
 
 		public abstract String replaceSeparators(final String s);
 		
@@ -45,14 +56,16 @@ public class ReferenceResolver implements ZylabMetadataXml.FileRefResolver {
 		}
 	}
 
-	private enum Relative {
+	private static enum Relative {
 		RELATIVE,
-		ABSOLUTE
+		ABSOLUTE,
+		UNKNOWN
 	}
 
-	private enum Location {
+	private static enum Location {
 		LOCAL("file:///"),
-		NETWORK("file://");
+		NETWORK("file://"),
+		UNKNOWN("file:///");
 
 		public final String uriPrefix;
 
@@ -61,10 +74,30 @@ public class ReferenceResolver implements ZylabMetadataXml.FileRefResolver {
 		}
 	}
 		
-	private enum PathType {
-		WIN_DRIVE_ABS("^[a-zA-Z]:\\", OS.WINDOWS, Relative.ABSOLUTE, Location.LOCAL),
-		WIN_DRIVE_REL("^([a-zA-Z]:)?[^\\]", OS.WINDOWS, Relative.RELATIVE, Location.LOCAL),
-		WIN_UNC("^\\\\", OS.WINDOWS, Relative.ABSOLUTE, Location.NETWORK);
+	private static enum PathType {
+		WIN_DRIVE_ABS("^[a-zA-Z]:\\\\",			/* e.g. C:\Data\…, C:\… */
+				OS.WINDOWS, Relative.ABSOLUTE, Location.LOCAL),
+		WIN_DRIVE_REL1("^[a-zA-Z]:[^\\\\]",		/* e.g. C:files (without the leading backslash) */
+				OS.WINDOWS, Relative.RELATIVE, Location.LOCAL),
+		WIN_DRIVE_REL2("^([a-zA-Z]:)?(\\w+|\\.{1,2})\\\\",	/* e.g. C:..\…, files\…, .\test (must include a blackslash to distinguis it from linux) */
+				OS.WINDOWS, Relative.RELATIVE, Location.LOCAL),
+		WIN_UNC("^\\\\\\\\",					/* e.g. \\server\share\folder */
+				OS.WINDOWS, Relative.ABSOLUTE, Location.NETWORK),
+		UNIX_ABS("^/",							/* e.g. /etc/hosts */
+				OS.UNIX, Relative.ABSOLUTE, Location.LOCAL),
+		UNIX_REL("^\\w+/",						/* e.g. home/user/config */
+				OS.UNIX, Relative.RELATIVE, Location.LOCAL),
+		UNKNOWN("", OS.UNKNOWN, Relative.UNKNOWN, Location.UNKNOWN) {
+			@Override
+			protected URI toUriImpl(String path) throws URISyntaxException {
+				try {
+					/* let java handle this unknown type of path. */
+					return new URI(URLEncoder.encode(path, StandardCharsets.UTF_8.name()));
+				} catch (UnsupportedEncodingException ex) {
+					throw new Error(ex);
+				}
+			}
+		};
 
 		private final String patExpr;
 		private final Pattern pat;
@@ -112,7 +145,7 @@ public class ReferenceResolver implements ZylabMetadataXml.FileRefResolver {
 		 * 		<li>{@link URI#URI(java.lang.String)} cannot parse the converted
 		 * 			origPath</li></ul>
 		 */
-		private URI toUriImpl(final String path) throws URISyntaxException {
+		protected URI toUriImpl(final String path) throws URISyntaxException {
 			if(os.isNative() && Location.LOCAL.equals(location)) {
 				// Let Java convert the String to an URI
 				return new File(path).toURI();
@@ -123,7 +156,13 @@ public class ReferenceResolver implements ZylabMetadataXml.FileRefResolver {
 				builder.append(location.uriPrefix);
 				builder.append(os.replaceSeparators(path));
 
-				return new URI(builder.toString());
+				try {
+					String encoded = URLEncoder.encode(builder.toString(), StandardCharsets.UTF_8.name());
+					return new URI(encoded);
+				} catch (UnsupportedEncodingException ex) {
+					throw new Error(ex);
+				}
+				
 			} else {
 				String msg = String.format(
 						"Unable to compose URI for non-native relative file path: %s",

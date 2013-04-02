@@ -8,7 +8,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
+import org.apache.tika.detect.DefaultDetector;
+import org.apache.tika.detect.Detector;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
@@ -192,6 +197,13 @@ public class ZylabMetadataXml extends AbstractParser {
 			URL aboutDoc = getResolver(context).resolve(metadataHandler.getAboutDocument());
 			try (InputStream aboutDocStream = aboutDoc.openStream()) {
 				// Parse document this metadata is about
+				metadata.remove(Metadata.RESOURCE_NAME_KEY);
+				metadata.add(Metadata.RESOURCE_NAME_KEY, metadataHandler.getAboutDocument().refName);
+				
+				metadata.remove(Metadata.CONTENT_TYPE);
+				String mediaType = new Tika().detect(aboutDocStream, metadata);
+				metadata.add(Metadata.CONTENT_TYPE, mediaType);
+			
 				getParser(context).parse(aboutDocStream, handler, metadata, context);
 			}
 		} catch (URISyntaxException | MalformedURLException ex) {

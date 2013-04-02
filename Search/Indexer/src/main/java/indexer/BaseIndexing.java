@@ -16,6 +16,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
@@ -26,7 +27,11 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
+import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
+import org.apache.tika.parser.ParsingReader;
 
 public class BaseIndexing implements AutoCloseable {
 	public enum FixedFields {
@@ -60,7 +65,7 @@ public class BaseIndexing implements AutoCloseable {
   
   /** logger for Commons logging. */
   private transient Logger log =
-    Logger.getLogger("BaseIndexing.class.getName()");
+    Logger.getLogger(BaseIndexing.class.getName());
 
   /** Creates a new instance of BaseIndexing
    * @param       configFile      path to the configurationfile
@@ -119,14 +124,19 @@ public class BaseIndexing implements AutoCloseable {
   private class TikaIndexAdder extends SimpleFileVisitor<Path> {
 		@Override
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+			Tika tikaFacade = new  Tika(); 
+			Parser parser = tikaFacade.getParser();
+			Detector detector = tikaFacade.getDetector();
+			ParseContext context = new ParseContext();
+			context.set(ZylabMetadataXml.FileRefResolver.class, cfg.getReferenceResolver());
 			
-			Tika tikaParser = new  Tika(); 
 			VisitedDocument doc = new VisitedDocument(file);
 			doc.storeFilename();
-			Analyzer analyzer = doc.detectAndStoreMediaType(tikaParser);
+			Analyzer analyzer = doc.detectAndStoreMediaType(tikaFacade);
 			
 			try {
-				doc.storeContent(tikaParser, analyzer);
+				doc.storeContent(parser, context, analyzer);
+				doc.storeMetadata();
 				try {
 					indexWriterUtil.getIndexWriter().addDocument(doc.getDocument(), analyzer);
 					indexWriterUtil.getIndexWriter().commit();
@@ -195,9 +205,9 @@ public class BaseIndexing implements AutoCloseable {
 				metadata.add(Metadata.RESOURCE_NAME_KEY, file.toFile().getName());
 			}
 
-			public Analyzer detectAndStoreMediaType(Tika parser) {
+			public Analyzer detectAndStoreMediaType(Tika tikaFacade) {
 				try {
-					String mediaType = parser.detect(file.toFile());
+					String mediaType = tikaFacade.detect(file.toFile());
 					
 					doc.add(new StringField(
 							FixedFields.MEDIA_TYPE.fieldName, mediaType, Store.YES));
@@ -216,14 +226,21 @@ public class BaseIndexing implements AutoCloseable {
 				}
 			}
 
-			public void storeContent(Tika parser, Analyzer analyzer)
+			public void storeContent(Parser parser, ParseContext context, Analyzer analyzer)
 					throws IOException {
-				Reader content = parser.parse(
-						new FileInputStream(file.toFile()), metadata);
+				Reader content = new ParsingReader(parser, new FileInputStream(file.toFile()), metadata, context);
 
 				TokenStream tokenStream = analyzer.tokenStream(
 						FixedFields.CONTENT.fieldName, content);
 				doc.add(new TextField(FixedFields.CONTENT.fieldName, tokenStream));
+			}
+
+			public void storeMetadata() {
+				for (String property : metadata.names()) {
+					for (String value : metadata.getValues(property)) {
+						doc.add(new StringField(property, value, Store.YES));
+					}
+				}
 			}
 
 			public Document getDocument() {

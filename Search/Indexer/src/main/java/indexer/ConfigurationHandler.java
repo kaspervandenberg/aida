@@ -3,9 +3,13 @@ package indexer;
 import indexer.config.ConfigType;
 import indexer.config.DocType;
 import indexer.config.FieldType;
+import indexer.config.FileRefType;
 import indexer.config.IndexType;
 import indexer.config.VectorType;
 import java.io.File;
+import java.lang.ref.WeakReference;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -20,6 +24,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import nl.maastro.eureca.aida.indexer.tika.parser.ReferenceResolver;
+import nl.maastro.eureca.aida.indexer.tika.parser.StringToURI;
 
 
 /**
@@ -367,6 +373,7 @@ public class ConfigurationHandler {
   private final String CONFIGURATIONFILE;
   private Map<String, String> ht;
   private final DocTypeCache documentTypes;
+  private WeakReference<ReferenceResolver> referenceResolver = null;
   
   /** logger for Commons logging. */
     private transient Logger log =
@@ -504,6 +511,25 @@ public class ConfigurationHandler {
       /* DEFAULT VALUE */
       return "STANDARD";
   }
+
+	public ReferenceResolver getReferenceResolver() {
+		ReferenceResolver resolver = (referenceResolver != null) ?
+				referenceResolver.get() : null;
+		if (resolver == null) {
+			resolver = new ReferenceResolver();
+			for (FileRefType ref: CT.getFileReference()) {
+				try {
+					resolver.addMapping(
+							StringToURI.getInstance().toURI(ref.getReferencedPath()),
+							StringToURI.getInstance().toURI(ref.getResolution()));
+				} catch (URISyntaxException ex) {
+					Logger.getLogger(ConfigurationHandler.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+			referenceResolver = new WeakReference<>(resolver);
+	  	}	  
+		return resolver;
+	}
 
   
   /**

@@ -15,6 +15,10 @@
 
   <Name>My_index</Name>
   <DataPath>datadir</DataPath>
+  <FileReference>
+	  <referenced_path>D:\ZyIMAGE Data\Index Data\EMD\</referenced_path>
+	  <resolution>referenced-data</resolution>
+  </FileReference>
   <IndexOverwrite>true</IndexOverwrite>
 
 

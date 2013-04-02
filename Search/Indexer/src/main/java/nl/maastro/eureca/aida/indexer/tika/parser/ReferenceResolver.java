@@ -1,24 +1,12 @@
 // © Maastro, 2013
 package nl.maastro.eureca.aida.indexer.tika.parser;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 /**
  * Use a table of URIs to resolve references
@@ -98,9 +86,10 @@ public class ReferenceResolver implements ZylabMetadataXml.FileRefResolver {
 	 * 		</li></ul>
 	 */
 	private static boolean match(final URI target, final URI prefix) {
-		return ((prefix.getScheme().compareTo(target.getScheme()) == 0)
-				&& (prefix.getHost().compareTo(target.getHost()) == 0)
-				&& (target.getPath().startsWith(prefix.getPath())));
+		NullStringComperator comp = new NullStringComperator();
+		return (comp.compare(prefix.getScheme(), target.getScheme()) == 0)
+				&& (comp.compare(prefix.getHost(), target.getHost()) == 0)
+				&& (comp.startsWith(target.getPath(), prefix.getPath()));
 	}
 	
 	/**

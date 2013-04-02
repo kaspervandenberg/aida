@@ -136,6 +136,7 @@ public class BaseIndexing implements AutoCloseable {
 			
 			try {
 				doc.storeContent(parser, context, analyzer);
+				doc.storeMetadata();
 				try {
 					indexWriterUtil.getIndexWriter().addDocument(doc.getDocument(), analyzer);
 					indexWriterUtil.getIndexWriter().commit();
@@ -232,6 +233,14 @@ public class BaseIndexing implements AutoCloseable {
 				TokenStream tokenStream = analyzer.tokenStream(
 						FixedFields.CONTENT.fieldName, content);
 				doc.add(new TextField(FixedFields.CONTENT.fieldName, tokenStream));
+			}
+
+			public void storeMetadata() {
+				for (String property : metadata.names()) {
+					for (String value : metadata.getValues(property)) {
+						doc.add(new StringField(property, value, Store.YES));
+					}
+				}
 			}
 
 			public Document getDocument() {

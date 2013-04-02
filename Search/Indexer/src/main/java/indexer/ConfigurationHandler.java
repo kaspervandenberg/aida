@@ -25,6 +25,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import nl.maastro.eureca.aida.indexer.tika.parser.ReferenceResolver;
+import nl.maastro.eureca.aida.indexer.tika.parser.StringToURI;
 
 
 /**
@@ -519,8 +520,8 @@ public class ConfigurationHandler {
 			for (FileRefType ref: CT.getFileReference()) {
 				try {
 					resolver.addMapping(
-							new URI(ref.getReferencedPath()),
-							new URI(ref.getResolution()));
+							StringToURI.getInstance().toURI(ref.getReferencedPath()),
+							StringToURI.getInstance().toURI(ref.getResolution()));
 				} catch (URISyntaxException ex) {
 					Logger.getLogger(ConfigurationHandler.class.getName()).log(Level.SEVERE, null, ex);
 				}

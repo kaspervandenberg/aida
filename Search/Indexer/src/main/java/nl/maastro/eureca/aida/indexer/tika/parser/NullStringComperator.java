@@ -76,7 +76,7 @@ public class NullStringComperator implements Comparator<String> {
 	 * 			{@code prefix}.</li></ul>
 	 */
 	public boolean startsWith(String target, String prefix) {
-		if (prefix != null) {
+		if (prefix == null) {
 			return true;
 		} else {
 			if (target != null) {

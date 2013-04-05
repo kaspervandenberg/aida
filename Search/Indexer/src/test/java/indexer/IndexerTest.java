@@ -7,18 +7,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXmlDetector;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexableField;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.parser.AutoDetectParser;
+import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matchers;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.equalTo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasKey;
 import org.junit.BeforeClass;
 
 /**
@@ -137,6 +143,24 @@ public class IndexerTest {
       assertEquals(Utilities.deleteDir(new File(indexdir)), true);
     
   }
+
+	@Test
+	public void testIndexContainsField() throws IOException {
+		testIndexZylab();
+		DirectoryReader dirReader = DirectoryReader.open(iwUtil.getIndexWriter(), false);
+		assertEquals(dirReader.maxDoc(), 1);
+//		assertThat(dirReader.document(0).getFields(), hasItem(
+//				new FeatureMatcher<IndexableField, String>(equalTo("Patisnummer"), "Field key", "Field key") {
+//			@Override
+//			protected String featureValueOf(IndexableField actual) {
+//				return actual.name();
+//			} } ));
+		System.out.println(String.format("maxdoc: %d", dirReader.maxDoc()));
+		Document doc = dirReader.document(0);
+		for(IndexableField field : doc.getFields()) {
+			System.out.println(String.format("Field name: %s,\t value: %s", field.name(), field.stringValue()));
+		}
+	}
   
   public void testIndexAll(boolean deleteAfterwards) throws IOException {
     this.deleteAfterwards = deleteAfterwards;

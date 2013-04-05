@@ -10,7 +10,12 @@ import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXmlDetector;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.FieldInfos;
+import org.apache.lucene.index.Fields;
 import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.parser.AutoDetectParser;
@@ -159,6 +164,16 @@ public class IndexerTest {
 		Document doc = dirReader.document(0);
 		for(IndexableField field : doc.getFields()) {
 			System.out.println(String.format("Field name: %s,\t value: %s", field.name(), field.stringValue()));
+		}
+	}
+
+	@Test
+	public void testFieldInfos() throws IOException {
+		testIndexAll();
+		DirectoryReader dirReader = DirectoryReader.open(iwUtil.getIndexWriter(), false);
+		Fields fieldInfos = MultiFields.getFields(dirReader);
+		for (String fieldName : fieldInfos) {
+			System.out.println(String.format("MultiFields field name: %s", fieldName));
 		}
 	}
   

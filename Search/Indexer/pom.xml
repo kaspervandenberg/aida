@@ -4,7 +4,7 @@
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>indexer</artifactId>
 	<packaging>jar</packaging>
-	<version>0.75-SNAPSHOT</version>
+	<version>0.76-SNAPSHOT</version>
 	
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
@@ -142,6 +142,13 @@
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-library</artifactId>
+			<version>1.3</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
 			<version>1.3</version>
 			<scope>test</scope>
 		</dependency>

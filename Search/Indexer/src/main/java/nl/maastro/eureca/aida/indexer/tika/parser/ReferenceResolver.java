@@ -7,6 +7,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Use a table of URIs to resolve references
@@ -14,6 +16,7 @@ import java.util.Map;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class ReferenceResolver implements ZylabMetadataXml.FileRefResolver {
+	private static final Logger log = Logger.getLogger(ReferenceResolver.class.getName());
 	
 	private Map<URI, URI> resolutionTable = new HashMap<>();
 
@@ -43,13 +46,23 @@ public class ReferenceResolver implements ZylabMetadataXml.FileRefResolver {
 					String origPath = original.getPath();
 					String mappedPath = origPath.replace(
 							prefix.getPath(), resolution.getPath());
-					return new URI(
+					URL result = new URI(
 							resolution.getScheme(),
 							resolution.getHost(),
 							mappedPath,
 							original.getFragment()).toURL();
+					log.log(Level.INFO, String.format(
+							"Resolve %s %s (URI %s) to %s",
+							reference.refPath, reference.refName,
+							original.toString(),
+							result.toString()));
+					return result;
 				}
 			}
+			log.log(Level.FINE, String.format(
+					"Leaving %s %s (URI %s) as is",
+					reference.refPath, reference.refName,
+					original.toString()));
 			return original.toURL();
 		} catch (MalformedURLException ex) {
 			throw new Error(ex);

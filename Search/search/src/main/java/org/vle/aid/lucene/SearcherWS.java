@@ -515,13 +515,13 @@ TopDocs _search (Query query) throws IOException {
 
             } else {
               if (v.size() > 1) {
-                json += "\n\t\t" + key + " : [ ";
+                json += "\n\t\t\"" + key + "\" : [ ";
                 for (Iterator n = v.iterator(); n.hasNext(); ) {
                   json += "\n\t\t\t\"" + escapeJason((String) n.next()) + "\",";
                 }
                 json = json.substring(0, json.length()-1) + "],";
               } else {
-                json += "\n\t\t" + key + " : \"" + escapeJason((String) v.firstElement()) + "\",";
+                json += "\n\t\t\"" + key + "\" : \"" + escapeJason((String) v.firstElement()) + "\",";
               }
               
               if (key.equalsIgnoreCase("path"))

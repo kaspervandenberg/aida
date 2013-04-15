@@ -84,7 +84,8 @@ public class item extends HttpServlet {
       return;
     }
 
-	  MediaType fileType = MediaType.parse(tika.detect(_file));
+	  MediaType fileType = MediaType.parse(tika.detect(
+			  new FileInputStream(_file)));
 	  response.setContentType(fileType.toString());
     
     if (thumbnail) {

@@ -9,6 +9,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +32,7 @@ import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.ParsingReader;
@@ -131,16 +135,31 @@ public class BaseIndexing implements AutoCloseable {
 			context.set(ZylabMetadataXml.FileRefResolver.class, cfg.getReferenceResolver());
 			
 			VisitedDocument doc = new VisitedDocument(file);
-			doc.storeFilename();
 			Analyzer analyzer = doc.detectAndStoreMediaType(tikaFacade);
 			
 			try {
 				doc.storeContent(parser, context, analyzer);
 				doc.storeMetadata();
+				doc.storeFilename();
 				try {
 					indexWriterUtil.getIndexWriter().addDocument(doc.getDocument(), analyzer);
 					indexWriterUtil.getIndexWriter().commit();
-					indexWriterUtil.copyToCache(file);
+
+					String  s_mediaType = doc.metadata.get(FixedFields.MEDIA_TYPE.fieldName);
+					MediaType mediaType = (s_mediaType != null) ? MediaType.parse(s_mediaType) : null;
+					if((mediaType != null) ? ZylabMetadataXml.ZYLAB_METADATA.compareTo(mediaType) == 0 : false) {
+						String s_about= doc.metadata.get(ZylabMetadataXml.FixedProperties.ABOUT_RESOLVED.get());
+						try {
+							URI about = new URI(s_about);
+							indexWriterUtil.copyToCache(new File(about).toPath(), file.getFileName().toString());
+						} catch (URISyntaxException ex) {
+							Logger.getLogger(BaseIndexing.class.getName()).log(
+									Level.SEVERE,
+									null, ex);
+						}
+					} else {
+						indexWriterUtil.copyToCache(file);
+					}
 					
 				} catch (OutOfMemoryError ex) {
 					indexWriterUtil.handleOutOfMememoryError(ex);
@@ -202,7 +221,7 @@ public class BaseIndexing implements AutoCloseable {
 			public void storeFilename() {
 				doc.add(new StringField(
 						FixedFields.ID.fieldName, file.toFile().getName(), Store.YES));
-				metadata.add(Metadata.RESOURCE_NAME_KEY, file.toFile().getName());
+//				metadata.add(Metadata.RESOURCE_NAME_KEY, file.toFile().getName());
 			}
 
 			public Analyzer detectAndStoreMediaType(Tika tikaFacade) {

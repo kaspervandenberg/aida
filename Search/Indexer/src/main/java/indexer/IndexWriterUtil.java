@@ -154,18 +154,22 @@ public class IndexWriterUtil implements AutoCloseable {
 		return dirReader.numDocs();
 	}
 
-	public void copyToCache(Path file) {
-		File src = file.toFile();
-		File dest = new File(getCacheDir(), file.toFile().getName());
+	public void copyToCache(Path src, String targetName) {
+		File dest = new File(getCacheDir(), targetName);
 		try {
-			Utilities.copy(src, dest);
+			Utilities.copy(src.toFile(), dest);
 		} catch (IOException ex) {
 			String msg = String.format(
 					"Unable to copy %s to cache %s",
-					src.getPath(),
+					src.toString(),
 					dest.getPath());
 			log.log(Level.SEVERE, msg, ex);
 		}
+		
+	}
+	
+	public void copyToCache(Path file) {
+		copyToCache(file, file.getFileName().toString());
 	}
 	
 	private FSDirectory initIndexDir(String indexName) {

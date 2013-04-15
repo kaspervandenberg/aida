@@ -211,7 +211,9 @@ public class ZylabMetadataXml extends AbstractParser {
 		stream.close();
 
 		try {
-			URL aboutDoc = getResolver(context).resolve(metadataHandler.getAboutDocument());
+			FileRef ref_aboutDoc = metadataHandler.getAboutDocument();
+			context.set(ZylabMetadataXml.FileRef.class, ref_aboutDoc);
+			URL aboutDoc = getResolver(context).resolve(ref_aboutDoc);
 			try (InputStream aboutDocStream = aboutDoc.openStream()) {
 				// Parse document this metadata is about
 				metadata.add(FixedProperties.ABOUT_RESOLVED.get(), aboutDoc.toString());

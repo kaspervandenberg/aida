@@ -130,24 +130,20 @@ public class BaseIndexing implements AutoCloseable {
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 			Tika tikaFacade = new  Tika(); 
 			Parser parser = tikaFacade.getParser();
-			Detector detector = tikaFacade.getDetector();
 			ParseContext context = new ParseContext();
 			context.set(ZylabMetadataXml.FileRefResolver.class, cfg.getReferenceResolver());
 			
 			VisitedDocument doc = new VisitedDocument(file);
-			Analyzer analyzer = doc.detectAndStoreMediaType(tikaFacade);
 			
 			try {
-				doc.storeContent(parser, context, analyzer);
+				Analyzer analyzer = doc.storeContent(parser, context);
 				doc.storeMetadata();
-				doc.storeFilename();
 				try {
 					indexWriterUtil.getIndexWriter().addDocument(doc.getDocument(), analyzer);
 					indexWriterUtil.getIndexWriter().commit();
 
-					String  s_mediaType = doc.metadata.get(FixedFields.MEDIA_TYPE.fieldName);
-					MediaType mediaType = (s_mediaType != null) ? MediaType.parse(s_mediaType) : null;
-					if((mediaType != null) ? ZylabMetadataXml.ZYLAB_METADATA.compareTo(mediaType) == 0 : false) {
+					ZylabMetadataXml.FileRef ref_about = context.get(ZylabMetadataXml.FileRef.class);
+					if(ref_about != null) {
 						String s_about= doc.metadata.get(ZylabMetadataXml.FixedProperties.ABOUT_RESOLVED.get());
 						try {
 							URI about = new URI(s_about);
@@ -218,43 +214,26 @@ public class BaseIndexing implements AutoCloseable {
 				file = file_;
 			}
 			
-			public void storeFilename() {
-				doc.add(new StringField(
-						FixedFields.ID.fieldName, file.toFile().getName(), Store.YES));
-//				metadata.add(Metadata.RESOURCE_NAME_KEY, file.toFile().getName());
-			}
-
-			public Analyzer detectAndStoreMediaType(Tika tikaFacade) {
-				try {
-					String mediaType = tikaFacade.detect(file.toFile());
-					
-					doc.add(new StringField(
-							FixedFields.MEDIA_TYPE.fieldName, mediaType, Store.YES));
-
-					// Todo AnalyzerFactory uses filename extension, change it to use
-					// Mime type
-					return analyzerFactory.getAnalyzer(mediaType);
-				} catch (IOException ex) {
-					// Fall back to global analyzer and omit media type field.
-					String msg = String.format(
-							"Error Indexing: while detecting file type of %s",
-							file.toString());
-					log.log(Level.WARNING, msg, ex);
-					
-					return analyzerFactory.getGlobalAnalyzer();
-				}
-			}
-
-			public void storeContent(Parser parser, ParseContext context, Analyzer analyzer)
+			public Analyzer storeContent(Parser parser, ParseContext context)
 					throws IOException {
 				Reader content = new ParsingReader(parser, new FileInputStream(file.toFile()), metadata, context);
 
+				Analyzer analyzer = analyzerFactory.getAnalyzer(metadata.get(Metadata.CONTENT_TYPE));
 				TokenStream tokenStream = analyzer.tokenStream(
 						FixedFields.CONTENT.fieldName, content);
 				doc.add(new TextField(FixedFields.CONTENT.fieldName, tokenStream));
+				return analyzer;
 			}
 
 			public void storeMetadata() {
+				doc.add(new StringField(
+						FixedFields.ID.fieldName, file.toFile().getName(), Store.YES));
+				
+				doc.add(new StringField(
+						FixedFields.MEDIA_TYPE.fieldName,
+						metadata.get(Metadata.CONTENT_TYPE),
+						Store.YES));
+				
 				for (String property : metadata.names()) {
 					for (String value : metadata.getValues(property)) {
 						doc.add(new StringField(property, value, Store.YES));

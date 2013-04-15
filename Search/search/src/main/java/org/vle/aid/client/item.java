@@ -83,13 +83,15 @@ public class item extends HttpServlet {
       displayError(response, "File '" + _file + " 'not found.");
       return;
     }
-
-	  MediaType fileType = MediaType.parse(tika.detect(
-			  new FileInputStream(_file)));
-	  response.setContentType(fileType.toString());
+	
+	MediaType fileType;
+	try (InputStream is = new FileInputStream(_file)) {
+		fileType = MediaType.parse(tika.detect(is));
+		response.setContentType(fileType.toString());
+	}
     
     if (thumbnail) {
-      if (fileType.compareTo(MediaType.application("pdf")) == 0) {
+      if (MediaType.application("pdf").compareTo(fileType) == 0) {
       
         response.setContentType("image/jpeg");
         

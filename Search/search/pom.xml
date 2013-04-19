@@ -87,6 +87,26 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>axistools-maven-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>wsdl2java</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/generated-sources/axistools</outputDirectory>
+							<urls>
+								<url>http://vocab.maastro.nl/axis/services/SearcherWS?wsdl</url>	
+							</urls>
+							<packagenName>nl.maastro.eureca.aida.serviceStub</packagenName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -224,6 +244,29 @@
 			<!--
 				Used in org.vle.aid.lucene.BugAida3Test, and 
 				org.vle.aid.lucene.SearcherWSTest indirectly. 
+				Provides JSON to java object transformation
+			-->
+			<!--
+				TODO: com.google.code.gson:gson is considered of higher quality 
+				see http://stackoverflow.com/questions/338586/a-better-java-json-library
+				therefore convert dependencies on org.json to dependencies on 
+				com.google.gson.
+			-->
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.2.2</version>
+			<!--
+				Used in nl.maastro.eureca.aida.search.zylabpatisclient.ZylabPatisClient.
+				Provides JSON to java object and vice versa transformation.
+			-->
+			<!--
+				TODO: com.google.code.gson:gson is considered of higher quality 
+				see http://stackoverflow.com/questions/338586/a-better-java-json-library
+				therefore convert dependencies on org.json to dependencies on 
+				com.google.gson.
 			-->
 		</dependency>
 

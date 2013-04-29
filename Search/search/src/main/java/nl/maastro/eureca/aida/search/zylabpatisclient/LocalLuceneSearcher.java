@@ -21,7 +21,7 @@ import org.apache.lucene.store.FSDirectory;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-class LocalLuceneSearcher extends SearcherBase {
+public class LocalLuceneSearcher extends SearcherBase {
 	private static final Logger log = Logger.getLogger(LocalLuceneSearcher.class.getName());
 	private static final StandardQueryParser parser = new StandardQueryParser();
 	private final IndexSearcher searcher;

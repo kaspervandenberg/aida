@@ -16,12 +16,12 @@ import org.apache.lucene.search.Query;
  * 
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-class WebserviceSearcher extends SearcherBase {
+public class WebserviceSearcher extends SearcherBase {
 	private static final Logger log = Logger.getLogger(WebserviceSearcher.class.getName());
 	private final nl.maastro.vocab.axis.services.SearcherWS.SearcherWS service;
 	private final String index;
 
-	public WebserviceSearcher(SearcherWS service_, String index_, final File index, String defaultField_, int maxResults_, final ForkJoinPool taskPool_) {
+	public WebserviceSearcher(SearcherWS service_, String index_, String defaultField_, int maxResults_, final ForkJoinPool taskPool_) {
 		super(defaultField_, maxResults_, taskPool_);
 		this.service = service_;
 		this.index = index_;

@@ -5,12 +5,13 @@ import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.search.Query;
 
 /**
- * Interface for the wrappers … and … allowing {@link ZylabPatisClient} to 
- * search via the SearcherWS webservice and via a process local Lucene instance.
+ * Interface for the wrappers {@link WebserviceSearcher} and 
+ * {@link LocalLuceneSearcher} allowing {@link ZylabPatisClient} to search via
+ * the SearcherWS webservice and via a process local Lucene instance.
  * 
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-interface Searcher {
+public interface Searcher {
 
 	SearchResult searchFor(final String query, final PatisNumber patient) throws QueryNodeException;
 

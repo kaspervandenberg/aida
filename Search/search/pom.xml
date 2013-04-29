@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>search</artifactId>
-	<version>0.82-SNAPSHOT</version>
+	<version>0.83-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	
 	<parent>
@@ -84,6 +84,11 @@
 						<goals>
 							<goal>xmlbeans</goal>
 						</goals>
+						<configuration>
+							<sourceSchemas>
+								<sourceSchema>result.xsd</sourceSchema>
+							</sourceSchemas>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -108,6 +113,22 @@
 				</executions>
 			</plugin>
 		</plugins>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+			
+			<resource>
+				<directory>src/main/xsd</directory>
+				<includes>
+					<include>zylabPatisClientConfig.xsd</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+			
+		</resources>
 	</build>
 
 	<dependencies>

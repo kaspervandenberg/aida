@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<zylabPatisClientConfig
+	xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+	xmlns='http://search.aida.eureca.maastro.nl/zylabpatisclient/config'
+	xmlns:zpsc='http://search.aida.eureca.maastro.nl/zylabpatisclient/config'
+	xsi:schemaLocation='http://search.aida.eureca.maastro.nl/zylabpatisclient/config file:/home/kasper2/git/aida.git/Search/search/src/main/xsd/zylabPatisClientConfig.xsd'
+	>
+	
+	<index>
+<?ignore
+		<webservice address="http://vocab.maastro.nl/axis/serBlablafdvices/SearcherWS" index="Zylab_test-2013bla0415-02"></webservice>
+?>
+		<localIndex file="file:///tmp/file" />	
+	</index>
+<?ignore
+	<index>
+		<webservice address="http://other.org/ws" />
+	</index>
+?>
+	<defaultField field=".ktnje" />
+	<resultLimit nHits="1203" />
+	<query id="zpsc:ewrt">Bla bla</query>
+	<query id="eewrt">Bla bla</query>
+
+</zylabPatisClientConfig>

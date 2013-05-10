@@ -577,6 +577,10 @@ public class Config {
 		}
 		return searcher;
 	}
+
+	public QueryProvider getConfiguredQueries() {
+		return this.new QueryPatterns();
+	}
 	
 	private static Document parseXml(File configFile) {
 		try {

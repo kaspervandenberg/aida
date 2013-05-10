@@ -72,6 +72,7 @@ public class ZylabPatisClient extends HttpServlet {
 	
 	private static final ForkJoinPool taskPool = new ForkJoinPool();
 
+	private final QueryProviderRegistry queryPatterns = new QueryProviderRegistry();
 	private Config config = null;
 
 	/**
@@ -79,10 +80,11 @@ public class ZylabPatisClient extends HttpServlet {
 	 * configuration settings.
 	 * 
 	 * @param config_	{@link Config} from which to read properties such as 
-	 * 		the {@link Searcher} to use and stored concept queries.
+	 * 		the {@link Searcher} to use and stored concept queryPatterns.
 	 */
 	public ZylabPatisClient(final Config config_) {
 		config = config_;
+		queryPatterns.registerProvider(config.getConfiguredQueries());
 	}
 	
 	/**
@@ -110,6 +112,7 @@ public class ZylabPatisClient extends HttpServlet {
 						RequestParameters.CONFIG_FILE.servletInitParamKey));
 			}
 			config = Config.init(new File(s_file), taskPool);
+			queryPatterns.registerProvider(config.getConfiguredQueries());
 		}
 	}
 

@@ -56,7 +56,17 @@
 	<xs:attribute name="nHits" type="xs:nonNegativeInteger" default="1000" />
 </xs:complexType>
 
-
+<!--
+	Query that clients of the Zylab Patis Search Client can refer to by id
+-->
+<xs:complexType name="ConceptQuery">
+	<xs:simpleContent>
+		<xs:extension base="xs:string">
+			<xs:attribute name="id" type="xs:QName" use="required" />
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+	
 
 <xs:element name="zylabPatisClientConfig">
 	<xs:complexType>
@@ -89,6 +99,7 @@
 				-->
 				<xs:element name="resultLimit" type="HitCount" />
 				
+				<xs:element name="query" type="ConceptQuery" />
 			</xs:choice>
 		</xs:sequence>
 

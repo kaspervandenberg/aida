@@ -1,13 +1,18 @@
 // © Maastro, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Properties;
+import javax.xml.namespace.QName;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryparser.flexible.core.nodes.OrQueryNode;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.FuzzyQuery;
@@ -24,78 +29,57 @@ import org.apache.lucene.search.spans.SpanTermQuery;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class PreconstructedQueries {
-	/**
-	 * Contant parts of URIs used to identify queries in {@link #storedPredicates}.
-	 * Use {@link UriParts#createURI(java.lang.String)} to create {@link URI}s
-	 * composed of these standard parts and a specific fragment.
-	 */
-	private enum UriParts {
-		SCHEME("http"),
-		HOST("vocab.maastro.nl"),
-		PATH("/concepts");
-
-		private final String value;
-
-		private UriParts(final String value_) {
-			value = value_;
-		}
-
-	}
 
 	/**
-	 * URI fragments that prefixed with the {@link UriParts} from the 
-	 * {@link URI}s that idenentify the {@link Query}s in 
+	 * QName local parts that prefixed with {@link PreconstructedQueries#getNamespaceUri()}
+	 * form the {@link QName}s that identify the {@link Query}s in 
 	 * {@link #storedPredicates}.
 	 */
-	public enum UriFragments {
+	public enum LocalParts {
 		METASTASIS_IV("metastasisStage_IV");
 
 		private final String value;
-		private URI uri = null;
+		private QName id = null;
 
-		private UriFragments(final String value_) {
+		private LocalParts(final String value_) {
 			value = value_;
 		}
 
 		/**
-		 * Return the URI composed from this {@code UriFragment} and 
-		 * {@link UriParts}.
+		 * Return the {@link QName} composed from this {@code LocalPart} and 
+		 * {@link #getNamespaceUri()}.
 		 * 
-		 * @see #createURI(java.lang.String) 
+		 * @see #createQName(java.lang.String) 
 		 * 
-		 * @return	the {@link URI}
+		 * @return	the {@link QName} to identify a preconstructed query with
 		 */
-		public URI getURI() {
-			if(uri == null) {
+		public QName getID() {
+			if(id == null) {
 				try {
-					uri = createURI(value);
+					id = createQName(value);
 				} catch (URISyntaxException ex) {
 					throw new Error("URISyntaxException in hardcoded URI", ex);
 				}
 			}
-			return uri;
+			return id;
 		}
 			
 		/**
-		 * Build an {@link URI} from the parts defined in {@link UriParts} and
-		 * this fragment.  {@code createURI()} uses 
-		 * {@link URI#URI(java.lang.String, java.lang.String, java.lang.String, java.lang.String) }
-		 * to build the requested {@code URI}.
+		 * Build an {@link QName} from {@link #PREFIX}, the namespace URI
+		 * {@link #getNamespaceUri() } and this local part.  {@code createQName()}
+		 * uses {@link QName#QName(java.lang.String, java.lang.String)}
+		 * to build the requested {@code QName}.
 		 * 
-		 * @param fragment	the fragment part of the URI to create
+		 * @param localpart	the local part of the QName to create
 		 * 
-		 * @return	the constructed {@link URI}
+		 * @return	the constructed {@link QName}
 		 * 
 		 * @throws URISyntaxException when the constructed URI has an syntax 
 		 * 		error. 
 		 */
-		private static URI createURI(String fragment) 
+		private static QName createQName(String localpart) 
 				throws URISyntaxException {
-			return new URI(
-					UriParts.SCHEME.value,
-					UriParts.HOST.value,
-					UriParts.PATH.value,
-					fragment);
+			return new QName(PREFIX, getNamespaceUri().toString(), localpart);
 		}
 	}
 
@@ -176,19 +160,53 @@ public class PreconstructedQueries {
 			return new SpanTermQuery(getTerm());
 		}
 	}
+
+	public class Provider implements QueryProvider {
+		@Override
+		public Collection<QName> getQueryIds() {
+			return PreconstructedQueries.instance().getIds();
+		}
+
+		@Override
+		public boolean hasString(QName id) {
+			return false;
+		}
+
+		@Override
+		public boolean hasObject(QName id) {
+			return PreconstructedQueries.instance().getIds().contains(id);
+		}
+
+		@Override
+		public String getAsString(QName id) throws NoSuchElementException {
+			throw new NoSuchElementException("PreconstructedQueries only provides Lucene Query objects");
+		}
+
+		@Override
+		public Query getAsObject(QName id) throws NoSuchElementException {
+			return PreconstructedQueries.instance().getQuery(id);
+		}
+	}
+	
+	private static final String SEARCH_PROPERTY_RESOURCE = "/search.properties";
+	private static final String SERVLET_URI_PROP = "nl.maastro.eureca.aida.search.zylabpatisclient.servletUri";
+	private static final String DEFAULT_SERVLET_URI = "http://vocab.maastro.nl/zylabpatis";
+	private static final String PREFIX = "pcq";
+	
+	private static URI servletUri = null;
 	
 	/**
 	 * Queries to search for patients that match certain predicates.
 	 * 
 	 */
 	// TODO Move to SearcherWS and provide interface to access stored queries
-	private static final Map<URI, Query> storedPredicates;
+	private static final Map<QName, Query> storedPredicates;
 	static {
-		Map<URI,Query> tmp = new HashMap<>();
+		Map<QName,Query> tmp = new HashMap<>();
 		// add URIs to query mappings here
 		
 		// Stage IV metastasis
-		tmp.put(UriFragments.METASTASIS_IV.getURI(), buildStageIVmetastasis());
+		tmp.put(LocalParts.METASTASIS_IV.getID(), buildStageIVmetastasis());
 			
 		
 		storedPredicates = Collections.unmodifiableMap(tmp);
@@ -223,12 +241,32 @@ public class PreconstructedQueries {
 	 * @param key
 	 * @return 
 	 */
-	public Query getQuery(final URI key) {
+	public Query getQuery(final QName key) {
 		return storedPredicates.get(key);
 	}
 
-	public Query getQuery(final UriFragments keyFragment) {
-		return storedPredicates.get(keyFragment.getURI());
+	public Query getQuery(final LocalParts keyFragment) {
+		return storedPredicates.get(keyFragment.getID());
+	}
+	
+	public Collection<QName> getIds() {
+		return Collections.unmodifiableSet(storedPredicates.keySet());
+	}
+	
+	private static URI getNamespaceUri() {
+		if(servletUri == null) {
+			InputStream propertyFile = PreconstructedQueries.class.getResourceAsStream(SEARCH_PROPERTY_RESOURCE);
+			Properties props = new Properties();
+			try {
+				props.load(propertyFile);
+				String s_uri = props.getProperty(SERVLET_URI_PROP, DEFAULT_SERVLET_URI);
+				servletUri = new URI(s_uri);
+				
+			} catch (IOException | URISyntaxException ex) {
+				throw new Error(ex);
+			}
+		}
+		return servletUri;
 	}
 	
 	private static Query buildStageIVmetastasis() {

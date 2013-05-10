@@ -3,40 +3,51 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Properties;
 import java.util.concurrent.ForkJoinPool;
-import java.util.logging.Logger;
 import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import nl.maastro.eureca.aida.search.zylabpatisclient.LocalLuceneSearcher;
+import nl.maastro.eureca.aida.search.zylabpatisclient.QueryProvider;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.WebserviceSearcher;
 import nl.maastro.vocab.axis.services.SearcherWS.SearcherWS;
 import nl.maastro.vocab.axis.services.SearcherWS.SearcherWSServiceLocator;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.apache.lucene.search.Query;
+import org.jdom2.Attribute;
+import org.jdom2.Comment;
+import org.jdom2.Content;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMConstants;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.filter.Filter;
+import org.jdom2.filter.Filters;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaderSchemaFactory;
+import org.jdom2.xpath.XPathExpression;
+import org.jdom2.xpath.XPathFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -46,198 +57,424 @@ import org.xml.sax.SAXException;
  */
 public class Config {
 	private interface XPathOp {
-		boolean nodeExists(Node context);
+		boolean nodeExists(Content context);
 		
-		String getAttrValue(Node context);
+		String getAttrValue(Content context);
 		
-		Node getLastNode(Node context); 
+		Content getFirstNode(Content context); 
+
+		List<? extends Content> getAllNodes(Content context);
+
+		List<Attribute> getAllAttributes(Content context);
+
+		void setVariable(String name, Object value) 
+				throws IllegalArgumentException;
 	}
 
-	private enum XPathNodes implements XPathOp {
-		BASE("/" + NS_PREFIX + ":zylabPatisClientConfig"),
-		INDEX(NS_PREFIX + ":index"),
-		ABS_INDEX(BASE.s_expr + "/" + INDEX.s_expr),
-		LOCAL_INDEX(NS_PREFIX + ":localIndex"),
-		WEBSERVICE_INDEX(NS_PREFIX + ":webservice"),
-		DEFAULT_FIELD(NS_PREFIX + ":defaultField"),
-		ABS_DEFAULT_FIELD(BASE.s_expr + "/" + DEFAULT_FIELD.s_expr),
-		RESULT_LIMIT(NS_PREFIX + ":resultLimit"),
-		ABS_RESULT_LIMIT(BASE.s_expr + "/" + RESULT_LIMIT.s_expr);
+	private static abstract class XPathOpBaseImpl<T> implements XPathOp {
+		private final Map<String, Object> variables;
+		
+		protected XPathOpBaseImpl() {
+			variables = null;
+		}
 
+		protected XPathOpBaseImpl(final Map<String, Object> variables_) {
+			variables = variables_;
+		}
 
-		private final String s_expr;
-		private transient XPathExpression  expr = null;
-
-		private XPathNodes(String s_expr_) {
-			this.s_expr = s_expr_;
+		protected Map<String, Object> getVariables() {
+			return variables;
+		}
+		
+		protected abstract XPathExpression<T> getExpr();
+		
+		@Override
+		public boolean nodeExists(Content context) {
+			return !getExpr().evaluate(context).isEmpty();
 		}
 
 		@Override
-		public boolean nodeExists(Node context) {
-			try {
-				return (Boolean) getExpr().evaluate(context, XPathConstants.BOOLEAN);
-			} catch (XPathExpressionException ex) {
-				throw new Error(ex);
-			}
+		public String getAttrValue(Content context) {
+			throw new IllegalStateException("XPath expression is not an attribute");
+		}
+		
+		@Override
+		public Content getFirstNode(Content context) {
+			throw new IllegalStateException("XPath expression is not a Node");
+		}
+		
+		@Override
+		public List<? extends Content> getAllNodes(Content context) {
+			throw new IllegalStateException("XPath expression is not a Node");
 		}
 
 		@Override
-		public String getAttrValue(Node context) {
+		public List<Attribute> getAllAttributes(Content context) {
 			throw new IllegalStateException("XPath expression is not an attribute");
 		}
 
 		@Override
-		public Node getLastNode(Node context) {
-			try {
-				NodeList items = (NodeList) getExpr().evaluate(context, XPathConstants.NODESET);
-				Node result = items.item(items.getLength() -1);
-				if(result == null) {
-					throw new NoSuchElementException(String.format(
-							"Document does not contain elements matching %s",
-							s_expr));
-				}
-				return result;
-			} catch (XPathExpressionException ex) {
-				throw new Error(ex);
+		public void setVariable(String name, Object value) throws IllegalArgumentException {
+			if(variables.containsKey(name)) {
+				getExpr().setVariable(name, value);
+			} else {
+				throw new IllegalArgumentException(String.format("No variable named %s", name));
 			}
-		}
-
-		private XPathExpression getExpr() {
-			if(expr == null) {
-				try {
-					expr = getXPath().compile(s_expr);
-				} catch (XPathExpressionException ex) {
-					throw new Error("Invallid XPath", ex);
-				}
-			}
-			return expr;
 		}
 	}
 	
-	private enum XPathAttrs implements XPathOp {
-		ADDRESS("@address"),
-		INDEX("@index"),
-		FILE("@file"),
-		FIELD("@field"),
-		ABS_DEFAULT_FIELD(XPathNodes.ABS_DEFAULT_FIELD.s_expr + "/" + FIELD.s_expr),
-		N_HITS("@nHits"),
-		ABS_RESULT_LIMIT(XPathNodes.ABS_RESULT_LIMIT.s_expr + "/" + N_HITS.s_expr);
-		
+	private static class XPathOpNodeImpl extends XPathOpBaseImpl<Element> {
 		
 		private final String s_expr;
-		private transient XPathExpression  expr = null;
-
-		private XPathAttrs(String s_expr_) {
+		private transient XPathExpression<Element>  expr = null;
+		
+		public XPathOpNodeImpl(final String s_expr_) {
+			this.s_expr = s_expr_;
+		}
+		
+		public XPathOpNodeImpl(final String s_expr_, final Map<String, Object> variables_) {
+			super(variables_);
 			this.s_expr = s_expr_;
 		}
 
 		@Override
-		public boolean nodeExists(Node context) {
-			try {
-				return (Boolean) getExpr().evaluate(context, XPathConstants.BOOLEAN);
-			} catch (XPathExpressionException ex) {
-				throw new Error(ex);
-			}
+		public Content getFirstNode(Content context) {
+			return getExpr().evaluateFirst(context);
 		}
 
 		@Override
-		public String getAttrValue(Node context) {
-			try {
-				return (String) getExpr().evaluate(context, XPathConstants.STRING);
-			} catch (XPathExpressionException ex) {
-				throw new Error(ex);
-			}
+		public List<Element> getAllNodes(Content context) {
+			return getExpr().evaluate(context);
 		}
 
 		@Override
-		public Node getLastNode(Node context) {
-			throw new IllegalStateException("XPath expression is not a Node");
-		}
-		
-		private XPathExpression getExpr() {
+		protected XPathExpression<Element> getExpr() {
 			if(expr == null) {
-				try {
-					expr = getXPath().compile(s_expr);
-				} catch (XPathExpressionException ex) {
-					throw new Error("Invallid XPath", ex);
-				}
+				expr = compileExpr(s_expr, getVariables(), Filters.element());
+			}
+			return expr;
+		}
+
+	}
+
+	private static class XPathOpAttrImpl extends XPathOpBaseImpl<Attribute> {
+		private final String s_expr;
+		private transient XPathExpression<Attribute>  expr = null;
+
+		public XPathOpAttrImpl(String s_expr_) {
+			this.s_expr = s_expr_;
+		}
+
+		public XPathOpAttrImpl(String s_expr_, final Map<String, Object> variables_) {
+			super(variables_);
+			this.s_expr = s_expr_;
+		}
+
+		@Override
+		public String getAttrValue(Content context) {
+			return getExpr().evaluateFirst(context).getValue();
+		}
+
+		@Override
+		public List<Attribute> getAllAttributes(Content context) {
+			return getExpr().evaluate(context);
+		}
+
+		@Override
+		protected XPathExpression<Attribute> getExpr() {
+			if(expr == null) {
+				expr = compileExpr(s_expr, getVariables(), Filters.attribute());
 			}
 			return expr;
 		}
 	}
 
-	private enum XPathCompound implements XPathOp {
-		INDEX_WEBSERVICE(XPathNodes.ABS_INDEX, XPathNodes.WEBSERVICE_INDEX),
-		INDEX_LOCAL(XPathNodes.ABS_INDEX, XPathNodes.LOCAL_INDEX),
-		WS_ADDRESS(XPathNodes.ABS_INDEX, XPathNodes.WEBSERVICE_INDEX, XPathAttrs.ADDRESS),
-		WS_INDEX(XPathNodes.ABS_INDEX, XPathNodes.WEBSERVICE_INDEX, XPathAttrs.INDEX),
-		LOCAL_FILE(XPathNodes.ABS_INDEX, XPathNodes.LOCAL_INDEX, XPathAttrs.FILE)
-
-		;
-
+	private static class XPathOpCompoundImpl implements XPathOp {
 		private final List<XPathOp> ops;
 			
-		private XPathCompound(XPathOp... ops_) {
+		private XPathOpCompoundImpl(XPathOp... ops_) {
 			ops = Arrays.asList(ops_);
 		}
 
 		@Override
-		public boolean nodeExists(Node context) {
+		public boolean nodeExists(Content context) {
 			return ops.get(ops.size() -1).nodeExists(
 					getContext(context, ops.subList(0, ops.size() -1)));
 		}
 
 		@Override
-		public String getAttrValue(Node context) {
+		public String getAttrValue(Content context) {
 			return ops.get(ops.size() -1).getAttrValue(
 					getContext(context, ops.subList(0, ops.size() -1)));
 		}
 
 		@Override
-		public Node getLastNode(Node context) {
-			return ops.get(ops.size() -1).getLastNode(
+		public Content getFirstNode(Content context) {
+			return ops.get(ops.size() -1).getFirstNode(
 					getContext(context, ops.subList(0, ops.size() -1)));
 		}
 
-		private Node getContext(Node context, List<XPathOp> pathExpr) {
+		@Override
+		public List<? extends Content> getAllNodes(Content context) {
+			return ops.get(ops.size() -1).getAllNodes(
+					getContext(context, ops.subList(0, ops.size() -1)));
+		}
+
+		@Override
+		public List<Attribute> getAllAttributes(Content context) {
+			return ops.get(ops.size() -1).getAllAttributes(
+					getContext(context, ops.subList(0, ops.size() -1)));
+		}
+
+		@Override
+		public void setVariable(String name, Object value) throws IllegalArgumentException {
+			final List<IllegalArgumentException> suppressedExceptions = new LinkedList<>();
+			
+			for (XPathOp pathComponent : ops) {
+				try {
+					pathComponent.setVariable(name, value);
+				} catch (IllegalArgumentException ex) {
+					suppressedExceptions.add(ex);
+				}
+			}
+			if(suppressedExceptions.size() >= ops.size()) {
+				throw new IllegalArgumentException(
+						String.format("None of the component XPath accepted %s", name.toString()),
+						new Exception("Multiple causes") {
+							final List<IllegalArgumentException> causes = new ArrayList(suppressedExceptions);
+						});
+			}
+		}
+
+
+		private Content getContext(Content context, List<XPathOp> pathExpr) {
 			if(pathExpr.size() <= 1) {
-				return pathExpr.get(0).getLastNode(context);
+				return pathExpr.get(0).getFirstNode(context);
 			} else {
-				return pathExpr.get(pathExpr.size() -1).getLastNode(
+				return pathExpr.get(pathExpr.size() -1).getFirstNode(
 						getContext(context, pathExpr.subList(0, pathExpr.size() -1)));
 			}
 		}
+		
+	}
+			
+	private class QueryPatterns implements QueryProvider {
+		private Map<QName, String> queries = null;
+
+		@Override
+		public Collection<QName> getQueryIds() {
+			initQueries();
+			return Collections.unmodifiableSet(queries.keySet());
+		}
+
+		@Override
+		public boolean hasString(QName id) {
+			initQueries();
+			return queries.containsKey(id);
+		}
+
+		@Override
+		public boolean hasObject(QName id) {
+			return false;
+//			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public String getAsString(QName id) throws NoSuchElementException {
+			if(!hasString(id)) {
+				throw new NoSuchElementException(
+						String.format("No query with id %s configured.", id.toString()));
+			}
+			initQueries();
+			if(queries.get(id) == null) {
+				QName canQName = findCanonicalQName(id);
+				String s_id = canQName.getPrefix().isEmpty() ?
+						canQName.getLocalPart() :
+						canQName.getPrefix() + ":" + canQName.getLocalPart();
+				XPaths.QUERY_BY_ID.setVariable("queryId", s_id);
+				queries.put(canQName, 
+						XPaths.QUERY_BY_ID.getFirstNode(getConfigDoc()).getValue());
+			}
+			return queries.get(id);
+		}
+
+		@Override
+		public Query getAsObject(QName id) throws NoSuchElementException {
+			throw new NoSuchElementException("Not supported yet.");
+		}
+
+		private void initQueries() {
+			if(queries == null) {
+				List<Attribute> attrs = XPaths.QUERY_IDS.getAllAttributes(getConfigDoc());
+				queries = new HashMap<>(attrs.size());
+				for (Attribute attribute : attrs) {
+					NameSpaceResolver nsr = NameSpaceResolver.createDefault();
+					try {
+						nsr.addAll(attribute.getNamespacesInScope());
+						String val = attribute.getValue();
+						queries.put(nsr.createQName(val), null);
+					} catch (URISyntaxException ex) {
+						throw new Error(String.format(
+								"Namespace URI in config file %s is not well formed.",
+								configFile.getName()),
+								ex);
+					}
+				}
+			}
+		}
+
+		private QName findCanonicalQName(QName qname) {
+			initQueries();
+			QName canonicalId = null;
+			Iterator<QName> i = queries.keySet().iterator();
+			while (canonicalId == null && i.hasNext()) {
+				QName item = i.next();
+				if(item.equals(qname)) {
+					canonicalId = item;
+				}	
+			}
+			if (canonicalId != null) {
+				return canonicalId;
+			} else {
+				throw new NoSuchElementException(
+						String.format("No query with id %s configured.", qname.toString()));
+			}
+			
+		}
 	}
 	
-	private enum XPaths implements XPathOp {
-		INDEX_WEBSERVICE(XPathCompound.INDEX_WEBSERVICE),
-		INDEX_LOCAL(XPathCompound.INDEX_LOCAL),
-		WS_ADDRES(XPathCompound.WS_ADDRESS),
-		WS_INDEX(XPathCompound.WS_INDEX, "Zylab_test-20130415-02"),
-		LOCAL_FILE(XPathCompound.LOCAL_FILE),
-		DEFAULT_FIELD(XPathAttrs.ABS_DEFAULT_FIELD, "content"),
-		RESULT_LIMIT(XPathAttrs.ABS_RESULT_LIMIT, "1000");
+	private enum XPathImpls {
+		// Node expressions
+		N_BASE(XPathOpNodeImpl.class,
+				"/" + NS_PREFIX + ":zylabPatisClientConfig"),
+		N_INDEX(XPathOpNodeImpl.class,
+				NS_PREFIX + ":index"),
+		N_ABS_INDEX(XPathOpNodeImpl.class,
+				N_BASE.s_expr + "/" + N_INDEX.s_expr),
+		N_LOCAL_INDEX(XPathOpNodeImpl.class,
+				NS_PREFIX + ":localIndex"),
+		N_WEBSERVICE_INDEX(XPathOpNodeImpl.class,
+				NS_PREFIX + ":webservice"),
+		N_DEFAULT_FIELD(XPathOpNodeImpl.class,
+				NS_PREFIX + ":defaultField"),
+		N_ABS_DEFAULT_FIELD(XPathOpNodeImpl.class,
+				N_BASE.s_expr + "/" + N_DEFAULT_FIELD.s_expr),
+		N_RESULT_LIMIT(XPathOpNodeImpl.class,
+				NS_PREFIX + ":resultLimit"),
+		N_ABS_RESULT_LIMIT(XPathOpNodeImpl.class,
+				N_BASE.s_expr + "/" + N_RESULT_LIMIT.s_expr),
+		N_QUERY(XPathOpNodeImpl.class,
+				NS_PREFIX + ":query"),
+		N_ABS_QUERY(XPathOpNodeImpl.class,
+				N_BASE.s_expr + "/" + N_QUERY.s_expr),
+		N_ABS_QUERY_BY_ID(XPathOpNodeImpl.class,
+				N_ABS_QUERY.s_expr + "[@id=$queryId]",
+				new Object[][]{{"queryId", ""}}),
+
+		// Attribute expressions
+		A_ADDRESS(XPathOpAttrImpl.class,
+				"@address"),
+		A_INDEX(XPathOpAttrImpl.class,
+				"@index"),
+		A_FILE(XPathOpAttrImpl.class,
+				"@file"),
+		A_FIELD(XPathOpAttrImpl.class,
+				"@field"),
+		A_ABS_DEFAULT_FIELD(XPathOpAttrImpl.class,
+				N_ABS_DEFAULT_FIELD.s_expr + "/" + A_FIELD.s_expr),
+		A_N_HITS(XPathOpAttrImpl.class,
+				"@nHits"),
+		A_ABS_RESULT_LIMIT(XPathOpAttrImpl.class,
+				N_ABS_RESULT_LIMIT.s_expr + "/" + A_N_HITS.s_expr),
+		A_ID(XPathOpAttrImpl.class,
+				"@id"),
+		A_ABS_QUERY_ID(XPathOpAttrImpl.class,
+				N_ABS_QUERY.s_expr + "/" + A_ID.s_expr),
+
+		// Compound paths
+		C_INDEX_WEBSERVICE(XPathOpCompoundImpl.class, N_ABS_INDEX, N_WEBSERVICE_INDEX),
+		C_INDEX_LOCAL(XPathOpCompoundImpl.class, N_ABS_INDEX, N_LOCAL_INDEX),
+		C_WS_ADDRESS(XPathOpCompoundImpl.class, N_ABS_INDEX, N_WEBSERVICE_INDEX, A_ADDRESS),
+		C_WS_INDEX(XPathOpCompoundImpl.class, N_ABS_INDEX, N_WEBSERVICE_INDEX, A_INDEX),
+		C_LOCAL_FILE(XPathOpCompoundImpl.class, N_ABS_INDEX, N_LOCAL_INDEX, A_FILE),
 		
+		;
+		public final XPathOp delegate;
+		public final String s_expr;
+		
+		private XPathImpls(final Class<? extends XPathOp> implementation, final String s_expr_) {
+			try {
+				delegate = implementation.getConstructor(String.class).newInstance(s_expr_);
+				s_expr = s_expr_;
+			} catch (InstantiationException | NoSuchMethodException | 
+					IllegalAccessException | InvocationTargetException ex) {
+				throw new Error(ex);
+			}
+		}
+
+		private XPathImpls(final Class<? extends XPathOp> implementation,
+				String s_expr_, Object[][] variables_) {
+			Map<String, Object> variables = new HashMap<>();
+			for (Object[] var : variables_) {
+				if((var.length == 2) && (var[0] instanceof String)) {
+					variables.put((String)var[0], var[1]);
+				} else {
+					throw new Error(
+							String.format("XPath variable incorrect %s", var.toString()));
+				}
+			}
+			try {
+				delegate = implementation.getConstructor(String.class, Map.class).
+						newInstance(s_expr_, variables);
+				s_expr = s_expr_;
+			} catch (InstantiationException | NoSuchMethodException | 
+					IllegalAccessException | InvocationTargetException ex) {
+				throw new Error(ex);
+			}
+		}
+
+		private XPathImpls(final Class<XPathOpCompoundImpl> implementation, XPathImpls... parts) {
+			XPathOp ops[] = new XPathOp[parts.length];
+			for (int i = 0; i < parts.length; i++) {
+				ops[i] = parts[i].delegate;
+			}
+			delegate = new XPathOpCompoundImpl(ops);
+			s_expr = null;
+		}
+	}
+		
+	private enum XPaths implements XPathOp {
+		// Node expressions
+		INDEX_WEBSERVICE(XPathImpls.C_INDEX_WEBSERVICE),
+		INDEX_LOCAL(XPathImpls.C_INDEX_LOCAL),
+		WS_ADDRES(XPathImpls.C_WS_ADDRESS),
+		WS_INDEX(XPathImpls.C_WS_INDEX, "Zylab_test-20130415-02"),
+		LOCAL_FILE(XPathImpls.C_LOCAL_FILE),
+		DEFAULT_FIELD(XPathImpls.A_ABS_DEFAULT_FIELD, "content"),
+		RESULT_LIMIT(XPathImpls.A_ABS_RESULT_LIMIT, "1000"),
+		QUERY_IDS(XPathImpls.A_ABS_QUERY_ID),
+		QUERY_BY_ID(XPathImpls.N_ABS_QUERY_BY_ID);
+
 		private final XPathOp delegate;
 		private final String defaultValue;
 
-		private XPaths(XPathOp delegate_) {
-			delegate = delegate_;
+		private XPaths(XPathImpls impl) {
+			delegate = impl.delegate;
 			defaultValue = null;
 		}
 
-		private XPaths(XPathOp delegate_, String defaultValue_) {
-			delegate = delegate_;
+		private XPaths(XPathImpls impl, final String defaultValue_) {
+			delegate = impl.delegate;
 			defaultValue = defaultValue_;
 		}
 
 		@Override
-		public boolean nodeExists(Node context) {
+		public boolean nodeExists(Content context) {
 			return delegate.nodeExists(context);
 		}
 
 		@Override
-		public String getAttrValue(Node context) {
+		public String getAttrValue(Content context) {
 			String result = delegate.getAttrValue(context);
 			if(result != null && !"".equals(result)) {
 				return result;
@@ -251,9 +488,25 @@ public class Config {
 		}
 		
 		@Override
-		public Node getLastNode(Node context) {
-			return delegate.getLastNode(context);
+		public Content getFirstNode(Content context) {
+			return delegate.getFirstNode(context);
 		}
+
+		@Override
+		public List<? extends Content> getAllNodes(Content context) {
+			return delegate.getAllNodes(context);
+		}
+
+		@Override
+		public List<Attribute> getAllAttributes(Content context) {
+			return delegate.getAllAttributes(context);
+		}
+
+		@Override
+		public void setVariable(String name, Object value) throws IllegalArgumentException {
+			delegate.setVariable(name, value);
+		}
+		
 	}
 
 	public enum PropertyKeys {
@@ -266,18 +519,19 @@ public class Config {
 		}
 	}
 	
-	private static final Logger log = Logger.getLogger(Config.class.getName());
 	private static final String NS = "http://search.aida.eureca.maastro.nl/zylabpatisclient/config";
 	private static final String NS_PREFIX = "zpsc";
 	private static final String SCHEMA_RESOURCE = "/zylabPatisClientConfig.xsd";
+	private static final String QNAME_SEP = ":";
 	
 	private static Config singleton = null;
 	
-	private static XPath xpath = null;
+	private static XPathFactory xpathfactory = null;
+	private static Collection<Namespace> xpathNamespaces = null;
 
 	private final File configFile;
 	private final ForkJoinPool taskPool;
-	private Document configDoc = null;
+	private Element configDoc = null;
 
 	private Searcher searcher = null;
 	
@@ -306,69 +560,71 @@ public class Config {
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
-	public Searcher getSearcher() {
+	public Searcher getSearcher() throws ServiceException, IOException {
 		if(searcher == null) {
 			String defaultField = XPaths.DEFAULT_FIELD.getAttrValue(getConfigDoc());
 			int maxHits = Integer.parseInt(XPaths.RESULT_LIMIT.getAttrValue(getConfigDoc()));
 			
-			try {
-				if(useWebservice()) {
-					SearcherWSServiceLocator wsLocator = new SearcherWSServiceLocator();
-						SearcherWS webservice = wsLocator.getSearcherWS(getWebserviceAddress());
-						searcher = new WebserviceSearcher(webservice, 
-								XPaths.WS_INDEX.getAttrValue(getConfigDoc()),
-								defaultField, maxHits, taskPool);
-				} else {
-					searcher = new LocalLuceneSearcher(getLocalIndexFile(), defaultField, maxHits, taskPool);
-				}
-			} catch (ServiceException | IOException ex) {
-				throw new Error(ex);
+			if(useWebservice()) {
+				SearcherWSServiceLocator wsLocator = new SearcherWSServiceLocator();
+					SearcherWS webservice = wsLocator.getSearcherWS(getWebserviceAddress());
+					searcher = new WebserviceSearcher(webservice, 
+							XPaths.WS_INDEX.getAttrValue(getConfigDoc()),
+							defaultField, maxHits, taskPool);
+			} else {
+				searcher = new LocalLuceneSearcher(getLocalIndexFile(), defaultField, maxHits, taskPool);
 			}
 		}
 		return searcher;
 	}
-
+	
 	private static Document parseXml(File configFile) {
 		try {
-			Document doc = getParser().parse(configFile);
+			Document doc = getParser().build(configFile);
 			return doc;
-		} catch (SAXException | IOException ex) {
+		} catch (JDOMException | IOException ex) {
 			throw new Error(ex);
 		}
 	}
 
-	private static DocumentBuilder getParser() {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setNamespaceAware(true);
-
+	private static SAXBuilder getParser() {
 		Source schemaSource = new StreamSource(Config.class.getResourceAsStream(SCHEMA_RESOURCE));
 		
 		try {
 			Schema  schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).
 					newSchema(schemaSource);
+			SAXBuilder result = new SAXBuilder(new XMLReaderSchemaFactory(schema));
 					
-			dbf.setSchema(schema);
-			return dbf.newDocumentBuilder();
+			return result;
 		
-		} catch (ParserConfigurationException | SAXException ex) {
+		} catch (SAXException ex) {
 			throw new Error(ex);
 		}
 	}
 
-	private static XPath getXPath() {
-		if(xpath == null) {
-			XPathFactory xpf = XPathFactory.newInstance();
-			xpath = xpf.newXPath();
-			Map<String, String> nsMappings = new HashMap<>();
-			nsMappings.put(NS_PREFIX, NS);
-			xpath.setNamespaceContext(new SimpleNamespaceContext(NS, nsMappings));
+	private static XPathFactory getXPathFactory() {
+		if(xpathfactory == null) {
+			xpathfactory = XPathFactory.instance();
 		}
-		return xpath;
+		return xpathfactory;
 	}
 
-	private Document getConfigDoc() {
+	private static Collection<Namespace> getXpathNamespaces() {
+		if(xpathNamespaces == null) {
+			xpathNamespaces = new ArrayDeque<>(1);
+			xpathNamespaces.add(Namespace.getNamespace(NS_PREFIX, NS));
+		}
+		return xpathNamespaces;
+	}
+	
+	private static <T> XPathExpression<T> compileExpr(
+			String expr, Map<String, Object> variables, Filter<T> filter) {
+		return getXPathFactory().compile(expr, filter, variables, getXpathNamespaces());
+	}
+
+	private Element getConfigDoc() {
 		if(configDoc == null) {
-			configDoc = parseXml(configFile);
+			configDoc = parseXml(configFile).getContent(Filters.element()).get(0);
 		}
 		return configDoc;
 	}
@@ -405,7 +661,7 @@ public class Config {
 		boolean existsLocal = XPaths.INDEX_LOCAL.nodeExists(getConfigDoc());
 		return existsWs || ! existsLocal;
 	}
-
+	
 	public static void main(String[] args) {
 		try {
 			URL resource = Config.class.getResource("/testConfig.xml");
@@ -413,11 +669,13 @@ public class Config {
 			Config testConfig = Config.init(new File(Config.class.getResource("/testConfig.xml").toURI()));
 //			XPaths.getXPath().compile("/zlpc/@ver");
 //			System.out.println(XPaths.ABS_VERSION.s_expr);
-			System.out.println(testConfig.getConfigDoc().getDocumentElement().getNamespaceURI());
-			System.out.println(testConfig.getConfigDoc().getDocumentElement().getNodeName());
-			System.out.println("Use webservice: " + testConfig.useWebservice());
-			System.out.println("Default field: *" + XPaths.DEFAULT_FIELD.getAttrValue(testConfig.getConfigDoc()) + "*");
-			System.out.println("Max hits: " + XPaths.RESULT_LIMIT.getAttrValue(testConfig.getConfigDoc()));
+//			System.out.println(testConfig.getConfigDoc().getDocumentElement().getNamespaceURI());
+//			System.out.println(testConfig.getConfigDoc().getDocumentElement().getNodeName());
+//			System.out.println("Use webservice: " + testConfig.useWebservice());
+//			System.out.println("Default field: *" + XPaths.N_DEFAULT_FIELD.getAttrValue(testConfig.getConfigDoc()) + "*");
+//			System.out.println("Max hits: " + XPaths.N_RESULT_LIMIT.getAttrValue(testConfig.getConfigDoc()));
+//			dumpNodeList((NodeList)XPathAttrs.ABS_QUERY_ID.getExpr().evaluate(testConfig.getConfigDoc(), XPathConstants.NODESET));
+//			dumpNodeList(XPathNodes.N_BASE.getLastNode(testConfig.getConfigDoc()).getAttributes().);
 //			System.out.println("Address: " + testConfig.getWebserviceAddress().toString());
 //			System.out.println("Index: " + testConfig.getWebserviceIndex());
 //			System.out.println(XPaths.getXPath().getNamespaceContext().getNamespaceURI(""));
@@ -426,15 +684,20 @@ public class Config {
 //			dumpNodeList((NodeList)XPaths.getXPath().evaluate("/:zylabPatisClientConfig", testConfig.getConfigDoc(), XPathConstants.NODESET));
 //			System.out.println("version: " + XPaths.getXPath().evaluate("/" + NS_PREFIX + ":zylabPatisClientConfig/@:version", testConfig.getConfigDoc(), XPathConstants.STRING));
 //			dumpNodeList((NodeList)XPaths.getXPath().evaluate("/zylabPatisClientConfig", testConfig.getConfigDoc(), XPathConstants.NODESET));
-//			dumpNodeList((NodeList)XPaths.BASE.getExpr().evaluate(testConfig.getConfigDoc(), XPathConstants.NODESET));
+//			dumpNodeList((NodeList)XPaths.N_BASE.getExpr().evaluate(testConfig.getConfigDoc(), XPathConstants.NODESET));
+			dumpNodeList(testConfig.getConfigDoc().getContent(Filters.element()));
+//			XPathImpls.N_ABS_QUERY_BY_ID.delegate.setVariable("queryId", "eewrt");
+//			dumpNode(XPathImpls.N_ABS_QUERY_BY_ID.delegate.getFirstNode(testConfig.getConfigDoc()));
 			
-
+			System.out.println(testConfig.new QueryPatterns().getQueryIds().toString());
+			System.out.println(testConfig.new QueryPatterns().getAsString(new QName("http://search.aida.eureca.maastro.nl/zylabpatisclient/config", "scopedQuery1", "zlpc")));
+//			System.out.println(testConfig.new QueryPatterns().getAsString(new QName("unscopedQuery2")));
 			
-//			System.out.println(XPaths.BASE.getExpr().evaluate(testConfig.getConfigDoc()));
-//			dumpNode(XPaths.BASE.getLastNode(testConfig.getConfigDoc()));
-//			dumpNode(XPaths.ABS_INDEX.getLastNode(testConfig.getConfigDoc()));
-//			System.out.println(XPaths.WEBSERVICE_INDEX.nodeExists(XPaths.ABS_INDEX.getLastNode(testConfig.getConfigDoc())));
-//			System.out.println(XPaths.LOCAL_INDEX.nodeExists(XPaths.ABS_INDEX.getLastNode(testConfig.getConfigDoc())));
+//			System.out.println(XPaths.N_BASE.getExpr().evaluate(testConfig.getConfigDoc()));
+//			dumpNode(XPaths.N_BASE.getLastNode(testConfig.getConfigDoc()));
+//			dumpNode(XPaths.N_ABS_INDEX.getLastNode(testConfig.getConfigDoc()));
+//			System.out.println(XPaths.N_WEBSERVICE_INDEX.nodeExists(XPaths.N_ABS_INDEX.getLastNode(testConfig.getConfigDoc())));
+//			System.out.println(XPaths.N_LOCAL_INDEX.nodeExists(XPaths.N_ABS_INDEX.getLastNode(testConfig.getConfigDoc())));
 //			System.out.println(XPaths.ABS_VERSION.getAttrValue(testConfig.getConfigDoc()));
 //		} catch (XPathExpressionException | URISyntaxException ex) {
 		} catch (URISyntaxException ex) {
@@ -442,15 +705,47 @@ public class Config {
 		}
 	}
 
-	private static void dumpNodeList(NodeList nodes) {
+	private static void dumpNodeList(List<? extends Content> nodes) {
 		System.out.println("List:");
-		for (int i = 0; i < nodes.getLength(); i++) {
-			Node n = nodes.item(i);
-			System.out.println(String.format("[%d]\t<%s:%s>", i, n.getPrefix(), n.getLocalName()));
+		for (int i = 0; i < nodes.size(); i++) {
+			Content n = nodes.get(i);
+			System.out.print(String.format("[%d]\t",i));
+			dumpNode(n);
 		}
 	}
 
-	private static void dumpNode(Node n) {
-		System.out.println(String.format("node: <%s:%s>", n.getPrefix(), n.getNodeName()));
+	private static void dumpNode(Content n) {
+		switch (n.getCType()) {
+			case Element:
+				Element e = (Element)n;
+				String value = e.getValue();
+				System.out.println(String.format("node: <%s:%s> value: %s", 
+						e.getNamespace().getPrefix(),
+						e.getName(),
+						value));
+				break;
+			case Comment:
+				Comment c = (Comment)n;
+				System.out.println(String.format("comment: %s", c.getText()));
+				break;
+			default:
+				System.out.println(String.format("Unknown element type %s", n.getClass().getName()));
+		}
+//		} else if(n instanceof Attribute) {
+//				break;
+//			case Node.ATTRIBUTE_NODE:
+//				System.out.println(String.format("%s:%s=\"%s\"",
+//						n.getPrefix(), n.getNodeName(), n.getNodeValue()));
+//		}
+//				break;
+//			case Node.TEXT_NODE:
+//				System.out.println(String.format("text: \"%s\"", n.getTextContent()));
+//				break;
+//			case Node.PROCESSING_INSTRUCTION_NODE:
+//				System.out.println(String.format("PI: <?%s:%s?>", n.getPrefix(), n.getNodeName()));
+//			default:
+//				System.out.println(String.format("unknown type %d, %s:%s",
+//						n.getNodeType(), n.getPrefix(), n.getNodeName()));
+//		}
 	}	
 }

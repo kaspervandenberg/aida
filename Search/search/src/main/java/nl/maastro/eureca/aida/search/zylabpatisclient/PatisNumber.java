@@ -1,6 +1,7 @@
 // © Maastr Clinics, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import java.util.Objects;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -26,9 +27,55 @@ public class PatisNumber {
 
 	private PatisNumber(String value_) {
 		value = value_;
-		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
+	/**
+	 * Create a new patis number; check that {@code value_} is a well formed 
+	 * patisnumber.
+	 * 
+	 * @param value_	string to convert into a patisnumber
+	 * @return	the constructed {@link PatisNumber}
+	 * 
+	 * @throws IllegalArgumentException	when {@code value_} is not a number 
+	 */
+	public static PatisNumber create(String value_) throws IllegalArgumentException {
+		try {
+			Integer v = Integer.parseInt(value_);
+			if(v < 0 || v > Integer.MAX_VALUE) {
+				throw new IllegalArgumentException(
+						String.format("Patis number value (%s) is out of range.",
+						value_));
+			} 
+			return new PatisNumber(value_);
+		} catch (NumberFormatException ex) {
+			throw new IllegalArgumentException(
+					String.format("%s is not a wellformed PatisNumber", value_),
+					ex);
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = 41 * hash + Objects.hashCode(this.value);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final PatisNumber other = (PatisNumber) obj;
+		if (!Objects.equals(this.value, other.value)) {
+			return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * Construct a Lucene {@link Query} composed of {@code other} combined with 
 	 * this {@code PatisNumber}.  The resulting query will return the subset of

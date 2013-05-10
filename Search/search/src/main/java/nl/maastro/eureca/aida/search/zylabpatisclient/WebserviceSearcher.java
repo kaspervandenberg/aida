@@ -43,5 +43,15 @@ public class WebserviceSearcher extends SearcherBase {
 	public SearchResult searchFor(Query query, PatisNumber patient) {
 		throw new UnsupportedOperationException("Webservice only supports String queries.");
 	}
+
+	@Override
+	public boolean supportsStringQueries() {
+		return true;
+	}
+
+	@Override
+	public boolean supportsLuceneQueryObjects() {
+		return false;
+	}
 	
 }

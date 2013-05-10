@@ -56,5 +56,15 @@ public class LocalLuceneSearcher extends SearcherBase {
 			return SearchResult.NO_RESULT();
 		}
 	}
+
+	@Override
+	public boolean supportsStringQueries() {
+		return true;
+	}
+
+	@Override
+	public boolean supportsLuceneQueryObjects() {
+		return true;
+	}
 	
 }

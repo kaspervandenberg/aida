@@ -20,5 +20,9 @@ public interface Searcher {
 	Iterable<SearchResult> searchForAll(final String query, final Iterable<PatisNumber> patients);
 
 	Iterable<SearchResult> searchForAll(final Query query, final Iterable<PatisNumber> patients);
+
+	boolean supportsStringQueries();
+
+	boolean supportsLuceneQueryObjects();
 	
 }

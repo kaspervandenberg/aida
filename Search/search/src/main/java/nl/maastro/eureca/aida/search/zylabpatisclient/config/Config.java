@@ -1,4 +1,4 @@
-// © Maastro Clinics, 2013
+// © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.config;
 
 import java.io.File;
@@ -48,6 +48,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaderSchemaFactory;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
+import org.vle.aid.lucene.getDocLength;
 import org.xml.sax.SAXException;
 
 /**
@@ -308,7 +309,7 @@ public class Config {
 				List<Attribute> attrs = XPaths.QUERY_IDS.getAllAttributes(getConfigDoc());
 				queries = new HashMap<>(attrs.size());
 				for (Attribute attribute : attrs) {
-					NameSpaceResolver nsr = NameSpaceResolver.createDefault();
+					NameSpaceResolver nsr = getNamespaces().pushContext();
 					try {
 						nsr.addAll(attribute.getNamespacesInScope());
 						String val = attribute.getValue();
@@ -445,6 +446,7 @@ public class Config {
 		
 	private enum XPaths implements XPathOp {
 		// Node expressions
+		ROOT(XPathImpls.N_BASE),
 		INDEX_WEBSERVICE(XPathImpls.C_INDEX_WEBSERVICE),
 		INDEX_LOCAL(XPathImpls.C_INDEX_LOCAL),
 		WS_ADDRES(XPathImpls.C_WS_ADDRESS),
@@ -532,6 +534,7 @@ public class Config {
 	private final File configFile;
 	private final ForkJoinPool taskPool;
 	private Element configDoc = null;
+	private NameSpaceResolver namespaces = null; 
 
 	private Searcher searcher = null;
 	
@@ -580,6 +583,21 @@ public class Config {
 
 	public QueryProvider getConfiguredQueries() {
 		return this.new QueryPatterns();
+	}
+
+	public NameSpaceResolver getNamespaces() {
+		if(namespaces == null) {
+			namespaces = NameSpaceResolver.createDefault();
+			try {
+				namespaces.addAll(getXpathNamespaces());
+				namespaces.addAll(
+					XPaths.ROOT.getFirstNode(getConfigDoc()).getNamespacesInScope());
+			} catch (URISyntaxException ex) {
+				throw new Error(
+						String.format("Hardcoded URI %s not well formed", NS), ex);
+			}
+		}
+		return namespaces;
 	}
 	
 	private static Document parseXml(File configFile) {

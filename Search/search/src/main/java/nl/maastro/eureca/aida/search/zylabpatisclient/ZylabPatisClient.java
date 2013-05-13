@@ -400,6 +400,7 @@ public class ZylabPatisClient extends HttpServlet {
 					Iterable<SearchResult> result = strategies.get(QueryRepresentation.determineRepresentation(this, query))
 							.get(SearcherCapability.determineCapability(config.getSearcher()))
 							.search(this, query, patients);
+					OutputFormat.JSON.outputResults(resp, result);
 				} catch (ServiceException | IOException ex) {
 					throw new ServletException(ex);
 				}
@@ -552,7 +553,7 @@ public class ZylabPatisClient extends HttpServlet {
 	}
 
 	private enum OutputFormat {
-		JSON(MediaType.set(MediaType.application("json"), MediaType.application("*"))) {
+		JSON(MediaType.set(MediaType.application("json"), MediaType.application("ANY" /* should be '*' */))) {
 			@Override
 			public void outputResults(
 					HttpServletResponse response, Iterable<SearchResult> results)

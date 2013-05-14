@@ -680,8 +680,8 @@ TopDocs _search (Query query) throws IOException {
         text = text.replaceAll("\\f", "");
         text = text.replaceAll("\\r", "");
         text = text.replaceAll("\\n", " ");
-        text = text.replaceAll("\\{", " ");
-        text = text.replaceAll("\\}", " ");
+        text = text.replaceAll("\\{", "&#123;");
+        text = text.replaceAll("\\}", "&#125;");
         text = text.replaceAll("\\*", "");
         return text;
     }
@@ -704,8 +704,8 @@ TopDocs _search (Query query) throws IOException {
         text = text.replaceAll("\\f", "");
         text = text.replaceAll("\\r", "");
         text = text.replaceAll("\\n", " ");
-        text = text.replaceAll("\\{", " ");
-        text = text.replaceAll("\\}", " ");
+        text = text.replaceAll("\\{", "&#123;");
+        text = text.replaceAll("\\}", "&#125;");
         text = text.replaceAll("\\]", ")");
         text = text.replaceAll("\\[", "(");
         text = text.replaceAll("\\*", "");

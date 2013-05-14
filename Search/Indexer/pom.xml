@@ -4,7 +4,7 @@
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>indexer</artifactId>
 	<packaging>jar</packaging>
-	<version>0.76-SNAPSHOT</version>
+	<version>0.77-SNAPSHOT</version>
 	
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
@@ -13,7 +13,7 @@
 		<relativePath>../../maven-parent-serviceServlet</relativePath>
 	</parent>
 
-  <build>
+	<build>
 		<plugins>
 			<plugin>
 				<!--
@@ -52,9 +52,9 @@
 				</executions>
 			</plugin>
 		</plugins>
-  </build>
+	</build>
 
-  <dependencies>
+	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -88,22 +88,22 @@
 		</dependency>
 		
 		<dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <version>4.1.0</version>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>4.1.0</version>
 			<!-- used in indexer.* -->
-    </dependency>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers-common</artifactId>
 			<version>4.1.0</version>
 		</dependency>
-    
+		
 		<dependency>
 <?ignore "try newer version"
 			<groupId>pdfbox</groupId>
-      <artifactId>pdfbox</artifactId>
+			<artifactId>pdfbox</artifactId>
 			<version>0.7.3</version>
 ?>
 			<groupId>org.apache.pdfbox</groupId>
@@ -113,16 +113,16 @@
 			<!-- newer versions available via org.apache.pdfbox -->
 			<!-- perhaps replace it for Tika -->
 			<!-- used in indexer.PdfHandler, and indexer.DocConverter -->
-    </dependency>
-    
+		</dependency>
+		
 		<dependency> 
-      <groupId>org.dspace</groupId>
-      <artifactId>jargon</artifactId>
-      <version>1.4.25</version>
+			<groupId>org.dspace</groupId>
+			<artifactId>jargon</artifactId>
+			<version>1.4.25</version>
 			<!-- provides edu.sdsc.grid.io.{srb,local} -->
 			<!-- used in indexer.SRBhandler -->
-    </dependency>
-    
+		</dependency>
+		
 		<dependency>
 			<groupId>org.jglobus</groupId>
 			<artifactId>JGlobus-Core</artifactId>
@@ -159,7 +159,7 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-  </dependencies>
+	</dependencies>
 </project>
 
 <!-- vim: set tabstop=2 shiftwidth=2 : -->

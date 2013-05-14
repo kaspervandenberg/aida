@@ -76,6 +76,10 @@
 		<display-name>AIDA – Zylab patis search client</display-name>
 		<servlet-name>zylabPatisSearchClient</servlet-name>
 		<servlet-class>nl.maastro.eureca.aida.search.zylabpatisclient.ZylabPatisClient</servlet-class>
+		<init-param>
+			<param-name>configFile</param-name>
+			<param-value>/usr/local/tomcat/webapps/search/WEB_INF/zpsc-config.xml</param-value>
+		</init-param>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>zylabPatisSearchClient</servlet-name>

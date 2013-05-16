@@ -4,13 +4,13 @@
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>zylabPatisClient</artifactId>
 	<version>0.84-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
-		<artifactId>maven-parent-serviceServlet</artifactId>
-		<version>0.2</version>
-		<relativePath>../../maven-parent-serviceServlet</relativePath>
+		<artifactId>maven-parent</artifactId>
+		<version>0.1</version>
+		<relativePath>../../maven-parent</relativePath>
 	</parent>
 
 	<profiles>
@@ -48,6 +48,57 @@
 						</plugin>
 					</plugins>
 				</pluginManagement>
+			</build>
+		</profile>
+
+		<profile>
+			<id>deploy_on_Vocab</id>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<version>2.3</version>
+						<configuration>
+							<webappDirectory>${env.CATALINA_BASE}/webapps/${project.name}</webappDirectory>
+						</configuration>
+						<executions>
+							<execution>
+								<id>Deploy servlet</id>
+								<phase>install</phase>
+								<goals>
+									<goal>exploded</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!--
+						Check that the required properties have been defined
+					-->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<version>1.2</version>
+						<executions>
+							<execution>
+								<id>enfore-properties</id>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<requireProperty>
+											<property>env.CATALINA_BASE</property>
+											<message>Source AIDA::System/setEnvironment to define CATALINA_BASE.</message>
+										</requireProperty>
+									</rules>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
 			</build>
 		</profile>
 	</profiles>

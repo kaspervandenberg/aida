@@ -4,6 +4,7 @@ package nl.maastro.eureca.aida.search.zylabpatisclient;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -405,15 +406,37 @@ public class ZylabPatisClient extends HttpServlet {
 					throw new ServletException(ex);
 				}
 
+				Writer w = resp.getWriter();
+				w.append("<html><body>"
+						+ "<H1>Not yet implemented</H1>"
+						+ "<p>Query IDs requested:<br/><dl>");
+				for (QName qName : queryPatternIDs) {
+					w.append("<dt>");
+					w.append(qName.toString());
+					w.append("</dt><dd>");
+					if(queryPatterns.hasString(qName)) {
+						w.append(queryPatterns.getAsString(qName));
+					} else if (queryPatterns.hasObject(qName)) {
+						w.append("<i>!! OBJECT cannot be represented as text !!</i>");
+					} else {
+						w.append("<i>!! Unknown Query ID !!</i>");
+					}
+					w.append("</dd>");
+				}
+				w.append("</dl></p></body></html>");
+				w.close();
+
 				break;
 			default:
-				throw new ServletException(
+				String msg = 
 						String.format(
 							"Cannot satisfy request %s; URI pattern not known to %s servlet",
 							req.getRequestURL(),
-							ZylabPatisClient.class.getName()));
+							ZylabPatisClient.class.getName());
+				resp.getWriter().append(msg).close();
+				throw new ServletException(msg);
 		}
-		throw new UnsupportedOperationException("Not yet implemented");
+//		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
 	private enum QueryRepresentation {

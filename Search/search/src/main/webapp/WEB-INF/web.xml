@@ -68,20 +68,6 @@
 		<url-pattern>/item/*</url-pattern>
 	</servlet-mapping>
 	
-	<servlet>
-		<description>
-			Use predefined query patterns to search Zylab documents by a 
-			patient's Patisnummer.
-		</description>
-		<display-name>AIDA – Zylab patis search client</display-name>
-		<servlet-name>zylabPatisSearchClient</servlet-name>
-		<servlet-class>nl.maastro.eureca.aida.search.zylabpatisclient.ZylabPatisClient</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>zylabPatisSearchClient</servlet-name>
-		<url-pattern>/zpsc/*</url-pattern>
-	</servlet-mapping>
-
 	<servlet-mapping>
 		<servlet-name>didyoumean</servlet-name>
 		<url-pattern>/DidYouMeanClient</url-pattern>

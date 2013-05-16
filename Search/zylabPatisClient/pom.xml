@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
-	<artifactId>search</artifactId>
+	<artifactId>zylabPatisClient</artifactId>
 	<version>0.84-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	
@@ -78,16 +78,19 @@
 				
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>xmlbeans-maven-plugin</artifactId>
+				<artifactId>axistools-maven-plugin</artifactId>
+				<version>1.4</version>
 				<executions>
 					<execution>
 						<goals>
-							<goal>xmlbeans</goal>
+							<goal>wsdl2java</goal>
 						</goals>
 						<configuration>
-							<sourceSchemas>
-								<sourceSchema>result.xsd</sourceSchema>
-							</sourceSchemas>
+							<outputDirectory>${project.build.directory}/generated-sources/axistools</outputDirectory>
+							<urls>
+								<url>http://vocab.maastro.nl/axis/services/SearcherWS?wsdl</url>	
+							</urls>
+							<packagenName>nl.maastro.eureca.aida.serviceStub</packagenName>
 						</configuration>
 					</execution>
 				</executions>
@@ -97,6 +100,14 @@
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+			
+			<resource>
+				<directory>src/main/xsd</directory>
+				<includes>
+					<include>zylabPatisClientConfig.xsd</include>
+				</includes>
 				<filtering>true</filtering>
 			</resource>
 			
@@ -113,14 +124,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>axis</groupId>
-			<artifactId>axis</artifactId>
-			<version>1.4</version>
-			<!-- provides org.apache.axis. -->
-			<!-- used in org.vle.aid.client.* -->
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
 			<version>4.1.0</version>
@@ -128,14 +131,6 @@
 				used in org.vle.aid.client.*, org.aid.vle.lucene.*, 
 				org.apache.lucene.aid.LuceneFilter
 			-->
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-highlighter</artifactId>
-			<version>4.1.0</version>
-			<!-- provides org.apache.lucene.search.highlight -->
-			<!-- used in org.vle.aid.lucene.tools.Snippet -->
 		</dependency>
 
 		<dependency>
@@ -148,61 +143,47 @@
 			
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers-common</artifactId>
-			<version>4.1.0</version>
-			<!-- used in org.vcle.aid.client.search -->
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-queryparser</artifactId>
 			<version>4.1.0</version>
 			<!-- used in org.vcle.aid.client.search -->
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.tika</groupId>
-			<artifactId>tika-core</artifactId>
-			<version>1.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.xmlbeans</groupId>
-			<artifactId>xmlbeans</artifactId>
-			<version>2.5.0</version>
-			<!-- used in org.vle.aid.client.result, org.vle.aid.lucene.SearcherWS -->
-		</dependency>
-
-		<dependency>
-			<groupId>jdbm</groupId>
-			<artifactId>jdbm</artifactId>
-			<version>1.0</version>
-			<!-- provides jdbm -->
+			<groupId>commons-cli</groupId>
+			<artifactId>commons-cli</artifactId>
+			<version>1.2</version>
+			<!-- Provides commandline argument parsing -->
 			<!--
-				used in org.vle.aid.lucene.tools.getSpellSuggestionsWS,
-				org.vle.aid.lucene.tools.getSynonymsWS, 
-				org.vle.aid.lucene.tools.cmdLineUpdateSynonyms
+				used in nl.maastro.eureca.aida.search.zylabpatisclient.ZylabPatisClient 
 			-->
 		</dependency>
-		
+	
 		<dependency>
-			<groupId>org.swinglabs</groupId>
-			<artifactId>pdf-renderer</artifactId>
-			<version>1.0.5</version>
-			<!-- provides com.sun.pdfview -->
-			<!-- used in src.main.java.org.vle.aid.lucene.tools.Thumbnails -->
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom2</artifactId>
+			<version>2.0.4</version>
+			<!--
+				Provides parsing XML to a DOM-tree and XPath operations; supposed to 
+				be better than java's standard implementation.
+			-->
+			<!--
+				used in nl.maastro.eureca.aida.search.zylabpatisclient.config.Config 
+			-->
 		</dependency>
 
 		<dependency>
-			<groupId>com.aliasi</groupId>
-			<artifactId>lingpipe</artifactId>
-			<version>2.2.0</version>
-			<!-- 
-				used in org.vle.aid.lucene.tools.getSpellSuggestionsWS,
-				org.vle.aid.lucene.tools.cmdLineCreateModel
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.4</version>
+			<!--
+				Provides navigation of DOM-trees with XPath.
+			-->
+			<!--
+				Used by org.jdom as optional dependency.
+				used in nl.maastro.eureca.aida.search.zylabpatisclient.config.Config 
 			-->
 		</dependency>
-		
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -220,24 +201,12 @@
 		</dependency>
 
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-			<scope>test</scope>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.2.2</version>
 			<!--
-				Used in org.vle.aid.lucene.SearcherWSTest
-			-->
-		</dependency>
-
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20090211</version>
-			<scope>test</scope>
-			<!--
-				Used in org.vle.aid.lucene.BugAida3Test, and 
-				org.vle.aid.lucene.SearcherWSTest indirectly. 
-				Provides JSON to java object transformation
+				Used in nl.maastro.eureca.aida.search.zylabpatisclient.ZylabPatisClient.
+				Provides JSON to java object and vice versa transformation.
 			-->
 			<!--
 				TODO: com.google.code.gson:gson is considered of higher quality 
@@ -246,27 +215,6 @@
 				com.google.gson.
 			-->
 		</dependency>
-
-		<dependency>
-			<groupId>com.sudhir.utils</groupId>
-			<artifactId>jsonmatchers</artifactId>
-			<version>1.1</version>
-			<scope>test</scope>
-			<!--
-				Used in org.vle.aid.lucene.SearcherWSTest
-			-->
-			<!--
-				Not found in central repo, installed in Kasper's Dropbox.
-			-->
-		</dependency>
-		
-		<dependency>
-	  	<groupId>org.apache.httpcomponents</groupId>
-		  <artifactId>httpclient</artifactId>
-		  <version>4.2.3</version>
-		  <scope>test</scope>
-			<!-- Used in org.vle.aid.lucene.BugAida3Test. -->
-	 	</dependency>
 	</dependencies>
 </project>
 

@@ -379,7 +379,7 @@ public class ZylabPatisClient extends HttpServlet {
 						"Specify config file in init parameter (%s).",
 						InitialParameters.CONFIG_FILE.servletInitParamKey));
 			}
-			config = Config.init(new File(s_file), taskPool);
+			config = Config.init(this.getServletContext().getResourceAsStream(s_file), taskPool);
 			queryPatterns.registerProvider(config.getConfiguredQueries());
 		}
 	}

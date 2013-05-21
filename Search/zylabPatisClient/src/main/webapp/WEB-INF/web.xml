@@ -10,7 +10,7 @@
 				<servlet-class>nl.maastro.eureca.aida.search.zylabpatisclient.ZylabPatisClient</servlet-class>
 				<init-param>
 						<param-name>configFile</param-name>
-						<param-value>/home/kasper2/git/aida-deployVocab.git/Search/zylabPatisClient/src/main/webapp/WEB-INF/zpsc-config.xml</param-value>
+						<param-value>/WEB-INF/zpsc-config.xml</param-value>
 				</init-param>
 		</servlet>
 		<servlet>
@@ -25,6 +25,10 @@
 				<servlet-name>ErrorPage</servlet-name>
 				<url-pattern>/ErrorPage</url-pattern>
 		</servlet-mapping>
+		<error-page>
+			<exception-type>java.lang.Error</exception-type>
+			<location>/ErrorPage</location>
+		</error-page>
 		<error-page>
 			<exception-type>java.lang.Exception</exception-type>
 			<location>/ErrorPage</location>

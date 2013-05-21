@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<zylabPatisClientConfig
+	xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+	xmlns='http://search.aida.eureca.maastro.nl/zylabpatisclient/config'
+	xmlns:zpsc='http://search.aida.eureca.maastro.nl/zylabpatisclient/config'
+	xmlns:vocab='http://vocab.maastro.nl/zpsc/'
+	xmlns:local='http://localhost:8080/zylabPatisClient/zpsc/queryPattern/'
+	xsi:schemaLocation='http://search.aida.eureca.maastro.nl/zylabpatisclient/config file:/home/kasper2/git/aida.git/Search/search/src/main/xsd/zylabPatisClientConfig.xsd'
+	>
+	
+	<index>
+<?ignore
+		<webservice address="http://vocab.maastro.nl/axis/serBlablafdvices/SearcherWS" index="Zylab_test-2013bla0415-02"></webservice>
+?>
+		<localIndex file="file:///var/local/aida/indexes/Zylab_test-20130415-02" />	
+	</index>
+<?ignore
+	<index>
+		<webservice address="http://other.org/ws" />
+	</index>
+?>
+	<defaultField field="content" />
+	<resultLimit nHits="1000" />
+	<query id="zpsc:scopedQuery1">This can be some content parsable by Lucence's query parser</query>
+	<query id="unscopedQuery2">Query string for unscoped query</query>
+	<query id="vocab:longparenchym">longparenchym</query>
+	<query id="local:longparenchym">longparenchym</query>
+	<query id="vocab:empty"> </query>
+	
+
+</zylabPatisClientConfig>
+
+<!-- vim: set tabstop=2 shiftwidth=2 :-->

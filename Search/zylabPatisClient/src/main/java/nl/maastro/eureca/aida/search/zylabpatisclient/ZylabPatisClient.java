@@ -190,12 +190,16 @@ public class ZylabPatisClient extends HttpServlet {
 		 */
 		protected <T> List<T> convertValues(
 				final ZylabPatisClient context, final String values[]) {
-			List<T> result = new ArrayList<>(values.length);
-			for (String s : values) {
-				assertClean(s);
-				result.add(this.<T>convertValue(context, s));
+			if (values != null) {
+				List<T> result = new ArrayList<>(values.length);
+				for (String s : values) {
+					assertClean(s);
+					result.add(this.<T>convertValue(context, s));
+				}
+				return result;
+			} else {
+				return Collections.<T>emptyList();
 			}
-			return result;
 		}
 		
 		private Option getOption() {
@@ -211,7 +215,7 @@ public class ZylabPatisClient extends HttpServlet {
 
 	private enum UriParameters {
 		QUERY_PATTERN_URI_PART(
-				Pattern.compile("(.*/queryPattern/)(.*?)/"),
+				Pattern.compile("(.*/queryPattern/)([\\p{Alnum}-_.]*)/"),
 				Pattern.compile("^([\\p{Alpha}[_]][\\p{Alnum}[_\\-.]]*)$"),
 				"\"%s\" is not a well formed local part of a QName."),
 
@@ -233,7 +237,9 @@ public class ZylabPatisClient extends HttpServlet {
 
 		public static UriParameters requestedParameter (HttpServletRequest request) {
 			for (UriParameters param : values()) {
-				if(param.uriPart.matcher(request.getPathInfo()).matches()) {
+				if(param.uriPart != null ? 
+						param.uriPart.matcher(request.getPathInfo()).matches() :
+						false) {
 					return param;
 				}
 			}
@@ -381,6 +387,14 @@ public class ZylabPatisClient extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// URL structure: {protocol}://{server}/{context}/{conceptQueryID}/results?patisNr="{patisNr}...}
+/*		StringBuilder w = new StringBuilder();
+		w.append("<html><body><p>Hello world.</p></body></html>");
+		resp.setContentType("text/html;charset=UTF-8");
+		resp.setContentLength(w.length());
+		resp.setCharacterEncoding("UTF-8");
+		resp.getWriter().append(w).flush();
+		resp.getWriter().close();
+		*/
 		UriParameters requestType = UriParameters.requestedParameter(req);
 		switch (requestType) {
 			case QUERY_PATTERN_URI_PART:
@@ -397,14 +411,14 @@ public class ZylabPatisClient extends HttpServlet {
 				}
 				
 				QName query = queryPatternIDs.get(0);
-				try {
-					Iterable<SearchResult> result = strategies.get(QueryRepresentation.determineRepresentation(this, query))
-							.get(SearcherCapability.determineCapability(config.getSearcher()))
-							.search(this, query, patients);
-					OutputFormat.JSON.outputResults(resp, result);
-				} catch (ServiceException | IOException ex) {
-					throw new ServletException(ex);
-				}
+//				try {
+//					Iterable<SearchResult> result = strategies.get(QueryRepresentation.determineRepresentation(this, query))
+//							.get(SearcherCapability.determineCapability(config.getSearcher()))
+//							.search(this, query, patients);
+//					OutputFormat.JSON.outputResults(resp, result);
+//				} catch (ServiceException | IOException ex) {
+//					throw new ServletException(ex);
+//				}
 
 				resp.setContentType("test/html;charset=UTF-8");
 //				Writer w = resp.getWriter();
@@ -427,7 +441,7 @@ public class ZylabPatisClient extends HttpServlet {
 				}
 				w.append("</dl></p></body></html>");
 				resp.setContentLength(w.length());
-				resp.getWriter().append(w);
+				resp.getWriter().append(w).close();
 //				w.close();
 
 				break;

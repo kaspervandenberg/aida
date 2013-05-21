@@ -406,7 +406,9 @@ public class ZylabPatisClient extends HttpServlet {
 					throw new ServletException(ex);
 				}
 
-				Writer w = resp.getWriter();
+				resp.setContentType("test/html;charset=UTF-8");
+//				Writer w = resp.getWriter();
+				StringBuilder w = new StringBuilder();
 				w.append("<html><body>"
 						+ "<H1>Not yet implemented</H1>"
 						+ "<p>Query IDs requested:<br/><dl>");
@@ -424,7 +426,9 @@ public class ZylabPatisClient extends HttpServlet {
 					w.append("</dd>");
 				}
 				w.append("</dl></p></body></html>");
-				w.close();
+				resp.setContentLength(w.length());
+				resp.getWriter().append(w);
+//				w.close();
 
 				break;
 			default:
@@ -433,8 +437,10 @@ public class ZylabPatisClient extends HttpServlet {
 							"Cannot satisfy request %s; URI pattern not known to %s servlet",
 							req.getRequestURL(),
 							ZylabPatisClient.class.getName());
+				resp.setContentType("test/html;charset=UTF-8");
+				resp.setContentLength(msg.length());
 				resp.getWriter().append(msg).close();
-				throw new ServletException(msg);
+//				throw new ServletException(msg);
 		}
 //		throw new UnsupportedOperationException("Not yet implemented");
 	}

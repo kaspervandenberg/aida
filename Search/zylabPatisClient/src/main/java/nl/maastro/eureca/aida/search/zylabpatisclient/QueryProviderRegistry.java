@@ -182,7 +182,7 @@ public class QueryProviderRegistry implements QueryProvider {
 				}
 			}
 			throw new NoSuchElementException(String.format(
-					"Query identified by %s not found"));
+					"Query identified by %s not found", id.toString()));
 		}
 	}
 

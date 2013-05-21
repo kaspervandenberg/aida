@@ -16,6 +16,99 @@ import org.apache.lucene.search.Query;
  */
 public interface QueryProvider {
 	/**
+	 * The types of representation that a provided query can have.
+	 */
+	public enum QueryRepresentation {
+		/**
+		 * The Query(ies) is (are) <em>only</em> provided as String; that is  
+		 * {@link #hasString(javax.xml.namespace.QName)} returns {@code true};
+		 * and {@link #hasObject(javax.xml.namespace.QName)} returns 
+		 * {@code false}.
+		 */
+		STRING(true, false),
+
+		/**
+		 * The Query(ies) is (are) <em>only</em> provided as a 
+		 * {@link org.apache.lucene.search.Query Lucene Query-object}; that is
+		 * {@link #hasString(javax.xml.namespace.QName)} returns {@code false); and
+		 * {@link #hasObject(javax.xml.namespace.QName)} returns {@code true}. 
+		 */
+		OBJECT(false, true),
+
+		/**
+		 * The Query(ies) is (are) provided as <em>both</em> a String and a
+		 * {@link org.apache.lucene.search.Query Lucene Query-object}; that is
+		 * both {@link #hasString(javax.xml.namespace.QName)} and
+		 * {@link #hasObject(javax.xml.namespace.QName)} return {@code true}. 
+		 */
+		BOTH(true, true),
+
+		/**
+		 * Some of the queries in the collection are provided as only String
+		 * while others are only provided as a 
+		 * {@link org.apache.lucene.search.Query Lucene Query-object}.  Some
+		 * queries may be provided in both representations.
+		 */
+		MIXED(false, false),
+
+		/**
+		 * The query(ies) is (are) not known by the provider.
+		 */
+		UNKNOWN_QUERY(false, false);
+
+		private final boolean asString;
+		private final boolean asObject;
+		
+		private QueryRepresentation(
+				final boolean asString_, final boolean asObject_) {
+			asString = asString_;
+			asObject = asObject_;
+		}
+
+		public static QueryRepresentation determineRepresentation(
+				QueryProvider context, Iterable<QName> queries) {
+			boolean allAsString = true;
+			boolean allAsObject = true;
+
+			for (QName q : queries) {
+				QueryRepresentation r = determineRepresentation(context, q);
+				if(r.equals(UNKNOWN_QUERY)) {
+					return UNKNOWN_QUERY;
+				}
+				allAsString &= r.asString;
+				allAsObject &= r.asObject;
+			}
+
+			if(allAsString && allAsObject) {
+				return BOTH;
+			} else if (allAsObject) {
+				return OBJECT;
+			} else if (allAsString) {
+				return STRING;
+			} else {
+				return MIXED;
+			}
+		}
+		
+		public static QueryRepresentation determineRepresentation(
+				QueryProvider context, QName query) {
+			boolean asString = context.hasString(query);
+			boolean asObject = context.hasObject(query);
+
+			if(asString && asObject) {
+				return BOTH;
+			} else if (asObject) {
+				return OBJECT;
+			} else if (asString) {
+				return STRING;
+			} else {
+				return UNKNOWN_QUERY;
+			}
+		}
+	}
+
+
+	/**
 	 * Retrieve the ids of the queries that this provider can provide.
 	 * 
 	 * For each id ∈ returned list, either 

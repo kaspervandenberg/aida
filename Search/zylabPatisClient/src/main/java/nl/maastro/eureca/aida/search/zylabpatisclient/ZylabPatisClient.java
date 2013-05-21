@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
+import nl.maastro.eureca.aida.search.zylabpatisclient.QueryProvider.QueryRepresentation;
+import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher.SearcherCapability;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.NameSpaceResolver;
 import org.apache.commons.cli.CommandLine;
@@ -50,7 +52,18 @@ import org.jdom2.Namespace;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class ZylabPatisClient extends HttpServlet {
+	/**
+	 * Request parameters specified as servlet 
+	 * {@link javax.servlet.http.HttpServletRequest#getParameter(java.lang.String)  request parameters}
+	 * or as commandline parameters when {@code ZylabPatisClient} is invoked 
+	 * from the commandline.
+	 */
 	private enum RequestParameters {
+		/**
+		 * A {@link PatisNumber} specified as request parameter or commandline
+		 * argument.
+		 */
+		@SuppressWarnings("static-access")
 		PATIS_NUMBER("patisNr[]",
 				OptionBuilder.withArgName("patisnumber")
 							.hasArg()
@@ -69,6 +82,11 @@ public class ZylabPatisClient extends HttpServlet {
 				return PatisNumber.create(value);
 			}
 		},
+
+		/**
+		 * A query pattern QName as request parameter or commandline argument.
+		 */
+		@SuppressWarnings("static-access")
 		QUERY_PATTERN("queryPatternID[]",
 				OptionBuilder.withArgName("qname")
 							.hasArg()
@@ -94,10 +112,27 @@ public class ZylabPatisClient extends HttpServlet {
 			}
 		};
 		
-		public /*@Nullable*/ final String httpKey;
-		private /*@Nullable*/ final Option option;
-		private /*@Nullable*/ final Pattern wellFormedValue;
-		private /*@Nullable*/ final String wfErrMsg;
+		/**
+		 * Key to use in {@link javax.servlet.http.HttpServletRequest#getParameter(java.lang.String)}.
+		 */
+		public final String httpKey;
+
+		/**
+		 * {@link org.apache.commons.cli.Option} to
+		 * {@link org.apache.commons.cli.CommandLineParser#parse(org.apache.commons.cli.Options, java.lang.String[]) parse}
+		 * the commandline with.
+		 */
+		private final Option option;
+
+		/**
+		 * {@link java.util.regex.Pattern} to restrict input to.
+		 */
+		private final Pattern wellFormedValue;
+
+		/**
+		 * Message to show when input is not well formed.
+		 */
+		private final String wfErrMsg;
 
 		/**
 		 * Create a HTTPRequest and commandline parameter.
@@ -117,7 +152,22 @@ public class ZylabPatisClient extends HttpServlet {
 			this.wellFormedValue = wellFormedValue_;
 			this.wfErrMsg = wfErrMsg_;
 		}
-	
+
+		/**
+		 * Convert a String to an object of type {@code <T>}.  Instances must
+		 * implement {@code convertValue} with the type of the parameter.
+		 * 
+		 * @param <T>	the type of value of the parameter.
+		 * @param context	a {@link ZylabPatisClient} that the instance can 
+		 * 		use when converting parameters.
+		 * @param value	the string value to convert; {@code value} matches
+		 * 		{@link #wellFormedValue}.
+		 * 
+		 * @return	{@code value} converted to {@code <T>}
+		 * 
+		 * @throws IllegalArgumentException	when {@code value} cannot be 
+		 * 		converted to {@code <T>}.
+		 */
 		protected abstract <T> T convertValue(
 				final ZylabPatisClient context, final String value)
 				throws IllegalArgumentException;
@@ -202,10 +252,6 @@ public class ZylabPatisClient extends HttpServlet {
 			}
 		}
 		
-		private Option getOption() {
-			return option;
-		}
-		
 		private void assertClean(String s) {
 			if(!wellFormedValue.matcher(s).matches()) {
 				throw new IllegalArgumentException(String.format(wfErrMsg, s));
@@ -219,7 +265,7 @@ public class ZylabPatisClient extends HttpServlet {
 				Pattern.compile("^([\\p{Alpha}[_]][\\p{Alnum}[_\\-.]]*)$"),
 				"\"%s\" is not a well formed local part of a QName."),
 
-		INVALLID_PATTERN(null, null, null)
+		INVALLID_PATTERN(Pattern.compile(".*"), Pattern.compile(".*"), null)
 		;
 		
 		public /*@Nullable*/ final Pattern uriPart;
@@ -459,84 +505,7 @@ public class ZylabPatisClient extends HttpServlet {
 //		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
-	private enum QueryRepresentation {
-		STRING(true, false),
-		OBJECT(false, true),
-		BOTH(true, true),
-		MIXED(false, false),
-		UNKNOWN_QUERY(false, false);
-
-		private final boolean asString;
-		private final boolean asObject;
-		
-		private QueryRepresentation(
-				final boolean asString_, final boolean asObject_) {
-			asString = asString_;
-			asObject = asObject_;
-		}
-
-		public static QueryRepresentation determineRepresentation(
-				ZylabPatisClient context, Iterable<QName> queries) {
-			boolean allAsString = true;
-			boolean allAsObject = true;
-
-			for (QName q : queries) {
-				QueryRepresentation r = determineRepresentation(context, q);
-				if(r.equals(UNKNOWN_QUERY)) {
-					return UNKNOWN_QUERY;
-				}
-				allAsString &= r.asString;
-				allAsObject &= r.asObject;
-			}
-
-			if(allAsString && allAsObject) {
-				return BOTH;
-			} else if (allAsObject) {
-				return OBJECT;
-			} else if (allAsString) {
-				return STRING;
-			} else {
-				return MIXED;
-			}
-		}
-		
-		public static QueryRepresentation determineRepresentation(
-				ZylabPatisClient context, QName query) {
-			boolean asString = context.queryPatterns.hasString(query);
-			boolean asObject = context.queryPatterns.hasObject(query);
-
-			if(asString && asObject) {
-				return BOTH;
-			} else if (asObject) {
-				return OBJECT;
-			} else if (asString) {
-				return STRING;
-			} else {
-				return UNKNOWN_QUERY;
-			}
-		}
-	}
-
-	private enum SearcherCapability {
-		STRING,
-		OBJECT,
-		BOTH,
-		NONE;
-
-		public static SearcherCapability determineCapability(Searcher s) {
-			if(s.supportsLuceneQueryObjects() && s.supportsStringQueries()) {
-				return BOTH;
-			} else if (s.supportsLuceneQueryObjects()) {
-				return OBJECT;
-			} else if (s.supportsStringQueries()) {
-				return STRING;
-			} else {
-				return NONE;
-			}
-		}
-	}
-
-	private enum Strategy { 
+	public enum Strategy { 
 		STRING {
 			@Override
 			public Iterable<SearchResult> search(
@@ -638,123 +607,6 @@ public class ZylabPatisClient extends HttpServlet {
 		
 		public abstract void outputResults(HttpServletResponse response,
 				Iterable<SearchResult> results) throws IOException;
-	}
-	
-	/**
-	 * Read the {@link PatisNumber}s in {@code request}.  Any request parameter
-	 * named {@link RequestParameters#PATIS_NUMBER} is added to the result.
-	 * 
-	 * @param request	{@link HttpServletRequest} used to call this 
-	 * 		{@link HttpServlet}; {@code getRequestedPatisNumbers} will sanitise
-	 * 		the Patisnumbers in {@code request}.	
-	 * 
-	 * @return	a list of requested {@link PatisNumber}.  The returned list is
-	 * 		empty when the servlet's client did not specify any PatisNumbers 
-	 * 		otherwise it contains one or more {@code PatisNumber}s. 
-	 * 
-	 * @throws IllegalArgumentException	when one (or more) of the patisnumbers
-	 * 		in the request are not well formed.
-	 * 
-	 */
-	private List<PatisNumber> getRequestedPatisNumbers(HttpServletRequest request) 
-			throws IllegalArgumentException {
-		return RequestParameters.PATIS_NUMBER.<PatisNumber>get(this, request);
-	}
-
-	/**
-	 * Read the {@link PatisNumber}s in {@code cmd}.  Any parameter
-	 * named {@link RequestParameters#PATIS_NUMBER} is added to the result.
-	 * 
-	 * @param cmd	{@link CommandLine} used to execute this Java program;
-	 * 		{@code getRequestedPatisNumbers} will sanitise the Patisnumbers 
-	 * 		in {@code cmd}.	
-	 * 
-	 * @return	a list of requested {@link PatisNumber}.  The returned list is
-	 * 		empty when the java program client did not specify any PatisNumbers 
-	 * 		otherwise it contains one or more {@code PatisNumber}s. 
-	 * 
-	 * @throws IllegalArgumentException	when one (or more) of the patisnumbers
-	 * 		in the commandline are not well formed.
-	 * 
-	 */
-	private List<PatisNumber> getRequestedPatisNumbers(CommandLine cmd) {
-		return RequestParameters.PATIS_NUMBER.<PatisNumber>get(this, cmd);
-	}
-
-	/**
-	 * Santise the array of patisnumber strings.  Called by 
-	 * {@link #getRequestedPatisNumbers(javax.servlet.http.HttpServletRequest)}
-	 * and {@link #getRequestedPatisNumbers(org.apache.commons.cli.CommandLine)}. 
-	 * 
-	 * @param numbers	array of strings representing patisnumbers
-	 * @return	a list of {@link PatisNumber}
-	 * 
-	 * @throws IllegalArgumentException	when one (or more) of the patisnumbers
-	 * 		in the array are not well formed.
-	 */
-	private List<PatisNumber> getRequestedPatisNumbers(String[] numbers)
-			throws IllegalArgumentException {
-		ArrayList<PatisNumber> result = new ArrayList<>(numbers.length);
-		
-		for (String number : numbers) {
-			InputSanitation.PATTIS_NR.assertClean(number);
-			result.add(PatisNumber.create(number));
-		}
-
-		return result;
-	}
-
-	/**
-	 * Read the requested query patterns from {@code request}.  The query 
-	 * wellFormedValue id (as a {@link QName}) in the request URI and any request
-	 * parameter named {@link RequestParameters#QUERY_PATTERN} are added to
-	 * the result.
-	 * 
-	 * @param request	{@link HttpServletRequest} used to call this 
-	 * 		{@link HttpServlet}; {@code getRequestedQueryPattern} will sanitise
-	 * 		the query wellFormedValue ids in {@code request}.
-	 * 
-	 * @throws IllegalArgumentException	when any of the 
-	 */
-	private List<QName> getRequestedQueryPattern(HttpServletRequest request) 
-			throws NoSuchElementException, IllegalArgumentException {
-		List<QName> result = new LinkedList<>();
-		
-		String path = request.getPathInfo();
-//		Matcher m = RequestParameters.QUERY_PATTERN.uriPart.matcher(path);
-//		if(m.matches()) {
-//			String uriMatch = m.group(1);
-//			InputSanitation.LOCAL_PART.assertCleanURL(uriMatch);
-//			config.getNamespaces().
-//			request.
-//			if(uriMatch != null && !uriMatch.isEmpty()) {
-//				result.add(sanitiseQName(uriMatch));
-//			}
-//		}
-			
-		String args[] = request.getParameterValues(RequestParameters.QUERY_PATTERN.httpKey);
-		for (String arg : args) {
-			result.add(sanitiseQName(arg));
-		}
-		
-		return result;
-	}
-	
-	private List<QName> getRequestedQueryPattern(CommandLine cmd) 
-			throws NoSuchElementException, IllegalArgumentException {
-		String qnames[] = cmd.getOptionValues(
-				RequestParameters.QUERY_PATTERN.getOption().getLongOpt());
-		List<QName> result = new ArrayList<>(qnames.length);
-		for (String str : qnames) {
-			result.add(sanitiseQName(str));
-		}
-		return result;
-	}
-
-	private QName sanitiseQName(final String qname) 
-			throws IllegalArgumentException, NoSuchElementException {
-		InputSanitation.QNAME.assertClean(qname);
-		return config.getNamespaces().createQName(qname);
 	}
 
 	

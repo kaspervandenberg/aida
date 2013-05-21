@@ -2,7 +2,10 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.config;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -315,8 +318,7 @@ public class Config {
 						queries.put(nsr.createQName(val), null);
 					} catch (URISyntaxException ex) {
 						throw new Error(String.format(
-								"Namespace URI in config file %s is not well formed.",
-								configFile.getName()),
+								"Namespace URI in config file is not well formed."),
 								ex);
 					}
 				}
@@ -530,27 +532,27 @@ public class Config {
 	private static XPathFactory xpathfactory = null;
 	private static Collection<Namespace> xpathNamespaces = null;
 
-	private final File configFile;
+	private final InputStream configStream;
 	private final ForkJoinPool taskPool;
 	private Element configDoc = null;
 	private NameSpaceResolver namespaces = null; 
 
 	private Searcher searcher = null;
 	
-	private Config(File configFile_, ForkJoinPool taskPool_) {
-		configFile = configFile_;
+	private Config(InputStream configStream_, ForkJoinPool taskPool_) {
+		configStream = configStream_;
 		taskPool = taskPool_;
 	}
 	
-	public static Config init(File configFile) {
-		return init(configFile, new ForkJoinPool());
+	public static Config init(InputStream configStream) {
+		return init(configStream, new ForkJoinPool());
 	}
 	
-	public static Config init(File configFile, ForkJoinPool taskPool_) {
+	public static Config init(InputStream configStream, ForkJoinPool taskPool_) {
 		if(singleton != null) {
 			throw new IllegalStateException("Call init() exactly once.");
 		}
-		singleton = new Config(configFile, taskPool_);
+		singleton = new Config(configStream, taskPool_);
 		return singleton;
 	}
 	
@@ -599,9 +601,9 @@ public class Config {
 		return namespaces;
 	}
 	
-	private static Document parseXml(File configFile) {
+	private static Document parseXml(InputStream configStream) {
 		try {
-			Document doc = getParser().build(configFile);
+			Document doc = getParser().build(configStream);
 			return doc;
 		} catch (JDOMException | IOException ex) {
 			throw new Error(ex);
@@ -645,7 +647,7 @@ public class Config {
 
 	private Element getConfigDoc() {
 		if(configDoc == null) {
-			configDoc = parseXml(configFile).getContent(Filters.element()).get(0);
+			configDoc = parseXml(configStream).getContent(Filters.element()).get(0);
 		}
 		return configDoc;
 	}
@@ -684,10 +686,10 @@ public class Config {
 	}
 	
 	public static void main(String[] args) {
-		try {
+//		try {
 			URL resource = Config.class.getResource("/testConfig.xml");
 			System.out.println(resource);
-			Config testConfig = Config.init(new File(Config.class.getResource("/testConfig.xml").toURI()));
+			Config testConfig = Config.init(Config.class.getResourceAsStream("/testConfig.xml"));
 //			XPaths.getXPath().compile("/zlpc/@ver");
 //			System.out.println(XPaths.ABS_VERSION.s_expr);
 //			System.out.println(testConfig.getConfigDoc().getDocumentElement().getNamespaceURI());
@@ -721,9 +723,9 @@ public class Config {
 //			System.out.println(XPaths.N_LOCAL_INDEX.nodeExists(XPaths.N_ABS_INDEX.getLastNode(testConfig.getConfigDoc())));
 //			System.out.println(XPaths.ABS_VERSION.getAttrValue(testConfig.getConfigDoc()));
 //		} catch (XPathExpressionException | URISyntaxException ex) {
-		} catch (URISyntaxException ex) {
-			throw new Error(ex);
-		}
+//		} catch (URISyntaxException ex) {
+//			throw new Error(ex);
+//		}
 	}
 
 	private static void dumpNodeList(List<? extends Content> nodes) {

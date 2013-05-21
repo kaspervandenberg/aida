@@ -9,7 +9,7 @@ and open the template in the editor.
 	xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
 	xmlns='http://search.aida.eureca.maastro.nl/zylabpatisclient/config'
 	xmlns:zpsc='http://search.aida.eureca.maastro.nl/zylabpatisclient/config'
-	xmlns:vocab='http://vocab.maastro.nl/zpsc/'
+	xmlns:vocab='http://vocab.maastro.nl/zylabPatisClient/zpsc/queryPattern'
 	xsi:schemaLocation='http://search.aida.eureca.maastro.nl/zylabpatisclient/config file:/home/kasper2/git/aida.git/Search/search/src/main/xsd/zylabPatisClientConfig.xsd'
 	>
 	

@@ -161,7 +161,7 @@ public class PreconstructedQueries {
 		}
 	}
 
-	public class Provider implements QueryProvider {
+	public static class Provider implements QueryProvider {
 		@Override
 		public Collection<QName> getQueryIds() {
 			return PreconstructedQueries.instance().getIds();

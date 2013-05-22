@@ -259,18 +259,22 @@ public class ZylabPatisClient extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Parts of the request URI that specify the resource (or the type of 
+	 * operation to perform.)
+	 */
 	private enum UriParameters {
 		QUERY_PATTERN_URI_PART(
 				Pattern.compile("(.*/queryPattern/)([\\p{Alnum}-_.]*)/"),
 				Pattern.compile("^([\\p{Alpha}[_]][\\p{Alnum}[_\\-.]]*)$"),
 				"\"%s\" is not a well formed local part of a QName."),
 
-		INVALLID_PATTERN(Pattern.compile(".*"), Pattern.compile(".*"), null)
+		INVALLID_PATTERN(Pattern.compile(".*"), Pattern.compile(".*"), "")
 		;
 		
-		public /*@Nullable*/ final Pattern uriPart;
-		private /*@Nullable*/ final Pattern wellFormedValue;
-		private /*@Nullable*/ final String wfErrMsg;
+		public final Pattern uriPart;
+		private final Pattern wellFormedValue;
+		private final String wfErrMsg;
 
 		private UriParameters(
 				final Pattern uriPart_,

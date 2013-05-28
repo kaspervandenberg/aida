@@ -291,9 +291,9 @@ public class PreconstructedQueries {
 		SpanOrQuery stage = new SpanOrQuery(
 				stage_enRoman, stage_enDigit, stage_nlRoman, stage_nlDigit);
 
-		SpanQuery metastasisStage = new SpanNearQuery(new SpanQuery[]{
+		SpanOrQuery metastasisStage = new SpanOrQuery(
 			metastasis, 
-			stage}, 5, false);
+			stage);
 		
 		SpanQuery extensiveDisease = new SpanNearQuery(new SpanQuery[]{
 			SearchTerms.EXTENSIVE.getFuzzySpan(),

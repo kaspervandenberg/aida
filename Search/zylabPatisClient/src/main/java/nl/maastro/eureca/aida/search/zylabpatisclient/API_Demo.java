@@ -26,6 +26,9 @@ public class API_Demo {
 		try {
 			// Read config file
 			// InputStream s = new FileInputStream("/home/kasper2/git/aida.git/Search/zylabPatisClient/src/main/webapp/WEB-INF/zpsc-config.xml");
+			final String propName ="java.util.logging.config.file";
+			System.out.printf("Property: %s: %s\n", propName, System.getProperty(propName));
+
 			InputStream s = new FileInputStream("/home/administrator/aida.git/Search/zylabPatisClient/src/main/webapp/WEB-INF/zpsc-config.xml");
 			Config config = Config.init(s);
 			logger.logp(Level.INFO, API_Demo.class.getName(), "main", "test logging level info");

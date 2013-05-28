@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.rpc.ServiceException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import org.apache.lucene.search.Query;
@@ -20,19 +18,14 @@ import org.apache.lucene.search.Query;
  * @author kasper2
  */
 public class API_Demo {
-	private static final Logger logger = Logger.getLogger(API_Demo.class.getName());
 	
 	static public void main(String[] args) {
 		try {
 			// Read config file
 			// InputStream s = new FileInputStream("/home/kasper2/git/aida.git/Search/zylabPatisClient/src/main/webapp/WEB-INF/zpsc-config.xml");
-			final String propName ="java.util.logging.config.file";
-			System.out.printf("Property: %s: %s\n", propName, System.getProperty(propName));
 
 			InputStream s = new FileInputStream("/home/administrator/aida.git/Search/zylabPatisClient/src/main/webapp/WEB-INF/zpsc-config.xml");
 			Config config = Config.init(s);
-			logger.logp(Level.INFO, API_Demo.class.getName(), "main", "test logging level info");
-			logger.logp(Level.FINE, API_Demo.class.getName(), "main", "test logging level fine");
 
 			// Use config to initialise a searcher
 			Searcher searcher = config.getSearcher();

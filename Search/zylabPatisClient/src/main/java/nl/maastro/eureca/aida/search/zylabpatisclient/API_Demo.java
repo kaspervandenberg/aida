@@ -21,7 +21,8 @@ public class API_Demo {
 	static public void main(String[] args) {
 		try {
 			// Read config file
-			InputStream s = new FileInputStream("/home/kasper2/git/aida.git/Search/zylabPatisClient/src/main/webapp/WEB-INF/zpsc-config.xml");
+			// InputStream s = new FileInputStream("/home/kasper2/git/aida.git/Search/zylabPatisClient/src/main/webapp/WEB-INF/zpsc-config.xml");
+			InputStream s = new FileInputStream("/home/administrator/aida.git/Search/zylabPatisClient/src/main/webapp/WEB-INF/zpsc-config.xml");
 			Config config = Config.init(s);
 
 			// Use config to initialise a searcher

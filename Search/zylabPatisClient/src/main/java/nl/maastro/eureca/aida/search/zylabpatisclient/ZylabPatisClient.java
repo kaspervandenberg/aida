@@ -4,18 +4,15 @@ package nl.maastro.eureca.aida.search.zylabpatisclient;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.IOException;
-import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +27,8 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.QueryProvider.QueryReprese
 import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher.SearcherCapability;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.NameSpaceResolver;
+import nl.maastro.eureca.aida.search.zylabpatisclient.contentNegotiation.ContentTypeNegotiator;
+import nl.maastro.eureca.aida.search.zylabpatisclient.contentNegotiation.MediaType;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
@@ -42,7 +41,6 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-import org.apache.tika.mime.MediaType;
 import org.jdom2.Namespace;
 
 /**
@@ -73,8 +71,7 @@ public class ZylabPatisClient extends HttpServlet {
 								+ "the matching documents of any of the "
 								+ "specified patisnumbers.")
 							.create("patisNr"),
-				Pattern.compile("^[\\p{Digit}]+$"),
-				"\"%s\" is not a wellformed number") {
+				InputSanitation.PATTIS_NR) {
 			
 			@Override
 			protected PatisNumber convertValue(
@@ -96,8 +93,7 @@ public class ZylabPatisClient extends HttpServlet {
 								+ "the documents matching any of the specified "
 								+ "patterns.")
 							.create("queryPatternID"),
-				Pattern.compile("^([\\p{Alpha}[_]][\\p{Alnum}[_\\-.]]*:)?([\\p{Alpha}[_]][\\p{Alnum}[_\\-.]]*)$"),
-				"\"%s\" is not a valid query identifier (QName)") {
+				InputSanitation.QNAME) {
 			
 			@Override
 			protected QName convertValue(
@@ -124,33 +120,22 @@ public class ZylabPatisClient extends HttpServlet {
 		 */
 		private final Option option;
 
-		/**
-		 * {@link java.util.regex.Pattern} to restrict input to.
-		 */
-		private final Pattern wellFormedValue;
-
-		/**
-		 * Message to show when input is not well formed.
-		 */
-		private final String wfErrMsg;
-
+		private final InputSanitation saneInput;
+		
 		/**
 		 * Create a HTTPRequest and commandline parameter.
 		 * 
 		 * @param httpKey_
 		 * @param option_
-		 * @param wellFormedValue_
-		 * @param wfErrMsg_ 
+		 * @param saneInput_ 
 		 */
 		private RequestParameters(
 				final String httpKey_,
 				final Option option_,
-				final Pattern wellFormedValue_,
-				final String wfErrMsg_) {
+				final InputSanitation saneInput_) {
 			this.httpKey = httpKey_;
 			this.option = option_;
-			this.wellFormedValue = wellFormedValue_;
-			this.wfErrMsg = wfErrMsg_;
+			saneInput = saneInput_;
 		}
 
 		/**
@@ -243,18 +228,13 @@ public class ZylabPatisClient extends HttpServlet {
 			if (values != null) {
 				List<T> result = new ArrayList<>(values.length);
 				for (String s : values) {
-					assertClean(s);
+//					assertClean(s);
+					saneInput.assertClean(s);
 					result.add(this.<T>convertValue(context, s));
 				}
 				return result;
 			} else {
 				return Collections.<T>emptyList();
-			}
-		}
-		
-		private void assertClean(String s) {
-			if(!wellFormedValue.matcher(s).matches()) {
-				throw new IllegalArgumentException(String.format(wfErrMsg, s));
 			}
 		}
 	}
@@ -265,24 +245,28 @@ public class ZylabPatisClient extends HttpServlet {
 	 */
 	private enum UriParameters {
 		QUERY_PATTERN_URI_PART(
-				Pattern.compile("(.*/queryPattern/)([\\p{Alnum}-_.]*)/"),
-				Pattern.compile("^([\\p{Alpha}[_]][\\p{Alnum}[_\\-.]]*)$"),
-				"\"%s\" is not a well formed local part of a QName."),
+				Pattern.compile("(.*/queryPattern/)([\\p{Alnum}-_.]*)/results"),
+				InputSanitation.LOCAL_QNAME),
 
-		INVALLID_PATTERN(Pattern.compile(".*"), Pattern.compile(".*"), "")
+		LIST_QUERIES(
+				Pattern.compile("(.*/queryIndex)"),
+				InputSanitation.ANY),
+
+		DEMO(
+				Pattern.compile("(.*/demo)"),
+				InputSanitation.ANY),
+
+		INVALLID_PATTERN(Pattern.compile(".*"), InputSanitation.ANY)
 		;
 		
 		public final Pattern uriPart;
-		private final Pattern wellFormedValue;
-		private final String wfErrMsg;
+		private final InputSanitation saneInputPattern;
 
 		private UriParameters(
 				final Pattern uriPart_,
-				final Pattern wellFormedValue_,
-				final String wfErrMsg_) {
+				final InputSanitation saneInput_) {
 			this.uriPart = uriPart_;
-			this.wellFormedValue = wellFormedValue_;
-			this.wfErrMsg = wfErrMsg_;
+			this.saneInputPattern = saneInput_;
 		}
 
 		public static UriParameters requestedParameter (HttpServletRequest request) {
@@ -302,7 +286,7 @@ public class ZylabPatisClient extends HttpServlet {
 			final NameSpaceResolver nsr = context.config.getNamespaces();
 			String s_nsUri = m.group(1);
 			String localPart = m.group(2);
-			assertCleanLocalPart(localPart);
+			saneInputPattern.assertClean(localPart);
 			try { 
 				URI nsUri = new URI(s_nsUri);
 				Namespace namespace = (nsr.containsUri(nsUri)) ?
@@ -330,13 +314,6 @@ public class ZylabPatisClient extends HttpServlet {
 							uriPart.pattern()));
 			}
 			return m;
-		}
-
-		private void assertCleanLocalPart(String localPart) {
-			if (!wellFormedValue.matcher(localPart).matches()) {
-				throw new IllegalArgumentException(
-						String.format(wfErrMsg, localPart));
-			}
 		}
 	}
 
@@ -368,12 +345,23 @@ public class ZylabPatisClient extends HttpServlet {
 	}
 	
 	private enum InputSanitation {
+		ANY(".*", ""),
+		LOCAL_QNAME("^([\\p{Alpha}[_]][\\p{Alnum}[_\\-.]]*)$",
+				"\"%s\" is not a well formed local part of a QName."),
 		QNAME("^([\\p{Alpha}[_]][\\p{Alnum}[_\\-.]]*:)?([\\p{Alpha}[_]][\\p{Alnum}[_\\-.]]*)$",
 				"\"%s\" is not a valid QName"),
 		PATTIS_NR("^[\\p{Digit}]+$",
 				"\"%s\" is not a wellformed number")
 		;
+		
+		/**
+		 * {@link java.util.regex.Pattern} to restrict input to.
+		 */
 		private final Pattern pattern;
+
+		/**
+		 * Message to show when input is not well formed.
+		 */
 		private final String errMsg;
 
 		private InputSanitation(final String regExpr, final String errMsg_) {
@@ -382,12 +370,130 @@ public class ZylabPatisClient extends HttpServlet {
 		}
 
 		public void assertClean(String s) {
-			if(pattern.matcher(s).matches()) {
+			if(!pattern.matcher(s).matches()) {
 				throw new IllegalArgumentException(String.format(errMsg, s));
 			}
 		}
 	}
 	
+	public enum Strategy { 
+		STRING {
+			@Override
+			public Iterable<SearchResult> search(
+					ZylabPatisClient context,
+					QName queryPatId,
+					Iterable<PatisNumber> patients)
+						throws ServiceException, IOException {
+				String query = context.queryPatterns.getAsString(queryPatId);
+				return context.config.getSearcher().searchForAll(query, patients);
+			}
+		},
+		
+		OBJECT {
+			@Override
+			public Iterable<SearchResult> search(
+					ZylabPatisClient context,
+					QName queryPatId,
+					Iterable<PatisNumber> patients)
+						throws ServiceException, IOException {
+				Query query = context.queryPatterns.getAsObject(queryPatId);
+				return context.config.getSearcher().searchForAll(query, patients);
+			}
+		},
+
+		FAIL {
+			@Override
+			public Iterable<SearchResult> search(ZylabPatisClient context, QName queryPatId, Iterable<PatisNumber> patients) throws ServiceException, IOException {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+			
+		}
+		;
+		public abstract Iterable<SearchResult> search(
+				ZylabPatisClient context,
+				QName queryPatId,
+				Iterable<PatisNumber> patients)
+					throws ServiceException, IOException;
+	}
+	
+	private enum OutputFormat {
+		JSON("application/json") {
+			@Override
+			public void doOutputResults(
+					Appendable writer, Iterable<SearchResult> results)
+					throws IOException {
+				ArrayList<SearchResult> tmp = new ArrayList<>();
+				for (SearchResult r : results) {
+					tmp.add(r);
+				}
+				new Gson().toJson(tmp.toArray(), writer);
+			}
+
+			@Override
+			public void outputQueryList(
+					HttpServletResponse response, Iterable<QName> queryIDs)
+					throws IOException {
+				response.setContentType(null);
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		},
+		;
+
+		private OutputFormat(final MediaType format_) {
+			format = format_;
+		}
+
+		private OutputFormat(final String s_format_) {
+			this(MediaType.parse(s_format_));
+		}
+		
+		public final MediaType format;
+		
+		protected abstract void doOutputResults(
+				Appendable writer, Iterable<SearchResult> results) throws IOException;
+		
+		public void outputResults(HttpServletResponse response,
+				Iterable<SearchResult> results) throws IOException {
+			response.setContentType(format.toString());
+			response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+			StringBuilder responseContent = new StringBuilder();
+			doOutputResults(responseContent, results);
+			response.setContentLength(responseContent.length());
+			response.getWriter().append(responseContent);
+			response.getWriter().flush();
+			response.getWriter().close();
+		}
+
+		public abstract void outputQueryList(HttpServletResponse response,
+				Iterable<QName> queryIDs) throws IOException;
+	}
+
+	private static final ContentTypeNegotiator<OutputFormat> contentTypeRegistry =
+			new ContentTypeNegotiator<>();
+	static {
+		contentTypeRegistry.put(MediaType.parse("application/json"), OutputFormat.JSON);
+		contentTypeRegistry.put(MediaType.getAny(), OutputFormat.JSON);
+	}
+
+	private static final EnumMap<QueryRepresentation, EnumMap<SearcherCapability, Strategy>>
+			strategies;
+	static {
+		strategies = new EnumMap<>(QueryRepresentation.class);
+		for (QueryRepresentation repr : QueryRepresentation.values()) {
+			strategies.put(repr, new EnumMap<SearcherCapability, Strategy>(SearcherCapability.class));
+		}
+		
+		strategies.get(QueryRepresentation.STRING).put(SearcherCapability.STRING, Strategy.STRING);
+		strategies.get(QueryRepresentation.STRING).put(SearcherCapability.BOTH, Strategy.STRING);
+		strategies.get(QueryRepresentation.BOTH).put(SearcherCapability.STRING, Strategy.STRING);
+		
+		strategies.get(QueryRepresentation.OBJECT).put(SearcherCapability.OBJECT, Strategy.OBJECT);
+		strategies.get(QueryRepresentation.OBJECT).put(SearcherCapability.BOTH, Strategy.OBJECT);
+		strategies.get(QueryRepresentation.BOTH).put(SearcherCapability.OBJECT, Strategy.OBJECT);
+		
+		strategies.get(QueryRepresentation.BOTH).put(SearcherCapability.BOTH, Strategy.OBJECT);
+	}
+
 	private static final ForkJoinPool taskPool = new ForkJoinPool();
 
 	private final QueryProviderRegistry queryPatterns = new QueryProviderRegistry();
@@ -447,7 +553,7 @@ public class ZylabPatisClient extends HttpServlet {
 		*/
 		UriParameters requestType = UriParameters.requestedParameter(req);
 		switch (requestType) {
-			case QUERY_PATTERN_URI_PART:
+			case QUERY_PATTERN_URI_PART: {
 				List<QName> queryPatternIDs = new LinkedList<>();
 				queryPatternIDs.add(
 					UriParameters.QUERY_PATTERN_URI_PART.getResourceQName(this, req));
@@ -470,7 +576,7 @@ public class ZylabPatisClient extends HttpServlet {
 //					throw new ServletException(ex);
 //				}
 
-				resp.setContentType("test/html;charset=UTF-8");
+				resp.setContentType("text/html;charset=UTF-8");
 //				Writer w = resp.getWriter();
 				StringBuilder w = new StringBuilder();
 				w.append("<html><body>"
@@ -493,6 +599,90 @@ public class ZylabPatisClient extends HttpServlet {
 				resp.setContentLength(w.length());
 				resp.getWriter().append(w).close();
 //				w.close();
+			}
+
+				break;
+			case LIST_QUERIES: {
+				resp.setContentType("text/html;charset=UTF-8");
+//				Writer w = resp.getWriter();
+				StringBuilder w = new StringBuilder();
+				w.append("<html><body>\n"
+						+ "<H1>Available queries</H1>\n"
+						+ "<p><dl>\n");
+				for (QName qName : queryPatterns.getQueryIds()) {
+					w.append("\t<dt>");
+					w.append(qName.toString());
+					w.append("</dt>\t<dd>");
+					if(queryPatterns.hasString(qName)) {
+						w.append(queryPatterns.getAsString(qName));
+					} else if (queryPatterns.hasObject(qName)) {
+						w.append("<i>!! OBJECT cannot be represented as text !!</i>");
+						w.append(queryPatterns.getAsObject(qName).toString());
+					} else {
+						w.append("<i>!! Unknown Query ID !!</i>");
+					}
+					w.append("</dd>\n");
+				}
+				w.append("</dl></p>");
+				w.append("</body></html>");
+				resp.setContentLength(w.length());
+				resp.getWriter().append(w).close();
+//				w.close();
+					
+			}
+				break;
+			case DEMO: {
+				List<QName> queryPatternIDs = new LinkedList<>();
+//				queryPatternIDs.add(
+//					UriParameters.QUERY_PATTERN_URI_PART.getResourceQName(this, req));
+				queryPatternIDs.addAll(RequestParameters.QUERY_PATTERN.<QName>get(this, req));
+
+				List<PatisNumber> patients = new LinkedList<>();
+				patients.addAll(RequestParameters.PATIS_NUMBER.<PatisNumber>get(this, req));
+				
+				QName query = queryPatternIDs.get(0);
+//				try {
+//					Iterable<SearchResult> result = strategies.get(QueryRepresentation.determineRepresentation(this, query))
+//							.get(SearcherCapability.determineCapability(config.getSearcher()))
+//							.search(this, query, patients);
+//					OutputFormat.JSON.outputResults(resp, result);
+//				} catch (ServiceException | IOException ex) {
+//					throw new ServletException(ex);
+//				}
+
+				resp.setContentType("text/html;charset=UTF-8");
+//				Writer w = resp.getWriter();
+				StringBuilder w = new StringBuilder();
+				w.append("<html><body>\n"
+						+ "<H1>Not yet implemented</H1>\n"
+						+ "<p>Query IDs requested:<br/><dl>\n");
+				for (QName qName : queryPatternIDs) {
+					w.append("\t<dt>");
+					w.append(qName.toString());
+					w.append("</dt>\t<dd>");
+					if(queryPatterns.hasString(qName)) {
+						w.append(queryPatterns.getAsString(qName));
+					} else if (queryPatterns.hasObject(qName)) {
+						w.append("<i>!! OBJECT cannot be represented as text !!</i>");
+						w.append(queryPatterns.getAsObject(qName).toString());
+					} else {
+						w.append("<i>!! Unknown Query ID !!</i>");
+					}
+					w.append("</dd>\n");
+				}
+				w.append("</dl></p>");
+				w.append("<p>Patisnummers requested:<br/><ul>");
+				for (PatisNumber patisNumber : patients) {
+					w.append("<li>");
+					w.append(patisNumber.value);
+					w.append("</li>");
+							
+				}
+				w.append("</ul></p></body></html>");
+				resp.setContentLength(w.length());
+				resp.getWriter().append(w).close();
+//				w.close();
+			}
 
 				break;
 			default:
@@ -501,121 +691,16 @@ public class ZylabPatisClient extends HttpServlet {
 							"Cannot satisfy request %s; URI pattern not known to %s servlet",
 							req.getRequestURL(),
 							ZylabPatisClient.class.getName());
-				resp.setContentType("test/html;charset=UTF-8");
-				resp.setContentLength(msg.length());
-				resp.getWriter().append(msg).close();
-//				throw new ServletException(msg);
+				resp.sendError(400, msg);
 		}
 //		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
-	public enum Strategy { 
-		STRING {
-			@Override
-			public Iterable<SearchResult> search(
-					ZylabPatisClient context,
-					QName queryPatId,
-					Iterable<PatisNumber> patients)
-						throws ServiceException, IOException {
-				String query = context.queryPatterns.getAsString(queryPatId);
-				return context.config.getSearcher().searchForAll(query, patients);
-			}
-		},
-		
-		OBJECT {
-			@Override
-			public Iterable<SearchResult> search(
-					ZylabPatisClient context,
-					QName queryPatId,
-					Iterable<PatisNumber> patients)
-						throws ServiceException, IOException {
-				Query query = context.queryPatterns.getAsObject(queryPatId);
-				return context.config.getSearcher().searchForAll(query, patients);
-			}
-		},
-
-		FAIL {
-			@Override
-			public Iterable<SearchResult> search(ZylabPatisClient context, QName queryPatId, Iterable<PatisNumber> patients) throws ServiceException, IOException {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
-			
-		}
-		;
-		public abstract Iterable<SearchResult> search(
-				ZylabPatisClient context,
-				QName queryPatId,
-				Iterable<PatisNumber> patients)
-					throws ServiceException, IOException;
-	}
-	
-	private static final EnumMap<QueryRepresentation, EnumMap<SearcherCapability, Strategy>>
-			strategies;
-	static {
-		strategies = new EnumMap<>(QueryRepresentation.class);
-		for (QueryRepresentation repr : QueryRepresentation.values()) {
-			strategies.put(repr, new EnumMap<SearcherCapability, Strategy>(SearcherCapability.class));
-		}
-		
-		strategies.get(QueryRepresentation.STRING).put(SearcherCapability.STRING, Strategy.STRING);
-		strategies.get(QueryRepresentation.STRING).put(SearcherCapability.BOTH, Strategy.STRING);
-		strategies.get(QueryRepresentation.BOTH).put(SearcherCapability.STRING, Strategy.STRING);
-		
-		strategies.get(QueryRepresentation.OBJECT).put(SearcherCapability.OBJECT, Strategy.OBJECT);
-		strategies.get(QueryRepresentation.OBJECT).put(SearcherCapability.BOTH, Strategy.OBJECT);
-		strategies.get(QueryRepresentation.BOTH).put(SearcherCapability.OBJECT, Strategy.OBJECT);
-		
-		strategies.get(QueryRepresentation.BOTH).put(SearcherCapability.BOTH, Strategy.OBJECT);
-	}
-
-	private enum OutputFormat {
-		JSON(MediaType.set(MediaType.application("json"), MediaType.application("ANY" /* should be '*' */))) {
-			@Override
-			public void outputResults(
-					HttpServletResponse response, Iterable<SearchResult> results)
-					throws IOException {
-				ArrayList<SearchResult> tmp = new ArrayList<>();
-				for (SearchResult r : results) {
-					tmp.add(r);
-				}
-				new Gson().toJson(tmp.toArray(), response.getWriter());
-			}
-		},
-		;
-		
-		private final Set<MediaType> supported;
-		
-		private OutputFormat(final Set<MediaType> supportedTypes_){
-			supported = supportedTypes_;
-		}
-		
-		public static OutputFormat getAccepted(String header) {
-			if(true) {
-				throw new UnsupportedOperationException("MediaType does not support '*'");
-			} else {
-				SortedMap<Double, MediaType> clientAccepts = new TreeMap<>(Collections.reverseOrder());
-				for (String s_mediatype : header.split(",\\p{Space}*")) {
-					MediaType mediatype = MediaType.parse(s_mediatype);
-					clientAccepts.put(
-							mediatype.getParameters().containsKey("q") ?
-							Double.valueOf(mediatype.getParameters().get("q")) :
-							1d,
-							mediatype);
-				}
-				for (MediaType acceptedType : clientAccepts.values()) {
-					
-				}
-			}
-			throw new UnsupportedOperationException("Not yet implemented");	
-		} 
-		
-		public abstract void outputResults(HttpServletResponse response,
-				Iterable<SearchResult> results) throws IOException;
-	}
 
 	
 
 	public static void main(String[] args) {
+		
 		
 //		String sQuery = PreconstructedQueries.instance().getQuery(PreconstructedQueries.LocalParts.METASTASIS_IV).toString("contents");
 		CoreParser parser = new CoreParser("content", new StandardAnalyzer(Version.LUCENE_41));
@@ -630,6 +715,7 @@ public class ZylabPatisClient extends HttpServlet {
 						PreconstructedQueries.LocalParts.METASTASIS_IV),
 					1000);
 
+			
 			System.out.printf("#results: %d\n", result.totalHits);
 			
 		} catch (IOException ex) {

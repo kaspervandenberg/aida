@@ -19,8 +19,8 @@ public class SearchResult {
 	
 	private static transient Gson gsonParserInstance;
 	private static transient SearchResult NO_RESULT;
-	private final PatisNumber patient;
-	private final int nHits;
+	public final PatisNumber patient;
+	public final int nHits;
 
 	private SearchResult(PatisNumber patient_, int nHits_) {
 		this.patient = patient_;

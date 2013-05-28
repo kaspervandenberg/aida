@@ -23,7 +23,7 @@ public class PatisNumber {
 	/**
 	 * The actual number
 	 */
-	private final String value;
+	public final String value;
 
 	private PatisNumber(String value_) {
 		value = value_;

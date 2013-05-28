@@ -34,12 +34,15 @@ public class LocalLuceneSearcher extends SearcherBase {
 
 	@Override
 	public SearchResult searchFor(final String query, final PatisNumber patient) throws QueryNodeException {
+		log.logp(Level.FINE, LocalLuceneSearcher.class.getName(), "searchFor(S,P)", String.format("Entering (patient: %s, query: %s)", patient.value, query.toString()));
 		String composedQuery = patient.compose(query);
 		try {
 			Query q = parser.parse(composedQuery, getDefaultField());
 			TopDocs result = searcher.search(q, getMaxResults());
+		log.logp(Level.FINE, LocalLuceneSearcher.class.getName(), "searchFor(S,P)", String.format("Leaving succesful (patient: %s, query: %s)", patient.value, query.toString()));
 			return SearchResult.create(patient, result);
 		} catch (IOException ex) {
+		log.logp(Level.FINE, LocalLuceneSearcher.class.getName(), "searchFor(S,P)", String.format("Exception (patient: %s, query: %s)", patient.value, query.toString()));
 			log.log(Level.WARNING, String.format("IOException when querying local Lucene instance"), ex);
 			return SearchResult.NO_RESULT();
 		}
@@ -47,11 +50,15 @@ public class LocalLuceneSearcher extends SearcherBase {
 
 	@Override
 	public SearchResult searchFor(final Query query, final PatisNumber patient) {
+		
+		log.logp(Level.FINE, LocalLuceneSearcher.class.getName(), "searchFor(Q,P)", String.format("Entering (patient: %s, query: %s)", patient.value, query.toString()));
 		try {
 			Query q = patient.compose(query);
 			TopDocs result = searcher.search(q, getMaxResults());
+		log.logp(Level.FINE, LocalLuceneSearcher.class.getName(), "searchFor(Q,P)", String.format("Leaving succesful (patient: %s, query: %s)", patient.value, query.toString()));
 			return SearchResult.create(patient, result);
 		} catch (IOException ex) {
+		log.logp(Level.FINE, LocalLuceneSearcher.class.getName(), "searchFor(Q,P)", String.format("Exception (patient: %s, query: %s)", patient.value, query.toString()));
 			log.log(Level.WARNING, String.format("IOException when querying local Lucene instance"), ex);
 			return SearchResult.NO_RESULT();
 		}

@@ -79,7 +79,7 @@ public class PreconstructedQueries {
 		 */
 		private static QName createQName(String localpart) 
 				throws URISyntaxException {
-			return new QName(PREFIX, getNamespaceUri().toString(), localpart);
+			return new QName(getNamespaceUri().toString(), localpart, PREFIX);
 		}
 	}
 

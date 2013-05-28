@@ -15,9 +15,10 @@ and open the template in the editor.
 	
 	<index>
 <?ignore
-		<webservice address="http://vocab.maastro.nl/axis/serBlablafdvices/SearcherWS" index="Zylab_test-2013bla0415-02"></webservice>
-?>
+		<webservice address="http://vocab.maastro.nl/axis/services/SearcherWS" index="Zylab_test-20130415-02"></webservice>
 		<localIndex file="file:///var/local/aida/indexes/Zylab_test-20130415-02" />	
+?>
+		<localIndex file="file:///home/kasper2/mnt/aida/indexes/Zylab_test-20130415-02" />	
 	</index>
 <?ignore
 	<index>

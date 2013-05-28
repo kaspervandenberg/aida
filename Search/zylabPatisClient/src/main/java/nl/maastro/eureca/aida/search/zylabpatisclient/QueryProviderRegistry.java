@@ -238,7 +238,7 @@ public class QueryProviderRegistry implements QueryProvider {
 			while(iter.hasNext()) {
 				QueryProvider provider = iter.next();
 				if(provider != this) {
-					target.addAll(iter.next().getQueryIds());
+					target.addAll(provider.getQueryIds());
 				}
 			}
 	}

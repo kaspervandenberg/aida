@@ -39,6 +39,17 @@ abstract class SearcherBase implements Searcher {
 
 	@Override
 	public Iterable<SearchResult> searchForAll(final String query, final Iterable<PatisNumber> patients) {
+		Deque<SearchResult> result = new ConcurrentLinkedDeque<>();
+		try {
+			for (PatisNumber patient : patients) {
+				result.add(searchFor(query, patient));
+			}
+		} catch (QueryNodeException ex) {
+			throw new Error(ex);
+		}
+		return result;
+		
+/*		
 		return taskPool.invoke(new SearchAllTask<String>(query, patients) {
 			@Override
 			protected RecursiveTask<SearchResult> searchForOneTask(final String query, final PatisNumber patient) {
@@ -56,10 +67,17 @@ abstract class SearcherBase implements Searcher {
 				};
 			}
 		});
+*/
 	}
 
 	@Override
 	public Iterable<SearchResult> searchForAll(final Query query, final Iterable<PatisNumber> patients) {
+		Deque<SearchResult> result = new ConcurrentLinkedDeque<>();
+		for (PatisNumber patient : patients) {
+			result.add(searchFor(query, patient));
+		}
+		return result;
+/*
 		return taskPool.invoke(new SearchAllTask<Query>(query, patients) {
 			@Override
 			protected RecursiveTask<SearchResult> searchForOneTask(final Query query, final PatisNumber patient) {
@@ -71,6 +89,7 @@ abstract class SearcherBase implements Searcher {
 				};
 			}
 		});
+*/
 	}
 
 	protected abstract class SearchAllTask<TQuery> extends RecursiveTask<Iterable<SearchResult>> {

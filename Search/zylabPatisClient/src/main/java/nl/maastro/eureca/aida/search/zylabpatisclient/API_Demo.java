@@ -47,7 +47,7 @@ public class API_Demo {
 
 			// Do something with the results
 			for (SearchResult searchResult : result) {
-				System.out.printf("PatisNr: %s found in %d documents",
+				System.out.printf("PatisNr: %s found in %d documents\n",
 						searchResult.patient.value, searchResult.nHits);
 			}
 			

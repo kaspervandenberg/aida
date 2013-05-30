@@ -32,10 +32,22 @@ public class API_Demo {
 
 			// Dummy list of patients; reading a list of patisnumbers is not yet in API
 			List<PatisNumber> patients = Arrays.<PatisNumber>asList(
-					PatisNumber.create("12345"),
-					PatisNumber.create("11111"),
-					PatisNumber.create("46467"),
-					PatisNumber.create("70986"));
+//					PatisNumber.create("12345"),
+//					PatisNumber.create("11111"),
+					PatisNumber.create("71415"), // Exp 0
+					PatisNumber.create("71539"),
+					PatisNumber.create("71586"),
+					PatisNumber.create("70924"),
+					PatisNumber.create("71785"),
+					PatisNumber.create("71438"),
+					PatisNumber.create("71375"),
+					PatisNumber.create("71448"),
+					
+					PatisNumber.create("71681"), // Exp 1
+					PatisNumber.create("71692"),
+					PatisNumber.create("71757"),
+					PatisNumber.create("70986"),
+					PatisNumber.create("46467"));
 
 			// Get a QueryPattern; normally the Query is retrieved via its
 			// URI and not via an internal enum constant

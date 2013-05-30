@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>zylabPatisClient</artifactId>
-	<version>0.84</version>
+	<version>0.85-SNAPSHOT</version>
 	<packaging>war</packaging>
 	
 	<parent>

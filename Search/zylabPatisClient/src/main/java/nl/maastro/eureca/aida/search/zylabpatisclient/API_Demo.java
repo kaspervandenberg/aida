@@ -34,6 +34,8 @@ public class API_Demo {
 			List<PatisNumber> patients = Arrays.<PatisNumber>asList(
 //					PatisNumber.create("12345"),
 //					PatisNumber.create("11111"),
+					PatisNumber.create("71358"), // Exp 0
+					PatisNumber.create("71314"),
 					PatisNumber.create("71415"), // Exp 0
 					PatisNumber.create("71539"),
 					PatisNumber.create("71586"),

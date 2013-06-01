@@ -93,7 +93,15 @@ public class LocalLuceneSearcher extends SearcherBase {
 			
 			for(int i = 0; i < results.scoreDocs.length; i++) {
 				Document doc = searcher.doc(results.scoreDocs[i].doc);
+				for (IndexableField indexableField : doc.getFields()) {
+					log.log(Level.FINER, "#{0} field: {1}, value: {2}",
+							new Object[] {
+							Integer.toString(i),
+							indexableField.name(),
+							indexableField.stringValue()});
+				}
 				IndexableField content = doc.getField("content");
+				
 				TokenStream stream = content.tokenStream(new StandardAnalyzer(Version.LUCENE_41));
 				try {
 					Set<String> docFragments = new HashSet<>(

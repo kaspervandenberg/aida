@@ -2,6 +2,11 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
 import com.google.gson.Gson;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.search.TopDocs;
 
 /**
@@ -21,10 +26,19 @@ public class SearchResult {
 	private static transient SearchResult NO_RESULT;
 	public final PatisNumber patient;
 	public final int nHits;
+	public final Map<String, Set<String>> snippets;
 
 	private SearchResult(PatisNumber patient_, int nHits_) {
 		this.patient = patient_;
 		this.nHits = nHits_;
+		this.snippets = Collections.<String, Set<String>>emptyMap();
+	}
+
+	private SearchResult(PatisNumber patient_, int nHits_, 
+			Map<String, Set<String>> snippets_) {
+		this.patient = patient_;
+		this.nHits = nHits_;
+		this.snippets = snippets_;
 	}
 
 	/**
@@ -38,8 +52,9 @@ public class SearchResult {
 		return NO_RESULT;
 	}
 
-	public static SearchResult create(final PatisNumber patient_, final TopDocs hits) {
-		return new SearchResult(patient_, hits.totalHits);
+	public static SearchResult create(final PatisNumber patient_, 
+			final TopDocs hits, Map<String, Set<String>> snippets_) {
+		return new SearchResult(patient_, hits.totalHits, snippets_);
 	}
 
 	public static SearchResult create(final PatisNumber patient_, final String json) {

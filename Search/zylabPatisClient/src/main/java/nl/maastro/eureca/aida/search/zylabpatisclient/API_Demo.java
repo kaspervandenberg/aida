@@ -61,8 +61,15 @@ public class API_Demo {
 
 			// Do something with the results
 			for (SearchResult searchResult : result) {
-				System.out.printf("PatisNr: %s found in %d documents\n",
+				System.out.printf("PatisNr: %s found in %d documents\nSnippets:\n",
 						searchResult.patient.value, searchResult.nHits);
+				
+				for (String docId : searchResult.snippets.keySet()) {
+					System.out.printf("\tDocument: %s\n", docId);
+					for (String snippet : searchResult.snippets.get(docId)) {
+						System.out.println("\t\t<snippet>%s</snippet>\n");
+					}
+				}
 			}
 			
 			

@@ -4,14 +4,12 @@
  */
 package indexer;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,16 +21,16 @@ import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
-import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.ParsingReader;
@@ -68,7 +66,7 @@ public class BaseIndexing implements AutoCloseable {
   public int failed = 0;
   
   /** logger for Commons logging. */
-  private transient Logger log =
+  private static final transient Logger log =
     Logger.getLogger(BaseIndexing.class.getName());
 
   /** Creates a new instance of BaseIndexing
@@ -96,8 +94,8 @@ public class BaseIndexing implements AutoCloseable {
 			new File(dataPath);
 	
 		if (log.isLoggable(Level.FINE)) {
-		  log.fine("Indexdir: " + indexWriterUtil.getIndexdir());
-		  log.fine("Datadir: " + datadir);
+		  log.log(Level.FINE, "Indexdir: {0}", indexWriterUtil.getIndexdir());
+		  log.log(Level.FINE, "Datadir: {0}", datadir);
 		}
 		
   }
@@ -126,6 +124,17 @@ public class BaseIndexing implements AutoCloseable {
    * @author Kasper van den Berg <kasper@kaspervandenberg.net>
    */
   private class TikaIndexAdder extends SimpleFileVisitor<Path> {
+		private final FieldType contentFieldType; 
+
+		public TikaIndexAdder() {
+			contentFieldType = new FieldType(TextField.TYPE_STORED);
+			contentFieldType.setTokenized(true);
+			contentFieldType.setStoreTermVectors(true);
+			contentFieldType.setStoreTermVectorOffsets(true);
+			contentFieldType.setStoreTermVectorPositions(true);
+			contentFieldType.freeze();
+		}
+	  
 		@Override
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 			Tika tikaFacade = new  Tika(); 
@@ -221,7 +230,8 @@ public class BaseIndexing implements AutoCloseable {
 				Analyzer analyzer = analyzerFactory.getAnalyzer(metadata.get(Metadata.CONTENT_TYPE));
 				TokenStream tokenStream = analyzer.tokenStream(
 						FixedFields.CONTENT.fieldName, content);
-				doc.add(new TextField(FixedFields.CONTENT.fieldName, tokenStream));
+				Field contentField = new Field(FixedFields.CONTENT.fieldName, tokenStream, contentFieldType);
+				doc.add(contentField);
 				return analyzer;
 			}
 

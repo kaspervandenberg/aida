@@ -225,12 +225,21 @@ public class BaseIndexing implements AutoCloseable {
 			
 			public Analyzer storeContent(Parser parser, ParseContext context)
 					throws IOException {
-				Reader content = new ParsingReader(parser, new FileInputStream(file.toFile()), metadata, context);
+				Reader contentReader = new ParsingReader(
+						parser, new FileInputStream(file.toFile()), metadata, context);
+				
+				StringBuilder content = new StringBuilder();
+				char[] buffer = new char[4096];
+				int nRead;
+				do {
+					nRead = contentReader.read(buffer);
+					if(nRead > 0) {
+						content.append(buffer, 0, nRead);
+					}
+				} while (nRead >-1);
 
 				Analyzer analyzer = analyzerFactory.getAnalyzer(metadata.get(Metadata.CONTENT_TYPE));
-				TokenStream tokenStream = analyzer.tokenStream(
-						FixedFields.CONTENT.fieldName, content);
-				Field contentField = new Field(FixedFields.CONTENT.fieldName, tokenStream, contentFieldType);
+				Field contentField = new Field(FixedFields.CONTENT.fieldName, content.toString(), contentFieldType);
 				doc.add(contentField);
 				return analyzer;
 			}

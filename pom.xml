@@ -5,9 +5,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.adaptivedisclosure</groupId>
-	<artifactId>AIDA</artifactId>
+	<artifactId>aida</artifactId>
 	<packaging>pom</packaging>
 	<version>0.85-SNAPSHOT</version>
+	<name>AIDA</name>
+	<description>
+		AIDA connects diverse sources of information via semantic web technology;
+		amongst those sources are thesauri and ontologies (in OWL and SKOS), 
+		unstructured text, and machine learning data.
+	</description>
 
 	<modules>
 		<module>Search/Indexer</module>

@@ -5,6 +5,12 @@
 	<artifactId>search</artifactId>
 	<version>0.84-SNAPSHOT</version>
 	<packaging>jar</packaging>
+	<name>AIDA::Search</name>
+	<description>
+		Web interface that connects different sources of information; AIDA::Search
+		allows using terms and concepts from thesauri and ontologies to search
+		through (unstructured) text.
+	</description>
 	
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>

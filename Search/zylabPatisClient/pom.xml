@@ -5,6 +5,11 @@
 	<artifactId>zylabPatisClient</artifactId>
 	<version>0.85-SNAPSHOT</version>
 	<packaging>war</packaging>
+	<name>AIDA::Zylab Patis Search client</name>
+	<description>
+		Client to search in Zylab's documents about patient for patients that match
+		(eligibility) criteria.
+	</description>
 	
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>

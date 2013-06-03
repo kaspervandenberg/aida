@@ -5,6 +5,11 @@
 	<artifactId>indexer</artifactId>
 	<packaging>jar</packaging>
 	<version>0.85-SNAPSHOT</version>
+	<name>AIDA::Indexer</name>
+	<description>
+		Build the index of documents in which AIDA::Search can
+		do full text search.
+	</description> 
 	
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>

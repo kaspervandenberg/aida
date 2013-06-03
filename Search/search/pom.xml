@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>search</artifactId>
-	<version>0.85</version>
+	<version>0.86-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>AIDA::Search</name>
 	<description>

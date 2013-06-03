@@ -67,7 +67,7 @@ public class API_Demo {
 				for (String docId : searchResult.snippets.keySet()) {
 					System.out.printf("\tDocument: %s\n", docId);
 					for (String snippet : searchResult.snippets.get(docId)) {
-						System.out.println("\t\t<snippet>%s</snippet>\n");
+						System.out.printf("\t\t<snippet>%s</snippet>\n", snippet);
 					}
 				}
 			}

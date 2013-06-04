@@ -37,7 +37,8 @@ public class PreconstructedQueries {
 	 */
 	public enum LocalParts {
 		METASTASIS("metastasis"),
-		NO_METASTASIS("no_metastasis");
+		NO_METASTASIS("no_metastasis"),
+		NO_HINTS_METASTASIS("no_hints_metastasis");
 
 		private final String value;
 		private QName id = null;
@@ -105,7 +106,8 @@ public class PreconstructedQueries {
 		EXTENSIVE("extensive"),
 		DISEASE("disease"),
 		UITZAAIING("uitzaaiing"),
-		GEEN("geen")
+		GEEN("geen"),
+		AANWIJZING("aanwijzing")
 		;
 
 		private final Term value;
@@ -211,7 +213,7 @@ public class PreconstructedQueries {
 		SpanOrQuery metastasis = buildMetastasis();
 		tmp.put(LocalParts.METASTASIS.getID(), metastasis);
 		tmp.put(LocalParts.NO_METASTASIS.getID(), buildNoMetastasis(metastasis));
-			
+		tmp.put(LocalParts.NO_HINTS_METASTASIS.getID(), buildNoHintsMetastasis(metastasis));
 		
 		storedPredicates = Collections.unmodifiableMap(tmp);
 	}
@@ -312,6 +314,17 @@ public class PreconstructedQueries {
 	private static Query buildNoMetastasis(SpanQuery metastasis) {
 		SpanQuery result = new SpanNearQuery(new SpanQuery[]{
 			SearchTerms.GEEN.getFuzzySpan(),
+			metastasis
+			}, 5, false);
+		return result;
+	}
+
+	private static Query buildNoHintsMetastasis(SpanQuery metastasis) {
+		SpanQuery result = new SpanNearQuery(new SpanQuery[] {
+			new SpanNearQuery(new SpanQuery[] {
+				SearchTerms.GEEN.getFuzzySpan(),
+				SearchTerms.AANWIJZING.getFuzzySpan()
+			}, 3, false),
 			metastasis
 			}, 5, false);
 		return result;

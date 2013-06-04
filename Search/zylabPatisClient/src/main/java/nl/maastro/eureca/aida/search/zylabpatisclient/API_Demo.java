@@ -54,7 +54,7 @@ public class API_Demo {
 			// Get a QueryPattern; normally the Query is retrieved via its
 			// URI and not via an internal enum constant
 			Query queryPattern = PreconstructedQueries.instance().getQuery(
-					PreconstructedQueries.LocalParts.METASTASIS_IV);
+					PreconstructedQueries.LocalParts.METASTASIS);
 			Iterable<SearchResult> result = searcher.searchForAll(
 					queryPattern,
 					patients);

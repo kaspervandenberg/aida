@@ -36,7 +36,8 @@ public class PreconstructedQueries {
 	 * {@link #storedPredicates}.
 	 */
 	public enum LocalParts {
-		METASTASIS_IV("metastasisStage_IV");
+		METASTASIS("metastasis"),
+		NO_METASTASIS("no_metastasis");
 
 		private final String value;
 		private QName id = null;
@@ -103,7 +104,8 @@ public class PreconstructedQueries {
 		FOUR_DIGIT("4"),
 		EXTENSIVE("extensive"),
 		DISEASE("disease"),
-		UITZAAIING("uitzaaiing")
+		UITZAAIING("uitzaaiing"),
+		GEEN("geen")
 		;
 
 		private final Term value;
@@ -206,7 +208,7 @@ public class PreconstructedQueries {
 		// add URIs to query mappings here
 		
 		// Stage IV metastasis
-		tmp.put(LocalParts.METASTASIS_IV.getID(), buildStageIVmetastasis());
+		tmp.put(LocalParts.METASTASIS.getID(), buildMetastasis());
 			
 		
 		storedPredicates = Collections.unmodifiableMap(tmp);
@@ -269,8 +271,7 @@ public class PreconstructedQueries {
 		return servletUri;
 	}
 	
-	private static Query buildStageIVmetastasis() {
-		BooleanQuery result = new BooleanQuery();
+	private static SpanOrQuery buildMetastasis() {
 		
 		SpanOrQuery metastasis = new SpanOrQuery(
 			SearchTerms.METASTASIS_EN.getFuzzySpan(),
@@ -291,20 +292,26 @@ public class PreconstructedQueries {
 		SpanOrQuery stage = new SpanOrQuery(
 				stage_enRoman, stage_enDigit, stage_nlRoman, stage_nlDigit);
 
-		SpanOrQuery metastasisStage = new SpanOrQuery(
-			metastasis, 
-			stage);
-		
 		SpanQuery extensiveDisease = new SpanNearQuery(new SpanQuery[]{
 			SearchTerms.EXTENSIVE.getFuzzySpan(),
 			SearchTerms.DISEASE.getFuzzySpan()}, 5, false);
 		
 //		result.add(metastasis, BooleanClause.Occur.SHOULD);
 //		result.add(stage, BooleanClause.Occur.SHOULD);
-		result.add(metastasisStage, BooleanClause.Occur.SHOULD);
-		result.add(extensiveDisease, BooleanClause.Occur.SHOULD);
-		result.add(SearchTerms.UITZAAIING.getFuzzyQuery(), BooleanClause.Occur.SHOULD);
+		SpanOrQuery result = new SpanOrQuery(
+				metastasis,
+				stage,
+				extensiveDisease,
+				SearchTerms.UITZAAIING.getFuzzySpan());
 
+		return result;
+	}
+
+	private static Query buildNoMetastasis(SpanQuery metastasis) {
+		SpanQuery result = new SpanNearQuery(new SpanQuery[]{
+			SearchTerms.GEEN.getFuzzySpan(),
+			metastasis
+			}, 5, false);
 		return result;
 	}
 }

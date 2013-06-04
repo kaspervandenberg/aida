@@ -702,7 +702,7 @@ public class ZylabPatisClient extends HttpServlet {
 	public static void main(String[] args) {
 		
 		
-//		String sQuery = PreconstructedQueries.instance().getQuery(PreconstructedQueries.LocalParts.METASTASIS_IV).toString("contents");
+//		String sQuery = PreconstructedQueries.instance().getQuery(PreconstructedQueries.LocalParts.METASTASIS).toString("contents");
 		CoreParser parser = new CoreParser("content", new StandardAnalyzer(Version.LUCENE_41));
 		String sQuery = "metastasis~ stage~\"~10";
 //		Query query = parser.parse(null);
@@ -712,7 +712,7 @@ public class ZylabPatisClient extends HttpServlet {
 			IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(indexDir));
 			TopDocs result = searcher.search(
 					PreconstructedQueries.instance().getQuery(
-						PreconstructedQueries.LocalParts.METASTASIS_IV),
+						PreconstructedQueries.LocalParts.METASTASIS),
 					1000);
 
 			

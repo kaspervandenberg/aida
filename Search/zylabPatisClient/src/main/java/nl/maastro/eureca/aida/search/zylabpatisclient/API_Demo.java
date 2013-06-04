@@ -60,20 +60,8 @@ public class API_Demo {
 					patients);
 
 			// Do something with the results
-			for (SearchResult searchResult : result) {
-				System.out.printf("PatisNr: %s found in %d documents\nSnippets:\n",
-						searchResult.patient.value, searchResult.nHits);
-				
-				for (String docId : searchResult.snippets.keySet()) {
-					System.out.printf("\tDocument: %s\n", docId);
-					for (String snippet : searchResult.snippets.get(docId)) {
-						System.out.printf("\t\t<snippet>%s</snippet>\n", snippet);
-					}
-				}
-			}
-			
-			
-			
+			new HumanReadableResultsFormatter().writeAll(System.out, result);
+
 		} catch (ServiceException | IOException ex) {
 			throw new Error(ex);
 		}

@@ -208,7 +208,9 @@ public class PreconstructedQueries {
 		// add URIs to query mappings here
 		
 		// Stage IV metastasis
-		tmp.put(LocalParts.METASTASIS.getID(), buildMetastasis());
+		SpanOrQuery metastasis = buildMetastasis();
+		tmp.put(LocalParts.METASTASIS.getID(), metastasis);
+		tmp.put(LocalParts.NO_METASTASIS.getID(), buildNoMetastasis(metastasis));
 			
 		
 		storedPredicates = Collections.unmodifiableMap(tmp);

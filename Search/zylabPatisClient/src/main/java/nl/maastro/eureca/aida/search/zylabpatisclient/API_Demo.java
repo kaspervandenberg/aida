@@ -53,14 +53,34 @@ public class API_Demo {
 
 			// Get a QueryPattern; normally the Query is retrieved via its
 			// URI and not via an internal enum constant
-			Query queryPattern = PreconstructedQueries.instance().getQuery(
+			Query queryPatternMetastasis = PreconstructedQueries.instance().getQuery(
 					PreconstructedQueries.LocalParts.METASTASIS);
-			Iterable<SearchResult> result = searcher.searchForAll(
-					queryPattern,
+			Iterable<SearchResult> resultMetastasis = searcher.searchForAll(
+					queryPatternMetastasis,
+					patients);
+
+			Query queryPatternGeenMetastasis = PreconstructedQueries.instance().getQuery(
+					PreconstructedQueries.LocalParts.NO_METASTASIS);
+			Iterable<SearchResult> resultGeenMetastasis = searcher.searchForAll(
+					queryPatternGeenMetastasis,
 					patients);
 
 			// Do something with the results
-			new HumanReadableResultsFormatter().writeAll(System.out, result);
+
+			System.out.println("M E T A S T A S I S");
+			System.out.println("- - - - - - - - - -");
+			System.out.println();
+			System.out.printf("Query: %s\n\n", queryPatternMetastasis.toString());
+			new HumanReadableResultsFormatter().writeAll(System.out, resultMetastasis);
+			
+			System.out.println();
+			System.out.println();
+			System.out.println("- - - - - - - - - - - - - - -");
+			System.out.println("G E E N   M E T A S T A S I S");
+			System.out.println("- - - - - - - - - - - - - - -");
+			System.out.println();
+			System.out.printf("Query: %s\n\n", queryPatternGeenMetastasis.toString());
+			new HumanReadableResultsFormatter().writeAll(System.out, resultGeenMetastasis);
 
 		} catch (ServiceException | IOException ex) {
 			throw new Error(ex);

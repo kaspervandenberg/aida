@@ -4,6 +4,8 @@
  */
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import nl.maastro.eureca.aida.search.zylabpatisclient.output.PlaintextHumanFormatter;
+import nl.maastro.eureca.aida.search.zylabpatisclient.output.SearchResultFormatter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +58,7 @@ public class API_Demo {
 		this.config = initConfig();
 		this.searcher = initSearcher(config);
 		this.patients = initPatients();
-		this.formatter = new HumanReadableResultsFormatter();
+		this.formatter = new PlaintextHumanFormatter();
 	}
 
 	
@@ -112,7 +114,7 @@ public class API_Demo {
 		
 		System.out.append(headers.get(preconstructedQuery));
 		try {
-			formatter.writeAll(System.out, results);
+			formatter.writeList(System.out, results);
 		} catch (IOException ex) {
 			throw new Error(ex);
 		}

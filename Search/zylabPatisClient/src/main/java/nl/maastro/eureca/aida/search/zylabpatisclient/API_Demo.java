@@ -4,16 +4,26 @@
  */
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.PlaintextHumanFormatter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.SearchResultFormatter;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import javax.xml.rpc.ServiceException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
+import nl.maastro.eureca.aida.search.zylabpatisclient.output.HtmlFormatter;
 import org.apache.lucene.search.Query;
 
 /**
@@ -58,7 +68,9 @@ public class API_Demo {
 		this.config = initConfig();
 		this.searcher = initSearcher(config);
 		this.patients = initPatients();
-		this.formatter = new PlaintextHumanFormatter();
+		HtmlFormatter tmp = new HtmlFormatter(); //new PlaintextHumanFormatter();
+		tmp.setShowSnippetsStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW);
+		this.formatter = tmp;
 	}
 
 	
@@ -119,12 +131,50 @@ public class API_Demo {
 			throw new Error(ex);
 		}
 	}
+
+	public void writeTable(List<PreconstructedQueries.LocalParts> datasets) {
+		LinkedHashMap<String, Iterable<SearchResult>> results =
+				new LinkedHashMap<>(datasets.size());
+		for (PreconstructedQueries.LocalParts queryId : datasets) {
+			Query query = PreconstructedQueries.instance().getQuery(queryId);
+			results.put(queryId.name(), searcher.searchForAll(query, patients));
+		}
+		
+		Date now = new Date();
+		File f = new File(String.format("results-%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS.html", now));
+		try {
+			OutputStreamWriter out = new OutputStreamWriter(new BufferedOutputStream(
+					new FileOutputStream(f)), StandardCharsets.UTF_8);
+			out.append(
+					"<!DOCTYPE html>\n" +
+					"<html>\n" +
+					"<head>\n");
+			out.append(String.format("<meta charset=\"%s\"/>\n", StandardCharsets.UTF_8.name()));
+			HtmlFormatter.writeScript(out);
+			HtmlFormatter.writeStyle(out);
+			out.append(
+					"</head>\n" +
+					"<body>\n");
+			out.append(String.format("<h1>Results of %1$tT (on %1$ta %1$te %1$tb)</h1>\n", now));
+			formatter.writeTable(out, results);
+			out.append("</body>\n"
+					+ "</html>\n\n");
+			out.close();
+		} catch (IOException ex) {
+			throw new Error(ex);
+		}
+				
+	}
 	
 	static public void main(String[] args) {
 		API_Demo instance = new API_Demo();
-		instance.searchAndShow(PreconstructedQueries.LocalParts.METASTASIS);
-		instance.searchAndShow(PreconstructedQueries.LocalParts.NO_METASTASIS);
-		instance.searchAndShow(PreconstructedQueries.LocalParts.NO_HINTS_METASTASIS);
+//		instance.searchAndShow(PreconstructedQueries.LocalParts.METASTASIS);
+//		instance.searchAndShow(PreconstructedQueries.LocalParts.NO_METASTASIS);
+//		instance.searchAndShow(PreconstructedQueries.LocalParts.NO_HINTS_METASTASIS);
+		instance.writeTable(Arrays.asList(
+				PreconstructedQueries.LocalParts.METASTASIS,
+				PreconstructedQueries.LocalParts.NO_METASTASIS,
+				PreconstructedQueries.LocalParts.NO_HINTS_METASTASIS));
 	}
 
 }

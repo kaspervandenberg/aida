@@ -17,7 +17,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	private enum Tags {
 		LIST("ul"),
 		LIST_ITEM("li"),
-		SCRIPT("script", "language=javascript"),
+		SCRIPT("script", "language=\"javascript\""),
 		SNIPPET_DIV("span", "class=\"snippet\" style=\"display:none\""),
 		LABEL("label", "class=\"showSnippetChoice\""),
 		DISPLAY_CHECKBOX("input", "type=\"checkbox\""),
@@ -25,7 +25,8 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		TABLE_ROW("tr"),
 		TABLE_CELL("td"),
 		TABLE_HEADER_CELL("th"),
-		TABLE_HEADER("thead");
+		TABLE_HEADER("thead"),
+		STYLE("style", "type=\"text/css\"");
 
 		private final String tag;
 		private final String tag_o;
@@ -37,8 +38,8 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		}
 
 		private Tags(final String tag_, final String params_) {
-			this.tag = tag_;
-			this.tag_o = open(tag_, params_);
+			this.tag = combine(tag_, params_);
+			this.tag_o = String.format("<%s>", this.tag);
 			this.tag_c = String.format("</%s>", tag_);
 			pattern = this.tag_o + "%s" + this.tag_c + "\n";
 		}
@@ -48,7 +49,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		}
 
 		public String open(final String params) {
-			return open(tag, params);
+			return String.format("<%s>", combine(tag, params));
 		}
 
 		public String close() {
@@ -59,10 +60,9 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 			return String.format(this.pattern, arg);
 		}
 
-		private static String open(final String tag_, final String params_) {
-			return String.format("<%s%s>",
-					tag_,
-					(params_.isEmpty() || params_.startsWith(" "))
+		private static String combine(final String tag_, final String params_) {
+			return tag_ +
+					((params_.isEmpty() || params_.startsWith(" "))
 						? params_
 						: " " + params_);
 		}
@@ -87,8 +87,8 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 				out.append(Tags.LABEL.open());
 				out.append(Tags.DISPLAY_CHECKBOX.open(
 						String.format(
-							"id=\"cb-%s\" onclick=\"toggleShow(cb-%s, %s)\"",
-							id, id, id)));
+							"id=\"cb-%1$s\" onclick=\"toggleShow(\'cb-%1$s\',\'%1$s\')\"",
+							id)));
 				out.append(Tags.DISPLAY_CHECKBOX.close());
 				out.append("details");
 				out.append(Tags.LABEL.close() + "\n");
@@ -98,19 +98,9 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 				out.append(Tags.SNIPPET_DIV.close());
 			}
 
-			public void writeScript(Appendable out) throws IOException {
-				out.append(Tags.SCRIPT.open() + "\n");
-				out.append(
-						"function toggleShow(cb, id) {"
-						+ "\t" + "if(id && id.style) {"
-						+ "\t\t" + 	"cb.checked ? 'inline' : 'none';"
-						+ "\t" + "}"
-						+ "}");
-				out.append(Tags.SCRIPT.close());
-			}
 		}
 		;
-
+		
 		public void writeSnippet(Appendable out, SearchResult result) throws IOException {
 			if(!result.snippets.isEmpty()) {
 				out.append(String.format("%s Matching documents:\n",
@@ -149,6 +139,50 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		
 	}
 	
+	public static void writeScript(Appendable out) throws IOException {
+		out.append(Tags.SCRIPT.open() + "\n");
+		out.append(
+				"function toggleShow(cbId, id) {\n"
+				+ "\t" + "el = document.getElementById(id);\n"
+				+ "\t" + "cb = document.getElementById(cbId);\n"
+				+ "\n"
+				+ "\t" + "if(el && el.style && cb) {\n"
+				+ "\t\t" + 	"el.style.display = cb.checked ? 'inline' : 'none';\n"
+				+ "\t" + "}\n"
+				+ "}\n");
+		out.append(Tags.SCRIPT.close());
+	}
+
+	public static void writeStyle(Appendable out) throws IOException {
+		out.append(Tags.STYLE.open());
+		out.append(
+			"table th {\n"
+			+ "\t" +	"border:1px solid black;\n"
+			+ "}\n\n"
+
+			+ "table td {\n"
+			+ "\t" +	"border:#ccc 1px solid;\n"
+			+ "}\n\n"
+
+			+ "table tr:nth-child(even) {\n"
+			+ "\t" +	"background: #F4EFEF;\n"
+			+ "}\n\n"
+
+			+ "table tr:nth-child(odd) {"
+			+ "\t" +	"background: #FAFAFA;\n"
+			+ "}\n\n"
+			 
+			+ ".showSnippetChoice {\n"
+			+ "\t" +	"color:blue;\n"
+			+ "\t" + 	"font-size:8pt;\n"
+			+ "\t" +	"float: right;\n"
+			+ "}\n\n"
+
+			+ ".searchHit {\n"
+			+ "\t" +	"background-color:yellow;\n"
+			+ "}\n");
+		out.append(Tags.STYLE.close());
+	}
 	
 	@Override
 	public void write(Appendable out, SearchResult result) throws IOException {
@@ -228,7 +262,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		ByteBuffer bytes_4 = ByteBuffer.allocate(4);
 		bytes_8.putLong(uuid.getMostSignificantBits() ^ uuid.getLeastSignificantBits());
 		bytes_4.putInt(bytes_8.getInt(0) ^ bytes_8.get(4));
-		return DatatypeConverter.printBase64Binary(bytes_4.array());
+		return DatatypeConverter.printBase64Binary(bytes_4.array()).replace("=", "");
 	}
 	
 }

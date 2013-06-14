@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
-package nl.maastro.eureca.aida.search.zylabpatisclient;
+package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +61,25 @@ public class QueryProviderRegistry implements QueryProvider {
 	}
 
 	/**
+	 * Retrieve whether this {@code QueryProvider} can provide the {@link Query}
+	 * identified by {@code id}.
+	 * 
+	 * @param id	the {@link QName} by which the query is known
+	 * @return	<ul><li>{@code true}, a {@link Provider} which can provide the 
+	 * 				requested query, i.e. {@link #get(javax.xml.namespace.QName)}
+	 * 				returns a {@link Query}; or </li>
+	 * 			<li>{@code false}, the provider cannot provide the requested 
+	 * 				query.</li></ul>
+	 */
+	public boolean provides(QName id) {
+		try {
+			return findProvider(id).provides(id);
+		} catch (NoSuchElementException ex) {
+			return false;
+		}
+	};
+
+	/**
 	 * Forward to {@link QueryProvider#hasString(javax.xml.namespace.QName)} of
 	 * the {@link QueryProvider provider} that provides {@code id}.
 	 * 
@@ -75,6 +95,7 @@ public class QueryProviderRegistry implements QueryProvider {
 	 * 			to this provider.</li></ul>
 	 */
 	@Override
+	@Deprecated
 	public boolean hasString(QName id) {
 		try {
 			return findProvider(id).hasString(id);
@@ -99,6 +120,7 @@ public class QueryProviderRegistry implements QueryProvider {
 	 * 		</li></ul>
 	 */
 	@Override
+	@Deprecated
 	public boolean hasObject(QName id) {
 		try {
 			return findProvider(id).hasObject(id);
@@ -106,6 +128,22 @@ public class QueryProviderRegistry implements QueryProvider {
 			return false;
 		}
 	}
+
+	/**
+	 * Forward to {@link QueryProvider#get(javax.xml.namespace.QName)  of the
+	 * {@link QueryProvider} that provides {@code id}.
+	 * 
+	 * @param id	the URI that identifies the query
+	 * 
+	 * @return	the query 
+	 * 
+	 * @throws NoSuchElementException	when no provider provides {@code id}.
+	 */
+	@Override
+	public nl.maastro.eureca.aida.search.zylabpatisclient.query.Query get(QName id) {
+		return findProvider(id).get(id);
+	}
+	
 
 	/**
 	 * Forward to {@link QueryProvider#getAsString(javax.xml.namespace.QName)} of the 
@@ -123,6 +161,7 @@ public class QueryProviderRegistry implements QueryProvider {
 	 * 		when no provider provides {@code id}.
 	 */
 	@Override
+	@Deprecated
 	public String getAsString(final QName id) throws NoSuchElementException {
 		return findProvider(id).getAsString(id);
 	}
@@ -143,6 +182,7 @@ public class QueryProviderRegistry implements QueryProvider {
 	 * 		when no provider provides(id).
 	 */
 	@Override
+	@Deprecated
 	public Query getAsObject(final QName id) throws NoSuchElementException {
 		return findProvider(id).getAsObject(id);
 	}

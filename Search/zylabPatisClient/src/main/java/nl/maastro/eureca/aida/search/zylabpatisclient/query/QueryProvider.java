@@ -1,10 +1,10 @@
 // © Maastro, 2013
-package nl.maastro.eureca.aida.search.zylabpatisclient;
+package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import javax.xml.namespace.QName;
-import org.apache.lucene.search.Query;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
 
 /**
  * Interface for classes that provide concept queries.  Register 
@@ -15,10 +15,13 @@ import org.apache.lucene.search.Query;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public interface QueryProvider {
+	
+	
 	/**
 	 * The types of representation that a provided query can have.
 	 */
-	public enum QueryRepresentation {
+	@Deprecated
+	public enum QueryRepresentation_Old {
 		/**
 		 * The Query(ies) is (are) <em>only</em> provided as String; that is  
 		 * {@link #hasString(javax.xml.namespace.QName)} returns {@code true};
@@ -59,19 +62,19 @@ public interface QueryProvider {
 		private final boolean asString;
 		private final boolean asObject;
 		
-		private QueryRepresentation(
+		private QueryRepresentation_Old(
 				final boolean asString_, final boolean asObject_) {
 			asString = asString_;
 			asObject = asObject_;
 		}
 
-		public static QueryRepresentation determineRepresentation(
+		public static QueryRepresentation_Old determineRepresentation(
 				QueryProvider context, Iterable<QName> queries) {
 			boolean allAsString = true;
 			boolean allAsObject = true;
 
 			for (QName q : queries) {
-				QueryRepresentation r = determineRepresentation(context, q);
+				QueryRepresentation_Old r = determineRepresentation(context, q);
 				if(r.equals(UNKNOWN_QUERY)) {
 					return UNKNOWN_QUERY;
 				}
@@ -90,7 +93,7 @@ public interface QueryProvider {
 			}
 		}
 		
-		public static QueryRepresentation determineRepresentation(
+		public static QueryRepresentation_Old determineRepresentation(
 				QueryProvider context, QName query) {
 			boolean asString = context.hasString(query);
 			boolean asObject = context.hasObject(query);
@@ -122,6 +125,30 @@ public interface QueryProvider {
 	public Collection<QName> getQueryIds();
 
 	/**
+	 * Retrieve whether this {@code QueryProvider} can provide the {@link Query}
+	 * identified by {@code id}.
+	 * 
+	 * @param id	the {@link QName} by which the query is known
+	 * @return	<ul><li>{@code true}, the provider can provide the query 
+	 * 				identified by {@code id}; or </li>
+	 * 			<li>{@code false}, the provider cannot provide the requested 
+	 * 				query.</li></ul>
+	 */
+	public boolean provides(QName id);
+
+	/**
+	 * Retrieve the query identified by {@code id}.
+	 * 
+	 * @param id	the {@link QName} that identifies the query
+	 * 
+	 * @return	the query
+	 * 
+	 * @throws NoSuchElementException	when this {@code QueryProvider} can not
+	 * 		provide the query.
+	 */
+	public Query get(QName id);
+	
+	/**
 	 * Retrieve whether the provider has the query available as a string that
 	 * can be send to {@link org.vle.aid.lucene.SearcherWS}.
 	 * When {@code hasString} returns {@code true} for a given {@code id},
@@ -137,6 +164,7 @@ public interface QueryProvider {
 	 * 			{@link org.apache.lucene.search.Query} or the query is unknown
 	 * 			to this provider.</li></ul>
 	 */
+	@Deprecated
 	public boolean hasString(final QName id);
 
 	/**
@@ -155,6 +183,7 @@ public interface QueryProvider {
 	 * 			String format or the query is unknown to this provider.
 	 * 		</li></ul>
 	 */
+	@Deprecated
 	public boolean hasObject(final QName id);
 
 	/**
@@ -169,6 +198,7 @@ public interface QueryProvider {
 	 * @throws NoSuchElementException	when this {@code QueryProvider} can not
 	 * 		provide the query (represented as string).
 	 */
+	@Deprecated
 	public String getAsString(final QName id) throws NoSuchElementException;
 
 	/**
@@ -183,5 +213,6 @@ public interface QueryProvider {
 	 * @throws NoSuchElementException	when this {@code QueryProvider} can not
 	 * 		provide the query (as a {@code Query}-object).
 	 */
-	public Query getAsObject(final QName id) throws NoSuchElementException;
+	@Deprecated
+	public org.apache.lucene.search.Query getAsObject(final QName id) throws NoSuchElementException;
 }

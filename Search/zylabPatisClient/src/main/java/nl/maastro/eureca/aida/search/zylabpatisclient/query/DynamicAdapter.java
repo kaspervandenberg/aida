@@ -114,8 +114,16 @@ public class DynamicAdapter {
 				new IdentityAdapter<ParseTree>());
 		registedBuilders.put(LuceneObject.class, LuceneObject.class,
 				new IdentityAdapter<LuceneObject>());
+		
 		registedBuilders.put(LuceneObject.class, ParseTree.class,
 				new ParseTreeToObjectAdapter.Builder());
+		registedBuilders.put(ParseTree.class, StringQuery.class, 
+				new StringToParseTreeAdapter.Builder());
+
+		registedBuilders.put(LuceneObject.class, StringQuery.class, 
+				new ChainedAdapter<>(
+					new StringToParseTreeAdapter.Builder(),
+					new ParseTreeToObjectAdapter.Builder()));
 	}
 
 	public <TIn extends Query, TOut extends Query> 

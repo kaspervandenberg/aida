@@ -31,12 +31,15 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import nl.maastro.eureca.aida.search.zylabpatisclient.LocalLuceneSearcher;
-import nl.maastro.eureca.aida.search.zylabpatisclient.QueryProvider;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.WebserviceSearcher;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTree;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQuery;
 import nl.maastro.vocab.axis.services.SearcherWS.SearcherWS;
 import nl.maastro.vocab.axis.services.SearcherWS.SearcherWSServiceLocator;
-import org.apache.lucene.search.Query;
 import org.jdom2.Attribute;
 import org.jdom2.Comment;
 import org.jdom2.Content;
@@ -262,7 +265,7 @@ public class Config {
 	}
 			
 	private class QueryPatterns implements QueryProvider {
-		private Map<QName, String> queries = null;
+		private Map<QName, Query> queries = null;
 
 		@Override
 		public Collection<QName> getQueryIds() {
@@ -271,38 +274,79 @@ public class Config {
 		}
 
 		@Override
+		public boolean provides(QName id) {
+			initQueries();
+			return queries.containsKey(id);
+		}
+
+		public Query get(final QName id) {
+			if(!provides(id)) {
+				throw new NoSuchElementException(
+						String.format("No query with id %s configured.", id.toString()));
+			}
+			initQueries();
+				
+			if(queries.get(id) == null) {
+				final QName canQName = findCanonicalQName(id);
+				String s_id = canQName.getPrefix().isEmpty() ?
+						canQName.getLocalPart() :
+						canQName.getPrefix() + ":" + canQName.getLocalPart();
+				XPaths.QUERY_BY_ID.setVariable("queryId", s_id);
+				final String s_query = XPaths.QUERY_BY_ID.getFirstNode(getConfigDoc()).getValue();
+				queries.put(id, new StringQuery() {
+					@Override
+					public String getRepresentation() {
+						return s_query;
+					}
+
+					@Override
+					public QName getName() {
+						return canQName;
+					}
+				});
+			}
+			return queries.get(id);
+		}
+		
+
+		@Override
+		@Deprecated
 		public boolean hasString(QName id) {
 			initQueries();
 			return queries.containsKey(id);
 		}
 
 		@Override
+		@Deprecated
 		public boolean hasObject(QName id) {
 			return false;
 //			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 
+		@Deprecated
 		@Override
 		public String getAsString(QName id) throws NoSuchElementException {
-			if(!hasString(id)) {
-				throw new NoSuchElementException(
-						String.format("No query with id %s configured.", id.toString()));
-			}
-			initQueries();
-			if(queries.get(id) == null) {
-				QName canQName = findCanonicalQName(id);
-				String s_id = canQName.getPrefix().isEmpty() ?
-						canQName.getLocalPart() :
-						canQName.getPrefix() + ":" + canQName.getLocalPart();
-				XPaths.QUERY_BY_ID.setVariable("queryId", s_id);
-				queries.put(canQName, 
-						XPaths.QUERY_BY_ID.getFirstNode(getConfigDoc()).getValue());
-			}
-			return queries.get(id);
+			return get(id).accept(new Query.Visitor<String>() {
+				@Override
+				public String visit(LuceneObject element) {
+					throw new IllegalStateException("Expected visiting a StringQuery.");
+				}
+
+				@Override
+				public String visit(StringQuery element) {
+					return element.getRepresentation();
+				}
+
+				@Override
+				public String visit(ParseTree element) {
+					throw new IllegalStateException("Expected visiting a StringQuery.");
+				}
+			});
 		}
 
 		@Override
-		public Query getAsObject(QName id) throws NoSuchElementException {
+		@Deprecated
+		public org.apache.lucene.search.Query getAsObject(QName id) throws NoSuchElementException {
 			throw new NoSuchElementException("Not supported yet.");
 		}
 

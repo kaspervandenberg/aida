@@ -27,5 +27,11 @@ and open the template in the editor.
 	<resultLimit nHits="1203" />
 	<query id="zpsc:scopedQuery1">This can be some content parsable by Lucence's query parser</query>
 	<query id="unscopedQuery2">Query string for unscoped query</query>
+	<concept id="test">
+		<lexPat>bla bla</lexPat>
+		<lexPat>rte,gbe</lexPat>
+	</concept>
+	
+	
 
 </zylabPatisClientConfig>

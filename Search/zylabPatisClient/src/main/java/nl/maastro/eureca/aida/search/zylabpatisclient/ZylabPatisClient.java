@@ -1,6 +1,7 @@
 // © Maastro, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProviderRegistry;
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
-import nl.maastro.eureca.aida.search.zylabpatisclient.QueryProvider.QueryRepresentation;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider.QueryRepresentation_Old;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher.SearcherCapability;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.NameSpaceResolver;
@@ -475,23 +476,23 @@ public class ZylabPatisClient extends HttpServlet {
 		contentTypeRegistry.put(MediaType.getAny(), OutputFormat.JSON);
 	}
 
-	private static final EnumMap<QueryRepresentation, EnumMap<SearcherCapability, Strategy>>
+	private static final EnumMap<QueryRepresentation_Old, EnumMap<SearcherCapability, Strategy>>
 			strategies;
 	static {
-		strategies = new EnumMap<>(QueryRepresentation.class);
-		for (QueryRepresentation repr : QueryRepresentation.values()) {
+		strategies = new EnumMap<>(QueryRepresentation_Old.class);
+		for (QueryRepresentation_Old repr : QueryRepresentation_Old.values()) {
 			strategies.put(repr, new EnumMap<SearcherCapability, Strategy>(SearcherCapability.class));
 		}
 		
-		strategies.get(QueryRepresentation.STRING).put(SearcherCapability.STRING, Strategy.STRING);
-		strategies.get(QueryRepresentation.STRING).put(SearcherCapability.BOTH, Strategy.STRING);
-		strategies.get(QueryRepresentation.BOTH).put(SearcherCapability.STRING, Strategy.STRING);
+		strategies.get(QueryRepresentation_Old.STRING).put(SearcherCapability.STRING, Strategy.STRING);
+		strategies.get(QueryRepresentation_Old.STRING).put(SearcherCapability.BOTH, Strategy.STRING);
+		strategies.get(QueryRepresentation_Old.BOTH).put(SearcherCapability.STRING, Strategy.STRING);
 		
-		strategies.get(QueryRepresentation.OBJECT).put(SearcherCapability.OBJECT, Strategy.OBJECT);
-		strategies.get(QueryRepresentation.OBJECT).put(SearcherCapability.BOTH, Strategy.OBJECT);
-		strategies.get(QueryRepresentation.BOTH).put(SearcherCapability.OBJECT, Strategy.OBJECT);
+		strategies.get(QueryRepresentation_Old.OBJECT).put(SearcherCapability.OBJECT, Strategy.OBJECT);
+		strategies.get(QueryRepresentation_Old.OBJECT).put(SearcherCapability.BOTH, Strategy.OBJECT);
+		strategies.get(QueryRepresentation_Old.BOTH).put(SearcherCapability.OBJECT, Strategy.OBJECT);
 		
-		strategies.get(QueryRepresentation.BOTH).put(SearcherCapability.BOTH, Strategy.OBJECT);
+		strategies.get(QueryRepresentation_Old.BOTH).put(SearcherCapability.BOTH, Strategy.OBJECT);
 	}
 
 	private static final ForkJoinPool taskPool = new ForkJoinPool();
@@ -711,10 +712,9 @@ public class ZylabPatisClient extends HttpServlet {
 					new File("/home/kasper2/mnt/aida/indexes/Zylab_test-20130415-02"));
 			IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(indexDir));
 			TopDocs result = searcher.search(
-					PreconstructedQueries.instance().getQuery(
-						PreconstructedQueries.LocalParts.METASTASIS),
+					new PreconstructedQueries.Provider().getAsObject(
+						PreconstructedQueries.LocalParts.METASTASIS.getID()),
 					1000);
-
 			
 			System.out.printf("#results: %d\n", result.totalHits);
 			

@@ -1,25 +1,35 @@
 // © Maastro, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import javax.xml.namespace.QName;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTree;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTreeToObjectAdapter;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQuery;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
+import org.apache.lucene.queryparser.flexible.core.config.QueryConfigHandler;
+import org.apache.lucene.queryparser.flexible.core.nodes.FuzzyQueryNode;
+import org.apache.lucene.queryparser.flexible.core.nodes.OrQueryNode;
+import org.apache.lucene.queryparser.flexible.core.nodes.ProximityQueryNode;
+import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
+import org.apache.lucene.queryparser.flexible.core.processors.QueryNodeProcessor;
 import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
-import org.apache.lucene.search.spans.SpanNearQuery;
-import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 
@@ -29,6 +39,196 @@ import org.apache.lucene.search.spans.SpanTermQuery;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class PreconstructedQueries {
+	private enum LexicalPatterns implements nl.maastro.eureca.aida.search.zylabpatisclient.query.Query {
+		METASTASIS_NL("metastase"),
+		METASTASIS_EN("metastasis"),
+		ANY_METASTASIS(OrQueryNode.class, METASTASIS_NL, METASTASIS_EN),
+		
+		STAGE_NL("stadium"),
+		STAGE_EN("stage"),
+		FOUR_ROMAN("IV"),
+		FOUR_DIGIT("4"),
+		STAGE_IV_NL(2, STAGE_NL, FOUR_ROMAN),
+		STAGE_4_NL(2, STAGE_NL, FOUR_DIGIT),
+		STAGE_IV_EN(2, STAGE_EN, FOUR_ROMAN),
+		STAGE_4_EN(2, STAGE_EN, FOUR_DIGIT),
+		ANY_STAGE4(OrQueryNode.class, STAGE_IV_NL, STAGE_4_NL, STAGE_IV_EN, STAGE_4_EN),
+
+		EXTENSIVE_EN("extensive"),
+		DISEASE_EN("disease"),
+		EXTENSIVE_DISEASE_EN(4, EXTENSIVE_EN, DISEASE_EN),
+		
+		UITZAAI_NL("uitzaai"),
+		UITGEZAAID_NL("uitgezaaid"),
+		ANY_UITZAAI(OrQueryNode.class, EXTENSIVE_DISEASE_EN, UITZAAI_NL,
+				UITGEZAAID_NL),
+		
+		NOT_NL1("geen"),
+		NOT_NL2("niet"),
+		NOT_EN1("no"),
+		NOT_EN2("not"),
+		ANY_NEGATION(OrQueryNode.class, NOT_NL1, NOT_NL2, NOT_EN1, NOT_EN2),
+		
+		SIGNS_NL1("aanwijzing"),
+		SIGNS_NL2("teken"),
+		ANY_SIGNS(OrQueryNode.class, SIGNS_NL1, SIGNS_NL2)
+		;
+		
+
+		private final QueryNode representation;
+		private transient QName id = null;
+
+		private static List<QueryNode> containedNodes(final LexicalPatterns... pats) {
+			final List<QueryNode> nodes = new ArrayList<>(pats.length);
+			for (LexicalPatterns p : pats) {
+				nodes.add(p.getRepresentation());
+			}
+			return nodes;
+		}
+		
+		private LexicalPatterns(final String term) {
+			representation = new FuzzyQueryNode(DEFAULT_FIELD, term, 2.0f, 0, term.length());
+		}	
+
+		private LexicalPatterns(final int distance, final LexicalPatterns... pats) {
+			
+			
+			representation = new ProximityQueryNode(containedNodes(pats), DEFAULT_FIELD, ProximityQueryNode.Type.NUMBER, distance, false);
+		}
+
+		private LexicalPatterns(final Class<OrQueryNode> dummy, final LexicalPatterns... pats) {
+			representation = new OrQueryNode(containedNodes(pats));
+		}
+		
+		@Override
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visit(new ParseTree() {
+				@Override
+				public QueryNode getRepresentation() {
+					return LexicalPatterns.this.getRepresentation();
+				}
+
+				@Override
+				public QName getName() {
+					return LexicalPatterns.this.getName();
+				}
+			});
+		}
+
+		@Override
+		public QName getName() {
+			if (id == null) {
+				try {
+					id = createQName(LexicalPatterns.this.name().toLowerCase());
+				} catch (URISyntaxException ex) {
+					throw new Error(ex);
+				}
+			}
+			return id;
+		}
+
+		public QueryNode getRepresentation() {
+			return representation;
+		}
+	}
+
+	private enum Concepts implements nl.maastro.eureca.aida.search.zylabpatisclient.query.Query {
+		METASTASIS(LexicalPatterns.ANY_METASTASIS, 
+				LexicalPatterns.ANY_STAGE4, LexicalPatterns.ANY_UITZAAI)
+		;
+			
+		private Concepts(final LexicalPatterns... pats) {
+			representation = new OrQueryNode(LexicalPatterns.containedNodes(pats));
+		}
+			
+		private final QueryNode representation;
+		private transient QName id = null;
+
+
+		@Override
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visit(new ParseTree() {
+				@Override
+				public QueryNode getRepresentation() {
+					return Concepts.this.getRepresentation();
+				}
+
+				@Override
+				public QName getName() {
+					return Concepts.this.getName();
+				}
+			});
+		}
+
+		@Override
+		public QName getName() {
+			if (id == null) {
+				try {
+					id = createQName(Concepts.this.name().toLowerCase());
+				} catch (URISyntaxException ex) {
+					throw new Error(ex);
+				}
+			}
+			return id;
+		}
+		
+		public QueryNode getRepresentation() {
+			return representation;
+		}
+	}
+
+	private enum SemanticModifiers implements QueryNodeProcessor {
+		NEGATED(4, LexicalPatterns.ANY_NEGATION),
+		SUSPICION(4, LexicalPatterns.ANY_SIGNS),
+		NEGATED_SUSPICION(6, LexicalPatterns.ANY_SIGNS, LexicalPatterns.ANY_NEGATION);
+
+		private final LexicalPatterns[] modifierPatterns;
+		private final int distance;
+		private QueryConfigHandler ignoredConfigHandler = null;
+
+		private SemanticModifiers(int distance_, LexicalPatterns... pats) {
+			distance = distance_;
+			modifierPatterns = pats;
+		}
+		
+		@Override
+		public QueryNode process(QueryNode queryTree) throws QueryNodeException {
+			List<QueryNode> nodes = new ArrayList(modifierPatterns.length + 1);
+			nodes.addAll(LexicalPatterns.containedNodes(modifierPatterns));
+			nodes.add(queryTree);
+			
+			return new ProximityQueryNode(nodes, DEFAULT_FIELD, ProximityQueryNode.Type.NUMBER, distance, false);
+		}
+
+		@Override
+		public void setQueryConfigHandler(QueryConfigHandler queryConfigHandler) {
+			ignoredConfigHandler = queryConfigHandler;
+		}
+
+		@Override
+		public QueryConfigHandler getQueryConfigHandler() {
+			return ignoredConfigHandler;
+		}
+		
+	}
+	
+	/**
+	 * Build an {@link QName} from {@link #PREFIX}, the namespace URI
+	 * {@link #getNamespaceUri() } and this local part.  {@code createQName()}
+	 * uses {@link QName#QName(java.lang.String, java.lang.String)}
+	 * to build the requested {@code QName}.
+	 * 
+	 * @param localpart	the local part of the QName to create
+	 * 
+	 * @return	the constructed {@link QName}
+	 * 
+	 * @throws URISyntaxException when the constructed URI has an syntax 
+	 * 		error. 
+	 */
+	private static QName createQName(String localpart) 
+			throws URISyntaxException {
+		return new QName(getNamespaceUri().toString(), localpart, PREFIX);
+	}
 
 	/**
 	 * QName local parts that prefixed with {@link PreconstructedQueries#getNamespaceUri()}
@@ -36,15 +236,24 @@ public class PreconstructedQueries {
 	 * {@link #storedPredicates}.
 	 */
 	public enum LocalParts {
-		METASTASIS("metastasis"),
-		NO_METASTASIS("no_metastasis"),
-		NO_HINTS_METASTASIS("no_hints_metastasis");
+		METASTASIS("metastasis", Concepts.METASTASIS, null),
+		HINTS_METASTASIS("hints_metastasis", Concepts.METASTASIS, 
+				SemanticModifiers.SUSPICION),
+		NO_METASTASIS("no_metastasis", Concepts.METASTASIS, SemanticModifiers.NEGATED),
+		NO_HINTS_METASTASIS("no_hints_metastasis", Concepts.METASTASIS, 
+				SemanticModifiers.NEGATED_SUSPICION);
 
 		private final String value;
-		private QName id = null;
+		private final Concepts concept;
+		private final SemanticModifiers modifier;
+		private transient QName id = null;
+		private transient nl.maastro.eureca.aida.search.zylabpatisclient.query.Query query;
 
-		private LocalParts(final String value_) {
+		private LocalParts(final String value_, final Concepts concept_, 
+				final SemanticModifiers modifier_) {
 			value = value_;
+			concept = concept_;
+			modifier = modifier_;
 		}
 
 		/**
@@ -66,29 +275,37 @@ public class PreconstructedQueries {
 			return id;
 		}
 			
-		/**
-		 * Build an {@link QName} from {@link #PREFIX}, the namespace URI
-		 * {@link #getNamespaceUri() } and this local part.  {@code createQName()}
-		 * uses {@link QName#QName(java.lang.String, java.lang.String)}
-		 * to build the requested {@code QName}.
-		 * 
-		 * @param localpart	the local part of the QName to create
-		 * 
-		 * @return	the constructed {@link QName}
-		 * 
-		 * @throws URISyntaxException when the constructed URI has an syntax 
-		 * 		error. 
-		 */
-		private static QName createQName(String localpart) 
-				throws URISyntaxException {
-			return new QName(getNamespaceUri().toString(), localpart, PREFIX);
+		public nl.maastro.eureca.aida.search.zylabpatisclient.query.Query getQuery() {
+			try {
+				if(query == null) {
+					if(modifier == null) {
+						query = concept;
+					} else {
+						final QueryNode node = modifier.process(concept.getRepresentation());
+						query = new ParseTree() {
+							@Override
+							public QueryNode getRepresentation() {
+								return node;
+							}
+
+							@Override
+							public QName getName() {
+								return LocalParts.this.getID();
+							}
+						};
+					}
+				}
+				return query;
+			} catch (QueryNodeException ex) {
+				throw new Error(ex);
+			}
 		}
 	}
 
 	/**
 	 * Lucene DEFAULT_FIELD to use for the {@link SearchTerms}.
 	 */
-	private static String DEFAULT_FIELD = "content";
+	private static final String DEFAULT_FIELD = "content";
 
 	/**
 	 * {@link Term#text()text-part} of the {@link Term}s used in preconstructed 
@@ -171,31 +388,64 @@ public class PreconstructedQueries {
 			return PreconstructedQueries.instance().getIds();
 		}
 
+
 		@Override
+		public boolean provides(QName id) {
+			return PreconstructedQueries.instance().getIds().contains(id);
+		}
+
+		@Override
+		@Deprecated
 		public boolean hasString(QName id) {
 			return false;
 		}
 
 		@Override
+		@Deprecated
 		public boolean hasObject(QName id) {
 			return PreconstructedQueries.instance().getIds().contains(id);
 		}
 
 		@Override
+		@Deprecated
 		public String getAsString(QName id) throws NoSuchElementException {
 			throw new NoSuchElementException("PreconstructedQueries only provides Lucene Query objects");
 		}
 
 		@Override
+		@Deprecated
 		public Query getAsObject(QName id) throws NoSuchElementException {
-			return PreconstructedQueries.instance().getQuery(id);
+			nl.maastro.eureca.aida.search.zylabpatisclient.query.Query q =
+					PreconstructedQueries.instance().getQuery(id);
+			return ADAPTER_BUILDER.adapt(q.accept(new nl.maastro.eureca.aida.search.zylabpatisclient.query.Query.Visitor<ParseTree>(){
+				@Override
+				public ParseTree visit(LuceneObject element) {
+					throw new IllegalStateException("Expected parse tree.");
+				}
+
+				@Override
+				public ParseTree visit(StringQuery element) {
+					throw new IllegalStateException("Expected parse tree.");
+				}
+
+				@Override
+				public ParseTree visit(ParseTree element) {
+					return element;
+				}
+			 })).getRepresentation();
+		}
+		@Override
+		public nl.maastro.eureca.aida.search.zylabpatisclient.query.Query get(QName id) {
+			return PreconstructedQueries.instance().storedPredicates.get(id).getQuery();
 		}
 	}
-	
+			
 	private static final String SEARCH_PROPERTY_RESOURCE = "/search.properties";
 	private static final String SERVLET_URI_PROP = "nl.maastro.eureca.aida.search.zylabpatisclient.servletUri";
 	private static final String DEFAULT_SERVLET_URI = "http://vocab.maastro.nl/zylabpatis";
 	private static final String PREFIX = "pcq";
+	private static final ParseTreeToObjectAdapter.Builder ADAPTER_BUILDER =
+			new ParseTreeToObjectAdapter.Builder();
 	
 	private static URI servletUri = null;
 	
@@ -204,19 +454,7 @@ public class PreconstructedQueries {
 	 * 
 	 */
 	// TODO Move to SearcherWS and provide interface to access stored queries
-	private static final Map<QName, Query> storedPredicates;
-	static {
-		Map<QName,Query> tmp = new HashMap<>();
-		// add URIs to query mappings here
-		
-		// Stage IV metastasis
-		SpanOrQuery metastasis = buildMetastasis();
-		tmp.put(LocalParts.METASTASIS.getID(), metastasis);
-		tmp.put(LocalParts.NO_METASTASIS.getID(), buildNoMetastasis(metastasis));
-		tmp.put(LocalParts.NO_HINTS_METASTASIS.getID(), buildNoHintsMetastasis(metastasis));
-		
-		storedPredicates = Collections.unmodifiableMap(tmp);
-	}
+	private final Map<QName, LocalParts> storedPredicates;
 
 	/**
 	 * Singleton instance, use {@link #instance()} to access
@@ -227,7 +465,11 @@ public class PreconstructedQueries {
 	 * Singleton, use {@link #instance()} to retrieve the sole instance.
 	 */
 	private PreconstructedQueries() {
-		// Intentionally empty
+		Map<QName, LocalParts> tmp = new HashMap<>();
+		for (LocalParts part : LocalParts.values()) {
+			tmp.put(part.getID(), part);
+		}
+		storedPredicates = Collections.unmodifiableMap(tmp);
 	}
 
 	/**
@@ -242,17 +484,14 @@ public class PreconstructedQueries {
 		return instance;
 	}
 
-	/**
-	 * Retrieve the {@link Query} id
-	 * @param key
-	 * @return 
-	 */
-	public Query getQuery(final QName key) {
-		return storedPredicates.get(key);
+	private nl.maastro.eureca.aida.search.zylabpatisclient.query.Query
+			getQuery(final QName key) {
+		return storedPredicates.get(key).getQuery();
 	}
 
-	public Query getQuery(final LocalParts keyFragment) {
-		return storedPredicates.get(keyFragment.getID());
+	private nl.maastro.eureca.aida.search.zylabpatisclient.query.Query
+			getQuery(final LocalParts keyFragment) {
+		return getQuery(keyFragment.getID());
 	}
 	
 	public Collection<QName> getIds() {
@@ -273,60 +512,5 @@ public class PreconstructedQueries {
 			}
 		}
 		return servletUri;
-	}
-	
-	private static SpanOrQuery buildMetastasis() {
-		
-		SpanOrQuery metastasis = new SpanOrQuery(
-			SearchTerms.METASTASIS_EN.getFuzzySpan(),
-			SearchTerms.METASTASIS_NL.getFuzzySpan());
-
-		SpanQuery stage_enRoman = new SpanNearQuery(new SpanQuery[]{
-			SearchTerms.STAGE_EN.getFuzzySpan(),
-			SearchTerms.FOUR_ROMAN.getExactSpan()}, 2, false);
-		SpanQuery stage_enDigit = new SpanNearQuery(new SpanQuery[]{
-			SearchTerms.STAGE_EN.getFuzzySpan(),
-			SearchTerms.FOUR_DIGIT.getExactSpan()}, 2, false);
-		SpanQuery stage_nlRoman = new SpanNearQuery(new SpanQuery[]{
-			SearchTerms.STAGE_NL.getFuzzySpan(),
-			SearchTerms.FOUR_ROMAN.getExactSpan()}, 2, false);
-		SpanQuery stage_nlDigit = new SpanNearQuery(new SpanQuery[]{
-			SearchTerms.STAGE_NL.getFuzzySpan(),
-			SearchTerms.FOUR_DIGIT.getExactSpan()}, 2, false);
-		SpanOrQuery stage = new SpanOrQuery(
-				stage_enRoman, stage_enDigit, stage_nlRoman, stage_nlDigit);
-
-		SpanQuery extensiveDisease = new SpanNearQuery(new SpanQuery[]{
-			SearchTerms.EXTENSIVE.getFuzzySpan(),
-			SearchTerms.DISEASE.getFuzzySpan()}, 5, false);
-		
-//		result.add(metastasis, BooleanClause.Occur.SHOULD);
-//		result.add(stage, BooleanClause.Occur.SHOULD);
-		SpanOrQuery result = new SpanOrQuery(
-				metastasis,
-				stage,
-				extensiveDisease,
-				SearchTerms.UITZAAIING.getFuzzySpan());
-
-		return result;
-	}
-
-	private static Query buildNoMetastasis(SpanQuery metastasis) {
-		SpanQuery result = new SpanNearQuery(new SpanQuery[]{
-			SearchTerms.GEEN.getFuzzySpan(),
-			metastasis
-			}, 5, false);
-		return result;
-	}
-
-	private static Query buildNoHintsMetastasis(SpanQuery metastasis) {
-		SpanQuery result = new SpanNearQuery(new SpanQuery[] {
-			new SpanNearQuery(new SpanQuery[] {
-				SearchTerms.GEEN.getFuzzySpan(),
-				SearchTerms.AANWIJZING.getFuzzySpan()
-			}, 3, false),
-			metastasis
-			}, 5, false);
-		return result;
 	}
 }

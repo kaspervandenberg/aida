@@ -1,0 +1,26 @@
+table th {
+    border:1px solid black;
+}
+
+table td {
+    border:#ccc 1px solid;
+
+}
+
+table tr:nth-child(even) {
+    background: #F6F6F6;
+}
+
+table tr:nth-child(odd) {
+    background: #FAFAFA;
+}
+ 
+.showSnippetChoice {
+    color:blue;
+    font-size:8pt;
+    float: right;
+}
+
+.searchHit {
+    background-color:yellow;
+}

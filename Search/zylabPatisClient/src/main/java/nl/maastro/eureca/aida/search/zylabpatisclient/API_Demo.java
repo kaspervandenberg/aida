@@ -21,6 +21,9 @@ import java.util.List;
 import javax.xml.rpc.ServiceException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.HtmlFormatter;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.DynamicAdapter;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
 import org.apache.lucene.search.Query;
 
 /**
@@ -58,12 +61,16 @@ public class API_Demo {
 
 	private final Config config;
 	private final Searcher searcher;
+	private final QueryProvider queryProvider;
+	private final DynamicAdapter queryAdapter;
 	private final List<PatisNumber> patients;
 	private final SearchResultFormatter formatter;
 
 	public API_Demo() {
 		this.config = initConfig();
 		this.searcher = initSearcher(config);
+		this.queryProvider = new PreconstructedQueries.Provider();
+		this.queryAdapter = new DynamicAdapter();
 		this.patients = initPatients();
 		HtmlFormatter tmp = new HtmlFormatter(); //new PlaintextHumanFormatter();
 		tmp.setShowSnippetsStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW);
@@ -73,14 +80,9 @@ public class API_Demo {
 	
 	private static Config initConfig() {
 		// Read config file
-		try {
-			InputStream s = new FileInputStream(
-				"/home/administrator/aida.git/Search/zylabPatisClient/src/main/webapp/WEB-INF/zpsc-config.xml");
-			return Config.init(s);
-			// intentionally keeping s open, since Config will read from it at a later time
-		} catch (IOException ex) {
-			throw new Error(ex);
-		}
+		InputStream s = API_Demo.class.getResourceAsStream("/zpsc-config.xml");
+		return Config.init(s);
+		// intentionally keeping s open, since Config will read from it at a later time
 	}
 
 	private static Searcher initSearcher(Config config) {
@@ -118,7 +120,8 @@ public class API_Demo {
 	
 	public void searchAndShow(
 			PreconstructedQueries.LocalParts preconstructedQuery) {
-		Query query = PreconstructedQueries.instance().getQuery(preconstructedQuery);
+		Query query = queryAdapter.adapt(LuceneObject.class, 
+				queryProvider.get(preconstructedQuery.getID())).getRepresentation();
 		Iterable<SearchResult> results = searcher.searchForAll(query, patients);
 		
 		System.out.append(headers.get(preconstructedQuery));
@@ -133,7 +136,8 @@ public class API_Demo {
 		LinkedHashMap<String, Iterable<SearchResult>> results =
 				new LinkedHashMap<>(datasets.size());
 		for (PreconstructedQueries.LocalParts queryId : datasets) {
-			Query query = PreconstructedQueries.instance().getQuery(queryId);
+			Query query = queryAdapter.adapt(LuceneObject.class,
+					queryProvider.get(queryId.getID())).getRepresentation();
 			results.put(queryId.name(), searcher.searchForAll(query, patients));
 		}
 		

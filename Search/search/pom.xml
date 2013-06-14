@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
 		<artifactId>maven-parent-serviceServlet</artifactId>
-		<version>0.2</version>
+		<version>0.3</version>
 		<relativePath>../../maven-parent-serviceServlet</relativePath>
 	</parent>
 

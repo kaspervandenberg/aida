@@ -20,6 +20,7 @@
 		<module>Search/search</module>
 		<module>Search/zylabPatisClient</module>
 
+		<module>maven-parent</module>
 		<module>maven-parent-serviceServlet</module>
 		
 		<!-- Modules not currently in use -->

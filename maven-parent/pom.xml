@@ -3,7 +3,7 @@
 
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>maven-parent</artifactId>
-	<version>0.1</version>
+	<version>0.4</version>
 	<name>AIDA parent</name>
 	<description>
 		Common entries for AIDA
@@ -18,7 +18,7 @@
 	<repositories>
 		<repository>
 			<id>Kasper's Dropbox (public)</id>
-			<url>http://dl.dropbox.com/u/69100636/mvn-repository/releases</url>
+			<url>https://www.dropbox.com/sh/bjni41k0zn5rqye/vM1CHa3d8N/mvn-repository/releases</url>
 			<!-- Contains Lingpipe -->
 		</repository>
 	</repositories>

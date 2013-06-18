@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="AIDA::Zylab Patis Search Client">
+	<body>
+		<menu ref="parent" />
+		<menu ref="reports" />
+		<menu name="Software design">
+			<item name="Queries" href="design_lexical_patterns_semantic_modifiers_and_concept.html"/>
+		</menu>
+	</body>
+</project>
+
+<!-- vim: set tabstop=2 shiftwidth=2 spl=en_gb spell: -->

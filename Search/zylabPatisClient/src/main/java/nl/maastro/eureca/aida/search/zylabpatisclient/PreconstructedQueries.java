@@ -53,33 +53,21 @@ public class PreconstructedQueries {
 	private enum LexicalPatterns implements nl.maastro.eureca.aida.search.zylabpatisclient.query.Query,
 			DualRepresentationQuery {
 		METASTASIS_NL("metastase"),
-		METASTASIS_EN("metastasis"),
-		ANY_METASTASIS(OrQueryNode.class, METASTASIS_NL, METASTASIS_EN),
 		
 		STAGE_NL("stadium"),
-		STAGE_EN("stage"),
 		FOUR_ROMAN("IV", false),
 		FOUR_DIGIT("4", false),
 		STAGE_IV_NL(2, STAGE_NL, FOUR_ROMAN),
 		STAGE_4_NL(2, STAGE_NL, FOUR_DIGIT),
-		STAGE_IV_EN(2, STAGE_EN, FOUR_ROMAN),
-		STAGE_4_EN(2, STAGE_EN, FOUR_DIGIT),
-		ANY_STAGE4(OrQueryNode.class, STAGE_IV_NL, STAGE_4_NL, STAGE_IV_EN, STAGE_4_EN),
-
-		EXTENSIVE_EN("extensive"),
-		DISEASE_EN("disease"),
-		EXTENSIVE_DISEASE_EN(4, EXTENSIVE_EN, DISEASE_EN),
+		ANY_STAGE4(OrQueryNode.class, STAGE_IV_NL, STAGE_4_NL),
 		
 		UITZAAI_NL("uitzaai"),
 		UITGEZAAID_NL("uitgezaaid"),
-		ANY_UITZAAI(OrQueryNode.class, EXTENSIVE_DISEASE_EN, UITZAAI_NL,
-				UITGEZAAID_NL),
+		ANY_UITZAAI(OrQueryNode.class, UITZAAI_NL, UITGEZAAID_NL),
 		
 		NOT_NL1("geen"),
 		NOT_NL2("niet"),
-		NOT_EN1("no"),
-		NOT_EN2("not"),
-		ANY_NEGATION(OrQueryNode.class, NOT_NL1, NOT_NL2, NOT_EN1, NOT_EN2),
+		ANY_NEGATION(OrQueryNode.class, NOT_NL1, NOT_NL2),
 		
 		SIGNS_NL1("aanwijzing"),
 		SIGNS_NL2("teken"),
@@ -198,7 +186,7 @@ public class PreconstructedQueries {
 
 	private enum Concepts implements nl.maastro.eureca.aida.search.zylabpatisclient.query.Query,
 			DualRepresentationQuery {
-		METASTASIS(LexicalPatterns.ANY_METASTASIS, 
+		METASTASIS(LexicalPatterns.METASTASIS_NL, 
 				LexicalPatterns.ANY_STAGE4, LexicalPatterns.ANY_UITZAAI)
 		;
 			

@@ -66,8 +66,10 @@
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
-					<compilerArgument>-Xlint:unchecked</compilerArgument>
-					<compilerArgument>-Xlint:deprecation</compilerArgument>:
+					<compilerArgs>
+						<Xlint:-unchecked/>
+						<Xlint:-deprecation/>
+					</compilerArgs>
           <showWarnings>true</showWarnings>
           <showDeprecation>true</showDeprecation>
 				</configuration>

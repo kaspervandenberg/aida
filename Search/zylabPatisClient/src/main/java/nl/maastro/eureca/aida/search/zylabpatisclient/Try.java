@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeParseException;
+import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
 import org.apache.lucene.queryparser.flexible.core.nodes.FuzzyQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.OrQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.ProximityQueryNode;
@@ -17,6 +18,7 @@ import org.apache.lucene.queryparser.flexible.core.parser.SyntaxParser;
 import org.apache.lucene.queryparser.flexible.core.processors.QueryNodeProcessor;
 import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.queryparser.flexible.standard.nodes.MultiPhraseQueryNode;
+import org.apache.lucene.search.Query;
 
 /**
  *
@@ -32,26 +34,41 @@ public class Try {
 			final String def = "content";
 			SyntaxParser parser = new StandardQueryParser().getSyntaxParser();
 			QueryNodeProcessor processor = new StandardQueryParser().getQueryNodeProcessor();
+			QueryBuilder builder = new StandardQueryParser().getQueryBuilder();
+			
+			QueryNode q = new ProximityQueryNode(Arrays.<QueryNode>asList(
+					new org.apache.lucene.queryparser.flexible.core.nodes.FieldQueryNode(def, "foo bar", 0, "foo bar".length())),
+					def, ProximityQueryNode.Type.NUMBER, 3, false);
+
 			
 			ArrayList<QueryNode> parsed = new ArrayList<>();
-			parsed.add(0, parser.parse("\"test boo\"~2", def));
-			parsed.add(1, parser.parse("confusion~2", def));
-			parsed.add(2, parser.parse("foo AND bar", def));
-			parsed.add(3, parser.parse("optional OR keuze", def));
+//			parsed.add(parser.parse("\"test boo\"~2", def));
+//			parsed.add(parser.parse("confusion~2", def));
+//			parsed.add(parser.parse("foo AND bar", def));
+//			parsed.add(parser.parse("(optional OR keuze) AND (field OR metastase)", def));
+			parsed.add(parser.parse("(\"letter comes\"~3 \"agitated employees\"~4 \"worried about salaries\"~1)" +
+" AND (\"letter comes agitated employees worried about salaries\"~8)", def));
 			
 			ArrayList<QueryNode> queries = new ArrayList<>();
 			queries.addAll(parsed);
+//			queries.add(q);
 
-			queries.add(4, new OrQueryNode(parsed));
-			queries.add(5, new ProximityQueryNode(parsed, def, ProximityQueryNode.Type.NUMBER, 5, false));
-			queries.add(6, new ProximityQueryNode(Arrays.asList(queries.get(3), queries.get(4)), null, ProximityQueryNode.Type.NUMBER, 8, false));
+//			queries.add(new OrQueryNode(parsed));
+//			queries.add(new ProximityQueryNode(parsed, def, ProximityQueryNode.Type.NUMBER, 5, false));
+//			queries.add(new ProximityQueryNode(Arrays.asList(queries.get(3), queries.get(4)), null, ProximityQueryNode.Type.NUMBER, 8, false));
 			
 
 			
 			
 			for (QueryNode n : queries) {
 				System.out.println(n.toString());
+				System.out.println();
 				System.out.println(processor.process(n).toString());
+				System.out.println();
+				System.out.println(QueryDisplay.instance().dumpQuery("", (Query) builder.build(n)));
+				System.out.println();
+				System.out.println(QueryDisplay.instance().dumpQuery("", (Query) builder.build(processor.process(n))));
+				System.out.println();
 				System.out.println();
 				System.out.println();
 			}

@@ -4,6 +4,7 @@
  */
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import java.util.Objects;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.FuzzyQuery;
@@ -22,7 +23,7 @@ public class QueryDisplay {
 		// Intentionally left empty
 	}
 
-	public QueryDisplay instance() {
+	public static QueryDisplay instance() {
 		if(singleton == null) {
 			singleton = new QueryDisplay();
 		}
@@ -44,14 +45,20 @@ public class QueryDisplay {
 	}
 	
 	private String dumpTermQuery(String indent, TermQuery q) {
-		return String.format("%sTermQuery: (%s, %s)\n",
-				indent, q.getTerm().field(), q.getTerm().text());
+		return String.format("%sTermQuery (%s): (%s, %s)\n",
+				indent, q.getClass().getName(), q.getTerm().field(), q.getTerm().text());
 	}
 
 	private String dumpBooleanQuery(String indent, BooleanQuery q) {
 		String subIndent = indent + "\t";
-		StringBuilder result = new StringBuilder(String.format("%sBooleanQuery: [\n", indent));
+		StringBuilder result = new StringBuilder(
+				String.format("%sBooleanQuery (%s): [\n",
+				indent,
+				q.getClass().getName()));
 		for (BooleanClause clause : q.clauses()) {
+			result.append(String.format("%soccurence: %s; clause:",
+					subIndent,
+					Objects.toString(clause.getOccur().name(), "not set")));
 			result.append(dumpQuery(subIndent, clause.getQuery()));
 		}
 		result.append(indent);
@@ -61,13 +68,15 @@ public class QueryDisplay {
 	}
 
 	private String dumpFuzzyQuery(String indent, FuzzyQuery q) {
-		return String.format("%sFuzzyQuery: (%s, %s)~%d\n",
-				indent, q.getTerm().field(), q.getTerm().text(), q.getMaxEdits());
+		return String.format("%sFuzzyQuery (%s): (%s, %s)~%d\n",
+				indent, q.getClass().getName(), q.getTerm().field(),
+				q.getTerm().text(), q.getMaxEdits());
 	}
 
 	private String dumpTermRangeQuery(String indent, TermRangeQuery q) {
-		return String.format("%sTermRangeQuery: (%s, %s--%s)\n",
-				indent, q.getField(), q.getLowerTerm().utf8ToString(), q.getUpperTerm().utf8ToString());
+		return String.format("%sTermRangeQuery (%s): (%s, %s--%s)\n",
+				indent, q.getClass().getName(), q.getField(), 
+				q.getLowerTerm().utf8ToString(), q.getUpperTerm().utf8ToString());
 	}
 	
 }

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,6 +35,8 @@ import org.apache.lucene.queryparser.flexible.core.processors.QueryNodeProcessor
 import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
+import org.apache.lucene.search.spans.SpanNearQuery;
+import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 
@@ -78,16 +81,85 @@ public class PreconstructedQueries {
 		ANY_SIGNS(OrQueryNode.class, SIGNS_NL1, SIGNS_NL2)
 		;
 		
+		/**
+		 * Present {@link nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns}
+		 * as {@link ParseTree} to 
+		 * {@link nl.maastro.eureca.aida.search.zylabpatisclient.query.Query.Visitor visitors}.
+		 * 
+		 * @see nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns#accept(nl.maastro.eureca.aida.search.zylabpatisclient.query.Query.Visitor) 
+		 * @see nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns.ToLuceneObject
+		 */
+		private class ToParseTree extends ParseTree {
+			@Override
+			public QueryNode getRepresentation() {
+				return LexicalPatterns.this.getParsetree_representation();
+			}
 
-		private final QueryNode representation;
+			@Override
+			public QName getName() {
+				return LexicalPatterns.this.getName();
+			}
+		}
+
+		/**
+		 * Present {@link nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns}
+		 * as {@link LuceneObject} to 
+		 * {@link nl.maastro.eureca.aida.search.zylabpatisclient.query.Query.Visitor visitors}.
+		 * 
+		 * @see nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns#accept(nl.maastro.eureca.aida.search.zylabpatisclient.query.Query.Visitor) 
+		 * @see nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns.ToParseTree
+		 */
+		private class ToLuceneObject extends LuceneObject {
+			@Override
+			public Query getRepresentation() {
+				return LexicalPatterns.this.getLuceneObject_representation();
+			}
+
+			@Override
+			public QName getName() {
+				return LexicalPatterns.this.getName();
+			}
+		}
+
+		/**
+		 * The {@link org.apache.lucene.queryparser.flexible.core.nodes.QueryNode}
+		 * parsetree that corresponds to this {@code LexicalPattern}.
+		 * 
+		 * @see nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns#luceneObject_representation
+		 */
+		private final QueryNode parsetree_representation;
+		
+		/**
+		 * The {@code LexicalPattern} as 
+		 * {@link org.apache.lucene.search.Query}-object that 
+		 * {@link org.apache.lucene.search.IndexSearcher} uses to search on.
+		 * 
+		 * The current use of {@link org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder#build(org.apache.lucene.queryparser.flexible.core.nodes.QueryNode)}
+		 * does not convert {@link org.apache.lucene.queryparser.flexible.core.nodes.ProximityQueryNode}
+		 * as intended, therefore {@code LexicalPatterns} store their
+		 * representation in two variants:
+		 * <ul><li>as a parse tree; and</li>
+		 * 		<li>as a lucene.search.SpanQuery.</li></ul>
+		 */
+		private final SpanQuery luceneObject_representation;
+		
 		private transient QName id = null;
 
 		private static List<QueryNode> containedNodes(final LexicalPatterns... pats) {
 			final List<QueryNode> nodes = new ArrayList<>(pats.length);
 			for (LexicalPatterns p : pats) {
-				nodes.add(p.getRepresentation());
+				nodes.add(p.getParsetree_representation());
 			}
 			return nodes;
+		}
+		
+		private static SpanQuery[] containedSpans(final LexicalPatterns... pats) {
+			final SpanQuery[] result = new SpanQuery[pats.length];
+			final List<SpanQuery> l_result = Arrays.asList(result);
+			for (LexicalPatterns lexPat : pats) {
+				l_result.add(lexPat.getLuceneObject_representation());
+			}
+			return result;
 		}
 		
 		private LexicalPatterns(final String term) {
@@ -96,39 +168,39 @@ public class PreconstructedQueries {
 
 		private LexicalPatterns(final String term, boolean fuzzy) {
 			if(fuzzy) {
-				representation = new FuzzyQueryNode(DEFAULT_FIELD, term, 2.0f, 0, term.length());
+				parsetree_representation = new FuzzyQueryNode(DEFAULT_FIELD, term, 2.0f, 0, term.length());
+				luceneObject_representation = new SpanMultiTermQueryWrapper<>(
+						new FuzzyQuery(new Term(DEFAULT_FIELD, term), 2));
 			} else {
-				representation = new FieldQueryNode(DEFAULT_FIELD, term, 0, term.length());
+				parsetree_representation = new FieldQueryNode(DEFAULT_FIELD, term, 0, term.length());
+				luceneObject_representation = new SpanTermQuery(new Term(DEFAULT_FIELD, term));
 			}
 		}
 
 		private LexicalPatterns(final int distance, final LexicalPatterns... pats) {
-			List<QueryNode> requiredNodes = new ArrayList(pats.length);
+			
+			List<QueryNode> requiredNodes = new ArrayList<>(pats.length);
 			for (QueryNode node : containedNodes(pats)) {
-				requiredNodes.add(new ModifierQueryNode(node, ModifierQueryNode.Modifier.MOD_REQ));
+				requiredNodes.add(new ModifierQueryNode(
+						node, ModifierQueryNode.Modifier.MOD_REQ));
 			}
-//			representation = new GroupQueryNode(new AndQueryNode(requiredNodes));
-				
-			representation = new GroupQueryNode(new ProximityQueryNode(requiredNodes, DEFAULT_FIELD, ProximityQueryNode.Type.NUMBER, distance, false));
+			parsetree_representation = new GroupQueryNode(
+					new ProximityQueryNode(
+					requiredNodes, DEFAULT_FIELD,
+					ProximityQueryNode.Type.NUMBER, distance, false));
+			
+			luceneObject_representation = new SpanNearQuery(
+					containedSpans(pats), distance, false);
 		}
 
 		private LexicalPatterns(final Class<OrQueryNode> dummy, final LexicalPatterns... pats) {
-			representation = new GroupQueryNode(new OrQueryNode(containedNodes(pats)));
+			parsetree_representation = new GroupQueryNode(new OrQueryNode(containedNodes(pats)));
+			luceneObject_representation = new SpanOrQuery(containedSpans(pats));
 		}
 		
 		@Override
 		public <T> T accept(Visitor<T> visitor) {
-			return visitor.visit(new ParseTree() {
-				@Override
-				public QueryNode getRepresentation() {
-					return LexicalPatterns.this.getRepresentation();
-				}
-
-				@Override
-				public QName getName() {
-					return LexicalPatterns.this.getName();
-				}
-			});
+			return visitor.visit(new ToLuceneObject());
 		}
 
 		@Override
@@ -143,8 +215,22 @@ public class PreconstructedQueries {
 			return id;
 		}
 
-		public QueryNode getRepresentation() {
-			return representation;
+		public SpanQuery getRepresentation() {
+			return getLuceneObject_representation();
+		}
+
+		/**
+		 * @return the parsetree_representation
+		 */
+		private QueryNode getParsetree_representation() {
+			return parsetree_representation;
+		}
+
+		/**
+		 * @return the luceneObject_representation
+		 */
+		private SpanQuery getLuceneObject_representation() {
+			return luceneObject_representation;
 		}
 	}
 
@@ -210,7 +296,7 @@ public class PreconstructedQueries {
 		@Override
 		public QueryNode process(QueryNode queryTree) throws QueryNodeException {
 			List<QueryNode> modifyingNodes = LexicalPatterns.containedNodes(modifierPatterns);
-			List<QueryNode> nodes = new ArrayList(2);
+			List<QueryNode> nodes = new ArrayList<>(2);
 			nodes.add(new OrQueryNode(modifyingNodes));
 			nodes.add(new ModifierQueryNode(queryTree, ModifierQueryNode.Modifier.MOD_REQ));
 			

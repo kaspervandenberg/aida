@@ -107,7 +107,7 @@ public class PreconstructedQueries {
 		
 		private transient QName id = null;
 
-		private static List<QueryNode> containedNodes(final LexicalPatterns... pats) {
+		static List<QueryNode> containedNodes(final LexicalPatterns... pats) {
 			final List<QueryNode> nodes = new ArrayList<>(pats.length);
 			for (LexicalPatterns p : pats) {
 				nodes.add(p.getParsetree_representation());
@@ -115,7 +115,7 @@ public class PreconstructedQueries {
 			return nodes;
 		}
 		
-		private static SpanQuery[] containedSpans(final LexicalPatterns... pats) {
+		static SpanQuery[] containedSpans(final LexicalPatterns... pats) {
 			final SpanQuery[] result = new SpanQuery[pats.length];
 			final List<SpanQuery> l_result = Arrays.asList(result);
 			for (LexicalPatterns lexPat : pats) {
@@ -194,32 +194,25 @@ public class PreconstructedQueries {
 		}
 	}
 
-	private enum Concepts implements nl.maastro.eureca.aida.search.zylabpatisclient.query.Query {
+	private enum Concepts implements nl.maastro.eureca.aida.search.zylabpatisclient.query.Query,
+			DualRepresentationQuery {
 		METASTASIS(LexicalPatterns.ANY_METASTASIS, 
 				LexicalPatterns.ANY_STAGE4, LexicalPatterns.ANY_UITZAAI)
 		;
 			
 		private Concepts(final LexicalPatterns... pats) {
-			representation = new OrQueryNode(LexicalPatterns.containedNodes(pats));
+			parsetree_representation = new OrQueryNode(LexicalPatterns.containedNodes(pats));
+			luceneObject_representation = new SpanOrQuery(LexicalPatterns.containedSpans(pats));
 		}
 			
-		private final QueryNode representation;
+		private final QueryNode parsetree_representation;
+		private final SpanQuery luceneObject_representation;
 		private transient QName id = null;
 
 
 		@Override
 		public <T> T accept(Visitor<T> visitor) {
-			return visitor.visit(new ParseTree() {
-				@Override
-				public QueryNode getRepresentation() {
-					return Concepts.this.getRepresentation();
-				}
-
-				@Override
-				public QName getName() {
-					return Concepts.this.getName();
-				}
-			});
+			return VISITABLE_DELEGATE.accept(this, visitor);
 		}
 
 		@Override
@@ -235,7 +228,23 @@ public class PreconstructedQueries {
 		}
 		
 		public QueryNode getRepresentation() {
-			return representation;
+			return parsetree_representation;
+		}
+
+		/**
+		 * @return the parsetree_representation
+		 */
+		@Override
+		public QueryNode getParsetree_representation() {
+			return parsetree_representation;
+		}
+
+		/**
+		 * @return the luceneObject_representation
+		 */
+		@Override
+		public SpanQuery getLuceneObject_representation() {
+			return luceneObject_representation;
 		}
 	}
 

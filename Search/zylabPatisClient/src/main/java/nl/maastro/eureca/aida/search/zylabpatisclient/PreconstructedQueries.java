@@ -1,6 +1,7 @@
 // © Maastro, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.DualRepresentationQuery;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,11 +20,11 @@ import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTree;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTreeToObjectAdapter;
+//import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQuery;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.core.config.QueryConfigHandler;
-import org.apache.lucene.queryparser.flexible.core.nodes.AndQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.FieldQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.FuzzyQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.GroupQueryNode;
@@ -33,7 +34,7 @@ import org.apache.lucene.queryparser.flexible.core.nodes.ProximityQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
 import org.apache.lucene.queryparser.flexible.core.processors.QueryNodeProcessor;
 import org.apache.lucene.search.FuzzyQuery;
-import org.apache.lucene.search.Query;
+//import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
@@ -46,7 +47,8 @@ import org.apache.lucene.search.spans.SpanTermQuery;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class PreconstructedQueries {
-	private enum LexicalPatterns implements nl.maastro.eureca.aida.search.zylabpatisclient.query.Query {
+	private enum LexicalPatterns implements nl.maastro.eureca.aida.search.zylabpatisclient.query.Query,
+			DualRepresentationQuery {
 		METASTASIS_NL("metastase"),
 		METASTASIS_EN("metastasis"),
 		ANY_METASTASIS(OrQueryNode.class, METASTASIS_NL, METASTASIS_EN),
@@ -81,46 +83,6 @@ public class PreconstructedQueries {
 		ANY_SIGNS(OrQueryNode.class, SIGNS_NL1, SIGNS_NL2)
 		;
 		
-		/**
-		 * Present {@link nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns}
-		 * as {@link ParseTree} to 
-		 * {@link nl.maastro.eureca.aida.search.zylabpatisclient.query.Query.Visitor visitors}.
-		 * 
-		 * @see nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns#accept(nl.maastro.eureca.aida.search.zylabpatisclient.query.Query.Visitor) 
-		 * @see nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns.ToLuceneObject
-		 */
-		private class ToParseTree extends ParseTree {
-			@Override
-			public QueryNode getRepresentation() {
-				return LexicalPatterns.this.getParsetree_representation();
-			}
-
-			@Override
-			public QName getName() {
-				return LexicalPatterns.this.getName();
-			}
-		}
-
-		/**
-		 * Present {@link nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns}
-		 * as {@link LuceneObject} to 
-		 * {@link nl.maastro.eureca.aida.search.zylabpatisclient.query.Query.Visitor visitors}.
-		 * 
-		 * @see nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns#accept(nl.maastro.eureca.aida.search.zylabpatisclient.query.Query.Visitor) 
-		 * @see nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns.ToParseTree
-		 */
-		private class ToLuceneObject extends LuceneObject {
-			@Override
-			public Query getRepresentation() {
-				return LexicalPatterns.this.getLuceneObject_representation();
-			}
-
-			@Override
-			public QName getName() {
-				return LexicalPatterns.this.getName();
-			}
-		}
-
 		/**
 		 * The {@link org.apache.lucene.queryparser.flexible.core.nodes.QueryNode}
 		 * parsetree that corresponds to this {@code LexicalPattern}.
@@ -200,7 +162,7 @@ public class PreconstructedQueries {
 		
 		@Override
 		public <T> T accept(Visitor<T> visitor) {
-			return visitor.visit(new ToLuceneObject());
+			return VISITABLE_DELEGATE.accept(this, visitor);
 		}
 
 		@Override
@@ -215,21 +177,19 @@ public class PreconstructedQueries {
 			return id;
 		}
 
-		public SpanQuery getRepresentation() {
-			return getLuceneObject_representation();
-		}
-
 		/**
 		 * @return the parsetree_representation
 		 */
-		private QueryNode getParsetree_representation() {
+		@Override
+		public QueryNode getParsetree_representation() {
 			return parsetree_representation;
 		}
 
 		/**
 		 * @return the luceneObject_representation
 		 */
-		private SpanQuery getLuceneObject_representation() {
+		@Override
+		public SpanQuery getLuceneObject_representation() {
 			return luceneObject_representation;
 		}
 	}
@@ -410,6 +370,9 @@ public class PreconstructedQueries {
 	 */
 	private static final String DEFAULT_FIELD = "content";
 
+	private static final DualRepresentationQuery.Visitable VISITABLE_DELEGATE =
+			DualRepresentationQuery.Visitable.AS_LUCENE_OBJECT;
+
 	/**
 	 * {@link Term#text()text-part} of the {@link Term}s used in preconstructed 
 	 * queries.
@@ -517,7 +480,7 @@ public class PreconstructedQueries {
 
 		@Override
 		@Deprecated
-		public Query getAsObject(QName id) throws NoSuchElementException {
+		public org.apache.lucene.search.Query getAsObject(QName id) throws NoSuchElementException {
 			nl.maastro.eureca.aida.search.zylabpatisclient.query.Query q =
 					PreconstructedQueries.instance().getQuery(id);
 			return ADAPTER_BUILDER.adapt(q.accept(new nl.maastro.eureca.aida.search.zylabpatisclient.query.Query.Visitor<ParseTree>(){

@@ -138,10 +138,10 @@ public class API_Demo {
 		for (PreconstructedQueries.LocalParts queryId : datasets) {
 			Query query = queryAdapter.adapt(LuceneObject.class,
 					queryProvider.get(queryId.getID())).getRepresentation();
-			System.out.println(queryId.toString());
-			System.out.append(QueryDisplay.instance().dumpQuery("", query));
-			System.out.println();
-			System.out.println();
+//			System.out.println(queryId.toString());
+//			System.out.append(QueryDisplay.instance().dumpQuery("", query));
+//			System.out.println();
+//			System.out.println();
 			results.put(queryId.name(), searcher.searchForAll(query, patients));
 		}
 		

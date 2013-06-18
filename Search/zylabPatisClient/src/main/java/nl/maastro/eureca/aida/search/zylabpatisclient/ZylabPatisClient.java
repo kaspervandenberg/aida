@@ -50,6 +50,7 @@ import org.jdom2.Namespace;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
+@SuppressWarnings({"deprecation", "serial"})
 public class ZylabPatisClient extends HttpServlet {
 	/**
 	 * Request parameters specified as servlet 

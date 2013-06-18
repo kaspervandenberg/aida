@@ -52,7 +52,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 public class PreconstructedQueries {
 	private enum LexicalPatterns implements nl.maastro.eureca.aida.search.zylabpatisclient.query.Query,
 			DualRepresentationQuery {
-		METASTASIS_NL("metastase"),
+		METASTASIS_NL("metastase", true),
 		
 		STAGE_NL("stadium"),
 		FOUR_ROMAN("IV", false),

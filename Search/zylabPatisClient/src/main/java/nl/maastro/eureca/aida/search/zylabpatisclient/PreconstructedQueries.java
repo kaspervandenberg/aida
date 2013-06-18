@@ -22,7 +22,11 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQuery;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.core.config.QueryConfigHandler;
+import org.apache.lucene.queryparser.flexible.core.nodes.AndQueryNode;
+import org.apache.lucene.queryparser.flexible.core.nodes.FieldQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.FuzzyQueryNode;
+import org.apache.lucene.queryparser.flexible.core.nodes.GroupQueryNode;
+import org.apache.lucene.queryparser.flexible.core.nodes.ModifierQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.OrQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.ProximityQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
@@ -46,8 +50,8 @@ public class PreconstructedQueries {
 		
 		STAGE_NL("stadium"),
 		STAGE_EN("stage"),
-		FOUR_ROMAN("IV"),
-		FOUR_DIGIT("4"),
+		FOUR_ROMAN("IV", false),
+		FOUR_DIGIT("4", false),
 		STAGE_IV_NL(2, STAGE_NL, FOUR_ROMAN),
 		STAGE_4_NL(2, STAGE_NL, FOUR_DIGIT),
 		STAGE_IV_EN(2, STAGE_EN, FOUR_ROMAN),
@@ -87,17 +91,29 @@ public class PreconstructedQueries {
 		}
 		
 		private LexicalPatterns(final String term) {
-			representation = new FuzzyQueryNode(DEFAULT_FIELD, term, 2.0f, 0, term.length());
+			this(term, false);
 		}	
 
+		private LexicalPatterns(final String term, boolean fuzzy) {
+			if(fuzzy) {
+				representation = new FuzzyQueryNode(DEFAULT_FIELD, term, 2.0f, 0, term.length());
+			} else {
+				representation = new FieldQueryNode(DEFAULT_FIELD, term, 0, term.length());
+			}
+		}
+
 		private LexicalPatterns(final int distance, final LexicalPatterns... pats) {
-			
-			
-			representation = new ProximityQueryNode(containedNodes(pats), DEFAULT_FIELD, ProximityQueryNode.Type.NUMBER, distance, false);
+			List<QueryNode> requiredNodes = new ArrayList(pats.length);
+			for (QueryNode node : containedNodes(pats)) {
+				requiredNodes.add(new ModifierQueryNode(node, ModifierQueryNode.Modifier.MOD_REQ));
+			}
+//			representation = new GroupQueryNode(new AndQueryNode(requiredNodes));
+				
+			representation = new GroupQueryNode(new ProximityQueryNode(requiredNodes, DEFAULT_FIELD, ProximityQueryNode.Type.NUMBER, distance, false));
 		}
 
 		private LexicalPatterns(final Class<OrQueryNode> dummy, final LexicalPatterns... pats) {
-			representation = new OrQueryNode(containedNodes(pats));
+			representation = new GroupQueryNode(new OrQueryNode(containedNodes(pats)));
 		}
 		
 		@Override
@@ -193,9 +209,10 @@ public class PreconstructedQueries {
 		
 		@Override
 		public QueryNode process(QueryNode queryTree) throws QueryNodeException {
-			List<QueryNode> nodes = new ArrayList(modifierPatterns.length + 1);
-			nodes.addAll(LexicalPatterns.containedNodes(modifierPatterns));
-			nodes.add(queryTree);
+			List<QueryNode> modifyingNodes = LexicalPatterns.containedNodes(modifierPatterns);
+			List<QueryNode> nodes = new ArrayList(2);
+			nodes.add(new OrQueryNode(modifyingNodes));
+			nodes.add(new ModifierQueryNode(queryTree, ModifierQueryNode.Modifier.MOD_REQ));
 			
 			return new ProximityQueryNode(nodes, DEFAULT_FIELD, ProximityQueryNode.Type.NUMBER, distance, false);
 		}

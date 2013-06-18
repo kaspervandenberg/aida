@@ -23,7 +23,12 @@ public interface Query {
 	 * 		<li>{@link Visitor#visit(ParseTree)}, or</li>
 	 * 		<li>{@link Visitor#visit(StringQuery)}</li></ul>
 	 * 
+	 * @param <T>	type that {@code visitor} uses during the visiting of this 
+	 * 		{@code Query}.
 	 * @param visitor	the object to call back. 
+	 * 
+	 * @return the value {@code visitor.accept(…)} returned; {@code Query} 
+	 * 		should treat {@code accepts} return value as opaque.
 	 */
 	public <T> T accept(Visitor<T> visitor);
 

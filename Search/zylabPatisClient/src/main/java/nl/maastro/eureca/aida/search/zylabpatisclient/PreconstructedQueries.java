@@ -27,6 +27,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQuery;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.core.config.QueryConfigHandler;
+import org.apache.lucene.queryparser.flexible.core.nodes.AndQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.FieldQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.FuzzyQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.GroupQueryNode;
@@ -71,7 +72,9 @@ public class PreconstructedQueries {
 		
 		SIGNS_NL1("aanwijzing"),
 		SIGNS_NL2("teken"),
-		ANY_SIGNS(OrQueryNode.class, SIGNS_NL1, SIGNS_NL2)
+		ANY_SIGNS(OrQueryNode.class, SIGNS_NL1, SIGNS_NL2),
+
+		QUESTION("?")
 		;
 		
 		/**
@@ -240,8 +243,9 @@ public class PreconstructedQueries {
 
 	private enum SemanticModifiers  {
 		NEGATED(4, LexicalPatterns.ANY_NEGATION),
-		SUSPICION(4, LexicalPatterns.ANY_SIGNS),
-		NEGATED_SUSPICION(6, LexicalPatterns.ANY_SIGNS, LexicalPatterns.ANY_NEGATION);
+		SUSPICION(4, LexicalPatterns.ANY_SIGNS, LexicalPatterns.QUESTION),
+		NEGATED_SUSPICION(6, LexicalPatterns.ANY_SIGNS, LexicalPatterns.ANY_NEGATION),
+		QUESTION(2, LexicalPatterns.QUESTION);
 
 		private final LexicalPatterns[] modifierPatterns;
 		private final int distance;
@@ -394,7 +398,8 @@ public class PreconstructedQueries {
 				SemanticModifiers.SUSPICION),
 		NO_METASTASIS("no_metastasis", Concepts.METASTASIS, SemanticModifiers.NEGATED),
 		NO_HINTS_METASTASIS("no_hints_metastasis", Concepts.METASTASIS, 
-				SemanticModifiers.NEGATED_SUSPICION);
+				SemanticModifiers.NEGATED_SUSPICION),
+		QUESTIONMARK_METASTASIS("question_mark_test", Concepts.METASTASIS, SemanticModifiers.QUESTION);
 
 		private final String value;
 		private final Concepts concept;

@@ -1,7 +1,6 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
-import java.util.HashMap;
-import java.util.NoSuchElementException;
+import nl.maastro.eureca.aida.search.zylabpatisclient.util.ClassMap;
 
 /**
  * Adapt any {@link Query} ({@link StringQuery}, {@link ParseTree}, or 
@@ -10,75 +9,23 @@ import java.util.NoSuchElementException;
  * @author Kasper vanden Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class DynamicAdapter {
-
-	private static class ClassMap<TValue> extends HashMap<Class<?>, TValue> {
-		public enum RetrievalStrategies {
-			SUBCLASS {
-				@Override
-				public boolean matches(Class<?> request, Class<?> stored) {
-					return stored.isAssignableFrom(request);
-				} },
-			
-			SUPERCLASS {
-				@Override
-				public boolean matches(Class<?> request, Class<?> stored) {
-					return request.isAssignableFrom(stored);
-				} };
-
-			public abstract boolean matches(Class<?> request, Class<?> stored);
-		}
-		
-		private final RetrievalStrategies strategy;
-
-		public ClassMap(RetrievalStrategies strategy_) {
-			this.strategy = strategy_;
-		}
-		
-		@Override
-		public TValue get(Object o_request) {
-			if(!(o_request instanceof Class)) {
-				throw new NoSuchElementException(
-						String.format("No elements of type %s stored.",
-						o_request.getClass().getName()));
-			}
-			Class<?> request = (Class)o_request;
-			
-			for (Class<?> stored : this.keySet()) {
-				if(strategy.matches(request, stored)) {
-					return getStrict(stored);
-				}
-			}
-
-			throw new NoSuchElementException(String.format(
-					"%s not stored (or any of its parents) in this map",
-					request.getName()));
-		}
-
-		public TValue getStrict(Object o_key) {
-			if(!(o_key instanceof Class)) {
-				throw new NoSuchElementException(
-						String.format("No elements of type %s stored.",
-						o_key.getClass().getName()));
-			}
-			Class<?> key = (Class)o_key;
-			return super.get(key);
-		}
-	}
 	
-	private class Table extends ClassMap<ClassMap< 
+	@SuppressWarnings("serial")  
+	private class Table extends ClassMap<Query, ClassMap<Query,  
 				QueryAdapterBuilder<? extends Query, ? extends Query>>> {
 
 		public Table() {
 			super(RetrievalStrategies.SUPERCLASS);
 		}
 		
+		@SuppressWarnings("unchecked")
 		public <TIn extends Query, TOut extends Query> 
 				QueryAdapterBuilder<TIn, TOut> put(
 					Class<TOut> key1,
 					Class<TIn> key2,
 					QueryAdapterBuilder<TIn, TOut> newValue_) {
 			if (!this.containsKey(key1)) {
-				this.put(key1, new ClassMap<QueryAdapterBuilder<? extends Query, ? extends Query>>(RetrievalStrategies.SUBCLASS));
+				this.put(key1, new ClassMap<Query, QueryAdapterBuilder<? extends Query, ? extends Query>>(RetrievalStrategies.SUBCLASS));
 			}
 			QueryAdapterBuilder<? extends Query, ? extends Query> result =
 					this.getStrict(key1).put(key2, newValue_);
@@ -91,6 +38,7 @@ public class DynamicAdapter {
 			return (QueryAdapterBuilder<TIn, TOut>)(Object)result;
 		}
 
+		@SuppressWarnings("unchecked")
 		public <TIn extends Query, TOut extends Query> QueryAdapterBuilder<TIn, TOut> get(Class<TOut> key1, Class<TIn> key2) {
 			QueryAdapterBuilder<? extends Query, ? extends Query> result = this.get(key1).get(key2);
 

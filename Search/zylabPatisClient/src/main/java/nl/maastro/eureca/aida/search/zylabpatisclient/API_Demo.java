@@ -4,6 +4,7 @@
  */
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.PreconstructedQueries;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.SearchResultFormatter;

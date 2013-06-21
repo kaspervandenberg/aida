@@ -1,6 +1,7 @@
 // © Maastro, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.PreconstructedQueries;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProviderRegistry;
 import com.google.gson.Gson;
 import java.io.File;

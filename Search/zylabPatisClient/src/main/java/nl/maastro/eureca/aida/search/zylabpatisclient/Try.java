@@ -4,6 +4,7 @@
  */
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.PreconstructedQueries;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;

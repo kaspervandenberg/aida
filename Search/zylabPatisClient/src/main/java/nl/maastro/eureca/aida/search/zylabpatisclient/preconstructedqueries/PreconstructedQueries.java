@@ -1,0 +1,249 @@
+// © Maastro, 2013
+package nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries;
+
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.DualRepresentationQuery;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Properties;
+import javax.xml.namespace.QName;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTree;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTreeToObjectAdapter;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQuery;
+
+/**
+ * Contains preconstructed queries to search for oncological concepts
+ * 
+ * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
+ */
+public class PreconstructedQueries {
+	
+	/**
+	 * Build an {@link QName} from {@link #PREFIX}, the namespace URI
+	 * {@link #getNamespaceUri() } and this local part.  {@code createQName()}
+	 * uses {@link QName#QName(java.lang.String, java.lang.String)}
+	 * to build the requested {@code QName}.
+	 * 
+	 * @param localpart	the local part of the QName to create
+	 * 
+	 * @return	the constructed {@link QName}
+	 * 
+	 * @throws URISyntaxException when the constructed URI has an syntax 
+	 * 		error. 
+	 */
+	QName createQName(String localpart) 
+			throws URISyntaxException {
+		return new QName(getNamespaceUri().toString(), localpart, PREFIX);
+	}
+
+	/**
+	 * QName local parts that prefixed with {@link PreconstructedQueries#getNamespaceUri()}
+	 * form the {@link QName}s that identify the {@link Query}s in 
+	 * {@link #storedPredicates}.
+	 */
+	public enum LocalParts {
+		METASTASIS("metastasis", Concepts.METASTASIS, null),
+		HINTS_METASTASIS("hints_metastasis", Concepts.METASTASIS, 
+				SemanticModifiers.SUSPICION),
+		NO_METASTASIS("no_metastasis", Concepts.METASTASIS, SemanticModifiers.NEGATED),
+		NO_HINTS_METASTASIS("no_hints_metastasis", Concepts.METASTASIS, 
+				SemanticModifiers.NEGATED_SUSPICION),
+		QUESTIONMARK_METASTASIS("question_mark_test", Concepts.METASTASIS, SemanticModifiers.QUESTION);
+
+		private final String value;
+		private final Concepts concept;
+		private final SemanticModifiers modifier;
+		private transient QName id = null;
+		private transient nl.maastro.eureca.aida.search.zylabpatisclient.query.Query query;
+
+		private LocalParts(final String value_, final Concepts concept_, 
+				final SemanticModifiers modifier_) {
+			value = value_;
+			concept = concept_;
+			modifier = modifier_;
+		}
+
+		/**
+		 * Return the {@link QName} composed from this {@code LocalPart} and 
+		 * {@link #getNamespaceUri()}.
+		 * 
+		 * @see #createQName(java.lang.String) 
+		 * 
+		 * @return	the {@link QName} to identify a preconstructed query with
+		 */
+		public QName getID() {
+			if(id == null) {
+				try {
+					id = PreconstructedQueries.instance().createQName(value);
+				} catch (URISyntaxException ex) {
+					throw new Error("URISyntaxException in hardcoded URI", ex);
+				}
+			}
+			return id;
+		}
+			
+		public nl.maastro.eureca.aida.search.zylabpatisclient.query.Query getQuery() {
+			if(query == null) {
+				if(modifier == null) {
+					query = concept;
+				} else {
+					query = modifier.getAdapter_dynamic().adapt(concept);
+				}
+			}
+			return query;
+		}
+	}
+
+	public static class Provider implements QueryProvider {
+		@Override
+		public Collection<QName> getQueryIds() {
+			return PreconstructedQueries.instance().getIds();
+		}
+
+
+		@Override
+		public boolean provides(QName id) {
+			return PreconstructedQueries.instance().getIds().contains(id);
+		}
+
+		@Override
+		@Deprecated
+		public boolean hasString(QName id) {
+			return false;
+		}
+
+		@Override
+		@Deprecated
+		public boolean hasObject(QName id) {
+			return PreconstructedQueries.instance().getIds().contains(id);
+		}
+
+		@Override
+		@Deprecated
+		public String getAsString(QName id) throws NoSuchElementException {
+			throw new NoSuchElementException("PreconstructedQueries only provides Lucene Query objects");
+		}
+
+		@Override
+		@Deprecated
+		public org.apache.lucene.search.Query getAsObject(QName id) throws NoSuchElementException {
+			nl.maastro.eureca.aida.search.zylabpatisclient.query.Query q =
+					PreconstructedQueries.instance().getQuery(id);
+			return q.accept(new Query.Visitor<org.apache.lucene.search.Query>() { 
+				@Override
+				public org.apache.lucene.search.Query visit(LuceneObject element) {
+					return element.getRepresentation();
+				}
+
+				@Override
+				public org.apache.lucene.search.Query visit(StringQuery element) {
+					throw new IllegalStateException("Expected parse tree.");
+				}
+
+				@Override
+				public org.apache.lucene.search.Query visit(ParseTree element) {
+					return ADAPTER_BUILDER.adapt(element).getRepresentation();
+				}
+			});
+		}
+
+		@Override
+		public nl.maastro.eureca.aida.search.zylabpatisclient.query.Query get(QName id) {
+			return PreconstructedQueries.instance().storedPredicates.get(id).getQuery();
+		}
+	}
+			
+	private static final String SEARCH_PROPERTY_RESOURCE = "/search.properties";
+	private static final String SERVLET_URI_PROP = "nl.maastro.eureca.aida.search.zylabpatisclient.servletUri";
+	private static final String DEFAULT_SERVLET_URI = "http://vocab.maastro.nl/zylabpatis";
+	private static final String PREFIX = "pcq";
+	private static final ParseTreeToObjectAdapter.Builder ADAPTER_BUILDER =
+			new ParseTreeToObjectAdapter.Builder();
+	
+	private static URI servletUri = null;
+	
+	/**
+	 * Lucene DEFAULT_FIELD to use for the {@link SearchTerms}.
+	 */
+	private final String DEFAULT_FIELD = "content";
+
+	private final DualRepresentationQuery.Visitable VISITABLE_DELEGATE =
+			DualRepresentationQuery.Visitable.AS_LUCENE_OBJECT;
+
+	/**
+	 * Queries to search for patients that match certain predicates.
+	 * 
+	 */
+	// TODO Move to SearcherWS and provide interface to access stored queries
+	private final Map<QName, LocalParts> storedPredicates;
+
+	/**
+	 * Singleton instance, use {@link #instance()} to access
+	 */
+	private static PreconstructedQueries instance;
+
+	/**
+	 * Singleton, use {@link #instance()} to retrieve the sole instance.
+	 */
+	private PreconstructedQueries() {
+		Map<QName, LocalParts> tmp = new HashMap<>();
+		for (LocalParts part : LocalParts.values()) {
+			tmp.put(part.getID(), part);
+		}
+		storedPredicates = Collections.unmodifiableMap(tmp);
+	}
+
+	/**
+	 * Access this singleton
+	 * 
+	 * @return the sole instance of {@code PreconstructedQueries}
+	 */
+	public static PreconstructedQueries instance() {
+		if(instance == null) {
+			instance = new PreconstructedQueries();
+		}
+		return instance;
+	}
+
+	private nl.maastro.eureca.aida.search.zylabpatisclient.query.Query
+			getQuery(final QName key) {
+		return storedPredicates.get(key).getQuery();
+	}
+	
+	public Collection<QName> getIds() {
+		return Collections.unmodifiableSet(storedPredicates.keySet());
+	}
+	
+	String getDefaultField() {
+		return DEFAULT_FIELD;
+	}
+
+	DualRepresentationQuery.Visitable getVisitableDelegate() {
+		return VISITABLE_DELEGATE;
+	}
+	
+	private static URI getNamespaceUri() {
+		if(servletUri == null) {
+			InputStream propertyFile = PreconstructedQueries.class.getResourceAsStream(SEARCH_PROPERTY_RESOURCE);
+			Properties props = new Properties();
+			try {
+				props.load(propertyFile);
+				String s_uri = props.getProperty(SERVLET_URI_PROP, DEFAULT_SERVLET_URI);
+				servletUri = new URI(s_uri);
+				
+			} catch (IOException | URISyntaxException ex) {
+				throw new Error(ex);
+			}
+		}
+		return servletUri;
+	}
+}

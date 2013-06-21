@@ -7,8 +7,10 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.UUID;
 import javax.xml.bind.DatatypeConverter;
+import nl.maastro.eureca.aida.search.zylabpatisclient.DocumentId;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
+import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
 
 /**
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
@@ -102,18 +104,18 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		;
 		
 		public void writeSnippet(Appendable out, SearchResult result) throws IOException {
-			if(!result.snippets.isEmpty()) {
+			if(!result.getMatchingDocuments().isEmpty()) {
 				out.append(String.format("%s Matching documents:\n",
 						Tags.LIST.open()));
-				for (String docId : result.snippets.keySet()) {
-					Set<String> perDocSnippets = result.snippets.get(docId);
+				for (DocumentId docId : result.getMatchingDocuments()) {
+					Set<Snippet> perDocSnippets = result.getSnippets(docId);
 					if(!perDocSnippets.isEmpty()) {
 						out.append(String.format("%s Document: %s, snippets:\n%s",
 								Tags.LIST_ITEM.open(),
 								docId,
 								Tags.LIST.open()));
-						for (String snippet : perDocSnippets) {
-							out.append(Tags.LIST_ITEM.format(snippet));
+						for (Snippet snippet : perDocSnippets) {
+							out.append(Tags.LIST_ITEM.format(snippet.value));
 						}
 						out.append(String.format("%s%s\n",
 								Tags.LIST.close(),

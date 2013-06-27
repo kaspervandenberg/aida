@@ -11,7 +11,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -24,13 +23,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
-import javax.xml.rpc.ServiceException;
-import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider.QueryRepresentation_Old;
-import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher.SearcherCapability;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.NameSpaceResolver;
 import nl.maastro.eureca.aida.search.zylabpatisclient.contentNegotiation.ContentTypeNegotiator;
 import nl.maastro.eureca.aida.search.zylabpatisclient.contentNegotiation.MediaType;
+import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.LocalParts;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
@@ -38,7 +35,6 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.queryparser.xml.CoreParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -379,46 +375,6 @@ public class ZylabPatisClient extends HttpServlet {
 		}
 	}
 	
-	public enum Strategy { 
-		STRING {
-			@Override
-			public Iterable<SearchResult> search(
-					ZylabPatisClient context,
-					QName queryPatId,
-					Iterable<PatisNumber> patients)
-						throws ServiceException, IOException {
-				String query = context.queryPatterns.getAsString(queryPatId);
-				return context.config.getSearcher().searchForAll(query, patients);
-			}
-		},
-		
-		OBJECT {
-			@Override
-			public Iterable<SearchResult> search(
-					ZylabPatisClient context,
-					QName queryPatId,
-					Iterable<PatisNumber> patients)
-						throws ServiceException, IOException {
-				Query query = context.queryPatterns.getAsObject(queryPatId);
-				return context.config.getSearcher().searchForAll(query, patients);
-			}
-		},
-
-		FAIL {
-			@Override
-			public Iterable<SearchResult> search(ZylabPatisClient context, QName queryPatId, Iterable<PatisNumber> patients) throws ServiceException, IOException {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
-			
-		}
-		;
-		public abstract Iterable<SearchResult> search(
-				ZylabPatisClient context,
-				QName queryPatId,
-				Iterable<PatisNumber> patients)
-					throws ServiceException, IOException;
-	}
-	
 	private enum OutputFormat {
 		JSON("application/json") {
 			@Override
@@ -476,25 +432,6 @@ public class ZylabPatisClient extends HttpServlet {
 	static {
 		contentTypeRegistry.put(MediaType.parse("application/json"), OutputFormat.JSON);
 		contentTypeRegistry.put(MediaType.getAny(), OutputFormat.JSON);
-	}
-
-	private static final EnumMap<QueryRepresentation_Old, EnumMap<SearcherCapability, Strategy>>
-			strategies;
-	static {
-		strategies = new EnumMap<>(QueryRepresentation_Old.class);
-		for (QueryRepresentation_Old repr : QueryRepresentation_Old.values()) {
-			strategies.put(repr, new EnumMap<SearcherCapability, Strategy>(SearcherCapability.class));
-		}
-		
-		strategies.get(QueryRepresentation_Old.STRING).put(SearcherCapability.STRING, Strategy.STRING);
-		strategies.get(QueryRepresentation_Old.STRING).put(SearcherCapability.BOTH, Strategy.STRING);
-		strategies.get(QueryRepresentation_Old.BOTH).put(SearcherCapability.STRING, Strategy.STRING);
-		
-		strategies.get(QueryRepresentation_Old.OBJECT).put(SearcherCapability.OBJECT, Strategy.OBJECT);
-		strategies.get(QueryRepresentation_Old.OBJECT).put(SearcherCapability.BOTH, Strategy.OBJECT);
-		strategies.get(QueryRepresentation_Old.BOTH).put(SearcherCapability.OBJECT, Strategy.OBJECT);
-		
-		strategies.get(QueryRepresentation_Old.BOTH).put(SearcherCapability.BOTH, Strategy.OBJECT);
 	}
 
 	private static final ForkJoinPool taskPool = new ForkJoinPool();
@@ -677,7 +614,7 @@ public class ZylabPatisClient extends HttpServlet {
 				w.append("<p>Patisnummers requested:<br/><ul>");
 				for (PatisNumber patisNumber : patients) {
 					w.append("<li>");
-					w.append(patisNumber.value);
+					w.append(patisNumber.getValue());
 					w.append("</li>");
 							
 				}
@@ -715,7 +652,7 @@ public class ZylabPatisClient extends HttpServlet {
 			IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(indexDir));
 			TopDocs result = searcher.search(
 					new PreconstructedQueries.Provider().getAsObject(
-						PreconstructedQueries.LocalParts.METASTASIS.getID()),
+						LocalParts.METASTASIS.getID()),
 					1000);
 			
 			System.out.printf("#results: %d\n", result.totalHits);

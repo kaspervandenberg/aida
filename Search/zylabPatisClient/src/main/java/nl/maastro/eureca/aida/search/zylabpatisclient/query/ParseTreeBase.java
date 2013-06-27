@@ -1,8 +1,6 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
-import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
-
 /**
  * Represent a query as a Lucene {@link org.apache.lucene.queryparser.flexible.core.nodes.QueryNode}.
  * Text can be parsed to query nodes; 
@@ -13,12 +11,14 @@ import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
  * 
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public interface ParseTree extends Query {
-
+public abstract class ParseTreeBase implements ParseTree {
+	
 	/**
-	 * @return the {@link org.apache.lucene.queryparser.flexible.core.nodes.QueryNode}
-	 * 		that represents this {@code Query}.
+	 * Visitor pattern; calls {@link nl.maastro.eureca.aida.search.zylabpatisclient.query.Query.Visitor#visit(ParseTree)}.
 	 */
-	QueryNode getRepresentation();
+	@Override
+	public <T> T accept(Visitor<T> visitor) {
+		return visitor.visit(this);
+	}
 	
 }

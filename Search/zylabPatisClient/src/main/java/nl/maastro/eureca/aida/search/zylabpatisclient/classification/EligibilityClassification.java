@@ -1,5 +1,5 @@
-// © Maastro Clinc, 2013
-package nl.maastro.eureca.aida.search.zylabpatisclient;
+// © Maastro Clinic, 2013
+package nl.maastro.eureca.aida.search.zylabpatisclient.classification;
 
 /**
  * Based on the found concepts and their modifiers a Patient's eligibilty is
@@ -7,7 +7,7 @@ package nl.maastro.eureca.aida.search.zylabpatisclient;
  * 
  * @author Kasper van den Berg <kasper.vandenberg@maastron.nl> <kasper@kaspervandenberg.net>
  */
-public enum Classification {
+public enum EligibilityClassification {
 	/**
 	 * The patient is not eligible for a clinical trial or the document marks
 	 * the patient as not eligible.

@@ -2,11 +2,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.maastro.eureca.aida.search.zylabpatisclient;
+package tryout;
 
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.PreconstructedQueries;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import nl.maastro.eureca.aida.search.zylabpatisclient.QueryDisplay;
+import nl.maastro.eureca.aida.search.zylabpatisclient.QueryDisplay;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeParseException;
 import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
@@ -31,6 +35,7 @@ public class Try {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
+		
 		try {
 			final String def = "content";
 			SyntaxParser parser = new StandardQueryParser().getSyntaxParser();

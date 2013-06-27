@@ -1,16 +1,23 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.output;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import javax.xml.bind.DatatypeConverter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.DocumentId;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 
 /**
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
@@ -21,6 +28,27 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		LIST_ITEM("li"),
 		SCRIPT("script", "language=\"javascript\""),
 		SNIPPET_DIV("span", "class=\"snippet\" style=\"display:none\""),
+		ELIGIBILITY_CLASS("span") {
+			private String cssClass="eligibily";
+			private String classExpr="class";
+
+			@Override
+			public String open() {
+				return open("");
+			}
+			
+			@Override
+			public String open(String params) {
+				String modParams;
+				if(params.contains(classExpr)) {
+					modParams = params.replaceFirst(
+							classExpr + "=\"",
+							classExpr +"=\"" + cssClass + " ");
+				} else {
+					modParams = params + " " + classExpr + "=\"" + cssClass + "\"";
+				}
+				return super.open(modParams);
+			} },
 		LABEL("label", "class=\"showSnippetChoice\""),
 		DISPLAY_CHECKBOX("input", "type=\"checkbox\""),
 		TABLE("table"),
@@ -85,7 +113,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 
 			@Override
 			public void write(Appendable out, SearchResult result) throws IOException {
-				String id = result.patient.value + "-" + tinySemiUnique();
+				String id = result.patient.getValue() + "-" + tinySemiUnique();
 				out.append(Tags.LABEL.open());
 				out.append(Tags.DISPLAY_CHECKBOX.open(
 						String.format(
@@ -109,20 +137,28 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 						Tags.LIST.open()));
 				for (DocumentId docId : result.getMatchingDocuments()) {
 					Set<Snippet> perDocSnippets = result.getSnippets(docId);
+					String innerPattern = !perDocSnippets.isEmpty() ?
+							"Document: %s %%s, snippets:\n" :
+							"Document: %s %%s";
+					String outerPattern = String.format(innerPattern, docId);
+					
+					out.append(Tags.LIST_ITEM.open());
+					writeEligibility(out, outerPattern, result.getClassification(docId));
 					if(!perDocSnippets.isEmpty()) {
-						out.append(String.format("%s Document: %s, snippets:\n%s",
-								Tags.LIST_ITEM.open(),
-								docId,
-								Tags.LIST.open()));
-						for (Snippet snippet : perDocSnippets) {
-							out.append(Tags.LIST_ITEM.format(snippet.value));
+						out.append(Tags.LIST.open());
+						for (SemanticModifier semMod : result.getModifiers(docId)) {
+							out.append(Tags.LIST_ITEM.open());
+							writeEligibility(out, "%s", Collections.singleton(semMod.getClassification()));
+							out.append(Tags.LIST.open());
+							for (Snippet snippet : perDocSnippets) {
+								out.append(Tags.LIST_ITEM.format(snippet.getValue()));
+							}
+							out.append(Tags.LIST.close());
+							out.append(Tags.LIST_ITEM.close());
 						}
-						out.append(String.format("%s%s\n",
-								Tags.LIST.close(),
-								Tags.LIST_ITEM.close()));
-					} else {
-						out.append(Tags.LIST_ITEM.format("Document: " + docId));
+						out.append(Tags.LIST.close());
 					}
+					out.append(Tags.LIST_ITEM.close());
 				}
 			} else {
 				out.append("empty");
@@ -140,6 +176,17 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		}
 		
 	}
+
+	private static final EnumMap<EligibilityClassification, Color> eligibilityColours;
+	static {
+		eligibilityColours = new EnumMap<>(EligibilityClassification.class);
+		eligibilityColours.put(EligibilityClassification.NO_EXCLUSION_CRITERION_FOUND, Color.GREEN);
+		eligibilityColours.put(EligibilityClassification.NOT_ELIGIBLE, Color.RED);
+		eligibilityColours.put(EligibilityClassification.UNCERTAIN, Color.ORANGE);
+		eligibilityColours.put(EligibilityClassification.UNKNOWN, Color.RED.darker());
+	}
+
+	private static final String eligCssPrefix = "eligibility-";
 	
 	public static void writeScript(Appendable out) throws IOException {
 		out.append(Tags.SCRIPT.open() + "\n");
@@ -182,20 +229,29 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 
 			+ ".searchHit {\n"
 			+ "\t" +	"background-color:yellow;\n"
-			+ "}\n");
+			+ "}\n\n");
+
+		for (Map.Entry<EligibilityClassification, Color> entry : eligibilityColours.entrySet()) {
+			out.append(
+					"." + eligCssPrefix + entry.getKey().name().toLowerCase() + " {\n"
+					+ "\t" +	"background-color:#" + Integer.toHexString(entry.getValue().getRGB()).substring(2) + ";\n"
+					+ "}\n\n");
+		}
 		out.append(Tags.STYLE.close());
 	}
 	
 	@Override
 	public void write(Appendable out, SearchResult result) throws IOException {
 		if(result.nHits > 0) {
-			out.append(String.format("patient %s: found (#hits: %d)<br/>\n",
-					result.patient.value,
-					result.nHits));
+			String innerPattern = String.format("patient %s: %%s (#hits: %d)<br/>\n",
+					result.patient.getValue(),
+					result.nHits);
+			writeEligibility(out, innerPattern, result.getClassification());
 			getSnippetStrategy().write(out, result);
 		} else {
-			out.append(String.format("patient %s: <em>not</em> found\n",
-					result.patient.value));
+			String innerPattern = String.format("patient %s: %%s",
+					result.patient.getValue());
+			writeEligibility(out, innerPattern, result.getClassification());
 		}
 	}
 
@@ -238,7 +294,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	@Override
 	protected void writeTableRow(Appendable out, Table data, PatisNumber row) throws IOException {
 		out.append(Tags.TABLE_ROW.open());
-		out.append("\t" + Tags.TABLE_HEADER_CELL.format(row.value) + "\n");
+		out.append("\t" + Tags.TABLE_HEADER_CELL.format(row.getValue()) + "\n");
 		super.writeTableRow(out, data, row);
 		out.append(Tags.TABLE_ROW.close() + "\n");
 	}
@@ -250,12 +306,33 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 				? (data.get(row).containsKey(col)
 					? (data.get(row).get(col).nHits > 0) : false) : false) {
 			SearchResult r = data.get(row).get(col);
-			out.append(String.format("found (%d hits)\n\t", r.nHits));
+			String innerPattern = String.format("%%s (%d hits)", r.nHits);
+			writeEligibility(out, innerPattern, r.getClassification());
 			getSnippetStrategy().write(out, r);
 		} else {
-			out.append("<em>not</em> found");
+			writeEligibility(out, "%s", Collections.singleton(EligibilityClassification.NO_EXCLUSION_CRITERION_FOUND));
 		}
 		out.append(Tags.TABLE_CELL.close() + "\n");
+	}
+
+	private static void writeEligibility(Appendable out, String pattern,
+			Set<EligibilityClassification> classifications) throws IOException {
+		Set<EligibilityClassification> tmpClassifications = classifications;
+		if(classifications.isEmpty()) {
+			tmpClassifications = Collections.singleton(EligibilityClassification.NO_EXCLUSION_CRITERION_FOUND);
+		}
+			
+		if(tmpClassifications.size()==1) {
+			out.append(Tags.ELIGIBILITY_CLASS.open(String.format(
+					"class=\"%s%s\"",
+					eligCssPrefix,
+					tmpClassifications.iterator().next().name().toLowerCase())) +
+					"\n");
+		} else {
+			out.append(Tags.ELIGIBILITY_CLASS.open());
+		}
+		out.append(String.format(pattern, tmpClassifications.toString()));
+		out.append(Tags.ELIGIBILITY_CLASS.close() + "\n");
 	}
 
 	private static String tinySemiUnique() {

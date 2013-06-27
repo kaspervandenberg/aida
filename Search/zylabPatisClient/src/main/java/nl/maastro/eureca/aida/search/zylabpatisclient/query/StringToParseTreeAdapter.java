@@ -3,6 +3,7 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
 import java.util.Objects;
 import javax.xml.namespace.QName;
+import nl.maastro.eureca.aida.search.zylabpatisclient.util.QNameUtil;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeParseException;
 import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
 import org.apache.lucene.queryparser.flexible.core.parser.SyntaxParser;
@@ -13,7 +14,7 @@ import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
  * 
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class StringToParseTreeAdapter extends ParseTree implements Query {
+public class StringToParseTreeAdapter extends ParseTreeBase implements Query {
 	public static class Builder implements QueryAdapterBuilder<StringQuery, ParseTree>{
 		private static final SyntaxParser defaultParser;
 		static {
@@ -64,10 +65,7 @@ public class StringToParseTreeAdapter extends ParseTree implements Query {
 		}
 
 		private QName appendDefaultSuffix(Query q) {
-			QName src = q.getName();
-			return new QName(src.getNamespaceURI(),
-					src.getLocalPart() + suffix,
-					src.getPrefix());
+			return QNameUtil.instance().append(q.getName(), suffix);
 		}
 	}
 	

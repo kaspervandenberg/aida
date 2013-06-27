@@ -2,8 +2,6 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.config;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -34,10 +32,12 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.LocalLuceneSearcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.WebserviceSearcher;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.DynamicAdapter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTree;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQuery;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQueryBase;
 import nl.maastro.vocab.axis.services.SearcherWS.SearcherWS;
 import nl.maastro.vocab.axis.services.SearcherWS.SearcherWSServiceLocator;
 import org.jdom2.Attribute;
@@ -45,7 +45,6 @@ import org.jdom2.Comment;
 import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMConstants;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.filter.Filter;
@@ -293,7 +292,7 @@ public class Config {
 						canQName.getPrefix() + ":" + canQName.getLocalPart();
 				XPaths.QUERY_BY_ID.setVariable("queryId", s_id);
 				final String s_query = XPaths.QUERY_BY_ID.getFirstNode(getConfigDoc()).getValue();
-				queries.put(id, new StringQuery() {
+				queries.put(id, new StringQueryBase() {
 					@Override
 					public String getRepresentation() {
 						return s_query;
@@ -620,7 +619,7 @@ public class Config {
 							XPaths.WS_INDEX.getAttrValue(getConfigDoc()),
 							defaultField, maxHits, taskPool);
 			} else {
-				searcher = new LocalLuceneSearcher(getLocalIndexFile(), defaultField, maxHits, taskPool);
+				searcher = new LocalLuceneSearcher(getLocalIndexFile(), defaultField, maxHits, taskPool, new DynamicAdapter());
 			}
 		}
 		return searcher;

@@ -18,7 +18,7 @@ public class PlaintextHumanFormatter extends SearchResultFormatterBase {
 			for (DocumentId docId : result.getMatchingDocuments()) {
 				out.append(String.format("\tDocument: %s\n", docId));
 				for (Snippet snippet : result.getSnippets(docId)) {
-					out.append(String.format("\t\t<snippet>%s</snippet>\n", snippet.value));
+					out.append(String.format("\t\t<snippet>%s</snippet>\n", snippet.getValue()));
 				}
 			}
 		}
@@ -63,7 +63,7 @@ public class PlaintextHumanFormatter extends SearchResultFormatterBase {
 	@Override
 	public void write(Appendable out, SearchResult result) throws IOException {
 		out.append(String.format("PatisNr: %s found in %d documents\nSnippets:\n",
-				result.patient.value,
+				result.patient.getValue(),
 				result.nHits));
 		getSnippetStrategy().write(out, result);
 	}

@@ -4,6 +4,7 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.util;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * Allows searching using the sub- and superclass- relation between 
@@ -77,28 +78,79 @@ public class ClassMap<TKeyClass, TValue> extends HashMap<Class<? extends TKeyCla
 		this.strategy = strategy_;
 	}
 
-	
+	public static <TKey> ClassMap<TKey, Void> createClassToVoidMap(RetrievalStrategies strategy_,
+			Set<? extends Class<? extends TKey>> items_) {
+		HashMap<Class<? extends TKey>, Void> itemMap = new HashMap<>(items_.size());
+		for (Class<? extends TKey> element : items_) {
+			itemMap.put(element, null);
+		}
+		return new ClassMap<>(strategy_, itemMap);
+	}
+
+	public static <TKey> Set<Class<? extends TKey>> createClassSet(
+			RetrievalStrategies strategy_,
+			Set<? extends Class<? extends TKey>> items_) {
+		return createClassToVoidMap(strategy_, items_).keySet();
+	}
+
+	@Override
+	public boolean containsKey(Object o_request) {
+		if (!(o_request instanceof Class)) {
+			return false;
+		}
+		@SuppressWarnings("unchecked")
+		Class<? extends TKeyClass> request = (Class) o_request;
+		return containsKey(request);
+	}
+
+	public boolean containsKey(Class<? extends TKeyClass> request) {
+		Class<? extends TKeyClass> storedKey = lookup(request);
+		if(storedKey != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean containsKeyStrict(Class<? extends TKeyClass> key) {
+		return super.containsKey(key);
+	}
+
+	public Class<? extends TKeyClass> getMatchingStoredKey(Class<? extends TKeyClass> request) {
+		Class<? extends TKeyClass> result = lookup(request);
+		if(result != null) {
+			return result;
+		} else {
+			throw new NoSuchElementException(String.format(
+					"%s not stored (or any of its parents) in this map",
+					request.getName()));
+		}
+	}
 
 	@Override
 	public TValue get(Object o_request) {
 		if (!(o_request instanceof Class)) {
 			throw new NoSuchElementException(String.format("No elements of type %s stored.", o_request.getClass().getName()));
 		}
-		Class<?> request = (Class) o_request;
-		for (Class<?> stored : this.keySet()) {
-			if (strategy.matches(request, stored)) {
-				return getStrict(stored);
-			}
-		}
-		throw new NoSuchElementException(String.format("%s not stored (or any of its parents) in this map", request.getName()));
+		@SuppressWarnings("unchecked")
+		Class<? extends TKeyClass> request = (Class) o_request;
+		return get(request);
 	}
 
-	public TValue getStrict(Object o_key) {
-		if (!(o_key instanceof Class)) {
-			throw new NoSuchElementException(String.format("No elements of type %s stored.", o_key.getClass().getName()));
-		}
-		Class<?> key = (Class) o_key;
+	public TValue get(Class<? extends TKeyClass> request) {
+		return getStrict(getMatchingStoredKey(request));
+	}
+
+	public TValue getStrict(Class<? extends TKeyClass> key) {
 		return super.get(key);
 	}
 	
+	private Class<? extends TKeyClass> lookup(Class<? extends TKeyClass> request) {
+		for (Class<? extends TKeyClass> stored : this.keySet()) {
+			if (strategy.matches(request, stored)) {
+				return stored;
+			}
+		}
+		return null;
+	}
 }

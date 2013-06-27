@@ -8,11 +8,13 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.query;
  * 
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public interface StringQuery extends Query {
+public abstract class StringQueryBase implements StringQuery {
 
 	/**
-	 * @return the String that represents this {@code Query}
+	 * Visitor pattern; calls {@link nl.maastro.eureca.aida.search.zylabpatisclient.query.Query.Visitor#visit(StringQuery)}.
 	 */
-	String getRepresentation();
-	
+	@Override
+	public <T> T accept(Visitor<T> visitor) {
+		return visitor.visit(this);
+	}
 }

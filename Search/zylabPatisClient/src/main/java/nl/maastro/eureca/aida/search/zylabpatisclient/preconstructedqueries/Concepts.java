@@ -1,9 +1,11 @@
-// © Maastro Clinc, 2013
+// © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries;
 
 import java.net.URISyntaxException;
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.DualRepresentationQuery;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
 import org.apache.lucene.queryparser.flexible.core.nodes.OrQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
 import org.apache.lucene.search.spans.SpanOrQuery;
@@ -14,7 +16,7 @@ import org.apache.lucene.search.spans.SpanQuery;
  * 
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-enum Concepts implements nl.maastro.eureca.aida.search.zylabpatisclient.query.Query, DualRepresentationQuery {
+enum Concepts implements Query, DualRepresentationQuery, LuceneObject {
 	METASTASIS(LexicalPatterns.METASTASIS_NL, LexicalPatterns.ANY_STAGE4, LexicalPatterns.ANY_UITZAAI);
 
 	private Concepts(final LexicalPatterns... pats) {
@@ -42,8 +44,9 @@ enum Concepts implements nl.maastro.eureca.aida.search.zylabpatisclient.query.Qu
 		return id;
 	}
 
-	public QueryNode getRepresentation() {
-		return parsetree_representation;
+	@Override
+	public SpanQuery getRepresentation() {
+		return getLuceneObject_representation();
 	}
 
 	/**

@@ -45,64 +45,6 @@ public class PreconstructedQueries {
 		return new QName(getNamespaceUri().toString(), localpart, PREFIX);
 	}
 
-	/**
-	 * QName local parts that prefixed with {@link PreconstructedQueries#getNamespaceUri()}
-	 * form the {@link QName}s that identify the {@link Query}s in 
-	 * {@link #storedPredicates}.
-	 */
-	public enum LocalParts {
-		METASTASIS("metastasis", Concepts.METASTASIS, null),
-		HINTS_METASTASIS("hints_metastasis", Concepts.METASTASIS, 
-				SemanticModifiers.SUSPICION),
-		NO_METASTASIS("no_metastasis", Concepts.METASTASIS, SemanticModifiers.NEGATED),
-		NO_HINTS_METASTASIS("no_hints_metastasis", Concepts.METASTASIS, 
-				SemanticModifiers.NEGATED_SUSPICION),
-		QUESTIONMARK_METASTASIS("question_mark_test", Concepts.METASTASIS, SemanticModifiers.QUESTION);
-
-		private final String value;
-		private final Concepts concept;
-		private final SemanticModifiers modifier;
-		private transient QName id = null;
-		private transient nl.maastro.eureca.aida.search.zylabpatisclient.query.Query query;
-
-		private LocalParts(final String value_, final Concepts concept_, 
-				final SemanticModifiers modifier_) {
-			value = value_;
-			concept = concept_;
-			modifier = modifier_;
-		}
-
-		/**
-		 * Return the {@link QName} composed from this {@code LocalPart} and 
-		 * {@link #getNamespaceUri()}.
-		 * 
-		 * @see #createQName(java.lang.String) 
-		 * 
-		 * @return	the {@link QName} to identify a preconstructed query with
-		 */
-		public QName getID() {
-			if(id == null) {
-				try {
-					id = PreconstructedQueries.instance().createQName(value);
-				} catch (URISyntaxException ex) {
-					throw new Error("URISyntaxException in hardcoded URI", ex);
-				}
-			}
-			return id;
-		}
-			
-		public nl.maastro.eureca.aida.search.zylabpatisclient.query.Query getQuery() {
-			if(query == null) {
-				if(modifier == null) {
-					query = concept;
-				} else {
-					query = modifier.getAdapter_dynamic().adapt(concept);
-				}
-			}
-			return query;
-		}
-	}
-
 	public static class Provider implements QueryProvider {
 		@Override
 		public Collection<QName> getQueryIds() {
@@ -158,7 +100,7 @@ public class PreconstructedQueries {
 
 		@Override
 		public nl.maastro.eureca.aida.search.zylabpatisclient.query.Query get(QName id) {
-			return PreconstructedQueries.instance().storedPredicates.get(id).getQuery();
+			return PreconstructedQueries.instance().getStoredPredicates().get(id).getQuery();
 		}
 	}
 			
@@ -184,7 +126,7 @@ public class PreconstructedQueries {
 	 * 
 	 */
 	// TODO Move to SearcherWS and provide interface to access stored queries
-	private final Map<QName, LocalParts> storedPredicates;
+	private Map<QName, LocalParts> storedPredicates = null;
 
 	/**
 	 * Singleton instance, use {@link #instance()} to access
@@ -195,11 +137,6 @@ public class PreconstructedQueries {
 	 * Singleton, use {@link #instance()} to retrieve the sole instance.
 	 */
 	private PreconstructedQueries() {
-		Map<QName, LocalParts> tmp = new HashMap<>();
-		for (LocalParts part : LocalParts.values()) {
-			tmp.put(part.getID(), part);
-		}
-		storedPredicates = Collections.unmodifiableMap(tmp);
 	}
 
 	/**
@@ -216,11 +153,11 @@ public class PreconstructedQueries {
 
 	private nl.maastro.eureca.aida.search.zylabpatisclient.query.Query
 			getQuery(final QName key) {
-		return storedPredicates.get(key).getQuery();
+		return getStoredPredicates().get(key).getQuery();
 	}
 	
 	public Collection<QName> getIds() {
-		return Collections.unmodifiableSet(storedPredicates.keySet());
+		return Collections.unmodifiableSet(getStoredPredicates().keySet());
 	}
 	
 	String getDefaultField() {
@@ -231,6 +168,20 @@ public class PreconstructedQueries {
 		return VISITABLE_DELEGATE;
 	}
 	
+	/**
+	 * @return the storedPredicates
+	 */
+	private Map<QName, LocalParts> getStoredPredicates() {
+		if(storedPredicates == null) {
+			Map<QName, LocalParts> tmp = new HashMap<>();
+			for (LocalParts part : LocalParts.values()) {
+				tmp.put(part.getID(), part);
+			}
+			storedPredicates = Collections.unmodifiableMap(tmp);
+		}
+		return storedPredicates;
+	}
+
 	private static URI getNamespaceUri() {
 		if(servletUri == null) {
 			InputStream propertyFile = PreconstructedQueries.class.getResourceAsStream(SEARCH_PROPERTY_RESOURCE);

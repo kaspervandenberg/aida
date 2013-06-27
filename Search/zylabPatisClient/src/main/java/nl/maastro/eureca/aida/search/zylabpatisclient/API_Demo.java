@@ -8,34 +8,39 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Prec
 import java.io.BufferedOutputStream;
 import java.io.File;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.SearchResultFormatter;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.xml.rpc.ServiceException;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Overrides;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.HtmlFormatter;
+import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.LocalParts;
+import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.SemanticModifiers;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.DynamicAdapter;
-import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
-import org.apache.lucene.search.Query;
 
 /**
  *
  * @author kasper2
  */
 public class API_Demo {
-	private static final EnumMap<PreconstructedQueries.LocalParts, String> headers =
-			new EnumMap(PreconstructedQueries.LocalParts.class);
+	private static final EnumMap<LocalParts, String> headers =
+			new EnumMap(LocalParts.class);
 	static {
-		headers.put(PreconstructedQueries.LocalParts.METASTASIS,
+		headers.put(LocalParts.METASTASIS,
 				"\n" +
 				"\n" +
 				"- - - - - - - - - -\n" +
@@ -43,7 +48,7 @@ public class API_Demo {
 				"- - - - - - - - - -\n" +
 				"\n\n");
 		
-		headers.put(PreconstructedQueries.LocalParts.NO_METASTASIS,
+		headers.put(LocalParts.NO_METASTASIS,
 				"\n" +
 				"\n" +
 				"- - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n" +
@@ -51,12 +56,12 @@ public class API_Demo {
 				"- - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n" +
 				"\n\n");
 
-		headers.put(PreconstructedQueries.LocalParts.NO_HINTS_METASTASIS, 
+		headers.put(LocalParts.HINTS_METASTASIS, 
 				"\n" +
 				"\n" +
-				"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n" +
-				"G E E N   M E T A S T A S I S   A A N G E T O O N D -- (span of spans)\n" +
-				"- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n" +
+				"- - - - - - - - - - - - - - - - - - - - - - - - - - - \n" +
+				"M E T A S T A S I S   O N Z E K E R -- (span of spans)\n" +
+				"- - - - - - - - - - - - - - - - - - - - - - - - - - - \n" +
 				"\n\n");
 	}
 
@@ -64,7 +69,9 @@ public class API_Demo {
 	private final Searcher searcher;
 	private final QueryProvider queryProvider;
 	private final DynamicAdapter queryAdapter;
-	private final List<PatisNumber> patients;
+	private final Map<PatisNumber, Boolean> patients;
+	private final List<SemanticModifier> modifiers;
+	private final Classifier classifier;
 	private final SearchResultFormatter formatter;
 
 	public API_Demo() {
@@ -73,6 +80,8 @@ public class API_Demo {
 		this.queryProvider = new PreconstructedQueries.Provider();
 		this.queryAdapter = new DynamicAdapter();
 		this.patients = initPatients();
+		this.modifiers = initSemanticModifiers();
+		this.classifier = initClassifier();
 		HtmlFormatter tmp = new HtmlFormatter(); //new PlaintextHumanFormatter();
 		tmp.setShowSnippetsStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW);
 		this.formatter = tmp;
@@ -95,35 +104,58 @@ public class API_Demo {
 		}
 	}
 
-	private static List<PatisNumber> initPatients() {
+	private static Map<PatisNumber, Boolean> initPatients() {
 		// Dummy list of patients; reading a list of patisnumbers is not yet in API
-		List<PatisNumber> result = Arrays.<PatisNumber>asList(
-//					PatisNumber.create("12345"),
-//					PatisNumber.create("11111"),
-				PatisNumber.create("71358"), // Exp 0
-				PatisNumber.create("71314"),
-				PatisNumber.create("71415"), // Exp 0
-				PatisNumber.create("71539"),
-				PatisNumber.create("71586"),
-				PatisNumber.create("70924"),
-				PatisNumber.create("71785"),
-				PatisNumber.create("71438"),
-				PatisNumber.create("71375"),
-				PatisNumber.create("71448"),
-				
-				PatisNumber.create("71681"), // Exp 1
-				PatisNumber.create("71692"),
-				PatisNumber.create("71757"),
-				PatisNumber.create("70986"),
-				PatisNumber.create("46467"));
+		Map<PatisNumber, Boolean> result = new LinkedHashMap<>();
+		result.put(PatisNumber.create("71358"), false);// Exp 0
+		result.put(PatisNumber.create("71314"), false);
+		result.put(PatisNumber.create("71415"), false); // Exp 0
+		result.put(PatisNumber.create("71539"), false);
+		result.put(PatisNumber.create("71586"), false);
+		result.put(PatisNumber.create("70924"), false);
+		result.put(PatisNumber.create("71785"), false);
+		result.put(PatisNumber.create("71438"), false);
+		result.put(PatisNumber.create("71375"), false);
+		result.put(PatisNumber.create("71448"), false);
+		
+		result.put(PatisNumber.create("71681"), true); // Exp 1
+		result.put(PatisNumber.create("71692"), true);
+		result.put(PatisNumber.create("71757"), true);
+		result.put(PatisNumber.create("70986"), true);
+		result.put(PatisNumber.create("46467"), true);
+		return result;
+	}
+
+	private static List<SemanticModifier> initSemanticModifiers() {
+		List<SemanticModifier> result = new ArrayList<>(SemanticModifiers.values().length + 1);
+		result.add(SemanticModifier.Constants.NULL_MODIFIER);
+		result.addAll(Arrays.asList(SemanticModifiers.values()));
 		return result;
 	}
 	
+	private static Classifier initClassifier() {
+		Classifier instance = Classifier.instance();
+		instance.appendRule(new Overrides(
+				SemanticModifiers.NEGATED,
+				SemanticModifier.Constants.NULL_MODIFIER));
+		instance.appendRule(new Overrides(
+				SemanticModifiers.SUSPICION,
+				SemanticModifier.Constants.NULL_MODIFIER));
+		return instance;
+	}
+
+	private List<SearchResult> initExpectedResults() {
+		List<SearchResult> expected = new ArrayList<>(patients.size());
+		for (Map.Entry<PatisNumber, Boolean> entry : patients.entrySet()) {
+			expected.add(SearchResult.create(entry.getKey(), entry.getValue()));
+		}
+		return expected;
+	}
+	
 	public void searchAndShow(
-			PreconstructedQueries.LocalParts preconstructedQuery) {
-		Query query = queryAdapter.adapt(LuceneObject.class, 
-				queryProvider.get(preconstructedQuery.getID())).getRepresentation();
-		Iterable<SearchResult> results = searcher.searchForAll(query, patients);
+			LocalParts preconstructedQuery) {
+		Query query = queryProvider.get(preconstructedQuery.getID());
+		Iterable<SearchResult> results = searcher.searchForAll(query, modifiers, patients.keySet());
 		
 		System.out.append(headers.get(preconstructedQuery));
 		try {
@@ -133,19 +165,17 @@ public class API_Demo {
 		}
 	}
 
-	public void writeTable(List<PreconstructedQueries.LocalParts> datasets) {
-		LinkedHashMap<String, Iterable<SearchResult>> results =
-				new LinkedHashMap<>(datasets.size());
-		for (PreconstructedQueries.LocalParts queryId : datasets) {
-			Query query = queryAdapter.adapt(LuceneObject.class,
-					queryProvider.get(queryId.getID())).getRepresentation();
-//			System.out.println(queryId.toString());
-//			System.out.append(QueryDisplay.instance().dumpQuery("", query));
-//			System.out.println();
-//			System.out.println();
-			results.put(queryId.name(), searcher.searchForAll(query, patients));
+	public Iterable<SearchResult> searchConcept(
+			Query concept, List<SemanticModifier> modifiers) {
+		Iterable<SearchResult> results = searcher.searchForAll(concept, modifiers, patients.keySet());
+		List<SearchResult> conclusions = new LinkedList<>();
+		for (SearchResult searchResult : results) {
+			conclusions.add(classifier.resolve(searchResult));
 		}
-		
+		return conclusions;
+	}
+	
+	public void writeTable(LinkedHashMap<String, Iterable<SearchResult>> results) {
 		Date now = new Date();
 		File f = new File(String.format("results-%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS.html", now));
 		try {
@@ -177,10 +207,12 @@ public class API_Demo {
 //		instance.searchAndShow(PreconstructedQueries.LocalParts.METASTASIS);
 //		instance.searchAndShow(PreconstructedQueries.LocalParts.NO_METASTASIS);
 //		instance.searchAndShow(PreconstructedQueries.LocalParts.NO_HINTS_METASTASIS);
-		instance.writeTable(Arrays.asList(
-				PreconstructedQueries.LocalParts.METASTASIS,
-				PreconstructedQueries.LocalParts.NO_METASTASIS,
-				PreconstructedQueries.LocalParts.NO_HINTS_METASTASIS));
+		LinkedHashMap<String, Iterable<SearchResult>> table = new LinkedHashMap<>();
+		table.put("Expected", instance.initExpectedResults());
+		table.put(LocalParts.METASTASIS.name(), 
+				instance.searchConcept(LocalParts.METASTASIS.getQuery(), instance.modifiers));
+		
+		instance.writeTable(table);
 	}
 
 }

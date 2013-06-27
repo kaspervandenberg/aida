@@ -1,5 +1,7 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
+import java.util.Set;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.util.ClassMap;
 
 /**
@@ -98,5 +100,49 @@ public class DynamicAdapter {
 				return registedBuilders.get(toType, ParseTree.class).adapt(element);
 			}
 		});
+	}
+
+	public Query applyModifier(Query concept, final SemanticModifier modifier) {
+		Class<? extends Query> conceptClass = concept.getClass();
+		// TODO Check Why ClassMap does not match: answer enum and DualRepresentation query and not StringQuery, LuceneObject, or ParseTree
+		ClassMap<Query, Set<Class<? extends Query>>> supportedConversions =
+				new ClassMap<>(ClassMap.RetrievalStrategies.SUBCLASS, modifier.getSupportedTypes());
+		if(supportedConversions.containsKey(conceptClass)) {
+			Class<? extends Query> inputType = supportedConversions.getMatchingStoredKey(conceptClass);
+			Class<? extends Query> outputType;
+			ClassMap<Query, Void> targetTypes = ClassMap.createClassToVoidMap(
+					ClassMap.RetrievalStrategies.SUPERCLASS, supportedConversions.get(conceptClass));
+			
+			if(targetTypes.containsKey(concept.getClass())) {
+				outputType = targetTypes.getMatchingStoredKey(conceptClass);
+			} else {
+				if(targetTypes.isEmpty()) {
+					throw new IllegalStateException(String.format(
+							"Modifier supported conversions structure is not well formed: %s exist as key but is mapped to an empty set.",
+							inputType.getName()));
+				}
+				outputType = targetTypes.keySet().iterator().next();
+			}
+			QueryAdapterBuilder<? extends Query, ? extends Query> modifierAdapter = 
+					modifier.getAdapterBuilder(inputType, outputType);
+			/*
+			 * Use capture helper method, see http://stackoverflow.com/a/17302484/814206
+			 */
+			return applyModifier(inputType, outputType, modifier, concept);
+			
+		} else {
+			throw new UnsupportedOperationException(String.format(
+					"Not yet implemented concept class %s, modifier supports: %s",
+					concept.getClass().getName(), modifier.getSupportedTypes().toString()));
+		}
+	}
+
+	private static <TIn extends Query, TOut extends Query> TOut applyModifier(
+			Class<TIn> inputType, Class<TOut> outputType,
+			SemanticModifier modifier, Query argument) {
+		TIn castArgument = inputType.cast(argument);
+		QueryAdapterBuilder<TIn, TOut> adapterBuilder =
+				modifier.getAdapterBuilder(inputType, outputType);
+		return adapterBuilder.adapt(castArgument);
 	}
 }

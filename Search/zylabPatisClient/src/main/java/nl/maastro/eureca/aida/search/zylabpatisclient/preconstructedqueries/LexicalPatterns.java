@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.DualRepresentationQuery;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.flexible.core.nodes.FieldQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.FuzzyQueryNode;
@@ -28,7 +30,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
  *
  * @author kasper
  */
-enum LexicalPatterns implements nl.maastro.eureca.aida.search.zylabpatisclient.query.Query, DualRepresentationQuery {
+enum LexicalPatterns implements Query, DualRepresentationQuery, LuceneObject {
 	METASTASIS_NL("metastase", true),
 	
 	STAGE_NL("stadium"),
@@ -48,9 +50,16 @@ enum LexicalPatterns implements nl.maastro.eureca.aida.search.zylabpatisclient.q
 	
 	SIGNS_NL1("aanwijzing"),
 	SIGNS_NL2("teken"),
-	ANY_SIGNS(OrQueryNode.class, SIGNS_NL1, SIGNS_NL2),
+	MOGELIJK("mogelijk"),
+	SUSPECT("suspect"),
+	BEELD("beeld"),
+	PAS("pas"),
+	PASSEN("passen"),
+	BEELD_PAST(3,BEELD, PAS),
+	BEELD_PASSEN(3, BEELD, PASSEN),
+	VERDENKING("verdenking"),
+	ANY_SIGNS(OrQueryNode.class, SIGNS_NL1, SIGNS_NL2, VERDENKING, SUSPECT, BEELD_PAST, BEELD_PASSEN, MOGELIJK);
 	
-	QUESTION("?");
 	
 	/**
 	 * The {@link org.apache.lucene.queryparser.flexible.core.nodes.QueryNode}
@@ -134,6 +143,11 @@ enum LexicalPatterns implements nl.maastro.eureca.aida.search.zylabpatisclient.q
 			}
 		}
 		return id;
+	}
+
+	@Override
+	public org.apache.lucene.search.Query getRepresentation() {
+		return getLuceneObject_representation();
 	}
 
 	/**

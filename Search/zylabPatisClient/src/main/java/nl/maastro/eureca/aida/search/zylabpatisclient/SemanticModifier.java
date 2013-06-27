@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,16 +80,44 @@ public interface SemanticModifier {
 	 * when documents a concept modified with this {@code SemanticModifier}
 	 * matches a document.
 	 */
-	public Classification getClassification();
+	public EligibilityClassification getClassification();
 	
-	/**
-	 * The {@code NULL_MODIFIER} indicates that a concept is not modified.
-	 */
-	public static final SemanticModifier NULL_MODIFIER = new SemanticModifier() {
+	public enum Constants implements SemanticModifier {
+		/**
+		 * The {@code NULL_MODIFIER} indicates that a concept is not modified.
+		 */
+		NULL_MODIFIER(EligibilityClassification.NOT_ELIGIBLE),
 
+		/**
+		 * The {@code UNKNOWN_MODIFIER} indicates that the {@link SemanticModifier}
+		 * for the {@code SearchResult} was not specified.
+		 */
+		UNKNOWN_MODIFIER(EligibilityClassification.UNKNOWN);
+
+		private static final Map<Class<? extends Query>, Set<Class<? extends Query>>>
+				supportedConversions; 
+		static {
+			Map<Class<? extends Query>, Set<Class<? extends Query>>> tmp = 
+					new HashMap<>(3);
+	
+			tmp.put(StringQuery.class, Collections.<Class<? extends Query>>singleton(StringQuery.class));
+			tmp.put(ParseTree.class, Collections.<Class<? extends Query>>singleton(ParseTree.class));
+			tmp.put(LuceneObject.class, Collections.<Class<? extends Query>>singleton(LuceneObject.class));
+			
+			supportedConversions = Collections.unmodifiableMap(tmp);
+		}
+
+		private final EligibilityClassification classification;
+		
+		private Constants(final EligibilityClassification classification_) {
+			this.classification = classification_;
+		}
+			
 		@Override
 		@SuppressWarnings("unchecked")
-		public <TIn extends Query, TOut extends Query> QueryAdapterBuilder<TIn, TOut> getAdapterBuilder(Class<TIn> inClass, Class<TOut> outClass) throws IllegalArgumentException {
+		public <TIn extends Query, TOut extends Query> QueryAdapterBuilder<TIn, TOut>
+				getAdapterBuilder(Class<TIn> inClass, Class<TOut> outClass)
+				throws IllegalArgumentException {
 			if(outClass.isAssignableFrom(inClass)) {
 				return (QueryAdapterBuilder<TIn, TOut>) new IdentityAdapter<TIn>();
 			}
@@ -98,18 +127,13 @@ public interface SemanticModifier {
 
 		@Override
 		public Map<Class<? extends Query>, Set<Class<? extends Query>>> getSupportedTypes() {
-			Map<Class<? extends Query>, Set<Class<? extends Query>>> result =
-				new HashMap<>(3);
-			result.put(StringQuery.class, Collections.<Class<? extends Query>>singleton(StringQuery.class));
-			result.put(ParseTree.class, Collections.<Class<? extends Query>>singleton(ParseTree.class));
-			result.put(LuceneObject.class, Collections.<Class<? extends Query>>singleton(LuceneObject.class));
-			
-			return result;
+			return Collections.unmodifiableMap(supportedConversions);
 		}
 
 		@Override
-		public Classification getClassification() {
-			return Classification.NOT_ELIGIBLE;
+		public EligibilityClassification getClassification() {
+			return classification;
 		}
-	};
+		
+	}
 }

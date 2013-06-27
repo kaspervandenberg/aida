@@ -1,4 +1,4 @@
-// © Maastro Clinc, 2013 
+// © Maastro Clinic, 2013 
 package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
 /**

@@ -18,6 +18,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.util.QNameUtil;
 
 /**
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
@@ -113,7 +114,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 
 			@Override
 			public void write(Appendable out, SearchResult result) throws IOException {
-				String id = result.patient.getValue() + "-" + tinySemiUnique();
+				String id = result.patient.getValue() + "-" + QNameUtil.instance().tinySemiUnique();
 				out.append(Tags.LABEL.open());
 				out.append(Tags.DISPLAY_CHECKBOX.open(
 						String.format(
@@ -334,14 +335,4 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		out.append(String.format(pattern, tmpClassifications.toString()));
 		out.append(Tags.ELIGIBILITY_CLASS.close() + "\n");
 	}
-
-	private static String tinySemiUnique() {
-		UUID uuid = UUID.randomUUID();
-		ByteBuffer bytes_8 = ByteBuffer.allocate(8);
-		ByteBuffer bytes_4 = ByteBuffer.allocate(4);
-		bytes_8.putLong(uuid.getMostSignificantBits() ^ uuid.getLeastSignificantBits());
-		bytes_4.putInt(bytes_8.getInt(0) ^ bytes_8.get(4));
-		return DatatypeConverter.printBase64Binary(bytes_4.array()).replace("=", "");
-	}
-	
 }

@@ -181,7 +181,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	private static final EnumMap<EligibilityClassification, Color> eligibilityColours;
 	static {
 		eligibilityColours = new EnumMap<>(EligibilityClassification.class);
-		eligibilityColours.put(EligibilityClassification.NO_EXCLUSION_CRITERION_FOUND, Color.GREEN);
+		eligibilityColours.put(EligibilityClassification.ELIGIBLE, Color.GREEN);
 		eligibilityColours.put(EligibilityClassification.NOT_ELIGIBLE, Color.RED);
 		eligibilityColours.put(EligibilityClassification.UNCERTAIN, Color.ORANGE);
 		eligibilityColours.put(EligibilityClassification.UNKNOWN, Color.RED.darker());
@@ -311,7 +311,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 			writeEligibility(out, innerPattern, r.getClassification());
 			getSnippetStrategy().write(out, r);
 		} else {
-			writeEligibility(out, "%s", Collections.singleton(EligibilityClassification.NO_EXCLUSION_CRITERION_FOUND));
+			writeEligibility(out, "%s", Collections.singleton(EligibilityClassification.ELIGIBLE));
 		}
 		out.append(Tags.TABLE_CELL.close() + "\n");
 	}
@@ -320,7 +320,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 			Set<EligibilityClassification> classifications) throws IOException {
 		Set<EligibilityClassification> tmpClassifications = classifications;
 		if(classifications.isEmpty()) {
-			tmpClassifications = Collections.singleton(EligibilityClassification.NO_EXCLUSION_CRITERION_FOUND);
+			tmpClassifications = Collections.singleton(EligibilityClassification.ELIGIBLE);
 		}
 			
 		if(tmpClassifications.size()==1) {

@@ -171,7 +171,7 @@ public class SearchResult {
 			if(nHits > 0) {
 				result.add(EligibilityClassification.NOT_ELIGIBLE);
 			} else {
-				result.add(EligibilityClassification.NO_EXCLUSION_CRITERION_FOUND);
+				result.add(EligibilityClassification.ELIGIBLE);
 			}
 		}
 		return result;

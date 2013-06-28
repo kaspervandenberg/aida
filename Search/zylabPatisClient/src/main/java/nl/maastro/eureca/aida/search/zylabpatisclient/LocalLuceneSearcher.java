@@ -3,6 +3,10 @@ package nl.maastro.eureca.aida.search.zylabpatisclient;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,6 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.DynamicAdapter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
@@ -47,14 +52,16 @@ public class LocalLuceneSearcher extends SearcherBase {
 	private static final StandardQueryParser parser = new StandardQueryParser();
 	private final DynamicAdapter queryAdapter;
 	private final IndexSearcher searcher;
+	private final File index;
 
-	public LocalLuceneSearcher(final File index, String defaultField_,
+	public LocalLuceneSearcher(final File index_, String defaultField_,
 			int maxResults_, final ForkJoinPool taskPool_,
 			DynamicAdapter queryAdapter_) throws IOException {
 		super(defaultField_, maxResults_);
-		Directory indexDir = FSDirectory.open(index);
+		Directory indexDir = FSDirectory.open(index_);
 		queryAdapter = queryAdapter_;
 		searcher = new IndexSearcher(DirectoryReader.open(indexDir), taskPool_);
+		index = index_;
 	}
 
 	@Override
@@ -76,7 +83,7 @@ public class LocalLuceneSearcher extends SearcherBase {
 					.getRepresentation();
 			try {
 					TopDocs result = searcher.search(luceneQuery, getMaxResults());
-					perModifierResults.add(SearchResult.create(patient, semMod, result, getFragments(luceneQuery, result)));
+					perModifierResults.add(new SearchResult(patient, result.totalHits, getMatchingDocs(luceneQuery, semMod, result)));
 					
 			} catch (IOException ex) {
 			log.logp(Level.FINE, LocalLuceneSearcher.class.getName(), "searchFor(Q,P)",
@@ -97,8 +104,10 @@ public class LocalLuceneSearcher extends SearcherBase {
 				new SearchResult[perModifierResults.size()]));
 	}
 
-	private Map<String, Set<String>> getFragments(org.apache.lucene.search.Query query, TopDocs results) {
-		log.logp(Level.FINE, LocalLuceneSearcher.class.getName(), "getFragments(Q, TD)", String.format("Entering (query: %s, results: %s)", query.toString(), results.toString()));
+	private Set<ResultDocument> getMatchingDocs(
+			org.apache.lucene.search.Query query,
+			SemanticModifier modifier,
+			TopDocs results) {
 		try {
 			QueryScorer scorer = new QueryScorer(query);
 			
@@ -107,8 +116,8 @@ public class LocalLuceneSearcher extends SearcherBase {
 					new SimpleHTMLEncoder(),
 					scorer);
 
-			Map<String, Set<String>> fragments = 
-					new HashMap<>(results.scoreDocs.length);
+			Set<ResultDocument> docs = 
+					new HashSet<>(results.scoreDocs.length);
 			
 			for(int i = 0; i < results.scoreDocs.length; i++) {
 				Document doc = searcher.doc(results.scoreDocs[i].doc);
@@ -123,26 +132,47 @@ public class LocalLuceneSearcher extends SearcherBase {
 				
 				TokenStream stream = content.tokenStream(new StandardAnalyzer(Version.LUCENE_41));
 				try {
-					Set<String> docFragments = new HashSet<>(
-							Arrays.asList(
-							highlighter.getBestFragments(
-								stream, content.stringValue(), 5)));
+					Set<Snippet> docFragments = new HashSet<>();
+					for (String snippet : highlighter.getBestFragments(
+								stream, content.stringValue(), 5)) {
+						docFragments.add(new Snippet(snippet));
+					}
+					
 					String id = doc.get("id");
 					if(id == null) {
 						id = "unknown_id?"+ UUID.randomUUID().toString();
 					}
-					fragments.put(id, docFragments);
+
+					URI uri = null;
+					try {
+						uri = Config.instance().getDocumentServer().resolve(
+							new URI(null, null, id, "index=" + index.getName(), null));
+					} catch (URISyntaxException ex) {
+						log.log(Level.WARNING, 
+								String.format("Exception when creating URI from %s, %s, and %s",
+									Config.instance().getDocumentServer(),
+									id,
+									index.getName()), ex);
+					}
+					
+					String docType = doc.get("Document_type");
+					
+					docs.add(new ResultDocument(
+							new DocumentId(id),
+							uri,
+							docType,
+							Collections.<SemanticModifier, Set<Snippet>>singletonMap(
+								modifier, docFragments)));
 				} catch (InvalidTokenOffsetsException ex) {
 					throw new Error(ex);
 				}
 			}
 					
-		log.logp(Level.FINE, LocalLuceneSearcher.class.getName(), "getFragments(Q, TD)", String.format("Leaving (succesful) (query: %s, results: %s)", query.toString(), results.toString()));
-			return fragments;
+			return docs;
 		} catch (IOException ex) {
 		log.logp(Level.FINE, LocalLuceneSearcher.class.getName(), "getFragments(Q, TD)", String.format("Exception (query: %s, results: %s)", query.toString(), results.toString()));
 			log.log(Level.WARNING, String.format("IOException when querying local Lucene instance"), ex);
-			return Collections.emptyMap();
+			return Collections.emptySet();
 		}
 	}
 }

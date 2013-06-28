@@ -1,10 +1,8 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.classification;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
-import nl.maastro.eureca.aida.search.zylabpatisclient.DocumentId;
+import nl.maastro.eureca.aida.search.zylabpatisclient.ResultDocument;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
@@ -38,8 +36,8 @@ public class Overrides implements Rule {
 	 */
 	@Override
 	public boolean isApplicable(SearchResult searchResult) {
-		for (DocumentId docId : searchResult.getMatchingDocuments()) {
-			if(isApplicable(searchResult, docId)) {
+		for (ResultDocument doc : searchResult.getMatchingDocuments()) {
+			if(isApplicable(doc)) {
 				return true;
 			}
 		}
@@ -59,38 +57,28 @@ public class Overrides implements Rule {
 	 * 		when this rule is not applicable
 	 */
 	@Override
-	public SearchResult apply(SearchResult searchResult) throws Inapplicable {
-		if(!isApplicable(searchResult)) {
+	public SearchResult apply(SearchResult src) throws Inapplicable {
+		if(!isApplicable(src)) {
 			throw new Rule.Inapplicable(String.format(
 					"SearchResult %s contains no document matching %s and %s.",
-					searchResult.toString(), overrider.toString(), overridden.toString()));
+					src.toString(), overrider.toString(), overridden.toString()));
 		}
 		
-		Map<DocumentId, Map<SemanticModifier, Set<Snippet>>> filteredResults =
-				new HashMap<>(searchResult.getMatchingDocuments().size());
-		for (DocumentId docId : searchResult.getMatchingDocuments()) {
-			Set<SemanticModifier> perDocModifiers = searchResult.getModifiers(docId);
-			Map<SemanticModifier, Set<Snippet>> filteredPerDocSnippets =
-					new HashMap<>(perDocModifiers.size());
-			for (SemanticModifier semanticModifier : perDocModifiers) {
-				filteredPerDocSnippets.put(semanticModifier,
-						searchResult.getSnippets(docId, semanticModifier));
+		SearchResult result = new SearchResult(src);
+		for (ResultDocument doc: result.getMatchingDocuments()) {
+			if(isApplicable(doc)) {
+				doc.removeModifier(overridden);
 			}
-			if (isApplicable(searchResult, docId)) {
-				filteredPerDocSnippets.remove(overridden);
-			}
-			filteredResults.put(docId, filteredPerDocSnippets);
 		}
 
-		return SearchResult.create(searchResult.patient, searchResult.nHits,
-				filteredResults);
+		return result;
 	}
 
 	/**
 	 * The rule can be applied to {@code docId} in {@code searchResult}. 
 	 */
-	private boolean isApplicable(SearchResult searchResult, DocumentId docId) {
-		Set<SemanticModifier> perDocModifiers = searchResult.getModifiers(docId);
+	private boolean isApplicable(ResultDocument doc) {
+		Set<SemanticModifier> perDocModifiers = doc.getModifiers();
 		return (perDocModifiers.contains(overrider) &&
 				perDocModifiers.contains(overridden));
 	}

@@ -3,16 +3,20 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.output;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.UnknownFormatConversionException;
 import javax.xml.bind.DatatypeConverter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.DocumentId;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
+import nl.maastro.eureca.aida.search.zylabpatisclient.ResultDocument;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
@@ -57,7 +61,8 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		TABLE_CELL("td"),
 		TABLE_HEADER_CELL("th"),
 		TABLE_HEADER("thead"),
-		STYLE("style", "type=\"text/css\"");
+		STYLE("style", "type=\"text/css\""),
+		LINK("a");
 
 		private final String tag;
 		private final String tag_o;
@@ -136,18 +141,32 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 			if(!result.getMatchingDocuments().isEmpty()) {
 				out.append(String.format("%s Matching documents:\n",
 						Tags.LIST.open()));
-				for (DocumentId docId : result.getMatchingDocuments()) {
-					Set<Snippet> perDocSnippets = result.getSnippets(docId);
+				for (ResultDocument doc: result.getMatchingDocuments()) {
+					String docName;
+					if(doc.isAvailable()) {
+						String urlDec = URLDecoder.decode(doc.getUrl().toASCIIString(), StandardCharsets.UTF_8.name());
+						String open = Tags.LINK.open(String.format("href=\"%s\"", urlDec));
+						docName = String.format("%s%s%s",
+								open, doc.getId().getValue(), Tags.LINK.close());
+					} else {
+						docName = doc.getId().getValue();
+					}
+					
+					String docType = !doc.getType().isEmpty() ?
+							String.format("(type: %s)", doc.getType()) :
+							"";
+									
+					Set<Snippet> perDocSnippets = doc.getSnippets();
 					String innerPattern = !perDocSnippets.isEmpty() ?
-							"Document: %s %%s, snippets:\n" :
-							"Document: %s %%s";
-					String outerPattern = String.format(innerPattern, docId);
+							"Document: %s %s %%s, snippets:\n" :
+							"Document: %s %s %%s";
+					String outerPattern = String.format(innerPattern, docName, docType);
 					
 					out.append(Tags.LIST_ITEM.open());
-					writeEligibility(out, outerPattern, result.getClassification(docId));
+					writeEligibility(out, outerPattern, doc.getClassifiers());
 					if(!perDocSnippets.isEmpty()) {
 						out.append(Tags.LIST.open());
-						for (SemanticModifier semMod : result.getModifiers(docId)) {
+						for (SemanticModifier semMod : doc.getModifiers()) {
 							out.append(Tags.LIST_ITEM.open());
 							writeEligibility(out, "%s", Collections.singleton(semMod.getClassification()));
 							out.append(Tags.LIST.open());

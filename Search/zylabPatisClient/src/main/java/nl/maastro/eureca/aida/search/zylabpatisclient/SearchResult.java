@@ -3,12 +3,14 @@ package nl.maastro.eureca.aida.search.zylabpatisclient;
 
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 import com.google.gson.Gson;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.lucene.search.TopDocs;
 
 /**
  * Results that {@link ZylabPatisClient} returns
@@ -28,19 +30,44 @@ public class SearchResult {
 	public final PatisNumber patient;
 	public final int nHits;
 	
-	private final Map<DocumentId, Map<SemanticModifier, Set<Snippet>>> snippets;
+	private final Map<DocumentId, ResultDocument> matchingDocs;
 
 	private SearchResult(PatisNumber patient_, int nHits_) {
 		this.patient = patient_;
 		this.nHits = nHits_;
-		this.snippets = Collections.<DocumentId, Map<SemanticModifier, Set<Snippet>>>emptyMap();
+		this.matchingDocs = Collections.emptyMap();
 	}
 
 	private SearchResult(PatisNumber patient_, int nHits_, 
-			Map<DocumentId, Map<SemanticModifier, Set<Snippet>>> snippets_) {
+			Map<DocumentId, ResultDocument> docs_) {
 		this.patient = patient_;
 		this.nHits = nHits_;
-		this.snippets = snippets_;
+		this.matchingDocs = docs_;
+	}
+
+	public SearchResult(PatisNumber patient) {
+		this(patient, 0, Collections.<ResultDocument>emptyList());
+	}
+	
+	public SearchResult(PatisNumber patient_, int nHits_, 
+			Collection<ResultDocument> matchingDocs_) {
+		this.patient = patient_;
+		this.nHits = nHits_;
+		this.matchingDocs = new HashMap<>();
+		for (ResultDocument doc : matchingDocs_) {
+			this.matchingDocs.put(doc.getId(), doc);
+		}
+		
+	}
+
+	public SearchResult(SearchResult other) {
+		this.patient = other.patient;
+		this.nHits = other.nHits;
+		Set<DocumentId> otherDocs = other.getMatchingDocumentIds();
+		this.matchingDocs = new HashMap<>(otherDocs.size());
+		for (DocumentId docId : otherDocs) {
+			this.matchingDocs.put(docId, new ResultDocument(other.getDoc(docId)));
+		}
 	}
 
 	/**
@@ -52,53 +79,6 @@ public class SearchResult {
 			NO_RESULT = new SearchResult(null, -1);
 		}
 		return NO_RESULT;
-	}
-
-	/**
-	 * Create a SearchResult from a call to 
-	 * {@link org.apache.lucene.search.IndexSearcher#search(org.apache.lucene.search.Query, int)}
-	 * 
-	 * @param patient_	the {@link PatisNumber} of the patient about whon these
-	 * 		{@code SearchResults} are.
-	 * @param hits	the {@link org.apache.lucene.search.TopDocs} as returned by
-	 * 		{@link org.apache.lucene.search.IndexSearcher#search(org.apache.lucene.search.Query, int)}
-	 * @param snippets_		a map of document id to the set of matching snippets.
-	 * 		All {@code Snippets} are assigned to 
-	 * 		{@link nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier.Constants#UNKNOWN_MODIFIER}.
-	 * 		Use {@link #assignUnknownTo(nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier) }
-	 * 		to assign an other {@link SemanticModifier} to the created 
-	 * 		{@code SearchResults}.
-	 * 
-	 * @return	a fresh {@link SearchResult} 
-	 */
-	public static SearchResult create(final PatisNumber patient_, 
-			final TopDocs hits, Map<String, Set<String>> snippets_) {
-		return create(patient_, SemanticModifier.Constants.UNKNOWN_MODIFIER, hits, snippets_);
-	}
-
-	public static SearchResult create(final PatisNumber patient_,
-			final SemanticModifier modifier_, final TopDocs hits,
-			final Map<String, Set<String>> snippets_) {
-		Map<DocumentId, Map<SemanticModifier, Set<Snippet>>> tmpSnippets =
-				new HashMap<>(snippets_.size());
-		for (Map.Entry<String, Set<String>> entry : snippets_.entrySet()) {
-			DocumentId docId = new DocumentId(entry.getKey());
-			Set<Snippet> perDocSnippets = new HashSet<>(entry.getValue().size());
-			for (String snippetText : entry.getValue()) {
-				perDocSnippets.add(new Snippet(snippetText));
-			}
-			tmpSnippets.put(docId,
-					Collections.<SemanticModifier, Set<Snippet>>singletonMap(
-						modifier_, perDocSnippets));
-		}
-		return new SearchResult(patient_, hits.totalHits, tmpSnippets);
-		
-	}
-	
-	public static SearchResult create(final PatisNumber patient_,
-			final int nHits, 
-			final Map<DocumentId, Map<SemanticModifier, Set<Snippet>>> snippets_) {
-		return new SearchResult(patient_, nHits, snippets_);
 	}
 
 
@@ -114,58 +94,51 @@ public class SearchResult {
 	public static SearchResult combine(SearchResult... parts) {
 		int totalHits = 0;
 		Set<PatisNumber> patients = new HashSet<>(1);
-		Map<DocumentId, Map<SemanticModifier, Set<Snippet>>> combinedSnippets =
+		Map<DocumentId, List<ResultDocument>> docsToCombine =
 				new HashMap<>();
-		for (int i = 0; i < parts.length; i++) {
-			SearchResult part = parts[i];
-			patients.add(part.patient);
+		for (SearchResult src : parts) {
+			patients.add(src.patient);
 			if(patients.size() != 1) {
 				throw new IllegalArgumentException(
 						"Cannot combine search results of different patients: " +
 						patients.toString());
 			}
-			totalHits += part.nHits;
-			for (DocumentId docId : part.getMatchingDocuments()) {
-				if (!combinedSnippets.containsKey(docId)) {
-					combinedSnippets.put(docId, new HashMap<SemanticModifier, Set<Snippet>>());
+
+			totalHits += src.nHits;
+			
+			for (ResultDocument doc : src.getMatchingDocuments()) {
+				DocumentId id = doc.getId();
+				if(!docsToCombine.containsKey(id)) {
+					docsToCombine.put(id, new LinkedList<ResultDocument>());
 				}
-				for (SemanticModifier semMod : part.getModifiers(docId)) {
-					if (!combinedSnippets.get(docId).containsKey(semMod)) {
-						combinedSnippets.get(docId).put(semMod, new HashSet<Snippet>());
-					}
-					combinedSnippets.get(docId).get(semMod).addAll(part.getSnippets(docId, semMod));
-				}
+				docsToCombine.get(id).add(doc);
 			}
 		}
+		Map<DocumentId, ResultDocument> mergedDocs = new HashMap<>(docsToCombine.size());
+		for (Map.Entry<DocumentId, List<ResultDocument>> entry : docsToCombine.entrySet()) {
+			mergedDocs.put(entry.getKey(), ResultDocument.combine(entry.getValue()));
+		}
+		
 		return new SearchResult(patients.iterator().next(),
-				totalHits, combinedSnippets);
+				totalHits, mergedDocs);
 	}
 
-	public Set<DocumentId> getMatchingDocuments() {
-		return Collections.unmodifiableSet(snippets.keySet());
+	public Set<DocumentId> getMatchingDocumentIds() {
+		return Collections.unmodifiableSet(matchingDocs.keySet());
 	}
 
-	public Set<SemanticModifier> getModifiers(DocumentId docId) {
-		return Collections.unmodifiableSet(snippets.get(docId).keySet());
-	}
-
-	public Set<Snippet> getSnippets(DocumentId docId, SemanticModifier modifier) {
-		return Collections.unmodifiableSet(snippets.get(docId).get(modifier));
+	public ResultDocument getDoc(DocumentId id) {
+		return matchingDocs.get(id);
 	}
 	
-	public Set<Snippet> getSnippets(DocumentId docId) {
-		Map<SemanticModifier, Set<Snippet>> snippetsByDoc = snippets.get(docId);
-		HashSet<Snippet> result = new HashSet<>(snippetsByDoc.size());
-		for (Set<Snippet> snipets : snippetsByDoc.values()) {
-			result.addAll(snipets);
-		}
-		return result;
+	public Collection<ResultDocument> getMatchingDocuments() {
+		return Collections.unmodifiableCollection(matchingDocs.values());
 	}
 
 	public Set<EligibilityClassification> getClassification() {
 		Set<EligibilityClassification> result = new HashSet<>();
-		for (DocumentId docId : snippets.keySet()) {
-			result.addAll(getClassification(docId));
+		for (ResultDocument doc : getMatchingDocuments()) {
+			result.addAll(doc.getClassifiers());
 		}
 		if(result.isEmpty()) {
 			if(nHits > 0) {
@@ -176,14 +149,13 @@ public class SearchResult {
 		}
 		return result;
 	}
-	
-	public Set<EligibilityClassification> getClassification(DocumentId docId) {
-		Set<SemanticModifier> modifiers = snippets.get(docId).keySet();
-		Set<EligibilityClassification> result = new HashSet<>(modifiers.size());
-		for (SemanticModifier semMod : modifiers) {
-			result.add(semMod.getClassification());
-		}
-		return result;
+
+	public void add(ResultDocument doc) {
+		matchingDocs.put(doc.getId(), doc);
+	}
+
+	public void remove(ResultDocument doc) {
+		matchingDocs.remove(doc.getId());
 	}
 
 	/**
@@ -199,17 +171,9 @@ public class SearchResult {
 	public Map<DocumentId, Set<Snippet>> assignUnknownTo(
 			SemanticModifier modifier) {
 		Map<DocumentId, Set<Snippet>> changed = new HashMap<>();
-		for (Map.Entry<DocumentId, Map<SemanticModifier, Set<Snippet>>> entry : snippets.entrySet()) {
-			if (entry.getValue().containsKey(SemanticModifier.Constants.UNKNOWN_MODIFIER)) {
-				Set<Snippet> unknownSnippets = entry.getValue().get(SemanticModifier.Constants.UNKNOWN_MODIFIER);
-				if(!unknownSnippets.isEmpty()) {
-					if(!entry.getValue().containsKey(modifier)) {
-						entry.getValue().put(modifier, new HashSet<Snippet>(unknownSnippets.size()));
-					}
-					entry.getValue().get(modifier).addAll(unknownSnippets);
-					changed.put(entry.getKey(), unknownSnippets);
-				}
-			}
+		for (Map.Entry<DocumentId, ResultDocument> entry : matchingDocs.entrySet()) {
+			changed.put(entry.getKey(), entry.getValue().reclassify(
+					SemanticModifier.Constants.UNKNOWN_MODIFIER, modifier));
 		}
 		return changed;
 	}

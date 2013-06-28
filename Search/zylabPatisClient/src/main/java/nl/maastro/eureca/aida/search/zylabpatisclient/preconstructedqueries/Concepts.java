@@ -17,7 +17,8 @@ import org.apache.lucene.search.spans.SpanQuery;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 enum Concepts implements Query, DualRepresentationQuery, LuceneObject {
-	METASTASIS(LexicalPatterns.METASTASIS_NL, LexicalPatterns.ANY_STAGE4, LexicalPatterns.ANY_UITZAAI);
+	METASTASIS(LexicalPatterns.METASTASIS_NL, LexicalPatterns.METASTASIS_SHORT,
+			LexicalPatterns.ANY_STAGE4, LexicalPatterns.ANY_UITZAAI);
 
 	private Concepts(final LexicalPatterns... pats) {
 		parsetree_representation = new OrQueryNode(LexicalPatterns.containedNodes(pats));

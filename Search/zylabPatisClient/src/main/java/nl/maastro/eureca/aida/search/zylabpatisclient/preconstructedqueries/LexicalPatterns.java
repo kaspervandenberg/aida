@@ -21,6 +21,7 @@ import org.apache.lucene.queryparser.flexible.core.nodes.ProximityQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
 import org.apache.lucene.queryparser.flexible.standard.nodes.WildcardQueryNode;
 import org.apache.lucene.search.FuzzyQuery;
+import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.search.spans.SpanNearQuery;
@@ -34,6 +35,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
  */
 enum LexicalPatterns implements Query, DualRepresentationQuery, LuceneObject {
 	METASTASIS_NL("*metastase*"),
+	METASTASIS_SHORT("meta"),
 	
 	STAGE_NL("stadium"),
 	FOUR_ROMAN("IV"),
@@ -42,7 +44,7 @@ enum LexicalPatterns implements Query, DualRepresentationQuery, LuceneObject {
 	STAGE_4_NL(2, STAGE_NL, FOUR_DIGIT),
 	ANY_STAGE4(OrQueryNode.class, STAGE_IV_NL, STAGE_4_NL),
 	
-	UITZAAI_NL("uitzaai"),
+	UITZAAI_NL("uitzaai*"),
 	UITGEZAAID_NL("uitgezaaid"),
 	ANY_UITZAAI(OrQueryNode.class, UITZAAI_NL, UITGEZAAID_NL),
 	
@@ -50,17 +52,22 @@ enum LexicalPatterns implements Query, DualRepresentationQuery, LuceneObject {
 	NOT_NL2("niet"),
 	ANY_NEGATION(OrQueryNode.class, NOT_NL1, NOT_NL2),
 	
-	SIGNS_NL1("aanwijzing"),
-	SIGNS_NL2("teken"),
+	DIFFERENTIAL_DIAGNOSISIS_SPELLING_ERROR("differenttaal*"),
+	DIFFERENTIAL_DIAGNOSISIS_FULL("differentiaal*"),
+	DIFFERENTIAL_DIAGNOSISIS(OrQueryNode.class, 
+			DIFFERENTIAL_DIAGNOSISIS_FULL,
+			DIFFERENTIAL_DIAGNOSISIS_SPELLING_ERROR),
+	SIGNS_NL1("aanwijzing*"),
+	SIGNS_NL2("teken*"),
 	MOGELIJK("mogelijk"),
 	SUSPECT("suspect"),
 	BEELD("beeld"),
-	PAS("pas"),
-	PASSEN("passen"),
+	PAS("pas*"),
+	BEVESTIG("bevestig*"),
 	BEELD_PAST(3,BEELD, PAS),
-	BEELD_PASSEN(3, BEELD, PASSEN),
 	VERDENKING("verdenking"),
-	ANY_SIGNS(OrQueryNode.class, SIGNS_NL1, SIGNS_NL2, VERDENKING, SUSPECT, BEELD_PAST, BEELD_PASSEN, MOGELIJK);
+	ANY_SIGNS(OrQueryNode.class, SIGNS_NL1, SIGNS_NL2, VERDENKING, SUSPECT, 
+			BEELD_PAST, BEVESTIG, MOGELIJK, DIFFERENTIAL_DIAGNOSISIS);
 	
 	private enum Type {
 		NORMAL,

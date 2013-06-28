@@ -169,7 +169,7 @@ public class SearchResult {
 		}
 		if(result.isEmpty()) {
 			if(nHits > 0) {
-				result.add(EligibilityClassification.UNKNOWN);
+				result.add(EligibilityClassification.NOT_ELIGIBLE);
 			} else {
 				result.add(EligibilityClassification.NO_EXCLUSION_CRITERION_FOUND);
 			}

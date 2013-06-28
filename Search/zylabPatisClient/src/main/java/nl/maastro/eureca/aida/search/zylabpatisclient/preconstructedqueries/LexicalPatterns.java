@@ -19,7 +19,9 @@ import org.apache.lucene.queryparser.flexible.core.nodes.ModifierQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.OrQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.ProximityQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
+import org.apache.lucene.queryparser.flexible.standard.nodes.WildcardQueryNode;
 import org.apache.lucene.search.FuzzyQuery;
+import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
@@ -31,11 +33,11 @@ import org.apache.lucene.search.spans.SpanTermQuery;
  * @author kasper
  */
 enum LexicalPatterns implements Query, DualRepresentationQuery, LuceneObject {
-	METASTASIS_NL("metastase", true),
+	METASTASIS_NL("*metastase*"),
 	
 	STAGE_NL("stadium"),
-	FOUR_ROMAN("IV", false),
-	FOUR_DIGIT("4", false),
+	FOUR_ROMAN("IV"),
+	FOUR_DIGIT("4"),
 	STAGE_IV_NL(2, STAGE_NL, FOUR_ROMAN),
 	STAGE_4_NL(2, STAGE_NL, FOUR_DIGIT),
 	ANY_STAGE4(OrQueryNode.class, STAGE_IV_NL, STAGE_4_NL),
@@ -60,6 +62,11 @@ enum LexicalPatterns implements Query, DualRepresentationQuery, LuceneObject {
 	VERDENKING("verdenking"),
 	ANY_SIGNS(OrQueryNode.class, SIGNS_NL1, SIGNS_NL2, VERDENKING, SUSPECT, BEELD_PAST, BEELD_PASSEN, MOGELIJK);
 	
+	private enum Type {
+		NORMAL,
+		FUZZY,
+		WILDCARD
+	}
 	
 	/**
 	 * The {@link org.apache.lucene.queryparser.flexible.core.nodes.QueryNode}
@@ -101,16 +108,30 @@ enum LexicalPatterns implements Query, DualRepresentationQuery, LuceneObject {
 	}
 
 	private LexicalPatterns(final String term) {
-		this(term, false);
+		this(term,
+				term.contains("*") ?
+					Type.WILDCARD :
+					( term.contains("~") ?
+						Type.FUZZY :
+						Type.NORMAL));
 	}
 
-	private LexicalPatterns(final String term, boolean fuzzy) {
-		if (fuzzy) {
-			parsetree_representation = new FuzzyQueryNode(PreconstructedQueries.instance().getDefaultField(), term, EDIT_DISTANCE, 0, term.length());
-			luceneObject_representation = new SpanMultiTermQueryWrapper<>(new FuzzyQuery(new Term(PreconstructedQueries.instance().getDefaultField(), term), 2));
-		} else {
-			parsetree_representation = new FieldQueryNode(PreconstructedQueries.instance().getDefaultField(), term, 0, term.length());
-			luceneObject_representation = new SpanTermQuery(new Term(PreconstructedQueries.instance().getDefaultField(), term));
+	private LexicalPatterns(final String term, Type type) {
+		switch (type) {
+			case NORMAL:
+				parsetree_representation = new FieldQueryNode(PreconstructedQueries.instance().getDefaultField(), term, 0, term.length());
+				luceneObject_representation = new SpanTermQuery(new Term(PreconstructedQueries.instance().getDefaultField(), term));
+				break;
+			case FUZZY:
+				parsetree_representation = new FuzzyQueryNode(PreconstructedQueries.instance().getDefaultField(), term, EDIT_DISTANCE, 0, term.length());
+				luceneObject_representation = new SpanMultiTermQueryWrapper<>(new FuzzyQuery(new Term(PreconstructedQueries.instance().getDefaultField(), term), 2));
+				break;
+			case WILDCARD:
+				parsetree_representation = new WildcardQueryNode(PreconstructedQueries.instance().getDefaultField(), term, 0, term.length());
+				luceneObject_representation = new SpanMultiTermQueryWrapper<>(new WildcardQuery(new Term(PreconstructedQueries.instance().getDefaultField(), term)));
+				break;
+			default:
+				throw new Error(new IllegalArgumentException("Unexpected enum value for Type"));
 		}
 	}
 

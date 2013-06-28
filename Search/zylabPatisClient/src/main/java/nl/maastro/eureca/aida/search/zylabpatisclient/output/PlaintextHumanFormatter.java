@@ -3,7 +3,7 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.output;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import nl.maastro.eureca.aida.search.zylabpatisclient.DocumentId;
+import nl.maastro.eureca.aida.search.zylabpatisclient.ResultDocument;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
 
@@ -15,9 +15,9 @@ public class PlaintextHumanFormatter extends SearchResultFormatterBase {
 	private static class FormatSnippets extends SearchResultFormatterBase {
 		@Override
 		public void write(Appendable out, SearchResult result) throws IOException {
-			for (DocumentId docId : result.getMatchingDocuments()) {
-				out.append(String.format("\tDocument: %s\n", docId));
-				for (Snippet snippet : result.getSnippets(docId)) {
+			for (ResultDocument doc : result.getMatchingDocuments()) {
+				out.append(String.format("\tDocument: %s\n", doc.getId()));
+				for (Snippet snippet : doc.getSnippets()) {
 					out.append(String.format("\t\t<snippet>%s</snippet>\n", snippet.getValue()));
 				}
 			}

@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
@@ -604,7 +606,7 @@ public class Config {
 			throw new IllegalStateException(
 					"Call init(…) before calling instance()");
 		}
-		throw new UnsupportedOperationException("Not yet implemented");
+		return singleton;
 	}
 
 	public Searcher getSearcher() throws ServiceException, IOException {
@@ -649,6 +651,15 @@ public class Config {
 		return defaultField;
 	}
 	
+	// TODO replace hardcoded with value from config file
+	public URI getDocumentServer() {
+		try {
+			return new URI("http://vocab.maastro.nl:80/search/item/");
+		} catch (URISyntaxException ex) {
+			throw new Error(ex);
+		}
+	}
+
 	private static Document parseXml(InputStream configStream) {
 		try {
 			Document doc = getParser().build(configStream);
@@ -731,49 +742,6 @@ public class Config {
 		boolean existsWs = XPaths.INDEX_WEBSERVICE.nodeExists(getConfigDoc());
 		boolean existsLocal = XPaths.INDEX_LOCAL.nodeExists(getConfigDoc());
 		return existsWs || ! existsLocal;
-	}
-	
-	public static void main(String[] args) {
-//		try {
-			URL resource = Config.class.getResource("/testConfig.xml");
-			System.out.println(resource);
-			Config testConfig = Config.init(Config.class.getResourceAsStream("/testConfig.xml"));
-//			XPaths.getXPath().compile("/zlpc/@ver");
-//			System.out.println(XPaths.ABS_VERSION.s_expr);
-//			System.out.println(testConfig.getConfigDoc().getDocumentElement().getNamespaceURI());
-//			System.out.println(testConfig.getConfigDoc().getDocumentElement().getNodeName());
-//			System.out.println("Use webservice: " + testConfig.useWebservice());
-//			System.out.println("Default field: *" + XPaths.N_DEFAULT_FIELD.getAttrValue(testConfig.getConfigDoc()) + "*");
-//			System.out.println("Max hits: " + XPaths.N_RESULT_LIMIT.getAttrValue(testConfig.getConfigDoc()));
-//			dumpNodeList((NodeList)XPathAttrs.ABS_QUERY_ID.getExpr().evaluate(testConfig.getConfigDoc(), XPathConstants.NODESET));
-//			dumpNodeList(XPathNodes.N_BASE.getLastNode(testConfig.getConfigDoc()).getAttributes().);
-//			System.out.println("Address: " + testConfig.getWebserviceAddress().toString());
-//			System.out.println("Index: " + testConfig.getWebserviceIndex());
-//			System.out.println(XPaths.getXPath().getNamespaceContext().getNamespaceURI(""));
-//			dumpNodeList((NodeList)XPaths.getXPath().evaluate("//*[local-name()='zylabPatisClientConfig']", testConfig.getConfigDoc(), XPathConstants.NODESET));
-//			dumpNodeList((NodeList)XPaths.getXPath().evaluate("//:zylabPatisClientConfig", testConfig.getConfigDoc(), XPathConstants.NODESET));
-//			dumpNodeList((NodeList)XPaths.getXPath().evaluate("/:zylabPatisClientConfig", testConfig.getConfigDoc(), XPathConstants.NODESET));
-//			System.out.println("version: " + XPaths.getXPath().evaluate("/" + NS_PREFIX + ":zylabPatisClientConfig/@:version", testConfig.getConfigDoc(), XPathConstants.STRING));
-//			dumpNodeList((NodeList)XPaths.getXPath().evaluate("/zylabPatisClientConfig", testConfig.getConfigDoc(), XPathConstants.NODESET));
-//			dumpNodeList((NodeList)XPaths.N_BASE.getExpr().evaluate(testConfig.getConfigDoc(), XPathConstants.NODESET));
-			dumpNodeList(testConfig.getConfigDoc().getContent(Filters.element()));
-//			XPathImpls.N_ABS_QUERY_BY_ID.delegate.setVariable("queryId", "eewrt");
-//			dumpNode(XPathImpls.N_ABS_QUERY_BY_ID.delegate.getFirstNode(testConfig.getConfigDoc()));
-			
-			System.out.println(testConfig.new QueryPatterns().getQueryIds().toString());
-			System.out.println(testConfig.new QueryPatterns().getAsString(new QName("http://search.aida.eureca.maastro.nl/zylabpatisclient/config", "scopedQuery1", "zlpc")));
-//			System.out.println(testConfig.new QueryPatterns().getAsString(new QName("unscopedQuery2")));
-			
-//			System.out.println(XPaths.N_BASE.getExpr().evaluate(testConfig.getConfigDoc()));
-//			dumpNode(XPaths.N_BASE.getLastNode(testConfig.getConfigDoc()));
-//			dumpNode(XPaths.N_ABS_INDEX.getLastNode(testConfig.getConfigDoc()));
-//			System.out.println(XPaths.N_WEBSERVICE_INDEX.nodeExists(XPaths.N_ABS_INDEX.getLastNode(testConfig.getConfigDoc())));
-//			System.out.println(XPaths.N_LOCAL_INDEX.nodeExists(XPaths.N_ABS_INDEX.getLastNode(testConfig.getConfigDoc())));
-//			System.out.println(XPaths.ABS_VERSION.getAttrValue(testConfig.getConfigDoc()));
-//		} catch (XPathExpressionException | URISyntaxException ex) {
-//		} catch (URISyntaxException ex) {
-//			throw new Error(ex);
-//		}
 	}
 
 	private static void dumpNodeList(List<? extends Content> nodes) {

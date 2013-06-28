@@ -25,6 +25,7 @@ import java.util.Map;
 				return storedOperations.keySet().iterator().next();
 			}
 
+			@SuppressWarnings("unchecked")
 			public <T> Operation<T> get(Class<T> type) {
 				// unchecked cast, but should work given restrictions on put.
 				return (Operation<T>)storedOperations.get(type);	

@@ -81,7 +81,7 @@ public class NameSpaceResolver {
 		}
 
 		@Override
-		public Iterator getPrefixes(String namespaceURI) {
+		public Iterator<String> getPrefixes(String namespaceURI) {
 			if (namespaceURI == null) {
 				throw new IllegalArgumentException("Resolving null namespaceURI");
 			}

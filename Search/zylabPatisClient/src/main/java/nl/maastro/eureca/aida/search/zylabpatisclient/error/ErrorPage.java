@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author kasper2
  */
+@SuppressWarnings("serial")
 public class ErrorPage extends HttpServlet {
 
 	/**

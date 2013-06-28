@@ -21,6 +21,7 @@ public abstract class SearchResultFormatterBase implements SearchResultFormatter
 	public void setShowSnippetsStrategy(SearchResultFormatter delegate_) {
 		snippetDelegate = delegate_;
 	}
+	@SuppressWarnings("serial")
 	protected static class Table extends LinkedHashMap<PatisNumber, LinkedHashMap<String, SearchResult>> {
 		
 	}

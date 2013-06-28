@@ -233,6 +233,7 @@ public class Config {
 					getContext(context, ops.subList(0, ops.size() -1)));
 		}
 
+		@SuppressWarnings("serial")
 		@Override
 		public void setVariable(String name, Object value) throws IllegalArgumentException {
 			final List<IllegalArgumentException> suppressedExceptions = new LinkedList<>();
@@ -248,7 +249,7 @@ public class Config {
 				throw new IllegalArgumentException(
 						String.format("None of the component XPath accepted %s", name.toString()),
 						new Exception("Multiple causes") {
-							final List<IllegalArgumentException> causes = new ArrayList(suppressedExceptions);
+							final List<IllegalArgumentException> causes = new ArrayList<>(suppressedExceptions);
 						});
 			}
 		}

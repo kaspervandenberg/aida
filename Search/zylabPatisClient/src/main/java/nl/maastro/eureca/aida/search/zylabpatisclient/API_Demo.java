@@ -38,7 +38,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
  */
 public class API_Demo {
 	private static final EnumMap<LocalParts, String> headers =
-			new EnumMap(LocalParts.class);
+			new EnumMap<>(LocalParts.class);
 	static {
 		headers.put(LocalParts.METASTASIS,
 				"\n" +

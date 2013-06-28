@@ -160,11 +160,11 @@ public class PreconstructedQueries {
 		return Collections.unmodifiableSet(getStoredPredicates().keySet());
 	}
 	
-	String getDefaultField() {
+	public String getDefaultField() {
 		return DEFAULT_FIELD;
 	}
 
-	DualRepresentationQuery.Visitable getVisitableDelegate() {
+	public DualRepresentationQuery.Visitable getVisitableDelegate() {
 		return VISITABLE_DELEGATE;
 	}
 	

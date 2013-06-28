@@ -643,6 +643,11 @@ public class Config {
 		}
 		return namespaces;
 	}
+
+	public String getDefaultField() {
+		String defaultField = XPaths.DEFAULT_FIELD.getAttrValue(getConfigDoc());
+		return defaultField;
+	}
 	
 	private static Document parseXml(InputStream configStream) {
 		try {

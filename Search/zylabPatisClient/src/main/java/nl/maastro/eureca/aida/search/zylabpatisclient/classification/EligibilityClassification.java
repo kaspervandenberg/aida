@@ -32,7 +32,7 @@ public enum EligibilityClassification {
 	 * the patient is classified as {@code NO_EXCLUSION_CRITERION_FOUND}; an
 	 * expert must decide whether the patient is eligible for a trial.
 	 */
-	NO_EXCLUSION_CRITERION_FOUND,
+	ELIGIBLE,
 
 	/**
 	 * Used for {@link SearchResult} based on queries with unknown criterion/

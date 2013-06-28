@@ -30,6 +30,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.apache.lucene.search.highlight.QueryScorer;
+import org.apache.lucene.search.highlight.SimpleHTMLEncoder;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -100,7 +101,11 @@ public class LocalLuceneSearcher extends SearcherBase {
 		log.logp(Level.FINE, LocalLuceneSearcher.class.getName(), "getFragments(Q, TD)", String.format("Entering (query: %s, results: %s)", query.toString(), results.toString()));
 		try {
 			QueryScorer scorer = new QueryScorer(query);
-			Highlighter highlighter = new Highlighter(new SimpleHTMLFormatter("<span class=\"searchHit\">", "</span>"), scorer);
+			
+			Highlighter highlighter = new Highlighter(
+					new SimpleHTMLFormatter("<span class=\"searchHit\">", "</span>"),
+					new SimpleHTMLEncoder(),
+					scorer);
 
 			Map<String, Set<String>> fragments = 
 					new HashMap<>(results.scoreDocs.length);

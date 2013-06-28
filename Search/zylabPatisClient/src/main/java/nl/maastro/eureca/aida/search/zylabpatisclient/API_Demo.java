@@ -141,6 +141,9 @@ public class API_Demo {
 		instance.appendRule(new Overrides(
 				SemanticModifiers.SUSPICION,
 				SemanticModifier.Constants.NULL_MODIFIER));
+		instance.appendRule(new Overrides(
+				SemanticModifiers.SUSPICION,
+				SemanticModifiers.NEGATED));
 		return instance;
 	}
 

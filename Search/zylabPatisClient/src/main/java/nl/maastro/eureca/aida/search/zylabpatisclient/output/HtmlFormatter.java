@@ -185,6 +185,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		eligibilityColours.put(EligibilityClassification.NOT_ELIGIBLE, Color.RED);
 		eligibilityColours.put(EligibilityClassification.UNCERTAIN, Color.ORANGE);
 		eligibilityColours.put(EligibilityClassification.UNKNOWN, Color.RED.darker());
+		eligibilityColours.put(EligibilityClassification.PROBABLY_ELIGIBLE, Color.GREEN.brighter());
 	}
 
 	private static final String eligCssPrefix = "eligibility-";

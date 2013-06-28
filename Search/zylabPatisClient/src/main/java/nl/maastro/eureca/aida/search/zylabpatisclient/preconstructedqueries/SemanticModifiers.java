@@ -40,7 +40,7 @@ import org.apache.lucene.search.spans.SpanQuery;
  * @author kasper
  */
 public enum SemanticModifiers implements SemanticModifier {
-	NEGATED(2, EligibilityClassification.UNCERTAIN,
+	NEGATED(2, EligibilityClassification.PROBABLY_ELIGIBLE,
 			LexicalPatterns.ANY_NEGATION),
 	SUSPICION(4, EligibilityClassification.UNCERTAIN,
 			LexicalPatterns.ANY_SIGNS);

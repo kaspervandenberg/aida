@@ -60,14 +60,26 @@ enum LexicalPatterns implements Query, DualRepresentationQuery, LuceneObject {
 	SIGNS_NL1("aanwijzing*"),
 	SIGNS_NL2("teken*"),
 	MOGELIJK("mogelijk"),
+	MISSCHIEN("misschien"),
 	SUSPECT("suspect"),
 	BEELD("beeld"),
 	PAS("pas*"),
 	BEVESTIG("bevestig*"),
 	BEELD_PAST(3,BEELD, PAS),
+	VERDACHT("verdacht"),
 	VERDENKING("verdenking"),
-	ANY_SIGNS(OrQueryNode.class, SIGNS_NL1, SIGNS_NL2, VERDENKING, SUSPECT, 
-			BEELD_PAST, BEVESTIG, MOGELIJK, DIFFERENTIAL_DIAGNOSISIS);
+	KAN("kan"),
+	KUNNEN("kunnen"),
+	KUNNEN_ALL(OrQueryNode.class, KAN, KUNNEN),
+	ZIJN("zijn"),
+	KUNNEN_ZIJN(4, KUNNEN_ALL, ZIJN),
+	ZOU("zou"),
+	VRAAG("vraag"),
+	INDERDAAD("inderdaad"),
+	INDERDAAD_DE_VRAAG(7, VRAAG, INDERDAAD),
+	ANY_SIGNS(OrQueryNode.class, SIGNS_NL1, SIGNS_NL2, VERDACHT, VERDENKING, SUSPECT, 
+			BEELD_PAST, BEVESTIG, MOGELIJK, DIFFERENTIAL_DIAGNOSISIS,
+			INDERDAAD_DE_VRAAG, KUNNEN_ZIJN, KUNNEN_ALL, ZOU, MISSCHIEN);
 	
 	private enum Type {
 		NORMAL,

@@ -147,7 +147,7 @@ public class API_Demo {
 	private List<SearchResult> initExpectedResults() {
 		List<SearchResult> expected = new ArrayList<>(patients.size());
 		for (Map.Entry<PatisNumber, Boolean> entry : patients.entrySet()) {
-			expected.add(SearchResult.create(entry.getKey(), entry.getValue()));
+			expected.add(SearchResultImpl.create(entry.getKey(), entry.getValue()));
 		}
 		return expected;
 	}

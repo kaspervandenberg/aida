@@ -37,10 +37,10 @@ public class WebserviceSearcher extends SearcherBase {
 		String constructedQuery = patient.compose(query);
 		try {
 			String resultJson = service.searchJason(index, constructedQuery, "0", getDefaultField(), String.valueOf(getMaxResults()));
-			return SearchResult.create(patient, resultJson);
+			return SearchResultImpl.create(patient, resultJson);
 		} catch (RemoteException ex) {
 			log.log(Level.SEVERE, String.format("RPC Error when calling searchJason on the webservice"), ex);
-			return SearchResult.NO_RESULT();
+			return SearchResultImpl.NO_RESULT();
 		}
 	}
 

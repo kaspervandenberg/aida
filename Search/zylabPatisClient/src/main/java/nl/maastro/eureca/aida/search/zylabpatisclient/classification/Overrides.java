@@ -4,6 +4,7 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.classification;
 import java.util.Set;
 import nl.maastro.eureca.aida.search.zylabpatisclient.ResultDocument;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResultImpl;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
 
@@ -64,7 +65,7 @@ public class Overrides implements Rule {
 					src.toString(), overrider.toString(), overridden.toString()));
 		}
 		
-		SearchResult result = new SearchResult(src);
+		SearchResult result = new SearchResultImpl(src);
 		for (ResultDocument doc: result.getMatchingDocuments()) {
 			if(isApplicable(doc)) {
 				doc.removeModifier(overridden);

@@ -18,6 +18,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.DocumentId;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.ResultDocument;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResultImpl;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
@@ -119,7 +120,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 
 			@Override
 			public void write(Appendable out, SearchResult result) throws IOException {
-				String id = result.patient.getValue() + "-" + QNameUtil.instance().tinySemiUnique();
+				String id = result.getPatient().getValue() + "-" + QNameUtil.instance().tinySemiUnique();
 				out.append(Tags.LABEL.open());
 				out.append(Tags.DISPLAY_CHECKBOX.open(
 						String.format(
@@ -262,15 +263,14 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	
 	@Override
 	public void write(Appendable out, SearchResult result) throws IOException {
-		if(result.nHits > 0) {
+		if(result.getTotalHits() > 0) {
 			String innerPattern = String.format("patient %s: %%s (#hits: %d)<br/>\n",
-					result.patient.getValue(),
-					result.nHits);
+					result.getPatient().getValue(), result.getTotalHits());
 			writeEligibility(out, innerPattern, result.getClassification());
 			getSnippetStrategy().write(out, result);
 		} else {
 			String innerPattern = String.format("patient %s: %%s",
-					result.patient.getValue());
+					result.getPatient().getValue());
 			writeEligibility(out, innerPattern, result.getClassification());
 		}
 	}
@@ -324,9 +324,9 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		out.append("\t" + Tags.TABLE_CELL.open());
 		if(data.containsKey(row) 
 				? (data.get(row).containsKey(col)
-					? (data.get(row).get(col).nHits > 0) : false) : false) {
+					? (data.get(row).get(col).getTotalHits() > 0) : false) : false) {
 			SearchResult r = data.get(row).get(col);
-			String innerPattern = String.format("%%s (%d hits)", r.nHits);
+			String innerPattern = String.format("%%s (%d hits)", r.getTotalHits());
 			writeEligibility(out, innerPattern, r.getClassification());
 			getSnippetStrategy().write(out, r);
 		} else {

@@ -63,8 +63,7 @@ public class PlaintextHumanFormatter extends SearchResultFormatterBase {
 	@Override
 	public void write(Appendable out, SearchResult result) throws IOException {
 		out.append(String.format("PatisNr: %s found in %d documents\nSnippets:\n",
-				result.patient.getValue(),
-				result.nHits));
+				result.getPatient().getValue(), result.getTotalHits()));
 		getSnippetStrategy().write(out, result);
 	}
 

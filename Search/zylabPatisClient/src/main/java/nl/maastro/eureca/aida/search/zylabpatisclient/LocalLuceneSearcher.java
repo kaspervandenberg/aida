@@ -83,14 +83,14 @@ public class LocalLuceneSearcher extends SearcherBase {
 					.getRepresentation();
 			try {
 					TopDocs result = searcher.search(luceneQuery, getMaxResults());
-					perModifierResults.add(new SearchResult(patient, result.totalHits, getMatchingDocs(luceneQuery, semMod, result)));
+					perModifierResults.add(new SearchResultImpl(patient, result.totalHits, getMatchingDocs(luceneQuery, semMod, result)));
 					
 			} catch (IOException ex) {
 			log.logp(Level.FINE, LocalLuceneSearcher.class.getName(), "searchFor(Q,P)",
 					String.format("Exception (patient: %s, query: %s)",
 						patient.getValue(), query.toString()));
 				log.log(Level.WARNING, String.format("IOException when querying local Lucene instance"), ex);
-				return SearchResult.NO_RESULT();
+				return SearchResultImpl.NO_RESULT();
 			}
 				
 		}
@@ -98,9 +98,9 @@ public class LocalLuceneSearcher extends SearcherBase {
 				String.format("Leaving succesful (patient: %s, query: %s)",
 					patient.getValue(), query.toString()));
 		if(perModifierResults.isEmpty()) {
-			return SearchResult.NO_RESULT();
+			return SearchResultImpl.NO_RESULT();
 		}
-		return SearchResult.combine(perModifierResults.toArray(
+		return SearchResultImpl.combine(perModifierResults.toArray(
 				new SearchResult[perModifierResults.size()]));
 	}
 

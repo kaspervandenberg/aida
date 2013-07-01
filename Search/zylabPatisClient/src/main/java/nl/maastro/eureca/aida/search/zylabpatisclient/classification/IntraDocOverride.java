@@ -16,11 +16,11 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
  * 
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class Overrides implements Rule {
+public class IntraDocOverride implements Rule {
 	private final SemanticModifier overrider;
 	private final SemanticModifier overridden;
 	
-	public Overrides(final SemanticModifier overrider_,
+	public IntraDocOverride(final SemanticModifier overrider_,
 			final SemanticModifier overridden_) {
 		this.overrider = overrider_;
 		this.overridden = overridden_;

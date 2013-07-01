@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.rpc.ServiceException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Overrides;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.IntraDocOverride;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.HtmlFormatter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.LocalParts;
@@ -135,10 +135,10 @@ public class API_Demo {
 	
 	private static Classifier initClassifier() {
 		Classifier instance = Classifier.instance();
-		instance.appendRule(new Overrides(
+		instance.appendRule(new IntraDocOverride(
 				SemanticModifiers.NEGATED,
 				SemanticModifier.Constants.NULL_MODIFIER));
-		instance.appendRule(new Overrides(
+		instance.appendRule(new IntraDocOverride(
 				SemanticModifiers.SUSPICION,
 				SemanticModifier.Constants.NULL_MODIFIER));
 		return instance;

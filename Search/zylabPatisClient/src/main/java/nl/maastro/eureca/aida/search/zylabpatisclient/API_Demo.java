@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.rpc.ServiceException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.InterDocOverride;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.IntraDocOverride;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.HtmlFormatter;
@@ -141,6 +143,9 @@ public class API_Demo {
 		instance.appendRule(new IntraDocOverride(
 				SemanticModifiers.SUSPICION,
 				SemanticModifier.Constants.NULL_MODIFIER));
+		instance.appendRule(new InterDocOverride(
+				EligibilityClassification.UNCERTAIN,
+				EligibilityClassification.NOT_ELIGIBLE));
 		return instance;
 	}
 

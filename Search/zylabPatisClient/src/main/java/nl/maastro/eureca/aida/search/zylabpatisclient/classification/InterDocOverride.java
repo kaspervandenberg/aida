@@ -2,7 +2,6 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.classification;
 
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 

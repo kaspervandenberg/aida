@@ -54,6 +54,7 @@ public class Try {
 //			parsed.add(parser.parse("(optional OR keuze) AND (field OR metastase)", def));
 			parsed.add(parser.parse("(\"letter comes\"~3 \"agitated employees\"~4 \"worried about salaries\"~1)" +
 " AND (\"letter comes agitated employees worried about salaries\"~8)", def));
+			parsed.add(parser.parse("\"d.d\"", def));
 			
 			ArrayList<QueryNode> queries = new ArrayList<>();
 			queries.addAll(parsed);

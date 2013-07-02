@@ -186,20 +186,10 @@ public class API_Demo {
 		try {
 			OutputStreamWriter out = new OutputStreamWriter(new BufferedOutputStream(
 					new FileOutputStream(f)), StandardCharsets.UTF_8);
-			out.append(
-					"<!DOCTYPE html>\n" +
-					"<html>\n" +
-					"<head>\n");
-			out.append(String.format("<meta charset=\"%s\"/>\n", StandardCharsets.UTF_8.name()));
-			HtmlFormatter.writeScript(out);
-			HtmlFormatter.writeStyle(out);
-			out.append(
-					"</head>\n" +
-					"<body>\n");
-			out.append(String.format("<h1>Results of %1$tT (on %1$ta %1$te %1$tb)</h1>\n", now));
+			HtmlFormatter.writeDocStart(out,
+					String.format("<h1>Results of %1$tT (on %1$ta %1$te %1$tb)</h1>\n", now));
 			formatter.writeTable(out, results);
-			out.append("</body>\n"
-					+ "</html>\n\n");
+			HtmlFormatter.writeDocEnd(out);
 			out.close();
 		} catch (IOException ex) {
 			throw new Error(ex);

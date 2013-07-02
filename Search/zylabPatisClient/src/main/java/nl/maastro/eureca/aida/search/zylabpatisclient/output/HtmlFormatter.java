@@ -4,24 +4,18 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.output;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
-import java.util.UnknownFormatConversionException;
-import javax.xml.bind.DatatypeConverter;
-import nl.maastro.eureca.aida.search.zylabpatisclient.DocumentId;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.ResultDocument;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
-import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResultImpl;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 import nl.maastro.eureca.aida.search.zylabpatisclient.util.QNameUtil;
 
@@ -63,7 +57,14 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		TABLE_HEADER_CELL("th"),
 		TABLE_HEADER("thead"),
 		STYLE("style", "type=\"text/css\""),
-		LINK("a");
+		LINK("a"),
+		DOC_HTML("html"),
+		DOC_HEAD("head"),
+		DOC_BODY("body"),
+		DOC_TITLE("title"),
+		META_CHARSET("meta",
+				String.format("charset=\"%s\"", StandardCharsets.UTF_8.name())),
+		TITLE("h1");
 
 		private final String tag;
 		private final String tag_o;
@@ -138,54 +139,87 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		}
 		;
 		
-		public void writeSnippet(Appendable out, SearchResult result) throws IOException {
-			if(!result.getMatchingDocuments().isEmpty()) {
-				out.append(String.format("%s Matching documents:\n",
-						Tags.LIST.open()));
-				for (ResultDocument doc: result.getMatchingDocuments()) {
-					String docName;
-					if(doc.isAvailable()) {
-						String urlDec = URLDecoder.decode(doc.getUrl().toASCIIString(), StandardCharsets.UTF_8.name());
-						String open = Tags.LINK.open(String.format("href=\"%s\"", urlDec));
-						docName = String.format("%s%s%s",
-								open, doc.getId().getValue(), Tags.LINK.close());
-					} else {
-						docName = doc.getId().getValue();
-					}
-					
-					String docType = !doc.getType().isEmpty() ?
-							String.format("(type: %s)", doc.getType()) :
-							"";
-									
-					Set<Snippet> perDocSnippets = doc.getSnippets();
-					String innerPattern = !perDocSnippets.isEmpty() ?
-							"Document: %s %s %%s, snippets:\n" :
-							"Document: %s %s %%s";
-					String outerPattern = String.format(innerPattern, docName, docType);
-					
+		private static void writeSnippet(Appendable out, SearchResult result) throws IOException {
+			writeDocumentList(out, result.getMatchingDocuments());
+		}
+
+		private static void writeDocumentList(Appendable out, 
+				Collection<ResultDocument> docs) throws IOException {
+			if(!docs.isEmpty()) {
+				out.append("\tMatching documents:\n");
+				out.append(Tags.LIST.open());
+				for (ResultDocument doc : docs) {
 					out.append(Tags.LIST_ITEM.open());
-					writeEligibility(out, outerPattern, doc.getClassifiers());
-					if(!perDocSnippets.isEmpty()) {
-						out.append(Tags.LIST.open());
-						for (SemanticModifier semMod : doc.getModifiers()) {
-							out.append(Tags.LIST_ITEM.open());
-							writeEligibility(out, "%s", Collections.singleton(semMod.getClassification()));
-							out.append(Tags.LIST.open());
-							for (Snippet snippet : perDocSnippets) {
-								out.append(Tags.LIST_ITEM.format(snippet.getValue()));
-							}
-							out.append(Tags.LIST.close());
-							out.append(Tags.LIST_ITEM.close());
-						}
-						out.append(Tags.LIST.close());
-					}
+					writeDocument(out, doc);
 					out.append(Tags.LIST_ITEM.close());
 				}
+				out.append(Tags.LIST.close());
 			} else {
-				out.append("empty");
+				out.append("\tsearch results contain no snippets\n");		
 			}
 		}
-		
+
+		private static void writeDocument(Appendable out, ResultDocument doc)
+				throws IOException {
+			String docName;
+			if(doc.isAvailable()) {
+				String urlDec = URLDecoder.decode(doc.getUrl().toASCIIString(), StandardCharsets.UTF_8.name());
+				String open = Tags.LINK.open(String.format("href=\"%s\"", urlDec));
+				docName = String.format("%s%s%s",
+						open, doc.getId().getValue(), Tags.LINK.close());
+			} else {
+				docName = doc.getId().getValue();
+			}
+			
+			String docType = !doc.getType().isEmpty() ?
+					String.format("(type: %s)", doc.getType()) :
+					"";
+							
+			Set<Snippet> perDocSnippets = doc.getSnippets();
+			String innerPattern = !perDocSnippets.isEmpty() ?
+					"Document: %s %s %%s, snippets:\n" :
+					"Document: %s %s %%s";
+			String outerPattern = String.format(innerPattern, docName, docType);
+			
+			writeEligibility(out, outerPattern, doc.getClassifiers());
+			writePerDocModifierList(out, doc, doc.getModifiers());
+		}
+
+		private static void writePerDocModifierList(Appendable out, 
+				ResultDocument doc, Set<SemanticModifier> modifiers)
+				throws IOException {
+			out.append(Tags.LIST.open());
+			for (SemanticModifier semMod : modifiers) {
+				out.append(Tags.LIST_ITEM.open());
+				writeModifier(out, doc, semMod);
+				out.append(Tags.LIST_ITEM.close());
+			}
+			out.append(Tags.LIST.close());
+		}
+
+		private static void writeModifier(Appendable out,
+				ResultDocument doc, SemanticModifier semMod)
+				throws IOException {
+			writeEligibility(out, "%s\n", 
+					Collections.singleton(semMod.getClassification()));
+			writeSnippetList(out, doc.getSnippets(semMod));
+		}
+
+		private static void writeSnippetList(Appendable out,
+				Set<Snippet> snippets) throws IOException {
+			out.append(Tags.LIST.open());
+			for (Snippet snippet : snippets) {
+				out.append(Tags.LIST_ITEM.open());
+				writeSnippet(out, snippet);
+				out.append(Tags.LIST_ITEM.close());
+			}
+			out.append(Tags.LIST.close());
+		}
+
+		private static void writeSnippet(Appendable out, Snippet snippet) throws IOException {
+			out.append(snippet.getValue());
+		}
+
 		@Override
 		public void writeList(Appendable out, Iterable<SearchResult> results) throws IOException {
 			throw new UnsupportedOperationException("Not supported.");
@@ -208,6 +242,23 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	}
 
 	private static final String eligCssPrefix = "eligibility-";
+
+	public static void writeDocStart(Appendable out, String title) throws IOException {
+		out.append(Tags.DOC_HTML.open() + "\n");
+		out.append(Tags.DOC_HEAD.open() + "\n");
+		out.append(Tags.DOC_TITLE.format(title));
+		out.append(Tags.META_CHARSET.format(""));
+		writeScript(out);
+		writeStyle(out);
+		out.append(Tags.DOC_HEAD.close() + "\n");
+		out.append(Tags.DOC_BODY.open() + "\n");
+		out.append(Tags.TITLE.format(title));
+	}
+
+	public static void writeDocEnd(Appendable out) throws IOException {
+		out.append(Tags.DOC_BODY.close() + "\n");
+		out.append(Tags.DOC_HTML.close());
+	}
 	
 	public static void writeScript(Appendable out) throws IOException {
 		out.append(Tags.SCRIPT.open() + "\n");
@@ -264,12 +315,12 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	@Override
 	public void write(Appendable out, SearchResult result) throws IOException {
 		if(result.getTotalHits() > 0) {
-			String innerPattern = String.format("patient %s: %%s (#hits: %d)<br/>\n",
+			String innerPattern = String.format("\tpatient %s: %%s (#hits: %d)<br/>\n",
 					result.getPatient().getValue(), result.getTotalHits());
 			writeEligibility(out, innerPattern, result.getClassification());
 			getSnippetStrategy().write(out, result);
 		} else {
-			String innerPattern = String.format("patient %s: %%s",
+			String innerPattern = String.format("\tpatient %s: %%s",
 					result.getPatient().getValue());
 			writeEligibility(out, innerPattern, result.getClassification());
 		}
@@ -280,9 +331,9 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		new SearchResultFormatterBase() {
 			@Override
 			public void write(Appendable out, SearchResult result) throws IOException {
-				out.append(HtmlFormatter.Tags.LIST_ITEM.open());
+				out.append("\t" + HtmlFormatter.Tags.LIST_ITEM.open());
 				HtmlFormatter.this.write(out, result);
-				out.append(HtmlFormatter.Tags.LIST_ITEM.close());
+				out.append("\t" + HtmlFormatter.Tags.LIST_ITEM.close());
 			}
 
 			@Override
@@ -343,15 +394,15 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		}
 			
 		if(tmpClassifications.size()==1) {
-			out.append(Tags.ELIGIBILITY_CLASS.open(String.format(
+			out.append("\t\t" + Tags.ELIGIBILITY_CLASS.open(String.format(
 					"class=\"%s%s\"",
 					eligCssPrefix,
 					tmpClassifications.iterator().next().name().toLowerCase())) +
 					"\n");
 		} else {
-			out.append(Tags.ELIGIBILITY_CLASS.open());
+			out.append("\t\t" + Tags.ELIGIBILITY_CLASS.open());
 		}
-		out.append(String.format(pattern, tmpClassifications.toString()));
-		out.append(Tags.ELIGIBILITY_CLASS.close() + "\n");
+		out.append("\t\t" + String.format(pattern, tmpClassifications.toString()));
+		out.append("\t\t" + Tags.ELIGIBILITY_CLASS.close() + "\n");
 	}
 }

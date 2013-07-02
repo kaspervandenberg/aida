@@ -1,7 +1,8 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
-import java.util.HashMap;
-import java.util.NoSuchElementException;
+import java.util.Set;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
+import nl.maastro.eureca.aida.search.zylabpatisclient.util.ClassMap;
 
 /**
  * Adapt any {@link Query} ({@link StringQuery}, {@link ParseTree}, or 
@@ -10,75 +11,23 @@ import java.util.NoSuchElementException;
  * @author Kasper vanden Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class DynamicAdapter {
-
-	private static class ClassMap<TValue> extends HashMap<Class<?>, TValue> {
-		public enum RetrievalStrategies {
-			SUBCLASS {
-				@Override
-				public boolean matches(Class<?> request, Class<?> stored) {
-					return stored.isAssignableFrom(request);
-				} },
-			
-			SUPERCLASS {
-				@Override
-				public boolean matches(Class<?> request, Class<?> stored) {
-					return request.isAssignableFrom(stored);
-				} };
-
-			public abstract boolean matches(Class<?> request, Class<?> stored);
-		}
-		
-		private final RetrievalStrategies strategy;
-
-		public ClassMap(RetrievalStrategies strategy_) {
-			this.strategy = strategy_;
-		}
-		
-		@Override
-		public TValue get(Object o_request) {
-			if(!(o_request instanceof Class)) {
-				throw new NoSuchElementException(
-						String.format("No elements of type %s stored.",
-						o_request.getClass().getName()));
-			}
-			Class<?> request = (Class)o_request;
-			
-			for (Class<?> stored : this.keySet()) {
-				if(strategy.matches(request, stored)) {
-					return getStrict(stored);
-				}
-			}
-
-			throw new NoSuchElementException(String.format(
-					"%s not stored (or any of its parents) in this map",
-					request.getName()));
-		}
-
-		public TValue getStrict(Object o_key) {
-			if(!(o_key instanceof Class)) {
-				throw new NoSuchElementException(
-						String.format("No elements of type %s stored.",
-						o_key.getClass().getName()));
-			}
-			Class<?> key = (Class)o_key;
-			return super.get(key);
-		}
-	}
 	
-	private class Table extends ClassMap<ClassMap< 
+	@SuppressWarnings("serial")  
+	private class Table extends ClassMap<Query, ClassMap<Query,  
 				QueryAdapterBuilder<? extends Query, ? extends Query>>> {
 
 		public Table() {
 			super(RetrievalStrategies.SUPERCLASS);
 		}
 		
+		@SuppressWarnings("unchecked")
 		public <TIn extends Query, TOut extends Query> 
 				QueryAdapterBuilder<TIn, TOut> put(
 					Class<TOut> key1,
 					Class<TIn> key2,
 					QueryAdapterBuilder<TIn, TOut> newValue_) {
 			if (!this.containsKey(key1)) {
-				this.put(key1, new ClassMap<QueryAdapterBuilder<? extends Query, ? extends Query>>(RetrievalStrategies.SUBCLASS));
+				this.put(key1, new ClassMap<Query, QueryAdapterBuilder<? extends Query, ? extends Query>>(RetrievalStrategies.SUBCLASS));
 			}
 			QueryAdapterBuilder<? extends Query, ? extends Query> result =
 					this.getStrict(key1).put(key2, newValue_);
@@ -91,6 +40,7 @@ public class DynamicAdapter {
 			return (QueryAdapterBuilder<TIn, TOut>)(Object)result;
 		}
 
+		@SuppressWarnings("unchecked")
 		public <TIn extends Query, TOut extends Query> QueryAdapterBuilder<TIn, TOut> get(Class<TOut> key1, Class<TIn> key2) {
 			QueryAdapterBuilder<? extends Query, ? extends Query> result = this.get(key1).get(key2);
 
@@ -150,5 +100,49 @@ public class DynamicAdapter {
 				return registedBuilders.get(toType, ParseTree.class).adapt(element);
 			}
 		});
+	}
+
+	public Query applyModifier(Query concept, final SemanticModifier modifier) {
+		Class<? extends Query> conceptClass = concept.getClass();
+		// TODO Check Why ClassMap does not match: answer enum and DualRepresentation query and not StringQuery, LuceneObject, or ParseTree
+		ClassMap<Query, Set<Class<? extends Query>>> supportedConversions =
+				new ClassMap<>(ClassMap.RetrievalStrategies.SUBCLASS, modifier.getSupportedTypes());
+		if(supportedConversions.containsKey(conceptClass)) {
+			Class<? extends Query> inputType = supportedConversions.getMatchingStoredKey(conceptClass);
+			Class<? extends Query> outputType;
+			ClassMap<Query, Void> targetTypes = ClassMap.createClassToVoidMap(
+					ClassMap.RetrievalStrategies.SUPERCLASS, supportedConversions.get(conceptClass));
+			
+			if(targetTypes.containsKey(concept.getClass())) {
+				outputType = targetTypes.getMatchingStoredKey(conceptClass);
+			} else {
+				if(targetTypes.isEmpty()) {
+					throw new IllegalStateException(String.format(
+							"Modifier supported conversions structure is not well formed: %s exist as key but is mapped to an empty set.",
+							inputType.getName()));
+				}
+				outputType = targetTypes.keySet().iterator().next();
+			}
+			QueryAdapterBuilder<? extends Query, ? extends Query> modifierAdapter = 
+					modifier.getAdapterBuilder(inputType, outputType);
+			/*
+			 * Use capture helper method, see http://stackoverflow.com/a/17302484/814206
+			 */
+			return applyModifier(inputType, outputType, modifier, concept);
+			
+		} else {
+			throw new UnsupportedOperationException(String.format(
+					"Not yet implemented concept class %s, modifier supports: %s",
+					concept.getClass().getName(), modifier.getSupportedTypes().toString()));
+		}
+	}
+
+	private static <TIn extends Query, TOut extends Query> TOut applyModifier(
+			Class<TIn> inputType, Class<TOut> outputType,
+			SemanticModifier modifier, Query argument) {
+		TIn castArgument = inputType.cast(argument);
+		QueryAdapterBuilder<TIn, TOut> adapterBuilder =
+				modifier.getAdapterBuilder(inputType, outputType);
+		return adapterBuilder.adapt(castArgument);
 	}
 }

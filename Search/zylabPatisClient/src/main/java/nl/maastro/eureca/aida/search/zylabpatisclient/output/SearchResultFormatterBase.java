@@ -21,6 +21,7 @@ public abstract class SearchResultFormatterBase implements SearchResultFormatter
 	public void setShowSnippetsStrategy(SearchResultFormatter delegate_) {
 		snippetDelegate = delegate_;
 	}
+	@SuppressWarnings("serial")
 	protected static class Table extends LinkedHashMap<PatisNumber, LinkedHashMap<String, SearchResult>> {
 		
 	}
@@ -62,10 +63,10 @@ public abstract class SearchResultFormatterBase implements SearchResultFormatter
 
 		for (String col : columns) {
 			for (SearchResult result : perColData.get(col)) {
-				if(!table.containsKey(result.patient)) {
-					table.put(result.patient, new LinkedHashMap<>(emptyRow));
+				if(!table.containsKey(result.getPatient())) {
+					table.put(result.getPatient(), new LinkedHashMap<>(emptyRow));
 				}
-				table.get(result.patient).put(col, result);
+				table.get(result.getPatient()).put(col, result);
 			}
 		}
 		return table;

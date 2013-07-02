@@ -2,8 +2,6 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.config;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -23,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
@@ -34,10 +34,12 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.LocalLuceneSearcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.WebserviceSearcher;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.DynamicAdapter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTree;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQuery;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQueryBase;
 import nl.maastro.vocab.axis.services.SearcherWS.SearcherWS;
 import nl.maastro.vocab.axis.services.SearcherWS.SearcherWSServiceLocator;
 import org.jdom2.Attribute;
@@ -45,7 +47,6 @@ import org.jdom2.Comment;
 import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMConstants;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.filter.Filter;
@@ -232,6 +233,7 @@ public class Config {
 					getContext(context, ops.subList(0, ops.size() -1)));
 		}
 
+		@SuppressWarnings("serial")
 		@Override
 		public void setVariable(String name, Object value) throws IllegalArgumentException {
 			final List<IllegalArgumentException> suppressedExceptions = new LinkedList<>();
@@ -247,7 +249,7 @@ public class Config {
 				throw new IllegalArgumentException(
 						String.format("None of the component XPath accepted %s", name.toString()),
 						new Exception("Multiple causes") {
-							final List<IllegalArgumentException> causes = new ArrayList(suppressedExceptions);
+							final List<IllegalArgumentException> causes = new ArrayList<>(suppressedExceptions);
 						});
 			}
 		}
@@ -293,7 +295,7 @@ public class Config {
 						canQName.getPrefix() + ":" + canQName.getLocalPart();
 				XPaths.QUERY_BY_ID.setVariable("queryId", s_id);
 				final String s_query = XPaths.QUERY_BY_ID.getFirstNode(getConfigDoc()).getValue();
-				queries.put(id, new StringQuery() {
+				queries.put(id, new StringQueryBase() {
 					@Override
 					public String getRepresentation() {
 						return s_query;
@@ -605,7 +607,7 @@ public class Config {
 			throw new IllegalStateException(
 					"Call init(…) before calling instance()");
 		}
-		throw new UnsupportedOperationException("Not yet implemented");
+		return singleton;
 	}
 
 	public Searcher getSearcher() throws ServiceException, IOException {
@@ -620,7 +622,7 @@ public class Config {
 							XPaths.WS_INDEX.getAttrValue(getConfigDoc()),
 							defaultField, maxHits, taskPool);
 			} else {
-				searcher = new LocalLuceneSearcher(getLocalIndexFile(), defaultField, maxHits, taskPool);
+				searcher = new LocalLuceneSearcher(getLocalIndexFile(), defaultField, maxHits, taskPool, new DynamicAdapter());
 			}
 		}
 		return searcher;
@@ -644,7 +646,21 @@ public class Config {
 		}
 		return namespaces;
 	}
+
+	public String getDefaultField() {
+		String defaultField = XPaths.DEFAULT_FIELD.getAttrValue(getConfigDoc());
+		return defaultField;
+	}
 	
+	// TODO replace hardcoded with value from config file
+	public URI getDocumentServer() {
+		try {
+			return new URI("http://vocab.maastro.nl:80/search/item/");
+		} catch (URISyntaxException ex) {
+			throw new Error(ex);
+		}
+	}
+
 	private static Document parseXml(InputStream configStream) {
 		try {
 			Document doc = getParser().build(configStream);
@@ -727,49 +743,6 @@ public class Config {
 		boolean existsWs = XPaths.INDEX_WEBSERVICE.nodeExists(getConfigDoc());
 		boolean existsLocal = XPaths.INDEX_LOCAL.nodeExists(getConfigDoc());
 		return existsWs || ! existsLocal;
-	}
-	
-	public static void main(String[] args) {
-//		try {
-			URL resource = Config.class.getResource("/testConfig.xml");
-			System.out.println(resource);
-			Config testConfig = Config.init(Config.class.getResourceAsStream("/testConfig.xml"));
-//			XPaths.getXPath().compile("/zlpc/@ver");
-//			System.out.println(XPaths.ABS_VERSION.s_expr);
-//			System.out.println(testConfig.getConfigDoc().getDocumentElement().getNamespaceURI());
-//			System.out.println(testConfig.getConfigDoc().getDocumentElement().getNodeName());
-//			System.out.println("Use webservice: " + testConfig.useWebservice());
-//			System.out.println("Default field: *" + XPaths.N_DEFAULT_FIELD.getAttrValue(testConfig.getConfigDoc()) + "*");
-//			System.out.println("Max hits: " + XPaths.N_RESULT_LIMIT.getAttrValue(testConfig.getConfigDoc()));
-//			dumpNodeList((NodeList)XPathAttrs.ABS_QUERY_ID.getExpr().evaluate(testConfig.getConfigDoc(), XPathConstants.NODESET));
-//			dumpNodeList(XPathNodes.N_BASE.getLastNode(testConfig.getConfigDoc()).getAttributes().);
-//			System.out.println("Address: " + testConfig.getWebserviceAddress().toString());
-//			System.out.println("Index: " + testConfig.getWebserviceIndex());
-//			System.out.println(XPaths.getXPath().getNamespaceContext().getNamespaceURI(""));
-//			dumpNodeList((NodeList)XPaths.getXPath().evaluate("//*[local-name()='zylabPatisClientConfig']", testConfig.getConfigDoc(), XPathConstants.NODESET));
-//			dumpNodeList((NodeList)XPaths.getXPath().evaluate("//:zylabPatisClientConfig", testConfig.getConfigDoc(), XPathConstants.NODESET));
-//			dumpNodeList((NodeList)XPaths.getXPath().evaluate("/:zylabPatisClientConfig", testConfig.getConfigDoc(), XPathConstants.NODESET));
-//			System.out.println("version: " + XPaths.getXPath().evaluate("/" + NS_PREFIX + ":zylabPatisClientConfig/@:version", testConfig.getConfigDoc(), XPathConstants.STRING));
-//			dumpNodeList((NodeList)XPaths.getXPath().evaluate("/zylabPatisClientConfig", testConfig.getConfigDoc(), XPathConstants.NODESET));
-//			dumpNodeList((NodeList)XPaths.N_BASE.getExpr().evaluate(testConfig.getConfigDoc(), XPathConstants.NODESET));
-			dumpNodeList(testConfig.getConfigDoc().getContent(Filters.element()));
-//			XPathImpls.N_ABS_QUERY_BY_ID.delegate.setVariable("queryId", "eewrt");
-//			dumpNode(XPathImpls.N_ABS_QUERY_BY_ID.delegate.getFirstNode(testConfig.getConfigDoc()));
-			
-			System.out.println(testConfig.new QueryPatterns().getQueryIds().toString());
-			System.out.println(testConfig.new QueryPatterns().getAsString(new QName("http://search.aida.eureca.maastro.nl/zylabpatisclient/config", "scopedQuery1", "zlpc")));
-//			System.out.println(testConfig.new QueryPatterns().getAsString(new QName("unscopedQuery2")));
-			
-//			System.out.println(XPaths.N_BASE.getExpr().evaluate(testConfig.getConfigDoc()));
-//			dumpNode(XPaths.N_BASE.getLastNode(testConfig.getConfigDoc()));
-//			dumpNode(XPaths.N_ABS_INDEX.getLastNode(testConfig.getConfigDoc()));
-//			System.out.println(XPaths.N_WEBSERVICE_INDEX.nodeExists(XPaths.N_ABS_INDEX.getLastNode(testConfig.getConfigDoc())));
-//			System.out.println(XPaths.N_LOCAL_INDEX.nodeExists(XPaths.N_ABS_INDEX.getLastNode(testConfig.getConfigDoc())));
-//			System.out.println(XPaths.ABS_VERSION.getAttrValue(testConfig.getConfigDoc()));
-//		} catch (XPathExpressionException | URISyntaxException ex) {
-//		} catch (URISyntaxException ex) {
-//			throw new Error(ex);
-//		}
 	}
 
 	private static void dumpNodeList(List<? extends Content> nodes) {

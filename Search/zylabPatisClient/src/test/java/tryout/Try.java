@@ -2,14 +2,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.maastro.eureca.aida.search.zylabpatisclient;
+package tryout;
 
+import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.PreconstructedQueries;
 import java.util.ArrayList;
 import java.util.Arrays;
-import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
-import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTree;
-import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query.Visitor;
-import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQuery;
+import java.util.HashMap;
+import java.util.Map;
+import nl.maastro.eureca.aida.search.zylabpatisclient.QueryDisplay;
+import nl.maastro.eureca.aida.search.zylabpatisclient.QueryDisplay;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeParseException;
 import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
@@ -34,6 +35,7 @@ public class Try {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
+		
 		try {
 			final String def = "content";
 			SyntaxParser parser = new StandardQueryParser().getSyntaxParser();
@@ -50,10 +52,10 @@ public class Try {
 //			parsed.add(parser.parse("confusion~2", def));
 //			parsed.add(parser.parse("foo AND bar", def));
 //			parsed.add(parser.parse("(optional OR keuze) AND (field OR metastase)", def));
-//			parsed.add(parser.parse("(\"letter comes\"~3 \"agitated employees\"~4 \"worried about salaries\"~1)" +
-//" AND (\"letter comes agitated employees worried about salaries\"~8)", def));
-			parsed.add(parser.parse("\\?", def));
-
+			parsed.add(parser.parse("(\"letter comes\"~3 \"agitated employees\"~4 \"worried about salaries\"~1)" +
+" AND (\"letter comes agitated employees worried about salaries\"~8)", def));
+			parsed.add(parser.parse("\"d.d\"", def));
+			
 			ArrayList<QueryNode> queries = new ArrayList<>();
 			queries.addAll(parsed);
 //			queries.add(q);
@@ -81,26 +83,7 @@ public class Try {
 			throw new Error(ex);
 		}
 
-		System.out.println("Preconstructed question mark");
-		Query preconQuestionmark = new PreconstructedQueries.Provider().get(
-				PreconstructedQueries.LocalParts.QUESTIONMARK_METASTASIS.getID()).accept(
-				new Visitor<Query>() {
-					@Override
-					public Query visit(LuceneObject element) {
-						return element.getRepresentation();
-					}
-
-					@Override
-					public Query visit(StringQuery element) {
-						throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-					}
-
-					@Override
-					public Query visit(ParseTree element) {
-						throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-					}
-			 });
-		System.out.println(QueryDisplay.instance().dumpQuery("\t", preconQuestionmark));
+		
 		// TODO code application logic here
 	}
 }

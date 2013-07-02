@@ -22,34 +22,39 @@ public class WebserviceSearcher extends SearcherBase {
 	private final String index;
 
 	public WebserviceSearcher(SearcherWS service_, String index_, String defaultField_, int maxResults_, final ForkJoinPool taskPool_) {
-		super(defaultField_, maxResults_, taskPool_);
+		super(defaultField_, maxResults_);
 		this.service = service_;
 		this.index = index_;
 	}
 
 	@Override
+	public SearchResult searchFor(nl.maastro.eureca.aida.search.zylabpatisclient.query.Query query, Iterable<SemanticModifier> modifiers, PatisNumber patient) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Deprecated
 	public SearchResult searchFor(String query, PatisNumber patient) throws QueryNodeException {
 		String constructedQuery = patient.compose(query);
 		try {
 			String resultJson = service.searchJason(index, constructedQuery, "0", getDefaultField(), String.valueOf(getMaxResults()));
-			return SearchResult.create(patient, resultJson);
+			return SearchResultImpl.create(patient, resultJson);
 		} catch (RemoteException ex) {
 			log.log(Level.SEVERE, String.format("RPC Error when calling searchJason on the webservice"), ex);
-			return SearchResult.NO_RESULT();
+			return SearchResultImpl.NO_RESULT();
 		}
 	}
 
-	@Override
+	@Deprecated
 	public SearchResult searchFor(Query query, PatisNumber patient) {
 		throw new UnsupportedOperationException("Webservice only supports String queries.");
 	}
 
-	@Override
+	@Deprecated
 	public boolean supportsStringQueries() {
 		return true;
 	}
 
-	@Override
+	@Deprecated
 	public boolean supportsLuceneQueryObjects() {
 		return false;
 	}

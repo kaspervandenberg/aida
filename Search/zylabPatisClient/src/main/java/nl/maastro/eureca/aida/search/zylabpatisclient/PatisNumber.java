@@ -1,11 +1,24 @@
 // © Maastr Clinics, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import java.util.Arrays;
 import java.util.Objects;
+import javax.xml.namespace.QName;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObjectBase;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTree;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTreeBase;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQuery;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQueryBase;
+import nl.maastro.eureca.aida.search.zylabpatisclient.util.HasString;
+import nl.maastro.eureca.aida.search.zylabpatisclient.util.QNameUtil;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.flexible.core.nodes.AndQueryNode;
+import org.apache.lucene.queryparser.flexible.core.nodes.FieldQueryNode;
+import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
 /**
@@ -13,7 +26,7 @@ import org.apache.lucene.search.TermQuery;
  * 
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class PatisNumber {
+public class PatisNumber extends HasString {
 	/**
 	 * The (name of the) Lucene-field in which the PatisNumber a document is 
 	 * about is stored.  This must match field name in the index.
@@ -23,10 +36,10 @@ public class PatisNumber {
 	/**
 	 * The actual number
 	 */
-	public final String value;
+//	public final String value;
 
 	private PatisNumber(String value_) {
-		value = value_;
+		super(value_);
 	}
 
 	/**
@@ -87,10 +100,61 @@ public class PatisNumber {
 	 * 		{@code PatisNumber} and {@code other}
 	 */
 	public Query compose(final Query other) {
-		BooleanQuery result = new BooleanQuery();
-		result.add(new TermQuery(new Term(PATIS_FIELD, value)), BooleanClause.Occur.MUST);
-		result.add(other, BooleanClause.Occur.MUST);
-		return result;
+		return other.accept(new Query.Visitor<Query>() {
+			@Override
+			public Query visit(final LuceneObject element) {
+				return new LuceneObjectBase() {
+					@Override
+					public org.apache.lucene.search.Query getRepresentation() {
+						BooleanQuery result = new BooleanQuery();
+						result.add(new TermQuery(new Term(PATIS_FIELD, value)), BooleanClause.Occur.MUST);
+						result.add(element.getRepresentation(), BooleanClause.Occur.MUST);
+						return result;
+					}
+
+					@Override
+					public QName getName() {
+						return QNameUtil.instance().append(element.getName(),
+								"-" + PatisNumber.this.getValue());
+					}
+				};
+			}
+
+			@Override
+			public Query visit(final StringQuery element) {
+				return new StringQueryBase() {
+					@Override
+					public String getRepresentation() {
+						return String.format("%s:%s AND %s",
+								PATIS_FIELD,value, element.getRepresentation());
+					}
+
+					@Override
+					public QName getName() {
+						return QNameUtil.instance().append(element.getName(),
+								"-" + PatisNumber.this.getValue());
+					}
+				};
+			}
+
+			@Override
+			public Query visit(final ParseTree element) {
+				return new ParseTreeBase() {
+					@Override
+					public QueryNode getRepresentation() {
+						return new AndQueryNode(
+								Arrays.asList(new FieldQueryNode(PATIS_FIELD, value, 0, value.length()),
+								element.getRepresentation()));
+					}
+
+					@Override
+					public QName getName() {
+						return QNameUtil.instance().append(element.getName(),
+								"-" + PatisNumber.this.getValue());
+					}
+				};
+			}
+		});
 	}
 
 	/**

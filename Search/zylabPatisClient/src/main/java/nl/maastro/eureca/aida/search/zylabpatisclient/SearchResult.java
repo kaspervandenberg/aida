@@ -1,72 +1,58 @@
-// © Maastro Clinics, 2013
+// © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
-import com.google.gson.Gson;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.search.TopDocs;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 
 /**
  * Results that {@link ZylabPatisClient} returns
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class SearchResult {
-	/**
-	 * The relevant parts of the response from SearcherWS.
-	 */
-	private static class SearcherWSResults {
-		int hits;
-	}
-	
-	private static transient Gson gsonParserInstance;
-	private static transient SearchResult NO_RESULT;
-	public final PatisNumber patient;
-	public final int nHits;
-	public final Map<String, Set<String>> snippets;
-
-	private SearchResult(PatisNumber patient_, int nHits_) {
-		this.patient = patient_;
-		this.nHits = nHits_;
-		this.snippets = Collections.<String, Set<String>>emptyMap();
-	}
-
-	private SearchResult(PatisNumber patient_, int nHits_, 
-			Map<String, Set<String>> snippets_) {
-		this.patient = patient_;
-		this.nHits = nHits_;
-		this.snippets = snippets_;
-	}
+public interface SearchResult {
 
 	/**
-	 * 
-	 * @return 
+	 * @return the patient
 	 */
-	public static SearchResult NO_RESULT() {
-		if (NO_RESULT == null) {
-			NO_RESULT = new SearchResult(null, -1);
-		}
-		return NO_RESULT;
-	}
+	public PatisNumber getPatient();
 
-	public static SearchResult create(final PatisNumber patient_, 
-			final TopDocs hits, Map<String, Set<String>> snippets_) {
-		return new SearchResult(patient_, hits.totalHits, snippets_);
-	}
-
-	public static SearchResult create(final PatisNumber patient_, final String json) {
-		SearcherWSResults result = getGsonParser().fromJson(json, SearcherWSResults.class);
-		return new SearchResult(patient_, result.hits);
-	}
-
-	private static Gson getGsonParser() {
-		if (gsonParserInstance == null) {
-			gsonParserInstance = new Gson();
-		}
-		return gsonParserInstance;
-	}
+	/**
+	 * @return the total number of matches over all documents in the index.
+	 * 		{@code nHits} can be greater than the sum of the hits in
+	 * 		{@link #getMatchingDocuments()} c.f.
+	 * 		{@link org.apache.lucene.search.TopDocs#totalHits}.
+	 * 		{@link #remove(nl.maastro.eureca.aida.search.zylabpatisclient.ResultDocument)
+	 * 		removing} a document from this {@code SearchResult} will not update
+	 * 	I	{@code nHits}
+	 */
+	public int getTotalHits();
 	
+	public Set<DocumentId> getMatchingDocumentIds();
+
+	public ResultDocument getDoc(DocumentId id);
+	
+	public Collection<ResultDocument> getMatchingDocuments();
+
+	public Set<EligibilityClassification> getClassification();
+
+	public void add(ResultDocument doc);
+
+	public void remove(ResultDocument doc);
+	
+	/**
+	 * Assign {@code modifier} as {@link SemanticModifier} to all {@link Snippet}s
+	 * that have {@link nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier.Constants#UNKNOWN_MODIFIER}
+	 * as value.
+	 *
+	 * @param modifier	the new {@link SemanticModifier} to assign
+	 *
+	 * @return  a {@link DocumentId}–set of {@link Snippet}-map of all
+	 * 		{@code Snippets} that were assign to {@code modifier}
+	 */
+	public Map<DocumentId, Set<Snippet>> assignUnknownTo(
+			SemanticModifier modifier);
+
+
 }

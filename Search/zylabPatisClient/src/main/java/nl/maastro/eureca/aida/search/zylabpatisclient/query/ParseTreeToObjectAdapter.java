@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
+import nl.maastro.eureca.aida.search.zylabpatisclient.util.QNameUtil;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
 import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
@@ -13,7 +14,7 @@ import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
  * Convert a parse tree to a query object that Lucene search can execute
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class ParseTreeToObjectAdapter extends LuceneObject implements Query {
+public class ParseTreeToObjectAdapter extends LuceneObjectBase implements Query {
 	public static class Builder implements QueryAdapterBuilder<ParseTree, LuceneObject> {
 		private static final QueryBuilder defaultQueryBuilder;
 		static {
@@ -56,10 +57,7 @@ public class ParseTreeToObjectAdapter extends LuceneObject implements Query {
 		}
 
 		private QName appendDefaultSuffix(Query q) {
-			QName src = q.getName();
-			return new QName(src.getNamespaceURI(),
-					src.getLocalPart() + suffix,
-					src.getPrefix());
+			return QNameUtil.instance().append(q.getName(), suffix);
 		}
 		
 	}

@@ -5,7 +5,7 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
 import javax.xml.namespace.QName;
-import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTree;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTreeBase;
 import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
 import org.apache.lucene.search.spans.SpanQuery;
 
@@ -13,7 +13,7 @@ import org.apache.lucene.search.spans.SpanQuery;
  *
  * @author kasper
  */
-public interface DualRepresentationQuery extends nl.maastro.eureca.aida.search.zylabpatisclient.query.Query {
+public interface DualRepresentationQuery extends Query  {
 
 	/**
 	 * @return the parsetree_representation
@@ -41,7 +41,7 @@ public interface DualRepresentationQuery extends nl.maastro.eureca.aida.search.z
 			@Override
 			public <T> T accept(final DualRepresentationQuery src,
 					final Query.Visitor<T> visitor) {
-				return visitor.visit(new ParseTree() {
+				return visitor.visit(new ParseTreeBase() {
 					@Override
 					public QueryNode getRepresentation() {
 						return src.getParsetree_representation();
@@ -63,7 +63,7 @@ public interface DualRepresentationQuery extends nl.maastro.eureca.aida.search.z
 			@Override
 			public <T> T accept(final DualRepresentationQuery src,
 					final Query.Visitor<T> visitor) {
-				return visitor.visit(new LuceneObject() {
+				return visitor.visit(new LuceneObjectBase() {
 					@Override
 					public org.apache.lucene.search.Query getRepresentation() {
 						return src.getLuceneObject_representation();

@@ -3,7 +3,9 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.output;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import nl.maastro.eureca.aida.search.zylabpatisclient.ResultDocument;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
+import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
 
 /**
  *
@@ -13,10 +15,10 @@ public class PlaintextHumanFormatter extends SearchResultFormatterBase {
 	private static class FormatSnippets extends SearchResultFormatterBase {
 		@Override
 		public void write(Appendable out, SearchResult result) throws IOException {
-			for (String docId : result.snippets.keySet()) {
-				out.append(String.format("\tDocument: %s\n", docId));
-				for (String snippet : result.snippets.get(docId)) {
-					out.append(String.format("\t\t<snippet>%s</snippet>\n", snippet));
+			for (ResultDocument doc : result.getMatchingDocuments()) {
+				out.append(String.format("\tDocument: %s\n", doc.getId()));
+				for (Snippet snippet : doc.getSnippets()) {
+					out.append(String.format("\t\t<snippet>%s</snippet>\n", snippet.getValue()));
 				}
 			}
 		}
@@ -61,8 +63,7 @@ public class PlaintextHumanFormatter extends SearchResultFormatterBase {
 	@Override
 	public void write(Appendable out, SearchResult result) throws IOException {
 		out.append(String.format("PatisNr: %s found in %d documents\nSnippets:\n",
-				result.patient.value,
-				result.nHits));
+				result.getPatient().getValue(), result.getTotalHits()));
 		getSnippetStrategy().write(out, result);
 	}
 

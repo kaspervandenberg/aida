@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.adaptivedisclosure</groupId>
+	<artifactId>aida</artifactId>
+	<packaging>pom</packaging>
+	<version>0.86-SNAPSHOT</version>
+	<name>AIDA</name>
+	<description>
+		AIDA connects diverse sources of information via semantic web technology;
+		amongst those sources are thesauri and ontologies (in OWL and SKOS), 
+		unstructured text, and machine learning data.
+	</description>
+
+	<modules>
+		<module>Search/Indexer</module>
+		<module>Search/search</module>
+		<module>Search/zylabPatisClient</module>
+
+		<module>maven-parent</module>
+		<module>maven-parent-serviceServlet</module>
+		
+		<!-- Modules not currently in use -->
+		<?ignore
+			<module>Search/taverna-plugin</module>
+			<module>Search/indexer-plugin</module>
+			<module>Search/basicIndexCLient</module>
+		?>
+	</modules>
+</project>
+
+<!-- vim: set tabstop=2 shiftwidth=2 : -->

@@ -3,13 +3,19 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>search</artifactId>
-	<version>0.81-SNAPSHOT</version>
+	<version>0.86-SNAPSHOT</version>
 	<packaging>jar</packaging>
+	<name>AIDA::Search</name>
+	<description>
+		Web interface that connects different sources of information; AIDA::Search
+		allows using terms and concepts from thesauri and ontologies to search
+		through (unstructured) text.
+	</description>
 	
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
 		<artifactId>maven-parent-serviceServlet</artifactId>
-		<version>0.2</version>
+		<version>0.4</version>
 		<relativePath>../../maven-parent-serviceServlet</relativePath>
 	</parent>
 
@@ -54,7 +60,6 @@
 
 	<build>
 		<plugins>
-			
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.0</version>
@@ -84,10 +89,23 @@
 						<goals>
 							<goal>xmlbeans</goal>
 						</goals>
+						<configuration>
+							<sourceSchemas>
+								<sourceSchema>result.xsd</sourceSchema>
+							</sourceSchemas>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+			
+		</resources>
 	</build>
 
 	<dependencies>
@@ -145,6 +163,12 @@
 			<artifactId>lucene-queryparser</artifactId>
 			<version>4.1.0</version>
 			<!-- used in org.vcle.aid.client.search -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+			<version>1.3</version>
 		</dependency>
 
 		<dependency>
@@ -218,6 +242,13 @@
 			<!--
 				Used in org.vle.aid.lucene.BugAida3Test, and 
 				org.vle.aid.lucene.SearcherWSTest indirectly. 
+				Provides JSON to java object transformation
+			-->
+			<!--
+				TODO: com.google.code.gson:gson is considered of higher quality 
+				see http://stackoverflow.com/questions/338586/a-better-java-json-library
+				therefore convert dependencies on org.json to dependencies on 
+				com.google.gson.
 			-->
 		</dependency>
 
@@ -245,3 +276,4 @@
 </project>
 
 <!-- vim: set tabstop=2 shiftwidth=2 : -->
+

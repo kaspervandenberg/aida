@@ -5,4 +5,7 @@
 /Search/Indexer/dist/
 /Search/Indexer/target/
 /Search/search/.settings/
-
+/Search/search/target/
+/Search/zylabPatisClient/target/
+/Search/zylabPatisClient/results/
+/Search/zylabPatisClient/data

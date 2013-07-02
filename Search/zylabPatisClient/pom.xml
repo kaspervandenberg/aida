@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.adaptivedisclosure.aida</groupId>
+	<artifactId>zylabPatisClient</artifactId>
+	<version>0.86-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<name>AIDA::Zylab Patis Search client</name>
+	<description>
+		Client to search in Zylab's documents about patient for patients that match
+		(eligibility) criteria.
+	</description>
+	
+	<parent>
+		<groupId>org.adaptivedisclosure.aida</groupId>
+		<artifactId>maven-parent</artifactId>
+		<version>0.4</version>
+		<relativePath>../../maven-parent</relativePath>
+	</parent>
+
+	<profiles>
+		<profile>
+			<id>test_remote_Vocab</id>
+			<properties>
+				<!--
+					Host on which services are deployed.
+				-->
+				<target.host>vocab.maastro.nl</target.host>
+
+				<!--
+					Port on which tomcat services listen.
+				-->
+				<target.port>80</target.port>
+
+				<!--
+					URL of Search/search webservice.
+					Used when testing Search/search.
+				-->
+				<target.search.url>
+					HTTP://${target.host}:${target.port}/search/
+				</target.search.url>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<artifactId>maven-surefire-plugin</artifactId>
+							<configuration>
+								<systemProperties>
+									<target.search.url>${target.search.url}</target.search.url>
+								</systemProperties>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
+
+	<build>
+		<plugins>
+			
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<compilerArgs>
+						<Xlint:-unchecked/>
+						<Xlint:-deprecation/>
+					</compilerArgs>
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<!--<version>2.14</version>-->
+				<configuration>
+					<skip>false</skip>
+					<workingDirectory>${test.workingDirectory}</workingDirectory>
+					<environmentVariables>
+						<INDEXDIR>${test.workingDirectory}/indexes</INDEXDIR>
+					</environmentVariables>
+				</configuration>
+			</plugin>
+				
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>axistools-maven-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>wsdl2java</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/generated-sources/axistools</outputDirectory>
+							<urls>
+								<url>http://vocab.maastro.nl/axis/services/SearcherWS?wsdl</url>	
+							</urls>
+							<packagenName>nl.maastro.eureca.aida.serviceStub</packagenName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+			
+			<resource>
+				<directory>src/main/xsd</directory>
+				<includes>
+					<include>zylabPatisClientConfig.xsd</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+			
+		</resources>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<!-- provides javax.servlet -->
+			<!-- used in olg.vle.aid.client/* -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.xml</groupId>
+			<artifactId>jaxrpc-api</artifactId>
+			<version>1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>4.1.0</version>
+			<!--
+				used in org.vle.aid.client.*, org.aid.vle.lucene.*, 
+				org.apache.lucene.aid.LuceneFilter
+			-->
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queries</artifactId>
+			<version>4.1.0</version>
+			<!-- Provides additional org.apache.lucene.search.filters -->
+			<!-- used in org.apache.lucene.aid.LuceneFilter -->
+		</dependency>
+			
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>4.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>4.1.0</version>
+			<!-- used in org.vcle.aid.client.search -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-highlighter</artifactId>
+			<version>4.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+			<version>1.3</version>
+		</dependency>
+			
+		<dependency>
+			<groupId>commons-cli</groupId>
+			<artifactId>commons-cli</artifactId>
+			<version>1.2</version>
+			<!-- Provides commandline argument parsing -->
+			<!--
+				used in nl.maastro.eureca.aida.search.zylabpatisclient.ZylabPatisClient 
+			-->
+		</dependency>
+	
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom2</artifactId>
+			<version>2.0.4</version>
+			<!--
+				Provides parsing XML to a DOM-tree and XPath operations; supposed to 
+				be better than java's standard implementation.
+			-->
+			<!--
+				used in nl.maastro.eureca.aida.search.zylabpatisclient.config.Config 
+			-->
+		</dependency>
+
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.4</version>
+			<!--
+				Provides navigation of DOM-trees with XPath.
+			-->
+			<!--
+				Used by org.jdom as optional dependency.
+				used in nl.maastro.eureca.aida.search.zylabpatisclient.config.Config 
+			-->
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<!--<version>4.11</version>-->
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<!--<version>1.3</version>-->
+			<scope>test</scope>
+			<!-- used in org.vle.aid.lucene.SearcherWSTest -->
+			<!-- provides xml.Matcher.* -->
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.2.2</version>
+			<!--
+				Used in nl.maastro.eureca.aida.search.zylabpatisclient.ZylabPatisClient.
+				Provides JSON to java object and vice versa transformation.
+			-->
+			<!--
+				TODO: com.google.code.gson:gson is considered of higher quality 
+				see http://stackoverflow.com/questions/338586/a-better-java-json-library
+				therefore convert dependencies on org.json to dependencies on 
+				com.google.gson.
+			-->
+		</dependency>
+	</dependencies>
+</project>
+
+<!-- vim: set tabstop=2 shiftwidth=2 : -->

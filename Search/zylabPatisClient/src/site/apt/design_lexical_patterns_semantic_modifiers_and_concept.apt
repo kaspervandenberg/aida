@@ -1,0 +1,174 @@
+			--------------------------------
+			ZPSC::Software design of Queries
+			--------------------------------
+   Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
+			--------------------------------
+				   2013-06-17
+			--------------------------------
+
+Context — <purpose of Zylab patis search client>
+
+	Zylab patis search client (ZPSC) allows the user to search through Zylab's 
+	documents for patients that are <NOT> excluded for clinical trials based on 
+	eligibility
+	criteria.  For example, given a list of 'patisnummers' (patient ids)
+	ZPSC has to exclude all patients with metastasis from the list of
+	patients that might be eligible for a clinical trial; i.e. exclude
+	those patients about whom the Zylab documents say they <have>
+	metastasis.  The human expert decides whether a patient is or is not
+	eligible for a clinical trial; ZPSC is not responsible for patients'
+	safety.  And, patients eligible for clinical trials are scarce.
+	Therefore ZPSC falsely suggesting a patient for a clinical trial when
+	the patient does not meet an eligibility criterion is preferred to
+	ZPSC falsely excluding a patient who actually is eligible for the trial.
+
+
+Analysis — <Lexical patterns, concepts, semantic modifiers, and patients>
+
+*-------------------+------------------------------------------------+
+ Concept            | Represents an eligibility criterion. In future |
+                    | versions concepts link the thesaurus (or       |
+                    | ontology) to the text searching.\              |
+                    | Concepts have one or more lexical patterns;    |
+                    | when a document matches at least one of these  |
+                    | patterns, the document the document matches    |
+                    | the concept.\                                  |
+                    | <Example: the concept metastasis>              |
+*-------------------+------------------------------------------------+
+ Lexical pattern    | The patterns of text that Lucene searches for  |
+                    | in Zylab's documents.\                         |
+                    | <For example the concept metastasis includes   |
+                    | lexical patterns: 'metastasis', 'metastase',   |
+                    | and 'stadium' and '4' both within a short      |
+                    | distance from the other.>                      |
+*-------------------+------------------------------------------------+
+ Semantic modifier  | Modify lexical patterns with negation and      |
+                    | uncertainty.\                                  |
+                    | <Example:\                                     |
+                    | 'geen…gevonden' (in English 'not found') is a  |
+                    | semantic modifier.\                            |
+                    | If a document about patient >{x}< contains     |
+                    | '…stadium 4…", it matches the concept          |
+                    | metastasis and the patient should be excluded  |
+                    | from the trial.  If however the document       |
+                    | contains "… geen stadium 4 gevonden …", the    |
+                    | patient >must< be included in the list of      |
+                    | candidates for the trial.>                     |
+*-------------------+------------------------------------------------+
+ Patient            | Pattisnummers identify patients, ZPSC receives |
+                    | a list of pattisnummers of the patients to     |
+                    | search for. The indexed documents contain the  |
+                    | pattisnummer as metadata.  When searching for  |
+                    | a (semantically modified) concept, ZPSC must   |
+                    | restrict the search to documents with the given|
+                    | pattisnummer.                                  |
+*-------------------+------------------------------------------------+
+
+
+Tools — <Lucene's flexible parser>
+
+	Lucene supports queries in different syntaxes.  It provides two query 
+	parser architectures: a legacy architecture and the flexible parser 
+	architecture.  ZPSC uses the latter.  This section gives an overview of the 
+	flexible parser architecture.
+	
+	<Note that the flexible parser architecture is not specific to Lucene,
+	it is build to support diverse parsing applications.>
+
+	The architecture divides parsing into three phases:
+
+*---------------+----------------------------------------------------+
+ syntax parsing | A string of text in a given syntax is changed into |
+				| a parse tree; a object of class <<<QueryNode>>> (or|
+				| a class derived from <<<QueryNode>>>) that has zero|
+				| or more <<<QueryNode>>> children (cf Composite     |
+				| design pattern).                                   |
+*---------------+----------------------------------------------------+
+ processing     | Convert a parse tree into an other parse tree.\    |
+				| Lucene has processors that optimize queries and    |
+				| that remove unsupported constructs from the parse. |
+				| The parsers can be chained together.               |
+*---------------+----------------------------------------------------+
+ building       | Lucene's search component does not operate on the  |
+				| <<<QueryNode>>> parse trees built by the Lucene    |
+				| parser component; instead it accepts objects of    |
+				| type <<<Query>>> (and its subclasses).  A          |
+				| <<<QueryBuilder>>> converts a <<<QueryNode>>>-tree |
+				| into a <<<Query>>>-object during the               |
+				| building-phase.                                    |
+*---------------+----------------------------------------------------+
+
+Design
+
+* Preconstructed queries v1.0
+
+	The initial ZPSC demo contains a preconstructed <<<Query>>>-object — i.e.
+	<no> flexible parser <<<QueryNode>>>-parse tree or any other parsing or
+	processing — for the concept metastasis with some of its lexical patterns.
+	Applying a semantic modifier means creating a new query for each
+	modifer–concept-combination (or even modifier–lexical pattern-combination).
+
+	Building or tuning queries this way requires some knowledge of Java, 
+	Lucene, and the ZPSC's code and requires a edit, compile, deploy, execute 
+	cycle to see the effect of changes.  Plenty of tuning the lexical patterns 
+	and concepts is needed.  Therefore shortening this cycle to edit, execute; 
+	reducing the expertise needed to change or extend search patterns; and 
+	being able to reuse semantic modifiers with different concepts are required 
+	features. Reading the patterns, concepts, and modifiers from a file will 
+	achieve the first two requirements.\
+	(Hyposthese) using the Lucene flexible parser architecture and 
+	implementation allows parsing text strings read from a file and allows 
+	combining semantic modifiers with any concept (or the concept's lexical 
+	patterns).  Enter preconstructed queries v2.0.
+
+* Preconstructed queries v2.0
+
+	The query is still hardcoded; however instead of using 
+	<<<lucene.search.Query>>> from Lucene's <<<search>>>, it uses a 
+	<<<zylabpatisclient.Query>>>.  The hardcoded query conforms to the 
+	composition of lexical patterns combined into a concept.  The (hardcoded) 
+	semantic modifiers can be applied to any concept.  The modifiers implement 
+	the <<<QueryNodeProcessor>>> interfacefrom Lucene's flexible parser package 
+	this implies that they can <<<process(…)>>> any <<<QueryNode>>> returning
+	the semantically modified query.
+	
+	The three subtypes of <<<zylabpatisclient.Query>>> encapsulate the three 
+	query representations used in Lucene's flexible parser architecture:
+	
+*-------------------+------------------------------------------------+
+ <<<StringQuery>>>  | encapsulates text strings that a               |
+					| <<<lucene.parser.flexible.SyntaxParser>>>  can |
+					| parse into a <<<QueryNode>>> parse tree.       |
+*-------------------+------------------------------------------------+
+ <<<ParseTree>>>    | encapsulates a <<<QueryNode>>> parse tree.     |
+					| Most operations are performed on these parse   |
+					| trees.                                         |
+*-------------------+------------------------------------------------+
+ <<<LuceneObject>>> | encapsulates a <<<lucene.search.Query>>>-object|
+					| built from a <<<QueryNode>>>-parse tree.       |
+*-------------------+------------------------------------------------+
+
+	ZPSC uses a combination of Adapter and Decorate design patterns to 
+	encapsulate the parse, process, and build transformations from Lucene's 
+	flexible parser architecture.
+
+*-------------------------------+------------------------------------+
+ <<<StringToParseTreeAdapter>>> | Adapts a <<<StringQuery>>> into a  |
+								| <<<ParseTree>>> by having a Lucene |
+								| <<<SyntaxParser>>> parse the       |
+								| <<<StringQuery>>>'s contents.      |
+*-------------------------------+------------------------------------+
+ <<<ParseTreeToObjectAdapter>>> | Adapts a <<<ParseTree>>> into a    |
+								| <<<LuceneObject>>> by having a     |
+								| Lucene <<<QueryBuilder>>> use the  |
+								| <<<ParseTree>>>'s contents to build|
+								| an object.                         |
+*-------------------------------+------------------------------------+
+ <<<DynamicAdapter>>>           | Selects the right (composite)      |
+								| adapter to decorate a given        |
+								| <<<zpsc.Query>>> with to convert it|
+								| to the requested type.             |
+*-------------------------------+------------------------------------+								
+
+
+~~ vim: set tabstop=4 shiftwidth=4 fo=cqtwan autoindent spl=en_gb spell: ~~

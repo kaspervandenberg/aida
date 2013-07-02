@@ -13,8 +13,8 @@
 <!-- You usually only have to change the following three items-->
 
 
-  <Name>My_index</Name>
-  <DataPath>datadir</DataPath>
+  <Name>Zylab_test</Name>
+  <DataPath>/media/medical/TEMP</DataPath>
   <IndexOverwrite>true</IndexOverwrite>
 
 

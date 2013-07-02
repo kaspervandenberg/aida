@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+		<servlet>
+				<description>
+			Use predefined query patterns to search Zylab documents by a 
+			patient's Patisnummer.
+		</description>
+				<display-name>AIDA – Zylab patis search client</display-name>
+				<servlet-name>zylabPatisSearchClient</servlet-name>
+				<servlet-class>nl.maastro.eureca.aida.search.zylabpatisclient.ZylabPatisClient</servlet-class>
+				<init-param>
+						<param-name>configFile</param-name>
+						<param-value>/WEB-INF/zpsc-config.xml</param-value>
+				</init-param>
+		</servlet>
+		<servlet>
+				<servlet-name>ErrorPage</servlet-name>
+				<servlet-class>nl.maastro.eureca.aida.search.zylabpatisclient.error.ErrorPage</servlet-class>
+		</servlet>
+		<servlet-mapping>
+				<servlet-name>zylabPatisSearchClient</servlet-name>
+				<url-pattern>/zpsc/*</url-pattern>
+		</servlet-mapping>
+		<servlet-mapping>
+				<servlet-name>ErrorPage</servlet-name>
+				<url-pattern>/ErrorPage</url-pattern>
+		</servlet-mapping>
+		<error-page>
+			<exception-type>java.lang.Error</exception-type>
+			<location>/ErrorPage</location>
+		</error-page>
+		<error-page>
+			<exception-type>java.lang.Exception</exception-type>
+			<location>/ErrorPage</location>
+		</error-page>
+</web-app>
+<!-- vim: set tabstop=2 shiftwidth=2 : -->

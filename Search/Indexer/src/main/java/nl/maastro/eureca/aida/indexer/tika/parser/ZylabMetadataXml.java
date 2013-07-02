@@ -8,14 +8,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
-import org.apache.tika.detect.DefaultDetector;
-import org.apache.tika.detect.Detector;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.Property;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.AbstractParser;
 import org.apache.tika.parser.ParseContext;
@@ -59,7 +56,7 @@ public class ZylabMetadataXml extends AbstractParser {
 		}
 		
 	}
-	
+
 	/**
 	 * {@link #refPath} and {@link #refName} identify the file this metadata is 
 	 * about.
@@ -120,6 +117,26 @@ public class ZylabMetadataXml extends AbstractParser {
 
 	private static final Set<MediaType> SUPPORTED_TYPE =
 			Collections.singleton(ZYLAB_METADATA);
+
+	public enum FixedProperties {
+		/**
+		 * The {@link FileRefResolver#resolve resolved} URL of the document this
+		 * metadata sidecar is about.
+		 */
+		ABOUT_RESOLVED {
+			private final String propname = "dcterms:references";
+			@Override
+			public Property get() {
+				Property result = Property.get(this.propname);
+				if(result == null) {
+					result = Property.internalTextBag(this.propname);
+				}
+				return result;
+			}
+		};
+		
+		public abstract Property get();
+	}
 
 	/**
 	 * Tika {@link org.apache.tika.metadata.Parser} to parse the file the 
@@ -194,9 +211,12 @@ public class ZylabMetadataXml extends AbstractParser {
 		stream.close();
 
 		try {
-			URL aboutDoc = getResolver(context).resolve(metadataHandler.getAboutDocument());
+			FileRef ref_aboutDoc = metadataHandler.getAboutDocument();
+			context.set(ZylabMetadataXml.FileRef.class, ref_aboutDoc);
+			URL aboutDoc = getResolver(context).resolve(ref_aboutDoc);
 			try (InputStream aboutDocStream = aboutDoc.openStream()) {
 				// Parse document this metadata is about
+				metadata.add(FixedProperties.ABOUT_RESOLVED.get(), aboutDoc.toString());
 				metadata.remove(Metadata.RESOURCE_NAME_KEY);
 				metadata.add(Metadata.RESOURCE_NAME_KEY, metadataHandler.getAboutDocument().refName);
 				

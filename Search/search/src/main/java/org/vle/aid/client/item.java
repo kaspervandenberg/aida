@@ -12,6 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import org.apache.tika.Tika;
+import org.apache.tika.mime.MediaType;
 import org.vle.aid.lucene.tools.Thumbnails;
 /**
  *
@@ -23,6 +25,8 @@ public class item extends HttpServlet {
   
   /** logger for Commons logging. */
   private static Logger log = Logger.getLogger("item.class.getName()");    
+
+  private static Tika tika = new Tika();
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -79,9 +83,15 @@ public class item extends HttpServlet {
       displayError(response, "File '" + _file + " 'not found.");
       return;
     }
+	
+	MediaType fileType;
+	try (InputStream is = new FileInputStream(_file)) {
+		fileType = MediaType.parse(tika.detect(is));
+		response.setContentType(fileType.toString());
+	}
     
     if (thumbnail) {
-      if (file.endsWith("pdf")) {
+      if (MediaType.application("pdf").compareTo(fileType) == 0) {
       
         response.setContentType("image/jpeg");
         
@@ -93,19 +103,7 @@ public class item extends HttpServlet {
       } else {
         return;
       }
-      
-    } else if (file.endsWith("pdf")) {
-      response.setContentType("application/pdf");
-    } else if (file.endsWith("txt")) {
-      response.setContentType("text/plain;charset=UTF-8");
-    } else if (file.endsWith("doc")) {
-      response.setContentType("application/msword");
-    } else if (file.endsWith("med") || file.endsWith("line") || file.endsWith("medline")) {
-      response.setContentType("text/txt;charset=UTF-8");
-    } else {
-      displayError(response, "Unknown file type");
-      return;
-    }
+	}	
 
     // Uncomment this for an attachment
     // response.setHeader("Content-disposition","attachment; filename=" + file);

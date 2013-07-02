@@ -4,11 +4,12 @@
  */
 package indexer;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,14 +21,15 @@ import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
-import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
@@ -64,7 +66,7 @@ public class BaseIndexing implements AutoCloseable {
   public int failed = 0;
   
   /** logger for Commons logging. */
-  private transient Logger log =
+  private static final transient Logger log =
     Logger.getLogger(BaseIndexing.class.getName());
 
   /** Creates a new instance of BaseIndexing
@@ -92,8 +94,8 @@ public class BaseIndexing implements AutoCloseable {
 			new File(dataPath);
 	
 		if (log.isLoggable(Level.FINE)) {
-		  log.fine("Indexdir: " + indexWriterUtil.getIndexdir());
-		  log.fine("Datadir: " + datadir);
+		  log.log(Level.FINE, "Indexdir: {0}", indexWriterUtil.getIndexdir());
+		  log.log(Level.FINE, "Datadir: {0}", datadir);
 		}
 		
   }
@@ -122,25 +124,47 @@ public class BaseIndexing implements AutoCloseable {
    * @author Kasper van den Berg <kasper@kaspervandenberg.net>
    */
   private class TikaIndexAdder extends SimpleFileVisitor<Path> {
+		private final FieldType contentFieldType; 
+
+		public TikaIndexAdder() {
+			contentFieldType = new FieldType(TextField.TYPE_STORED);
+			contentFieldType.setTokenized(true);
+			contentFieldType.setStoreTermVectors(true);
+			contentFieldType.setStoreTermVectorOffsets(true);
+			contentFieldType.setStoreTermVectorPositions(true);
+			contentFieldType.freeze();
+		}
+	  
 		@Override
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 			Tika tikaFacade = new  Tika(); 
 			Parser parser = tikaFacade.getParser();
-			Detector detector = tikaFacade.getDetector();
 			ParseContext context = new ParseContext();
 			context.set(ZylabMetadataXml.FileRefResolver.class, cfg.getReferenceResolver());
 			
 			VisitedDocument doc = new VisitedDocument(file);
-			doc.storeFilename();
-			Analyzer analyzer = doc.detectAndStoreMediaType(tikaFacade);
 			
 			try {
-				doc.storeContent(parser, context, analyzer);
+				Analyzer analyzer = doc.storeContent(parser, context);
 				doc.storeMetadata();
 				try {
 					indexWriterUtil.getIndexWriter().addDocument(doc.getDocument(), analyzer);
 					indexWriterUtil.getIndexWriter().commit();
-					indexWriterUtil.copyToCache(file);
+
+					ZylabMetadataXml.FileRef ref_about = context.get(ZylabMetadataXml.FileRef.class);
+					if(ref_about != null) {
+						String s_about= doc.metadata.get(ZylabMetadataXml.FixedProperties.ABOUT_RESOLVED.get());
+						try {
+							URI about = new URI(s_about);
+							indexWriterUtil.copyToCache(new File(about).toPath(), file.getFileName().toString());
+						} catch (URISyntaxException ex) {
+							Logger.getLogger(BaseIndexing.class.getName()).log(
+									Level.SEVERE,
+									null, ex);
+						}
+					} else {
+						indexWriterUtil.copyToCache(file);
+					}
 					
 				} catch (OutOfMemoryError ex) {
 					indexWriterUtil.handleOutOfMememoryError(ex);
@@ -199,43 +223,36 @@ public class BaseIndexing implements AutoCloseable {
 				file = file_;
 			}
 			
-			public void storeFilename() {
-				doc.add(new StringField(
-						FixedFields.ID.fieldName, file.toFile().getName(), Store.YES));
-				metadata.add(Metadata.RESOURCE_NAME_KEY, file.toFile().getName());
-			}
-
-			public Analyzer detectAndStoreMediaType(Tika tikaFacade) {
-				try {
-					String mediaType = tikaFacade.detect(file.toFile());
-					
-					doc.add(new StringField(
-							FixedFields.MEDIA_TYPE.fieldName, mediaType, Store.YES));
-
-					// Todo AnalyzerFactory uses filename extension, change it to use
-					// Mime type
-					return analyzerFactory.getAnalyzer(mediaType);
-				} catch (IOException ex) {
-					// Fall back to global analyzer and omit media type field.
-					String msg = String.format(
-							"Error Indexing: while detecting file type of %s",
-							file.toString());
-					log.log(Level.WARNING, msg, ex);
-					
-					return analyzerFactory.getGlobalAnalyzer();
-				}
-			}
-
-			public void storeContent(Parser parser, ParseContext context, Analyzer analyzer)
+			public Analyzer storeContent(Parser parser, ParseContext context)
 					throws IOException {
-				Reader content = new ParsingReader(parser, new FileInputStream(file.toFile()), metadata, context);
+				Reader contentReader = new ParsingReader(
+						parser, new FileInputStream(file.toFile()), metadata, context);
+				
+				StringBuilder content = new StringBuilder();
+				char[] buffer = new char[4096];
+				int nRead;
+				do {
+					nRead = contentReader.read(buffer);
+					if(nRead > 0) {
+						content.append(buffer, 0, nRead);
+					}
+				} while (nRead >-1);
 
-				TokenStream tokenStream = analyzer.tokenStream(
-						FixedFields.CONTENT.fieldName, content);
-				doc.add(new TextField(FixedFields.CONTENT.fieldName, tokenStream));
+				Analyzer analyzer = analyzerFactory.getAnalyzer(metadata.get(Metadata.CONTENT_TYPE));
+				Field contentField = new Field(FixedFields.CONTENT.fieldName, content.toString(), contentFieldType);
+				doc.add(contentField);
+				return analyzer;
 			}
 
 			public void storeMetadata() {
+				doc.add(new StringField(
+						FixedFields.ID.fieldName, file.toFile().getName(), Store.YES));
+				
+				doc.add(new StringField(
+						FixedFields.MEDIA_TYPE.fieldName,
+						metadata.get(Metadata.CONTENT_TYPE),
+						Store.YES));
+				
 				for (String property : metadata.names()) {
 					for (String value : metadata.getValues(property)) {
 						doc.add(new StringField(property, value, Store.YES));

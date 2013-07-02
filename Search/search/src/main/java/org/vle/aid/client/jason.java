@@ -3,6 +3,7 @@ package org.vle.aid.client;
 import java.io.*;
 import java.util.Map;
 
+import java.util.logging.Level;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -124,12 +125,17 @@ public class jason extends HttpServlet {
             throw new IOException("Unknown operator");
           }
         } catch (Exception e) {
+			log.log(
+					Level.SEVERE,
+					String.format("Caught error when processing %s", param.toString()), e);
           StringWriter sw = new StringWriter();
           PrintWriter pw = new PrintWriter(sw);
+		  pw.println(String.format("Error %s", e.toString()));
+		  pw.println(String.format("request: ", param.toString()));
+		  pw.println("Stacktrace:");
           e.printStackTrace(pw);
           String reason = sw.toString();
           pw.close();
-          log.severe(e.toString());
           out.print("{'success':false, 'errors':{'reason':'"+reason.replaceAll("\\n", "<br/>")+"'}}");
         }
         

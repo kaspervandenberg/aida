@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<!-- © Maastro, 2013 -->
+
+<!--
+	Configuration options for ZylabPatisClient java class in package 
+	nl.maastro.eureca.aida.search.zylabpatisclient.
+-->
+
+<xs:schema version="1.0"
+					 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+					 xmlns="http://search.aida.eureca.maastro.nl/zylabpatisclient/config"
+					 targetNamespace="http://search.aida.eureca.maastro.nl/zylabpatisclient/config"
+					 elementFormDefault="qualified">
+
+
+<!--
+	Index to search can be either a webservice or a local directory with indexes. 
+-->		
+<xs:complexType name="IndexLocation">
+	<xs:choice>
+		<xs:element name="webservice" type="ServiceCall" />
+		<xs:element name="localIndex" type="FileUrl" />
+	</xs:choice>	
+</xs:complexType>
+
+<!--
+	Address of a FileUrl must be the URL of a directory where a Lucene index is 
+	stored.  The configured URL must be locally accessible.
+-->
+<xs:complexType name="FileUrl">
+	<xs:attribute name="file" type="xs:anyURI" use="required" />
+</xs:complexType>
+
+<!--
+	A Service is accessed via its URL and requires an index to search in.
+-->			
+<xs:complexType name="ServiceCall">
+	<xs:attribute name="address"
+								type="xs:anyURI" 
+								default="http://vocab.maastro.nl/axis/services/SearcherWS" />
+
+	<xs:attribute name="index"
+								type="xs:string"
+								default="Zylab_test-20130415-02" />
+</xs:complexType>
+		
+<!--
+	Name of a field as it exists in the lucene index
+-->
+<xs:complexType name="FieldName">
+	<xs:attribute name="field" type="xs:string" default="content" />
+</xs:complexType>
+
+
+<xs:complexType name="HitCount">
+	<xs:attribute name="nHits" type="xs:nonNegativeInteger" default="1000" />
+</xs:complexType>
+
+<!--
+	Query that clients of the Zylab Patis Search Client can refer to by id
+-->
+<xs:complexType name="ConceptQuery">
+	<xs:simpleContent>
+		<xs:extension base="xs:string">
+			<xs:attribute name="id" type="xs:QName" use="required" />
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+	
+
+<xs:element name="zylabPatisClientConfig">
+	<xs:complexType>
+		<!--
+			Configure the Zylab Patis Search Client by specifying any number of the 
+			elements below, and in any order.  When an element occurs multiple times,
+			Zylab Patis Search Client uses the last value.  When no value is 
+			configured the Zylab Patis Search Client uses a default setting.
+		-->
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:choice>
+				<!--
+					Location of the index to use.  By default the webservice at
+					http://vocab.maastro.nl/axis/services/SearcherWS is used.
+				-->
+				<xs:element name="index" type="IndexLocation" />
+
+				<!--
+					Lucene index field name to use for query terms without field 
+					specification.  By default the "content" is used
+				-->
+				<xs:element name="defaultField" type="FieldName" />
+
+				<!--
+					The used Lucene API requires specifying the maximum number of search
+					results that it will return.  Note that the Zylab Patis Search Client
+					will issue multiple queries when searching a list of Patis numbers,
+					the maximum number of results that it returns might exceed the 
+					configured 'resultLimit'.
+				-->
+				<xs:element name="resultLimit" type="HitCount" />
+				
+				<xs:element name="query" type="ConceptQuery" />
+			</xs:choice>
+		</xs:sequence>
+
+		<!--
+			Zylab Patis Search Client will check whether the configuration matches
+			the version it expects.
+		-->
+		<xs:attribute name="version" type="xs:string" fixed="${project.version}" />
+		
+	</xs:complexType>		
+</xs:element>
+
+</xs:schema>
+<!-- vim: set tabstop=2 shiftwidth=2 : -->

@@ -1,10 +1,10 @@
 echo 'all exports aida install might need'
 
-#aida@vocab.maastro.nl /tmp/aida http://vocab.maastro.nl:80
+#aida@clinisearch.ad.maastro.nl /tmp/aida http://clinisearch.ad.maastro.nl:80
 export JAVA_HOME=/usr/lib/jvm/jdk1.7.0
 export AIDA_HOME=/home/aida/
-export TARGET_URL=http://vocab.maastro.nl:80
-export TARGET_HOST=vocab.maastro.nl
+export TARGET_URL=http://clinisearch.ad.maastro.nl:80
+export TARGET_HOST=clinisearch.ad.maastro.nl
 export TARGET_PORT=80
 
 #common stuff

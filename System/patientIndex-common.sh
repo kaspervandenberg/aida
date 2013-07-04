@@ -31,10 +31,10 @@ INFORM_RESTORE=\
 "Restoring ${INDEXNAME} from ${TMP}; \\n\
 moving it back to ${INDEXDIR}"
 INFORM_RELOAD_DISAPPEAR=\
-"Reload http://vocab.maastro.nl/search in webbrowser \\n\
+"Reload http://clinisearch.ad.maastro.nl/search in webbrowser \\n\
 and see ${INDEXNAME} not being there anymore."
 INFORM_RELOAD_APPEAR=\
-"Reload http://vocab.maastro.nl/search in webbrowser \\n\
+"Reload http://clinisearch.ad.maastro.nl/search in webbrowser \\n\
 and see ${INDEXNAME} is available."
 
 

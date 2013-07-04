@@ -65,7 +65,7 @@
 						<configuration>
 							<outputDirectory>${project.build.directory}/generated-sources/axistools</outputDirectory>
 							<urls>
-								<url>http://vocab.maastro.nl/axis/services/IndexWS?wsdl</url>	
+								<url>http://clinisearch.maastro.nl/axis/services/IndexWS?wsdl</url>	
 							</urls>
 							<packagenName>nl.maastro.eureca.aida.serviceStub</packagenName>
 						</configuration>

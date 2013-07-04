@@ -125,6 +125,12 @@ public class API_Demo {
 		result.put(PatisNumber.create("71757"), true);
 		result.put(PatisNumber.create("70986"), true);
 		result.put(PatisNumber.create("46467"), true);
+		
+		result.put(PatisNumber.create("71441"), true);
+		result.put(PatisNumber.create("71121"), false);
+		result.put(PatisNumber.create("71089"), false);
+		result.put(PatisNumber.create("70657"), false);
+		result.put(PatisNumber.create("70979"), false);
 		return result;
 	}
 

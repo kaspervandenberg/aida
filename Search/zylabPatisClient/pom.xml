@@ -25,7 +25,7 @@
 				<!--
 					Host on which services are deployed.
 				-->
-				<target.host>vocab.maastro.nl</target.host>
+				<target.host>clinisearch.ad.maastro.nl</target.host>
 
 				<!--
 					Port on which tomcat services listen.
@@ -99,7 +99,7 @@
 						<configuration>
 							<outputDirectory>${project.build.directory}/generated-sources/axistools</outputDirectory>
 							<urls>
-								<url>http://vocab.maastro.nl/axis/services/SearcherWS?wsdl</url>	
+								<url>http://clinisearch.ad.maastro.nl/axis/services/SearcherWS?wsdl</url>	
 							</urls>
 							<packagenName>nl.maastro.eureca.aida.serviceStub</packagenName>
 						</configuration>

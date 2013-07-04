@@ -655,7 +655,7 @@ public class Config {
 	// TODO replace hardcoded with value from config file
 	public URI getDocumentServer() {
 		try {
-			return new URI("http://vocab.maastro.nl:80/search/item/");
+			return new URI("http://clinisearch.ad.maastro.nl:80/search/item/");
 		} catch (URISyntaxException ex) {
 			throw new Error(ex);
 		}

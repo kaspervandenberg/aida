@@ -37,7 +37,7 @@
 <xs:complexType name="ServiceCall">
 	<xs:attribute name="address"
 								type="xs:anyURI" 
-								default="http://vocab.maastro.nl/axis/services/SearcherWS" />
+								default="http://clinisearch.ad.maastro.nl/axis/services/SearcherWS" />
 
 	<xs:attribute name="index"
 								type="xs:string"
@@ -80,7 +80,7 @@
 			<xs:choice>
 				<!--
 					Location of the index to use.  By default the webservice at
-					http://vocab.maastro.nl/axis/services/SearcherWS is used.
+					http://clinisearch.ad.maastro.nl/axis/services/SearcherWS is used.
 				-->
 				<xs:element name="index" type="IndexLocation" />
 

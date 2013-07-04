@@ -349,7 +349,7 @@ function loadServerList() {
   var storedserverlist = loadObject('storedserverlist', new Array(0));
   storedserverlist.add(getBaseURL() + '/openrdf-sesame');	  
   storedserverlist.add('http://dev.adaptivedisclosure.org/openrdf-sesame');
-  storedserverlist.add('http://vocab.maastro.nl/sesame');
+  storedserverlist.add('http://clinisearch.maastro.nl/sesame');
   storedserverlist.add('http://localhost/sesame');
   storedserverlist.add('http://amc-app2.amc.sara.nl/openrdf-sesame');
   storedserverlist.add('http://hcls.deri.org/sparql');

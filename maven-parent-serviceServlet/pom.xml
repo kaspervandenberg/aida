@@ -20,7 +20,7 @@
 	<profiles>
 		<!--
 			Installs webservices into the AXIS installation on
-			vocab.maastro.nl and servlet into Tomcat.
+			clinisearch.ad.maastro.nl and servlet into Tomcat.
 			activate with: $ mvn -P deploy_on_Vocab -Dvocab.tomcat.admin.user={…} -Dvocab.tomcat.admin.password={…} install
 		-->
 		<profile>

@@ -106,7 +106,7 @@ public class PreconstructedQueries {
 			
 	private static final String SEARCH_PROPERTY_RESOURCE = "/search.properties";
 	private static final String SERVLET_URI_PROP = "nl.maastro.eureca.aida.search.zylabpatisclient.servletUri";
-	private static final String DEFAULT_SERVLET_URI = "http://vocab.maastro.nl/zylabpatis";
+	private static final String DEFAULT_SERVLET_URI = "http://clinisearch.ad.maastro.nl/zylabpatis";
 	private static final String PREFIX = "pcq";
 	private static final ParseTreeToObjectAdapter.Builder ADAPTER_BUILDER =
 			new ParseTreeToObjectAdapter.Builder();

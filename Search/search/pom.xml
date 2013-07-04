@@ -26,7 +26,7 @@
 				<!--
 					Host on which services are deployed.
 				-->
-				<target.host>vocab.maastro.nl</target.host>
+				<target.host>clinisearch.ad.maastro.nl</target.host>
 
 				<!--
 					Port on which tomcat services listen.

@@ -33,6 +33,13 @@
 				<target.port>80</target.port>
 
 				<!--
+					URL of Search/zylabpatisclient webservice.
+				-->
+				<target.zpsc.url>
+					HTTP://${target.host}:${target.port}/zylabpatis/
+				</target.zpsc.url>
+				
+				<!--
 					URL of Search/search webservice.
 					Used when testing Search/search.
 				-->

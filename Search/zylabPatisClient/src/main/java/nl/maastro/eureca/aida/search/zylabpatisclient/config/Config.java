@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,6 +64,39 @@ import org.xml.sax.SAXException;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class Config {
+	public enum PropertyKeys {
+		SERVLET_URI("nl.maastro.eureca.aida.search.zylabpatisclient.servletUri",
+				"http://clinisearch.ad.maastro.nl/zylabpatis"),
+
+		SEARCH_ITEM_URL("nl.maastro.eureca.aida.search.search.itemUrl"),
+
+		CONFIG_NAMESPACE(
+				"nl.maastro.eureca.aida.search.zylabpatisclient.config.namespace",
+				"http://search.aida.eureca.maastro.nl/zylabpatisclient/config"),
+		CONFIG_NAMESPACE_PREFIX(
+				"nl.maastro.eureca.aida.search.zylabpatisclient.config.namespace.prefix",
+				"zpsc"),
+		
+		VERSION("nl.maastro.eureca.aida.search.zylabpatisclient.version");
+
+		private final String key;
+		private final String defaultValue;
+		
+		private PropertyKeys(final String key_) {
+			key = key_;
+			defaultValue = null;
+		}
+
+		private PropertyKeys(final String key_, final String default_) {
+			key = key_;
+			defaultValue = default_;
+		}
+
+		public String getValue() {
+			return getProperties().getProperty(key, defaultValue);
+		}
+	}
+	
 	private interface XPathOp {
 		boolean nodeExists(Content context);
 		
@@ -394,25 +428,25 @@ public class Config {
 	private enum XPathImpls {
 		// Node expressions
 		N_BASE(XPathOpNodeImpl.class,
-				"/" + NS_PREFIX + ":zylabPatisClientConfig"),
+				"/" + PropertyKeys.CONFIG_NAMESPACE_PREFIX.getValue() + ":zylabPatisClientConfig"),
 		N_INDEX(XPathOpNodeImpl.class,
-				NS_PREFIX + ":index"),
+				PropertyKeys.CONFIG_NAMESPACE_PREFIX.getValue() + ":index"),
 		N_ABS_INDEX(XPathOpNodeImpl.class,
 				N_BASE.s_expr + "/" + N_INDEX.s_expr),
 		N_LOCAL_INDEX(XPathOpNodeImpl.class,
-				NS_PREFIX + ":localIndex"),
+				PropertyKeys.CONFIG_NAMESPACE_PREFIX.getValue() + ":localIndex"),
 		N_WEBSERVICE_INDEX(XPathOpNodeImpl.class,
-				NS_PREFIX + ":webservice"),
+				PropertyKeys.CONFIG_NAMESPACE_PREFIX.getValue() + ":webservice"),
 		N_DEFAULT_FIELD(XPathOpNodeImpl.class,
-				NS_PREFIX + ":defaultField"),
+				PropertyKeys.CONFIG_NAMESPACE_PREFIX.getValue() + ":defaultField"),
 		N_ABS_DEFAULT_FIELD(XPathOpNodeImpl.class,
 				N_BASE.s_expr + "/" + N_DEFAULT_FIELD.s_expr),
 		N_RESULT_LIMIT(XPathOpNodeImpl.class,
-				NS_PREFIX + ":resultLimit"),
+				PropertyKeys.CONFIG_NAMESPACE_PREFIX.getValue() + ":resultLimit"),
 		N_ABS_RESULT_LIMIT(XPathOpNodeImpl.class,
 				N_BASE.s_expr + "/" + N_RESULT_LIMIT.s_expr),
 		N_QUERY(XPathOpNodeImpl.class,
-				NS_PREFIX + ":query"),
+				PropertyKeys.CONFIG_NAMESPACE_PREFIX.getValue() + ":query"),
 		N_ABS_QUERY(XPathOpNodeImpl.class,
 				N_BASE.s_expr + "/" + N_QUERY.s_expr),
 		N_ABS_QUERY_BY_ID(XPathOpNodeImpl.class,
@@ -558,20 +592,9 @@ public class Config {
 		
 	}
 
-	public enum PropertyKeys {
-		VERSION("nl.maastro.eureca.aida.search.version");
-
-		private final String key;
-		
-		private PropertyKeys(final String key_) {
-			key = key_;
-		}
-	}
-	
-	private static final String NS = "http://search.aida.eureca.maastro.nl/zylabpatisclient/config";
-	private static final String NS_PREFIX = "zpsc";
+	private static final String PROPERTY_RESOURCE = "/zylabpatis.properties";
 	private static final String SCHEMA_RESOURCE = "/zylabPatisClientConfig.xsd";
-	private static final String QNAME_SEP = ":";
+	private static Properties properties = null;
 	
 	private static Config singleton = null;
 	
@@ -610,6 +633,22 @@ public class Config {
 		return singleton;
 	}
 
+	private static Properties getProperties() {
+		if(properties == null) {
+			try {
+				InputStream propertyFile = Config.class.getResourceAsStream(PROPERTY_RESOURCE);
+				properties = new Properties();
+				properties.load(propertyFile);
+			} catch(IOException ex) {
+				properties = null;
+				throw new Error(String.format(
+						"Initialisation error when reading properties from %s",
+						PROPERTY_RESOURCE));
+			}
+		}
+		return properties;
+	}
+
 	public Searcher getSearcher() throws ServiceException, IOException {
 		if(searcher == null) {
 			String defaultField = XPaths.DEFAULT_FIELD.getAttrValue(getConfigDoc());
@@ -641,7 +680,8 @@ public class Config {
 					XPaths.ROOT.getFirstNode(getConfigDoc()).getNamespacesInScope());
 			} catch (URISyntaxException ex) {
 				throw new Error(
-						String.format("Hardcoded URI %s not well formed", NS), ex);
+						String.format("Hardcoded URI %s not well formed", 
+							PropertyKeys.CONFIG_NAMESPACE.getValue()), ex);
 			}
 		}
 		return namespaces;
@@ -652,10 +692,9 @@ public class Config {
 		return defaultField;
 	}
 	
-	// TODO replace hardcoded with value from config file
 	public URI getDocumentServer() {
 		try {
-			return new URI("http://clinisearch.ad.maastro.nl:80/search/item/");
+			return new URI(PropertyKeys.SEARCH_ITEM_URL.getValue());
 		} catch (URISyntaxException ex) {
 			throw new Error(ex);
 		}
@@ -695,7 +734,9 @@ public class Config {
 	private static Collection<Namespace> getXpathNamespaces() {
 		if(xpathNamespaces == null) {
 			xpathNamespaces = new ArrayDeque<>(1);
-			xpathNamespaces.add(Namespace.getNamespace(NS_PREFIX, NS));
+			xpathNamespaces.add(Namespace.getNamespace(
+					PropertyKeys.CONFIG_NAMESPACE.getValue(),
+					PropertyKeys.CONFIG_NAMESPACE_PREFIX.getValue()));
 		}
 		return xpathNamespaces;
 	}

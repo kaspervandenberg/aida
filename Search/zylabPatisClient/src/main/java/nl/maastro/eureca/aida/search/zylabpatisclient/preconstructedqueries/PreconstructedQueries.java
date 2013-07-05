@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import javax.xml.namespace.QName;
+import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTree;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTreeToObjectAdapter;
@@ -104,9 +105,6 @@ public class PreconstructedQueries {
 		}
 	}
 			
-	private static final String SEARCH_PROPERTY_RESOURCE = "/search.properties";
-	private static final String SERVLET_URI_PROP = "nl.maastro.eureca.aida.search.zylabpatisclient.servletUri";
-	private static final String DEFAULT_SERVLET_URI = "http://clinisearch.ad.maastro.nl/zylabpatis";
 	private static final String PREFIX = "pcq";
 	private static final ParseTreeToObjectAdapter.Builder ADAPTER_BUILDER =
 			new ParseTreeToObjectAdapter.Builder();
@@ -184,14 +182,11 @@ public class PreconstructedQueries {
 
 	private static URI getNamespaceUri() {
 		if(servletUri == null) {
-			InputStream propertyFile = PreconstructedQueries.class.getResourceAsStream(SEARCH_PROPERTY_RESOURCE);
-			Properties props = new Properties();
 			try {
-				props.load(propertyFile);
-				String s_uri = props.getProperty(SERVLET_URI_PROP, DEFAULT_SERVLET_URI);
+				String s_uri = Config.PropertyKeys.SERVLET_URI.getValue();
 				servletUri = new URI(s_uri);
 				
-			} catch (IOException | URISyntaxException ex) {
+			} catch (URISyntaxException ex) {
 				throw new Error(ex);
 			}
 		}

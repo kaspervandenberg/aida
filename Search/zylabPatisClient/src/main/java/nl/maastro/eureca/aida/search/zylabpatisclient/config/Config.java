@@ -2,6 +2,8 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.config;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -31,9 +33,11 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import nl.maastro.eureca.aida.search.zylabpatisclient.LocalLuceneSearcher;
+import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.WebserviceSearcher;
+import nl.maastro.eureca.aida.search.zylabpatisclient.input.PatisReader;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.DynamicAdapter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTree;
@@ -418,6 +422,10 @@ public class Config {
 		N_ABS_QUERY_BY_ID(XPathOpNodeImpl.class,
 				N_ABS_QUERY.s_expr + "[@id=$queryId]",
 				new Object[][]{{"queryId", ""}}),
+		N_PATIENTS_JSON(XPathOpNodeImpl.class,
+				NS_PREFIX + ":patients"),
+		N_ABS_PATIENTS_JSON(XPathOpNodeImpl.class,
+				N_BASE.s_expr + "/" + N_PATIENTS_JSON.s_expr),
 
 		// Attribute expressions
 		A_ADDRESS(XPathOpAttrImpl.class,
@@ -445,6 +453,7 @@ public class Config {
 		C_WS_ADDRESS(XPathOpCompoundImpl.class, N_ABS_INDEX, N_WEBSERVICE_INDEX, A_ADDRESS),
 		C_WS_INDEX(XPathOpCompoundImpl.class, N_ABS_INDEX, N_WEBSERVICE_INDEX, A_INDEX),
 		C_LOCAL_FILE(XPathOpCompoundImpl.class, N_ABS_INDEX, N_LOCAL_INDEX, A_FILE),
+		C_PATIENTS_JSON_FILE(XPathOpCompoundImpl.class, N_ABS_PATIENTS_JSON, A_FILE),
 		
 		;
 		public final XPathOp delegate;
@@ -502,7 +511,8 @@ public class Config {
 		DEFAULT_FIELD(XPathImpls.A_ABS_DEFAULT_FIELD, "content"),
 		RESULT_LIMIT(XPathImpls.A_ABS_RESULT_LIMIT, "1000"),
 		QUERY_IDS(XPathImpls.A_ABS_QUERY_ID),
-		QUERY_BY_ID(XPathImpls.N_ABS_QUERY_BY_ID);
+		QUERY_BY_ID(XPathImpls.N_ABS_QUERY_BY_ID),
+		PATIS_FILE_JASON(XPathImpls.C_PATIENTS_JSON_FILE);
 
 		private final XPathOp delegate;
 		private final String defaultValue;
@@ -661,6 +671,23 @@ public class Config {
 		}
 	}
 
+	public Map<PatisNumber, Boolean> getPatients() {
+		File f = getPatientsJsonFile();
+		PatisReader p = new PatisReader();
+		try {
+			try (FileReader in = new FileReader(f)) {
+				return p.readFromJSON(in);
+			} catch (FileNotFoundException ex) {
+				throw new Error(String.format(
+						"Configured file of patisnumbers %s not found.",
+						f.getPath()),
+						ex);
+			}
+		} catch (IOException ex) {
+			throw new Error(ex);
+		}
+	}
+
 	private static Document parseXml(InputStream configStream) {
 		try {
 			Document doc = getParser().build(configStream);
@@ -727,16 +754,31 @@ public class Config {
 	}
 
 	private File getLocalIndexFile() {
-		String addr = XPaths.LOCAL_FILE.getAttrValue(getConfigDoc());
+		return getFile(XPaths.LOCAL_FILE, 
+				"Local index URI (%s) malformed",
+				"Local index file is not configured.");
+	}
+
+	private File getPatientsJsonFile() {
+		return getFile(XPaths.PATIS_FILE_JASON,
+				"Json file of patients URI (%s) malforme.d",
+				"Json file of ptient not configued.");
+	}
+
+	private File getFile(final XPathOp fileAttr, 
+			final String msg_UriSyntaxException, 
+			final String msg_notConfigured) {
+		String addr = fileAttr.getAttrValue(getConfigDoc());
 		if(addr != null) {
 			try {
 				return new File(new URI(addr));
 			} catch (URISyntaxException ex) {
-				throw new Error(String.format("Local index URI (%s) malformed", addr), ex);
+				throw new Error(String.format(msg_UriSyntaxException, addr), ex);
 			}
 		} else {
-			throw new Error("Local index file is not configured.");
+			throw new Error(msg_notConfigured);
 		}
+		
 	}
 
 	private boolean useWebservice() {

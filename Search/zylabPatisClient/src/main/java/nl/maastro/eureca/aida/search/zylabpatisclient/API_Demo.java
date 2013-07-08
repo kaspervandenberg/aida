@@ -107,31 +107,7 @@ public class API_Demo {
 	}
 
 	private static Map<PatisNumber, Boolean> initPatients() {
-		// Dummy list of patients; reading a list of patisnumbers is not yet in API
-		Map<PatisNumber, Boolean> result = new LinkedHashMap<>();
-		result.put(PatisNumber.create("71358"), false);// Exp 0
-		result.put(PatisNumber.create("71314"), false);
-		result.put(PatisNumber.create("71415"), false); // Exp 0
-		result.put(PatisNumber.create("71539"), false);
-		result.put(PatisNumber.create("71586"), false);
-		result.put(PatisNumber.create("70924"), false);
-		result.put(PatisNumber.create("71785"), false);
-		result.put(PatisNumber.create("71438"), false);
-		result.put(PatisNumber.create("71375"), false);
-		result.put(PatisNumber.create("71448"), false);
-		
-		result.put(PatisNumber.create("71681"), true); // Exp 1
-		result.put(PatisNumber.create("71692"), true);
-		result.put(PatisNumber.create("71757"), true);
-		result.put(PatisNumber.create("70986"), true);
-		result.put(PatisNumber.create("46467"), true);
-		
-		result.put(PatisNumber.create("71441"), true);
-		result.put(PatisNumber.create("71121"), false);
-		result.put(PatisNumber.create("71089"), false);
-		result.put(PatisNumber.create("70657"), false);
-		result.put(PatisNumber.create("70979"), false);
-		return result;
+		return Config.instance().getPatients();
 	}
 
 	private static List<SemanticModifier> initSemanticModifiers() {

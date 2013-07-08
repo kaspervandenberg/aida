@@ -30,6 +30,7 @@ and open the template in the editor.
 ?>
 	<defaultField field="content" />
 	<resultLimit nHits="1000" />
+	<patients file="file:///home/kasper/git/aida.git/Search/zylabPatisClient/data/patients-20121221_AD2.json" />
 	<query id="zpsc:scopedQuery1">This can be some content parsable by Lucence's query parser</query>
 	<query id="unscopedQuery2">Query string for unscoped query</query>
 	<query id="vocab:longparenchym">longparenchym</query>

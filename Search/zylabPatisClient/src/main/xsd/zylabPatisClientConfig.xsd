@@ -66,8 +66,15 @@
 		</xs:extension>
 	</xs:simpleContent>
 </xs:complexType>
-	
 
+<!--
+	A JSON file that provides a collection of patients mapped to their expected 
+	trial eligibilty criterion.
+-->
+<xs:complexType name="PatisJsonSource">
+	<xs:attribute name="file" type="xs:anyURI" use="required"/>	
+</xs:complexType>
+	
 <xs:element name="zylabPatisClientConfig">
 	<xs:complexType>
 		<!--
@@ -98,6 +105,8 @@
 					configured 'resultLimit'.
 				-->
 				<xs:element name="resultLimit" type="HitCount" />
+
+				<xs:element name="patients" type="PatisJsonSource" />
 				
 				<xs:element name="query" type="ConceptQuery" />
 			</xs:choice>

@@ -131,6 +131,23 @@ public class API_Demo {
 		result.put(PatisNumber.create("71089"), false);
 		result.put(PatisNumber.create("70657"), false);
 		result.put(PatisNumber.create("70979"), false);
+		
+		result.put(PatisNumber.create("71367"), false);
+		result.put(PatisNumber.create("71369"), false);
+		result.put(PatisNumber.create("71118"), false);
+		result.put(PatisNumber.create("71363"), false);
+		result.put(PatisNumber.create("70933"), false);
+		result.put(PatisNumber.create("71105"), false);
+		result.put(PatisNumber.create("71190"), false);
+		result.put(PatisNumber.create("70946"), false);
+		result.put(PatisNumber.create("71074"), false);
+		result.put(PatisNumber.create("70996"), false);
+		result.put(PatisNumber.create("71422"), false);
+		result.put(PatisNumber.create("71193"), false);
+		result.put(PatisNumber.create("71454"), false);
+		result.put(PatisNumber.create("71169"), false);
+		result.put(PatisNumber.create("71739"), false);
+		result.put(PatisNumber.create("71464"), false);
 		return result;
 	}
 

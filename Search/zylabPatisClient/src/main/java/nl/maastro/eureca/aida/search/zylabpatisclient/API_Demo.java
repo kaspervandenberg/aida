@@ -29,6 +29,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.IntraDocOve
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.HtmlFormatter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.LocalParts;
+import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Patients;
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.SemanticModifiers;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.DynamicAdapter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
@@ -107,7 +108,11 @@ public class API_Demo {
 	}
 
 	private static Map<PatisNumber, Boolean> initPatients() {
-		return Config.instance().getPatients();
+		LinkedHashMap<PatisNumber, Boolean> result = new LinkedHashMap<>(
+				Patients.instance().getExpectedMetastasis());
+		result.putAll(Config.instance().getPatients());
+
+		return result;
 	}
 
 	private static List<SemanticModifier> initSemanticModifiers() {

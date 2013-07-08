@@ -17,6 +17,13 @@ public class Patients {
 		expectedMetastasis = initExpectedMetastasis();
 	}
 
+	public static Patients instance() {
+		if(instance == null) {
+			instance = new Patients();
+		}
+		return instance;
+	}
+	
 	public LinkedHashMap<PatisNumber, Boolean> getExpectedMetastasis() {
 		return expectedMetastasis;
 	}

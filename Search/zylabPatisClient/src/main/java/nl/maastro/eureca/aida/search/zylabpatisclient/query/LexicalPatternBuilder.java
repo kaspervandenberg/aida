@@ -33,61 +33,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class LexicalPatternBuilder {
-	public static class LexicalPattern implements Query, DualRepresentationQuery, LuceneObject {
-		/**
-		 * The {@link org.apache.lucene.queryparser.flexible.core.nodes.QueryNode}
-		 * parsetree that corresponds to this {@code LexicalPattern}.
-		 *
-		 * @see nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns#luceneObject_representation
-		 */
-		private final QueryNode parsetree_representation;
-		/**
-		 * The {@code LexicalPattern} as
-		 * {@link org.apache.lucene.search.Query}-object that
-		 * {@link org.apache.lucene.search.IndexSearcher} uses to search on.
-		 *
-		 * The current use of {@link org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder#build(org.apache.lucene.queryparser.flexible.core.nodes.QueryNode)}
-		 * does not convert {@link org.apache.lucene.queryparser.flexible.core.nodes.ProximityQueryNode}
-		 * as intended, therefore {@code LexicalPatterns} store their
-		 * representation in two variants:
-		 * <ul><li>as a parse tree; and</li>
-		 * 		<li>as a lucene.search.SpanQuery.</li></ul>
-		 */
-		private final SpanQuery luceneObject_representation;
-		private final QName id;
-
-		public LexicalPattern(final QName id_, final QueryNode parseTree_,
-				final org.apache.lucene.search.spans.SpanQuery luceneObject_) {
-			this.id = id_;
-			this.parsetree_representation = parseTree_;
-			this.luceneObject_representation = luceneObject_;
-		}
-		
-		@Override
-		public <T> T accept(Visitor<T> visitor) {
-			return DualRepresentationQuery.Visitable.AS_LUCENE_OBJECT.accept(this, visitor);
-		}
-
-		@Override
-		public QName getName() {
-			return id;
-		}
-
-		@Override
-		public QueryNode getParsetree_representation() {
-			return parsetree_representation;
-		}
-
-		@Override
-		public SpanQuery getLuceneObject_representation() {
-			return luceneObject_representation;
-		}
-
-		@Override
-		public org.apache.lucene.search.Query getRepresentation() {
-			return this.getLuceneObject_representation();
-		}
-	}
 
 	private static class SubPatternCollection {
 		public ArrayList<QueryNode> nodes;
@@ -97,7 +42,7 @@ public class LexicalPatternBuilder {
 			nodes = new ArrayList<>();
 			luceneObjects = new ArrayList<>();
 			
-			for (LexicalPatternBuilder.LexicalPattern pat : patterns) {
+			for (LexicalPattern pat : patterns) {
 				luceneObjects.add(pat.getLuceneObject_representation());
 				nodes.add(pat.getParsetree_representation());
 			}
@@ -121,33 +66,6 @@ public class LexicalPatternBuilder {
 			instance = new LexicalPatternBuilder();
 		}
 		return instance;
-	}
-
-	private static class XmlParser extends DefaultHandler {
-		@Override
-		public void startPrefixMapping(String prefix, String uri) throws SAXException {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public void endPrefixMapping(String prefix) throws SAXException {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public void endElement(String uri, String localName, String qName) throws SAXException {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public void characters(char[] ch, int start, int length) throws SAXException {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
 	}
 
 	public LexicalPattern term(QName id, String term) {

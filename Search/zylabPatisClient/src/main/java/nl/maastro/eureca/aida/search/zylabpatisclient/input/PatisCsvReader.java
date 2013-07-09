@@ -4,11 +4,14 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.input;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 
 /**
  * Read a list of {@link PatisNumber}s from a comma separated file.
@@ -16,14 +19,32 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class PatisCsvReader {
-	private static Logger log = Logger.getLogger(PatisCsvReader.class.getCanonicalName());
+	public interface Classifier {
+		public Boolean expectedClassification(PatisNumber patient,
+				String[] textFields); 
+	}
+	
+	private static final Logger log =
+			Logger.getLogger(PatisCsvReader.class.getCanonicalName());
 	private String separator = ";";
 	private int column = 0;
 	private int ignoredLines = 1;
 
 	public List<PatisNumber> read(InputStreamReader input) {
+		return new ArrayList<>(
+				read(input, new Classifier() {
+					@Override
+					public Boolean expectedClassification(PatisNumber patient, String[] textFields) {
+						return false;
+					}
+				}).keySet());
+	}
+	
+	public LinkedHashMap<PatisNumber, Boolean> read(
+			InputStreamReader input,
+			Classifier classifier) {
 		BufferedReader reader = new BufferedReader(input);
-		List<PatisNumber> result = new LinkedList<>();
+		LinkedHashMap<PatisNumber, Boolean> result = new LinkedHashMap<>();
 		try {
 			String line = reader.readLine();
 			int linesRead = 0;
@@ -35,7 +56,9 @@ public class PatisCsvReader {
 				String fields[] = line.split(separator);
 				try {
 					if(fields.length > column) {
-						result.add(PatisNumber.create(fields[column]));
+						PatisNumber p = PatisNumber.create(fields[column]);
+						boolean classification = classifier.expectedClassification(p, fields);
+						result.put(p, classification);
 					}
 				} catch (IllegalArgumentException ex) {
 					log.log(Level.WARNING, "Invalid patisnumber: \"{0}\"", fields[column]);
@@ -48,7 +71,6 @@ public class PatisCsvReader {
 		}
 		return result;
 	}
-	
 	
 	public String getSeparator() {
 		return separator;

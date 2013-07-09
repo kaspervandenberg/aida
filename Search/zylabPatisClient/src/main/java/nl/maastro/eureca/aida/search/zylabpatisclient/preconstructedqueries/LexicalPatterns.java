@@ -47,6 +47,10 @@ enum LexicalPatterns implements Query, DualRepresentationQuery, LuceneObject {
 	UITZAAI_NL("uitzaai*"),
 	UITGEZAAID_NL("uitgezaaid"),
 	ANY_UITZAAI(OrQueryNode.class, UITZAAI_NL, UITGEZAAID_NL),
+
+	CHEMO("chemo*"),
+	KUUR("kuur"),
+	ANY_CHEMOKUUR(OrQueryNode.class, CHEMO, KUUR),
 	
 	NOT_NL1("geen"),
 	NOT_NL2("niet"),

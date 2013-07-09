@@ -90,6 +90,16 @@ public class LexicalPatternBuilder {
 				new SpanMultiTermQueryWrapper<>(new WildcardQuery(new Term(getField(), term))));
 	}
 
+	public LexicalPattern auto(QName id, String termExpr) {
+		if (termExpr.contains("*")) {
+			return wildcard(id, termExpr);
+		} else if (termExpr.contains("~")) {
+			return fuzzy(id, termExpr);
+		} else {
+			return term(id, termExpr);
+		}
+	}
+
 	public LexicalPattern near(QName id, int distance, Iterable<LexicalPattern> patterns) {
 		SubPatternCollection pats = new SubPatternCollection(patterns);
 		return new LexicalPattern(id,

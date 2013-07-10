@@ -18,6 +18,39 @@ import java.util.Set;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class SearchResultImpl implements SearchResult {
+	private static class DummyEligible extends SearchResultImpl {
+		public DummyEligible(PatisNumber patient) {
+			super(patient, 0);
+		}
+
+		@Override
+		public Set<EligibilityClassification> getClassification() {
+			return Collections.singleton(EligibilityClassification.ELIGIBLE);
+		}
+	}
+
+	private static class DummyNotEligible extends SearchResultImpl {
+		public DummyNotEligible(PatisNumber patient) {
+			super(patient, 1);
+		}
+
+		@Override
+		public Set<EligibilityClassification> getClassification() {
+			return Collections.singleton(EligibilityClassification.NOT_ELIGIBLE);
+		}
+	}
+	
+	private static class DummyUnknown extends SearchResultImpl {
+		public DummyUnknown(PatisNumber patient) {
+			super(patient, 0);
+		}
+
+		@Override
+		public Set<EligibilityClassification> getClassification() {
+			return Collections.singleton(EligibilityClassification.UNKNOWN);
+		}
+	}
+			
 	/**
 	 * The relevant parts of the response from SearcherWS.
 	 */
@@ -91,6 +124,17 @@ public class SearchResultImpl implements SearchResult {
 		return new SearchResultImpl(patient_, found ? 1 : 0);
 	}
 
+	public static SearchResultImpl createDummyEligible(final PatisNumber patient_) {
+		return new DummyEligible(patient_);
+	}
+
+	public static SearchResultImpl createDummyNotEliligle(final PatisNumber patient_) {
+		return new DummyNotEligible(patient_);
+	}
+
+	public static SearchResultImpl createDummyUnknown(final PatisNumber patient_) {
+		return new DummyUnknown(patient_);
+	}
 	public static SearchResultImpl combine(SearchResult... parts) {
 		int totalHits = 0;
 		Set<PatisNumber> patients = new HashSet<>(1);

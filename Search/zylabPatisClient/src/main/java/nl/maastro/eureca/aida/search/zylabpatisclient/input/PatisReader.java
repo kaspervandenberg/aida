@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.input;
 
+import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearcher;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.FileNotFoundException;
@@ -13,6 +14,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResultImpl;
+import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SearcherBase;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
 
 /**
  * Read a collection of {@link PatisNumber} and expected eligibility from
@@ -75,6 +82,22 @@ public class PatisReader {
 			gson = new Gson();
 		}
 		return gson;
+	}
+
+	public DummySearcher getDummySearcherFromCsv(InputStreamReader csvSource,
+			PatisCsvReader.Classifier classifier) {
+		final LinkedHashMap<PatisNumber, Boolean> read =
+				getCsvReader().read(csvSource, classifier);
+		return getDummySearcher(read);
+	}
+
+	public DummySearcher getDummySearcherFromJson(InputStreamReader jsonSource) {
+		final Map<PatisNumber, Boolean> read = readFromJSON(jsonSource);
+		return getDummySearcher(read);
+	}
+
+	private DummySearcher getDummySearcher(final Map<PatisNumber, Boolean> results) {
+		return new DummySearcher(results);
 	}
 
 	public static void main(String[] args) {

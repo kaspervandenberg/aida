@@ -2,7 +2,9 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries;
 
 import java.util.LinkedHashMap;
+import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
+import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher;
 
 /**
  *
@@ -26,6 +28,10 @@ public class Patients {
 	
 	public LinkedHashMap<PatisNumber, Boolean> getExpectedMetastasis() {
 		return expectedMetastasis;
+	}
+
+	public Searcher getDummySearcher() {
+		return new DummySearcher(getExpectedMetastasis());
 	}
 
 	private static LinkedHashMap<PatisNumber, Boolean> initExpectedMetastasis() {

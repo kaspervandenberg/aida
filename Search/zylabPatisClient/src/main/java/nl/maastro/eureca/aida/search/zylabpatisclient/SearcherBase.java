@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  * 
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-abstract class SearcherBase implements Searcher {
+public abstract class SearcherBase implements Searcher {
 	private final String defaultField;
 	private final int maxResults;
 

@@ -174,7 +174,7 @@ public class API_Demo {
 			OutputStreamWriter out = new OutputStreamWriter(new BufferedOutputStream(
 					new FileOutputStream(f)), StandardCharsets.UTF_8);
 			HtmlFormatter.writeDocStart(out,
-					String.format("<h1>Results of %1$tT (on %1$ta %1$te %1$tb)</h1>\n", now));
+					String.format("Results of %1$tT (on %1$ta %1$te %1$tb)\n", now));
 			formatter.writeTable(out, results);
 			HtmlFormatter.writeDocEnd(out);
 			out.close();

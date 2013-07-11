@@ -11,16 +11,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 
 /**
  * Query the EMD for the patient's expected metastasis.
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class PatisExpectedEmdReader {
+public class PatisExpectedEmdReader implements PatisCsvReader.Classifier {
 	private static class DBConnection {
 		private static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
 		private static final String DB_URL = "jdbc:mysql://as-emd-01-s";
@@ -68,7 +67,7 @@ public class PatisExpectedEmdReader {
 			this.username = getUsername();
 			this.password = getPassword();
 		}
-		
+
 		public static DBConnection instance() {
 			if(singleton == null) {
 				singleton = new DBConnection();
@@ -161,24 +160,30 @@ public class PatisExpectedEmdReader {
 		}
 	}
 
-	public boolean getExpectedMetastasis(PatisNumber patient) {
+	public EligibilityClassification getExpectedMetastasis(PatisNumber patient) {
 		try (ResultSet results = DBConnection.instance().query(patient)) {
 			while(results.next()) {
 				if(results.getBoolean("m")) {
-					return true;
+					return EligibilityClassification.NOT_ELIGIBLE;
 				}
 			}
-			return false;
+			return EligibilityClassification.ELIGIBLE;
 		} catch (SQLException ex) {
 			throw new Error(ex);
 		}
 	}
 	
-	public Map<PatisNumber, Boolean> getExpectedMetastasis(Iterable<PatisNumber> patients) {
-		Map<PatisNumber, Boolean> result = new LinkedHashMap<>();
+	public Map<PatisNumber, EligibilityClassification> getExpectedMetastasis(Iterable<PatisNumber> patients) {
+		Map<PatisNumber, EligibilityClassification> result = new LinkedHashMap<>();
 		for (PatisNumber patient : patients) {
 			result.put(patient, getExpectedMetastasis(patient));
 		}
 		return result;
+	}
+
+	@Override
+	public EligibilityClassification expectedClassification(
+			PatisNumber patient, String[] textFields) {
+		return getExpectedMetastasis(patient);
 	}
 }

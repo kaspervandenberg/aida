@@ -9,7 +9,8 @@ and open the template in the editor.
 	xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
 	xmlns='http://search.aida.eureca.maastro.nl/zylabpatisclient/config'
 	xmlns:zpsc='http://search.aida.eureca.maastro.nl/zylabpatisclient/config'
-	xmlns:vocab='http://clinisearch.ad.maastro.nl/zpsc/'
+	xmlns:vocab='http://clinisearch.ad.maastro.nl/zylabpatis/'
+	xmlns:pcq='http://clinisearch.ad.maastro.nl/zylabpatis/'
 	xmlns:local='http://localhost:8080/zylabPatisClient/zpsc/queryPattern/'
 	xsi:schemaLocation='http://search.aida.eureca.maastro.nl/zylabpatisclient/config file:/home/kasper/git/aida.git/Search/search/src/main/xsd/zylabPatisClientConfig.xsd'
 	>
@@ -30,7 +31,7 @@ and open the template in the editor.
 ?>
 	<defaultField field="content" />
 	<resultLimit nHits="1000" />
-	<patients file="file:///home/kasper/git/aida.git/Search/zylabPatisClient/data/patients-20121221_AD2.json" />
+	<patients concept-ref="pcq:metastasis" file="file:///home/kasper/git/aida.git/Search/zylabPatisClient/patients-metastasis-20121221_AD2.json" />
 	<query id="zpsc:scopedQuery1">This can be some content parsable by Lucence's query parser</query>
 	<query id="unscopedQuery2">Query string for unscoped query</query>
 	<query id="vocab:longparenchym">longparenchym</query>

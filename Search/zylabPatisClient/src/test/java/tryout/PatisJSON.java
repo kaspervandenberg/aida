@@ -5,7 +5,6 @@
 package tryout;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,9 +17,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 import nl.maastro.eureca.aida.search.zylabpatisclient.input.PatisCsvReader;
 import nl.maastro.eureca.aida.search.zylabpatisclient.input.PatisExpectedEmdReader;
-import org.apache.lucene.analysis.sinks.TokenTypeSinkFilter;
 
 /**
  *
@@ -49,9 +48,9 @@ public class PatisJSON {
 		return singleton;
 	}
 	
-	public Map<PatisNumber, Boolean> expected(InputStreamReader patisCsv) {
+	public Map<PatisNumber, EligibilityClassification> expected(InputStreamReader patisCsv) {
 		List<PatisNumber> patients = fileReader.read(patisCsv);
-		LinkedHashMap<PatisNumber, Boolean> result = 
+		LinkedHashMap<PatisNumber, EligibilityClassification> result = 
 				new LinkedHashMap<>(patients.size());
 		return emdReader.getExpectedMetastasis(patients);
 	}

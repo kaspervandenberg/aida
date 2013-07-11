@@ -4,7 +4,6 @@
  */
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
-import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.PreconstructedQueries;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.SearchResultFormatter;
@@ -16,63 +15,59 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import javax.xml.rpc.ServiceException;
+import nl.maastro.eureca.aida.search.zylabpatisclient.ChainedSearcher.CombinationStrategy;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.InterDocOverride;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.IntraDocOverride;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.HtmlFormatter;
-import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.LocalParts;
+import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Concepts;
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Patients;
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.SemanticModifiers;
-import nl.maastro.eureca.aida.search.zylabpatisclient.query.DynamicAdapter;
-import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
-import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
 
 /**
  *
  * @author kasper2
  */
 public class API_Demo {
-	private static final EnumMap<LocalParts, String> headers =
-			new EnumMap<>(LocalParts.class);
-	static {
-		headers.put(LocalParts.METASTASIS,
-				"\n" +
-				"\n" +
-				"- - - - - - - - - -\n" +
-				"M E T A S T A S I S\n" +
-				"- - - - - - - - - -\n" +
-				"\n\n");
-		
-		headers.put(LocalParts.NO_METASTASIS,
-				"\n" +
-				"\n" +
-				"- - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n" +
-				"G E E N   M E T A S T A S I S -- (Combine span with term)\n" +
-				"- - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n" +
-				"\n\n");
+	private enum SearchedConcepts {
+		EXPECTED_METASTASIS {{ setConcept(Concepts.METASTASIS); }},
+		METASTASIS {{ setConcept(Concepts.METASTASIS); }},
+		EXPECTED_CHEMOKUUR {{ setConcept(Concepts.CHEMOKUUR); }},
+		CHEMOKUUR {{ setConcept(Concepts.CHEMOKUUR); }};
 
-		headers.put(LocalParts.HINTS_METASTASIS, 
-				"\n" +
-				"\n" +
-				"- - - - - - - - - - - - - - - - - - - - - - - - - - - \n" +
-				"M E T A S T A S I S   O N Z E K E R -- (span of spans)\n" +
-				"- - - - - - - - - - - - - - - - - - - - - - - - - - - \n" +
-				"\n\n");
+		private Searcher searcher = null;
+		private Concepts concept = null;
+		
+		public Searcher setSearcher(Searcher searcher_) {
+			Searcher tmp = this.searcher;
+			this.searcher = searcher_;
+			return tmp;
+		}
+
+		public Searcher getSearcher() {
+			return searcher;
+		}
+
+		protected Concepts setConcept(Concepts concept_) {
+			Concepts tmp = this.concept;
+			this.concept = concept_;
+			return tmp;
+		}
+
+		public Concepts getConcept() {
+			return concept;
+		}
 	}
 
 	private final Config config;
 	private final Searcher searcher;
-	private final QueryProvider queryProvider;
-	private final DynamicAdapter queryAdapter;
-	private final Map<PatisNumber, Boolean> patients;
+	private final List<PatisNumber> patients;
 	private final List<SemanticModifier> modifiers;
 	private final Classifier classifier;
 	private final SearchResultFormatter formatter;
@@ -80,12 +75,10 @@ public class API_Demo {
 	public API_Demo() {
 		this.config = initConfig();
 		this.searcher = initSearcher(config);
-		this.queryProvider = new PreconstructedQueries.Provider();
-		this.queryAdapter = new DynamicAdapter();
 		this.patients = initPatients();
 		this.modifiers = initSemanticModifiers();
 		this.classifier = initClassifier();
-		HtmlFormatter tmp = new HtmlFormatter(); //new PlaintextHumanFormatter();
+		HtmlFormatter tmp = new HtmlFormatter();
 		tmp.setShowSnippetsStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW);
 		this.formatter = tmp;
 	}
@@ -101,16 +94,27 @@ public class API_Demo {
 	private static Searcher initSearcher(Config config) {
 		// Use config to initialise a searcher
 		try {
-			return config.getSearcher();
+			Searcher s = config.getSearcher();
+			
+			SearchedConcepts.EXPECTED_METASTASIS.setSearcher(
+					new ChainedSearcher(CombinationStrategy.FIRST_FOUND, Arrays.asList(
+						Patients.instance().getDummySearcher(),
+						new DummySearcher(config.getPatients())
+					)));
+			SearchedConcepts.METASTASIS.setSearcher(s);
+			SearchedConcepts.EXPECTED_CHEMOKUUR.setSearcher(null);
+			SearchedConcepts.CHEMOKUUR.setSearcher(s);
+			
+			return s;
 		} catch (ServiceException | IOException ex) {
 			throw new Error(ex);
 		}
 	}
 
-	private static Map<PatisNumber, Boolean> initPatients() {
-		LinkedHashMap<PatisNumber, Boolean> result = new LinkedHashMap<>(
-				Patients.instance().getExpectedMetastasis());
-		result.putAll(Config.instance().getPatients());
+	private static List<PatisNumber> initPatients() {
+		List<PatisNumber> result = new LinkedList<>(
+				Patients.instance().getExpectedMetastasis().keySet());
+		result.addAll(Config.instance().getPatients().keySet());
 
 		return result;
 	}
@@ -136,30 +140,9 @@ public class API_Demo {
 		return instance;
 	}
 
-	private List<SearchResult> initExpectedResults() {
-		List<SearchResult> expected = new ArrayList<>(patients.size());
-		for (Map.Entry<PatisNumber, Boolean> entry : patients.entrySet()) {
-			expected.add(SearchResultImpl.create(entry.getKey(), entry.getValue()));
-		}
-		return expected;
-	}
-	
-	public void searchAndShow(
-			LocalParts preconstructedQuery) {
-		Query query = queryProvider.get(preconstructedQuery.getID());
-		Iterable<SearchResult> results = searcher.searchForAll(query, modifiers, patients.keySet());
-		
-		System.out.append(headers.get(preconstructedQuery));
-		try {
-			formatter.writeList(System.out, results);
-		} catch (IOException ex) {
-			throw new Error(ex);
-		}
-	}
-
-	public Iterable<SearchResult> searchConcept(
-			Query concept, List<SemanticModifier> modifiers) {
-		Iterable<SearchResult> results = searcher.searchForAll(concept, modifiers, patients.keySet());
+	private Iterable<SearchResult> searchConcept(SearchedConcepts concept) {
+		Iterable<SearchResult> results = concept.getSearcher().searchForAll(
+				concept.getConcept(), modifiers, patients);
 		List<SearchResult> conclusions = new LinkedList<>();
 		for (SearchResult searchResult : results) {
 			conclusions.add(classifier.resolve(searchResult));
@@ -186,13 +169,14 @@ public class API_Demo {
 	
 	static public void main(String[] args) {
 		API_Demo instance = new API_Demo();
-//		instance.searchAndShow(PreconstructedQueries.LocalParts.METASTASIS);
-//		instance.searchAndShow(PreconstructedQueries.LocalParts.NO_METASTASIS);
-//		instance.searchAndShow(PreconstructedQueries.LocalParts.NO_HINTS_METASTASIS);
 		LinkedHashMap<String, Iterable<SearchResult>> table = new LinkedHashMap<>();
-		table.put("Expected", instance.initExpectedResults());
-		table.put(LocalParts.METASTASIS.name(), 
-				instance.searchConcept(LocalParts.METASTASIS.getQuery(), instance.modifiers));
+		table.put(SearchedConcepts.EXPECTED_METASTASIS.name(),
+				instance.searchConcept(SearchedConcepts.EXPECTED_METASTASIS));
+		table.put(SearchedConcepts.METASTASIS.name(), 
+				instance.searchConcept(SearchedConcepts.METASTASIS));
+		table.put(SearchedConcepts.CHEMOKUUR.name(),
+				instance.searchConcept(SearchedConcepts.CHEMOKUUR));
+//		System.out.append(SearchedConcepts.METASTASIS.getConcept().getName().toString());
 		
 		instance.writeTable(table);
 	}

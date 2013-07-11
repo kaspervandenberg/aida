@@ -2,6 +2,7 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
 import java.util.Map;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
 
 /**
@@ -18,18 +19,18 @@ public class DummySearcher extends SearcherBase {
 	 * 		<li>{@code false}, the patient's documents should not match the 
 	 * 			concept → the patient is eligiblie for clinical trials.</li></ul>
 	 */
-	private final Map<PatisNumber, Boolean> results;
+	private final Map<PatisNumber, EligibilityClassification> results;
 
-	public DummySearcher(Map<PatisNumber, Boolean> results) {
+	public DummySearcher(Map<PatisNumber, EligibilityClassification> results) {
 		super("", 0);
 		this.results = results;
 	}
 
 	@Override
 	public SearchResult searchFor(final Query query, final Iterable<SemanticModifier> modifiers, final PatisNumber patient) {
-		if (results.containsKey(patient) && results.get(patient) == true) {
+		if (results.containsKey(patient) && results.get(patient) == EligibilityClassification.NOT_ELIGIBLE) {
 			return SearchResultImpl.createDummyNotEliligle(patient);
-		} else if (results.containsKey(patient) && results.get(patient) == false) {
+		} else if (results.containsKey(patient) && results.get(patient) == EligibilityClassification.ELIGIBLE) {
 			return SearchResultImpl.createDummyEligible(patient);
 		} else {
 			return SearchResultImpl.createDummyUnknown(patient);

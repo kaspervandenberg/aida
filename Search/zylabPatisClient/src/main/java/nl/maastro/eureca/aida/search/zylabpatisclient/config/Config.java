@@ -32,11 +32,13 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.LocalLuceneSearcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.WebserviceSearcher;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 import nl.maastro.eureca.aida.search.zylabpatisclient.input.PatisReader;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.DynamicAdapter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
@@ -671,7 +673,7 @@ public class Config {
 		}
 	}
 
-	public Map<PatisNumber, Boolean> getPatients() {
+	public Map<PatisNumber, EligibilityClassification> getPatients() {
 		File f = getPatientsJsonFile();
 		PatisReader p = new PatisReader();
 		try {

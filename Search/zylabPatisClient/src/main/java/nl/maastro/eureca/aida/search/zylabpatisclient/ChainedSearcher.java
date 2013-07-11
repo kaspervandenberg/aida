@@ -64,16 +64,17 @@ public class ChainedSearcher extends SearcherBase {
 	}
 	
 	private final Deque<Searcher> delegates;
-	private CombinationStrategy strategy;
+	private final CombinationStrategy strategy;
 
 	public ChainedSearcher() {
-		super("", 0);
-		delegates = new LinkedList<>();
+		this(CombinationStrategy.FIRST_FOUND, Collections.<Searcher>emptyList());
 	}
 
-	public ChainedSearcher(Collection<? extends Searcher> chain) {
+	public ChainedSearcher(CombinationStrategy strat_,
+			Collection<? extends Searcher> chain) {
 		super("", 0);
-		delegates = new LinkedList<>(chain);
+		this.strategy = strat_;
+		this.delegates = new LinkedList<>(chain);
 	}
 	
 	@Override

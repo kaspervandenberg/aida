@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,10 +19,28 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Eligibility
  */
 public class PatisCsvReader {
 	public interface Classifier {
-		public Boolean expectedClassification(PatisNumber patient,
+		public EligibilityClassification expectedClassification(PatisNumber patient,
 				String[] textFields); 
 	}
-	
+
+	public class FieldEmpty implements Classifier {
+		private int column = 10;
+
+		@Override
+		public EligibilityClassification expectedClassification(PatisNumber patient, String[] textFields) {
+			if (textFields.length > column) {
+				if(!textFields[column].isEmpty()) {
+					return EligibilityClassification.ELIGIBLE;
+				} else {
+					return EligibilityClassification.NOT_ELIGIBLE;
+				}
+			} else {
+				return EligibilityClassification.NOT_ELIGIBLE;
+			}
+		}
+		
+	}
+
 	private static final Logger log =
 			Logger.getLogger(PatisCsvReader.class.getCanonicalName());
 	private String separator = ";";
@@ -34,17 +51,17 @@ public class PatisCsvReader {
 		return new ArrayList<>(
 				read(input, new Classifier() {
 					@Override
-					public Boolean expectedClassification(PatisNumber patient, String[] textFields) {
-						return false;
+					public EligibilityClassification expectedClassification(PatisNumber patient, String[] textFields) {
+						return EligibilityClassification.UNKNOWN;
 					}
 				}).keySet());
 	}
 	
-	public LinkedHashMap<PatisNumber, Boolean> read(
+	public LinkedHashMap<PatisNumber, EligibilityClassification> read(
 			InputStreamReader input,
 			Classifier classifier) {
 		BufferedReader reader = new BufferedReader(input);
-		LinkedHashMap<PatisNumber, Boolean> result = new LinkedHashMap<>();
+		LinkedHashMap<PatisNumber, EligibilityClassification> result = new LinkedHashMap<>();
 		try {
 			String line = reader.readLine();
 			int linesRead = 0;
@@ -57,7 +74,7 @@ public class PatisCsvReader {
 				try {
 					if(fields.length > column) {
 						PatisNumber p = PatisNumber.create(fields[column]);
-						boolean classification = classifier.expectedClassification(p, fields);
+						EligibilityClassification classification = classifier.expectedClassification(p, fields);
 						result.put(p, classification);
 					}
 				} catch (IllegalArgumentException ex) {

@@ -13,13 +13,9 @@ import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
-import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
-import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResultImpl;
-import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher;
-import nl.maastro.eureca.aida.search.zylabpatisclient.SearcherBase;
-import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
-import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 
 /**
  * Read a collection of {@link PatisNumber} and expected eligibility from
@@ -36,31 +32,19 @@ public class PatisReader {
 		return getCsvReader().read(csvSource);
 	}
 
-	public Map<PatisNumber, Boolean> lookup(Iterable<PatisNumber> patients) {
-		return getEmdReader().getExpectedMetastasis(patients);
-	}
-
-	public Map<PatisNumber, Boolean> readCsvAndLookup(InputStreamReader csvSource) {
-		return lookup(getCsvReader().read(csvSource));
-	}
-
-	public Map<PatisNumber, Boolean> readFromJSON(InputStreamReader jsonSource) {
-		Type mapT = new TypeToken<LinkedHashMap<String, Boolean>>(){ }.getType();
-		LinkedHashMap<String, Boolean> items = getGson().fromJson(jsonSource, mapT);
-		LinkedHashMap<PatisNumber, Boolean> result = new LinkedHashMap<>(items.size());
-		for (Map.Entry<String, Boolean> entry : items.entrySet()) {
+	public Map<PatisNumber, EligibilityClassification> readFromJSON(InputStreamReader jsonSource) {
+		Type mapT = new TypeToken<LinkedHashMap<String, EligibilityClassification>>(){ }.getType();
+		LinkedHashMap<String, EligibilityClassification> items = getGson().fromJson(jsonSource, mapT);
+		LinkedHashMap<PatisNumber, EligibilityClassification> result = new LinkedHashMap<>(items.size());
+		for (Map.Entry<String, EligibilityClassification> entry : items.entrySet()) {
 			result.put(PatisNumber.create(entry.getKey()), entry.getValue());
 		}
 		return result;
 	}
 
 	public void writeToJSON(Appendable jsonDest, 
-			Map<PatisNumber, Boolean> expectedMatches) {
+			Map<PatisNumber, EligibilityClassification> expectedMatches) {
 		getGson().toJson(expectedMatches, jsonDest);
-	}
-
-	public void convertCsvToJSON(InputStreamReader csvSource, Appendable jsonDest) {
-		writeToJSON(jsonDest, readCsvAndLookup(csvSource));
 	}
 
 	public PatisCsvReader getCsvReader() {
@@ -86,26 +70,26 @@ public class PatisReader {
 
 	public DummySearcher getDummySearcherFromCsv(InputStreamReader csvSource,
 			PatisCsvReader.Classifier classifier) {
-		final LinkedHashMap<PatisNumber, Boolean> read =
+		final LinkedHashMap<PatisNumber, EligibilityClassification> read =
 				getCsvReader().read(csvSource, classifier);
 		return getDummySearcher(read);
 	}
 
 	public DummySearcher getDummySearcherFromJson(InputStreamReader jsonSource) {
-		final Map<PatisNumber, Boolean> read = readFromJSON(jsonSource);
+		final Map<PatisNumber, EligibilityClassification> read = readFromJSON(jsonSource);
 		return getDummySearcher(read);
 	}
 
-	private DummySearcher getDummySearcher(final Map<PatisNumber, Boolean> results) {
+	private DummySearcher getDummySearcher(final Map<PatisNumber, EligibilityClassification> results) {
 		return new DummySearcher(results);
 	}
 
 	public static void main(String[] args) {
 		final String msg_useage = String.format(
-				"java %s {patients.csv} {patients.json}",
+				"java %s {patients.csv} {patients.json} {classifier_class}",
 				PatisReader.class.getName());
 		final String errMsg_illegalArgument = 
-				"Specify two files as arguments.";
+				"Specify two files and optionally a classifier as arguments.";
 		final String errMsg_inputFileNotFound = 
 				"File, %s, not found (or unreadable).";
 		final String errMsg_outputFileNotAvailabe =
@@ -119,11 +103,24 @@ public class PatisReader {
 			System.out.println(msg_useage);
 			throw new Error(new IllegalArgumentException(errMsg_illegalArgument));
 		}
+		PatisCsvReader.Classifier classifier;
+		if (args.length >= 3) {
+			try {
+				Class <?> c = Class.forName("");
+				classifier = (PatisCsvReader.Classifier) c.newInstance();
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+				throw new Error(ex);
+			}
+		} else {
+			classifier = new PatisExpectedEmdReader();
+		}
 
 		try {
 			try(FileReader in = new FileReader(args[0])) {
 				try(FileWriter out = new FileWriter(args[1])) {
-					instance.convertCsvToJSON(in, out);
+					LinkedHashMap<PatisNumber, EligibilityClassification> expected =
+							instance.getCsvReader().read(in, classifier);
+					instance.writeToJSON(out, expected);
 				} catch (IOException ex) {
 					throw new Error(String.format(errMsg_outputFileNotAvailabe, args[1]), ex);
 				}

@@ -1,0 +1,65 @@
+<!-- © Maastro, 2013 -->
+<?xml version="1.0"?>
+<xs:schema version="1.0"
+					 xmlns:xs="http://www.w3.org/2001/XMLSchema"
+					 xmlns="http://search.aida.eureca.maastro.nl/zylabpatisclient/patternSyntax"
+					 targetNamespace="http://search.aida.eureca.maastro.nl/zylabpatisclient/patternSyntax"
+					 elementFormDefault="qualified">
+	
+<xs:complexType name="PatternBase">
+	<xs:annotation>
+		<xs:documentation>
+			Base type for lexical patterns.  Allows to identify patterns via an 
+			'id'-attribute.
+		</xs:documentation>
+	</xs:annotation>
+	
+	<xs:simpleContent>
+		<xs:extension base="xs:string">
+			<xs:attribute name="id" type="xs:QName" />
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+
+<xs:complexType name="Fuzzy">
+	<xs:complexContent>
+		<xs:extension base="PatternBase">
+			<xs:attribute name="editDistance" type="xs:positiveInteger" default="2">
+				<xs:annotation>
+					<xs:documentation>
+						How much variation is acceptable for a fuzzy pattern.  Higher values
+						imply that more differing terms will match.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:extension>
+	</xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="PatternRef">
+	<xs:attribute name="ref" type="xs:QName" use="required" />
+</xs:complexType>
+
+<xs:complexType name="Or">
+	<xs:attribute name="id" type="xs:Qname" />
+	<xs:sequence>
+		<xs:group ref="Pattern" maxOccurs="unbounded" />
+	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="Span">
+	<xs:attribute >
+
+<xs:group name="Pattern" >
+	<xs:choice>
+		<xs:element name="term" type="PatternBase" />
+		<xs:element name="wildcard" type="PatternBase" />
+		<xs:element name="fuzzy" type="Fuzzy" />
+		<xs:element name="ref" type="PatternRef" />
+		<xs:element name="or" type="Or" />
+			
+	</xs:choice>
+</xs:group>
+
+</xs:schema>
+<!-- vim: set tabstop=2 shiftwidth=2 : -->

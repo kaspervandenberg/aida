@@ -23,7 +23,7 @@ public class PatisCsvReader {
 				String[] textFields); 
 	}
 
-	public class FieldEmpty implements Classifier {
+	public static class FieldEmpty implements Classifier {
 		private int column = 10;
 
 		@Override

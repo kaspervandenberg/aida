@@ -39,7 +39,13 @@ public class API_Demo {
 		EXPECTED_METASTASIS {{ setConcept(Concepts.METASTASIS); }},
 		METASTASIS {{ setConcept(Concepts.METASTASIS); }},
 		EXPECTED_CHEMOKUUR {{ setConcept(Concepts.CHEMOKUUR); }},
-		CHEMOKUUR {{ setConcept(Concepts.CHEMOKUUR); }};
+		CHEMOKUUR {{ setConcept(Concepts.CHEMOKUUR); }},
+		
+		PROSTAAT {{ setConcept(Concepts.PROSTAAT); }},
+		RECTUM {{ setConcept(Concepts.RECTUM); }},
+		HEERLEN {{ setConcept(Concepts.HEERLEN); }},
+		RECTUM_uit_HEERLEN {{ setConcept(Concepts.RECTUM_HEERLEN); }},
+		CERVIX {{ setConcept(Concepts.CERVIX); }};
 
 		private Searcher searcher = null;
 		private Concepts concept = null;
@@ -167,15 +173,23 @@ public class API_Demo {
 				
 	}
 	
+	public void addTo(LinkedHashMap<String, Iterable<SearchResult>> table, SearchedConcepts concept) {
+		table.put(concept.name(), searchConcept(concept));	
+	}
+	
 	static public void main(String[] args) {
 		API_Demo instance = new API_Demo();
 		LinkedHashMap<String, Iterable<SearchResult>> table = new LinkedHashMap<>();
-		table.put(SearchedConcepts.EXPECTED_METASTASIS.name(),
-				instance.searchConcept(SearchedConcepts.EXPECTED_METASTASIS));
-		table.put(SearchedConcepts.METASTASIS.name(), 
-				instance.searchConcept(SearchedConcepts.METASTASIS));
-		table.put(SearchedConcepts.CHEMOKUUR.name(),
-				instance.searchConcept(SearchedConcepts.CHEMOKUUR));
+//		table.put(SearchedConcepts.EXPECTED_METASTASIS.name(),
+//				instance.searchConcept(SearchedConcepts.EXPECTED_METASTASIS));
+		instance.addTo(table, SearchedConcepts.METASTASIS);
+		instance.addTo(table, SearchedConcepts.CHEMOKUUR);
+		instance.addTo(table, SearchedConcepts.PROSTAAT);
+		instance.addTo(table, SearchedConcepts.RECTUM);
+		instance.addTo(table, SearchedConcepts.HEERLEN);
+		instance.addTo(table, SearchedConcepts.RECTUM_uit_HEERLEN);
+		instance.addTo(table, SearchedConcepts.CERVIX);
+
 //		System.out.append(SearchedConcepts.METASTASIS.getConcept().getName().toString());
 		
 		instance.writeTable(table);

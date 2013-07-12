@@ -12,6 +12,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.query.DualRepresentationQu
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.flexible.core.nodes.AndQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.FieldQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.FuzzyQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.GroupQueryNode;
@@ -51,6 +52,14 @@ enum LexicalPatterns implements Query, DualRepresentationQuery, LuceneObject {
 	CHEMO("chemo*"),
 	KUUR("kuur"),
 	ANY_CHEMOKUUR(OrQueryNode.class, CHEMO, KUUR),
+
+	PROSTAAT("prostaat*"),
+	
+	RECTUM("rectum*"),
+	HEERLEN("heerlen"),
+	RECTUM_HEERLEN(AndQueryNode.class, RECTUM, HEERLEN),
+
+	CERVIX("cervix*"),
 	
 	NOT_NL1("geen"),
 	NOT_NL2("niet"),
@@ -169,9 +178,16 @@ enum LexicalPatterns implements Query, DualRepresentationQuery, LuceneObject {
 		luceneObject_representation = new SpanNearQuery(containedSpans(pats), distance, false);
 	}
 
-	private LexicalPatterns(final Class<OrQueryNode> dummy, final LexicalPatterns... pats) {
-		parsetree_representation = new GroupQueryNode(new OrQueryNode(containedNodes(pats)));
-		luceneObject_representation = new SpanOrQuery(containedSpans(pats));
+	private LexicalPatterns(final Class<? extends QueryNode> dummy, final LexicalPatterns... pats) {
+		if(dummy.isAssignableFrom(OrQueryNode.class)) {
+			parsetree_representation = new GroupQueryNode(new OrQueryNode(containedNodes(pats)));
+			luceneObject_representation = new SpanOrQuery(containedSpans(pats));
+		} else if(dummy.isAssignableFrom(AndQueryNode.class)) {
+			parsetree_representation = new GroupQueryNode(new AndQueryNode(containedNodes(pats)));
+			luceneObject_representation = new SpanNearQuery(containedSpans(pats), 200, false);
+		} else {
+			throw new UnsupportedOperationException("Other types of patterns collections not supported.");
+		}
 	}
 
 	@Override

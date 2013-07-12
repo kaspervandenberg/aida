@@ -19,7 +19,13 @@ import org.apache.lucene.search.spans.SpanQuery;
 public enum Concepts implements Query, DualRepresentationQuery, LuceneObject {
 	METASTASIS(LexicalPatterns.METASTASIS_NL, LexicalPatterns.METASTASIS_SHORT,
 			LexicalPatterns.ANY_STAGE4, LexicalPatterns.ANY_UITZAAI),
-	CHEMOKUUR(LexicalPatterns.ANY_CHEMOKUUR);
+	CHEMOKUUR(LexicalPatterns.ANY_CHEMOKUUR),
+	
+	PROSTAAT(LexicalPatterns.PROSTAAT),
+	RECTUM(LexicalPatterns.RECTUM),
+	HEERLEN(LexicalPatterns.HEERLEN),
+	RECTUM_HEERLEN(LexicalPatterns.RECTUM_HEERLEN),
+	CERVIX(LexicalPatterns.CERVIX);
 
 	private Concepts(final LexicalPatterns... pats) {
 		parsetree_representation = new OrQueryNode(LexicalPatterns.containedNodes(pats));

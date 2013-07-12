@@ -106,7 +106,7 @@ public class PatisReader {
 		PatisCsvReader.Classifier classifier;
 		if (args.length >= 3) {
 			try {
-				Class <?> c = Class.forName("");
+				Class <?> c = Class.forName(args[2]);
 				classifier = (PatisCsvReader.Classifier) c.newInstance();
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
 				throw new Error(ex);

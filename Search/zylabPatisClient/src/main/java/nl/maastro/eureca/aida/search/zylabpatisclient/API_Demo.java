@@ -14,10 +14,14 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.xml.rpc.ServiceException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.ChainedSearcher.CombinationStrategy;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
@@ -36,36 +40,112 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Sema
  */
 public class API_Demo {
 	private enum SearchedConcepts {
-		EXPECTED_METASTASIS {{ setConcept(Concepts.METASTASIS); }},
-		METASTASIS {{ setConcept(Concepts.METASTASIS); }},
-		EXPECTED_CHEMOKUUR {{ setConcept(Concepts.CHEMOKUUR); }},
-		CHEMOKUUR {{ setConcept(Concepts.CHEMOKUUR); }},
+		EXPECTED_METASTASIS(Concepts.METASTASIS, Strategy.SIMULATED),
+		METASTASIS(Concepts.METASTASIS, Strategy.REAL),
+//		EXPECTED_CHEMOKUUR(Concepts.CHEMOKUUR, Strategy.SIMULATED),
+		CHEMOKUUR(Concepts.CHEMOKUUR, Strategy.REAL),
 		
-		PROSTAAT {{ setConcept(Concepts.PROSTAAT); }},
-		RECTUM {{ setConcept(Concepts.RECTUM); }},
-		HEERLEN {{ setConcept(Concepts.HEERLEN); }},
-		RECTUM_uit_HEERLEN {{ setConcept(Concepts.RECTUM_HEERLEN); }},
-		CERVIX {{ setConcept(Concepts.CERVIX); }};
+		PROSTAAT(Concepts.PROSTAAT, Strategy.REAL),
+		RECTUM(Concepts.RECTUM, Strategy.REAL),
+		HEERLEN(Concepts.HEERLEN, Strategy.REAL),
+		RECTUM_uit_HEERLEN(Concepts.RECTUM_HEERLEN, Strategy.REAL),
+		CERVIX(Concepts.CERVIX, Strategy.REAL);
 
+		private enum Strategy {
+			REAL {
+				public void setSearcher(SearchedConcepts container, Searcher searcher_) {
+					container.setSearcher_real(searcher_);
+				}
+
+				@Override
+				public void addExpected(SearchedConcepts container, Map<PatisNumber, EligibilityClassification> expected_, boolean preserveExisting) {
+					throw new IllegalStateException(
+							"Cannot set expected; non-simulated SearchConcepts "
+							+ "use a real searcher to get their results.");
+				}
+			},
+
+			SIMULATED {
+				@Override
+				public void setSearcher(SearchedConcepts container, Searcher searcher_) {
+					throw new IllegalStateException(
+							"Cannot set searcher; simulated SearchedConcepts "
+							+ "use a DummySearcher.");
+				}
+
+				@Override
+				public void addExpected(SearchedConcepts container, Map<PatisNumber, EligibilityClassification> expected_, boolean preserveExisting) {
+					container.addExpected_sim(expected_, preserveExisting);
+				}
+				
+			};
+
+			public abstract void setSearcher(SearchedConcepts container, Searcher searcher_); 
+			public abstract void addExpected(SearchedConcepts container, Map<PatisNumber, EligibilityClassification> expected_, boolean preserveExisting);
+		}
+
+		private final Concepts concept;
+		private final Strategy strat;
+		private final LinkedHashMap<PatisNumber, EligibilityClassification> expected =
+				new LinkedHashMap<>();
 		private Searcher searcher = null;
-		private Concepts concept = null;
+
+		private SearchedConcepts(Concepts concept_, Strategy strat_) {
+			this.strat = strat_;
+			this.concept = concept_;
+		}
+
+		public static void init(Config config, Searcher defaultSearcher) {
+			for (SearchedConcepts e : SearchedConcepts.values()) {
+				if(e.isSimulated()) {
+					if(e.equals(EXPECTED_METASTASIS)) {
+						e.addExpected(config.getPatients(), true);
+					} else {
+						throw new UnsupportedOperationException("Not yet implemented");
+					}
+				} else {
+					e.setSearcher(defaultSearcher);
+				}
+			}
+		}
 		
-		public Searcher setSearcher(Searcher searcher_) {
-			Searcher tmp = this.searcher;
+		public void setSearcher(Searcher searcher_) {
+			strat.setSearcher(this, searcher_);
+		}
+
+		private void setSearcher_real(Searcher searcher_) {
 			this.searcher = searcher_;
-			return tmp;
+		}
+
+
+		public void addExpected(Map<PatisNumber,
+				EligibilityClassification> expected_, boolean preserveExisting) {
+			strat.addExpected(this, expected_, preserveExisting);
+		}
+
+		private void addExpected_sim(
+				Map<PatisNumber, EligibilityClassification> expected_, boolean preserveExisting) {
+			LinkedHashMap<PatisNumber, EligibilityClassification> toAdd =
+					new LinkedHashMap<>(expected_);
+			if(preserveExisting) {
+				toAdd.keySet().removeAll(this.expected.keySet());
+			}
+			this.expected.putAll(toAdd);
+			this.searcher = new DummySearcher(this.expected);
+		}
+
+		public boolean isSimulated() {
+			return strat.equals(Strategy.SIMULATED);
 		}
 
 		public Searcher getSearcher() {
 			return searcher;
 		}
 
-		protected Concepts setConcept(Concepts concept_) {
-			Concepts tmp = this.concept;
-			this.concept = concept_;
-			return tmp;
+		public Set<PatisNumber> getPatients() {
+			return expected.keySet();
 		}
-
+		
 		public Concepts getConcept() {
 			return concept;
 		}
@@ -73,7 +153,7 @@ public class API_Demo {
 
 	private final Config config;
 	private final Searcher searcher;
-	private final List<PatisNumber> patients;
+	private final LinkedHashSet<PatisNumber> patients;
 	private final List<SemanticModifier> modifiers;
 	private final Classifier classifier;
 	private final SearchResultFormatter formatter;
@@ -81,6 +161,7 @@ public class API_Demo {
 	public API_Demo() {
 		this.config = initConfig();
 		this.searcher = initSearcher(config);
+		initSearchedConcepts(config, searcher);
 		this.patients = initPatients();
 		this.modifiers = initSemanticModifiers();
 		this.classifier = initClassifier();
@@ -101,26 +182,22 @@ public class API_Demo {
 		// Use config to initialise a searcher
 		try {
 			Searcher s = config.getSearcher();
-			
-			SearchedConcepts.EXPECTED_METASTASIS.setSearcher(
-					new ChainedSearcher(CombinationStrategy.FIRST_FOUND, Arrays.asList(
-						Patients.instance().getDummySearcher(),
-						new DummySearcher(config.getPatients())
-					)));
-			SearchedConcepts.METASTASIS.setSearcher(s);
-			SearchedConcepts.EXPECTED_CHEMOKUUR.setSearcher(null);
-			SearchedConcepts.CHEMOKUUR.setSearcher(s);
-			
 			return s;
 		} catch (ServiceException | IOException ex) {
 			throw new Error(ex);
 		}
 	}
 
-	private static List<PatisNumber> initPatients() {
-		List<PatisNumber> result = new LinkedList<>(
-				Patients.instance().getExpectedMetastasis().keySet());
-		result.addAll(Config.instance().getPatients().keySet());
+	private static void initSearchedConcepts(Config config, Searcher searcher) {
+		SearchedConcepts.EXPECTED_METASTASIS.addExpected(Patients.instance().getExpectedMetastasis(), false);
+		SearchedConcepts.init(config, searcher);
+	}
+
+	private static LinkedHashSet<PatisNumber> initPatients() {
+		LinkedHashSet<PatisNumber> result = new LinkedHashSet<>();
+		for (SearchedConcepts e : SearchedConcepts.values()) {
+			result.addAll(e.getPatients());
+		}
 
 		return result;
 	}
@@ -180,8 +257,7 @@ public class API_Demo {
 	static public void main(String[] args) {
 		API_Demo instance = new API_Demo();
 		LinkedHashMap<String, Iterable<SearchResult>> table = new LinkedHashMap<>();
-//		table.put(SearchedConcepts.EXPECTED_METASTASIS.name(),
-//				instance.searchConcept(SearchedConcepts.EXPECTED_METASTASIS));
+
 		instance.addTo(table, SearchedConcepts.METASTASIS);
 		instance.addTo(table, SearchedConcepts.CHEMOKUUR);
 		instance.addTo(table, SearchedConcepts.PROSTAAT);

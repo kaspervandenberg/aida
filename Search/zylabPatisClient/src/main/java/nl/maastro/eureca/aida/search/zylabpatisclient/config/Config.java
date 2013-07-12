@@ -428,6 +428,9 @@ public class Config {
 				NS_PREFIX + ":patients"),
 		N_ABS_PATIENTS_JSON(XPathOpNodeImpl.class,
 				N_BASE.s_expr + "/" + N_PATIENTS_JSON.s_expr),
+		N_ABS_PATIENTS_JSON_BY_ID(XPathOpNodeImpl.class,
+				N_ABS_PATIENTS_JSON.s_expr + "[@concept-ref=$conceptRef]",
+				new Object[][]{{"conceptRef", ""}}),
 
 		// Attribute expressions
 		A_ADDRESS(XPathOpAttrImpl.class,
@@ -455,7 +458,7 @@ public class Config {
 		C_WS_ADDRESS(XPathOpCompoundImpl.class, N_ABS_INDEX, N_WEBSERVICE_INDEX, A_ADDRESS),
 		C_WS_INDEX(XPathOpCompoundImpl.class, N_ABS_INDEX, N_WEBSERVICE_INDEX, A_INDEX),
 		C_LOCAL_FILE(XPathOpCompoundImpl.class, N_ABS_INDEX, N_LOCAL_INDEX, A_FILE),
-		C_PATIENTS_JSON_FILE(XPathOpCompoundImpl.class, N_ABS_PATIENTS_JSON, A_FILE),
+		C_PATIENTS_JSON_FILE(XPathOpCompoundImpl.class, N_ABS_PATIENTS_JSON_BY_ID, A_FILE),
 		
 		;
 		public final XPathOp delegate;
@@ -673,8 +676,8 @@ public class Config {
 		}
 	}
 
-	public Map<PatisNumber, EligibilityClassification> getPatients() {
-		File f = getPatientsJsonFile();
+	public Map<PatisNumber, EligibilityClassification> getPatients(QName concept) {
+		File f = getPatientsJsonFile(concept);
 		PatisReader p = new PatisReader();
 		try {
 			try (FileReader in = new FileReader(f)) {
@@ -761,7 +764,9 @@ public class Config {
 				"Local index file is not configured.");
 	}
 
-	private File getPatientsJsonFile() {
+	private File getPatientsJsonFile(QName concept) {
+		// TODO replace concept with a (canonical) string
+		XPaths.PATIS_FILE_JASON.setVariable("conceptRef", concept);
 		return getFile(XPaths.PATIS_FILE_JASON,
 				"Json file of patients URI (%s) malforme.d",
 				"Json file of ptient not configued.");

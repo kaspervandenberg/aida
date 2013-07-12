@@ -92,13 +92,7 @@ public class API_Demo {
 		public static void init(Config config, Searcher defaultSearcher) {
 			for (SearchedConcepts e : SearchedConcepts.values()) {
 				if(e.isSimulated()) {
-					// TODO Implement Config getPatients by concept
-//					e.addExpected(config.getPatients(e.getConcept().getName()), true);
-					if(e.equals(SearchedConcepts.EXPECTED_METASTASIS)) {
-						e.addExpected(config.getPatients(), true);
-					} else {
-						throw new UnsupportedOperationException("Not yet implemented");
-					}
+					e.addExpected(config.getPatients(e.getConcept().getName()), true);
 				} else {
 					e.setSearcher(defaultSearcher);
 				}

@@ -54,7 +54,8 @@ enum LexicalPatterns implements Query, DualRepresentationQuery, LuceneObject {
 	
 	NOT_NL1("geen"),
 	NOT_NL2("niet"),
-	ANY_NEGATION(OrQueryNode.class, NOT_NL1, NOT_NL2),
+        ZONDER("zonder"),
+	ANY_NEGATION(OrQueryNode.class, NOT_NL1, NOT_NL2, ZONDER),
 	
 	DIFFERENTIAL_DIAGNOSISIS_ABBREV("d.d"),
 	DIFFERENTIAL_DIAGNOSISIS_SPELLING_ERROR("differenttaal*"),

@@ -7,7 +7,7 @@
 	<groupId>org.adaptivedisclosure</groupId>
 	<artifactId>aida</artifactId>
 	<packaging>pom</packaging>
-	<version>0.86-SNAPSHOT</version>
+	<version>0.86</version>
 	<name>AIDA</name>
 	<description>
 		AIDA connects diverse sources of information via semantic web technology;

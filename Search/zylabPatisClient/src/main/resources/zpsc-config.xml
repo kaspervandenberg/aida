@@ -31,7 +31,8 @@ and open the template in the editor.
 ?>
 	<defaultField field="content" />
 	<resultLimit nHits="1000" />
-	<patients concept-ref="pcq:metastasis" file="file:///home/kasper/git/aida.git/Search/zylabPatisClient/patients-metastasis-20121221_AD2.json" />
+	<patients concept-ref="pcq:metastasis" file="file:///home/kasper/git/aida.git/Search/zylabPatisClient/data/patients-metastasis-20121221_AD2.json" />
+	<patients concept-ref="pcq:chemokuur" file="file:///home/kasper/git/aida.git/Search/zylabPatisClient/data/patients-chemo-20121221_AD2.json" />
 	<query id="zpsc:scopedQuery1">This can be some content parsable by Lucence's query parser</query>
 	<query id="unscopedQuery2">Query string for unscoped query</query>
 	<query id="vocab:longparenchym">longparenchym</query>

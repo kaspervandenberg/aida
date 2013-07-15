@@ -38,6 +38,13 @@ public class PatisCsvReader {
 				return EligibilityClassification.NOT_ELIGIBLE;
 			}
 		}
+	}
+
+	public static class AllUnknown implements Classifier {
+		@Override
+		public EligibilityClassification expectedClassification(PatisNumber patient, String[] textFields) {
+			return EligibilityClassification.UNKNOWN;
+		}
 		
 	}
 

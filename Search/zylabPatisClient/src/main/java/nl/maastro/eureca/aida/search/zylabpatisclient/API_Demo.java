@@ -42,7 +42,7 @@ public class API_Demo {
 	private enum SearchedConcepts {
 		EXPECTED_METASTASIS(Concepts.METASTASIS, Strategy.SIMULATED),
 		METASTASIS(Concepts.METASTASIS, Strategy.REAL),
-//		EXPECTED_CHEMOKUUR(Concepts.CHEMOKUUR, Strategy.SIMULATED),
+		EXPECTED_CHEMOKUUR(Concepts.CHEMOKUUR, Strategy.SIMULATED),
 		CHEMOKUUR(Concepts.CHEMOKUUR, Strategy.REAL);
 
 		private enum Strategy {
@@ -247,8 +247,8 @@ public class API_Demo {
 				instance.searchConcept(SearchedConcepts.EXPECTED_METASTASIS));
 		table.put(SearchedConcepts.METASTASIS.name(), 
 				instance.searchConcept(SearchedConcepts.METASTASIS));
-//		table.put(SearchedConcepts.EXPECTED_CHEMOKUUR.name(),
-//				instance.searchConcept(SearchedConcepts.EXPECTED_CHEMOKUUR));
+		table.put(SearchedConcepts.EXPECTED_CHEMOKUUR.name(),
+				instance.searchConcept(SearchedConcepts.EXPECTED_CHEMOKUUR));
 		table.put(SearchedConcepts.CHEMOKUUR.name(),
 				instance.searchConcept(SearchedConcepts.CHEMOKUUR));
 //		System.out.append(SearchedConcepts.METASTASIS.getConcept().getName().toString());

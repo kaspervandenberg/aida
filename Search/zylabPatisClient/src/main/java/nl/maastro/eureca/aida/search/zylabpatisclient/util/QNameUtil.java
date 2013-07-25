@@ -11,6 +11,8 @@ import javax.xml.namespace.QName;
  * @author kasper
  */
 public class QNameUtil {
+	private static final String QNAME_SEP = ":";
+	
 	private QNameUtil() { }
 
 	private static QNameUtil singleton = null;
@@ -26,6 +28,14 @@ public class QNameUtil {
 		return new QName(name.getNamespaceURI(),
 				name.getLocalPart() + appendix,
 				name.getPrefix());
+	}
+
+	public String getPrefixedName(QName name) {
+		if (!name.getPrefix().isEmpty()) {
+			return name.getPrefix() + QNAME_SEP + name.getLocalPart();
+		} else {
+			return name.getLocalPart();
+		}
 	}
 	
 	public String tinySemiUnique() {

@@ -17,14 +17,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ForkJoinPool;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
@@ -32,7 +29,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.LocalLuceneSearcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
@@ -273,45 +269,21 @@ public class Config {
 	}
 			
 	private class QueryPatterns implements QueryProvider {
-		private Map<QName, Query> queries = null;
-
 		@Override
 		public Collection<QName> getQueryIds() {
-			initQueries();
 			return Collections.unmodifiableSet(queries.keySet());
 		}
 
 		@Override
 		public boolean provides(QName id) {
-			initQueries();
 			return queries.containsKey(id);
 		}
 
+		@Override
 		public Query get(final QName id) {
 			if(!provides(id)) {
 				throw new NoSuchElementException(
 						String.format("No query with id %s configured.", id.toString()));
-			}
-			initQueries();
-				
-			if(queries.get(id) == null) {
-				final QName canQName = findCanonicalQName(id);
-				String s_id = canQName.getPrefix().isEmpty() ?
-						canQName.getLocalPart() :
-						canQName.getPrefix() + ":" + canQName.getLocalPart();
-				XPaths.QUERY_BY_ID.setVariable("queryId", s_id);
-				final String s_query = XPaths.QUERY_BY_ID.getFirstNode(getConfigDoc()).getValue();
-				queries.put(id, new StringQueryBase() {
-					@Override
-					public String getRepresentation() {
-						return s_query;
-					}
-
-					@Override
-					public QName getName() {
-						return canQName;
-					}
-				});
 			}
 			return queries.get(id);
 		}
@@ -320,7 +292,6 @@ public class Config {
 		@Override
 		@Deprecated
 		public boolean hasString(QName id) {
-			initQueries();
 			return queries.containsKey(id);
 		}
 
@@ -328,7 +299,6 @@ public class Config {
 		@Deprecated
 		public boolean hasObject(QName id) {
 			return false;
-//			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 
 		@Deprecated
@@ -357,44 +327,6 @@ public class Config {
 		public org.apache.lucene.search.Query getAsObject(QName id) throws NoSuchElementException {
 			throw new NoSuchElementException("Not supported yet.");
 		}
-
-		private void initQueries() {
-			if(queries == null) {
-				List<Attribute> attrs = XPaths.QUERY_IDS.getAllAttributes(getConfigDoc());
-				queries = new HashMap<>(attrs.size());
-				for (Attribute attribute : attrs) {
-					NameSpaceResolver nsr = getNamespaces().pushContext();
-					try {
-						nsr.addAll(attribute.getNamespacesInScope());
-						String val = attribute.getValue();
-						queries.put(nsr.createQName(val), null);
-					} catch (URISyntaxException ex) {
-						throw new Error(String.format(
-								"Namespace URI in config file is not well formed."),
-								ex);
-					}
-				}
-			}
-		}
-
-		private QName findCanonicalQName(QName qname) {
-			initQueries();
-			QName canonicalId = null;
-			Iterator<QName> i = queries.keySet().iterator();
-			while (canonicalId == null && i.hasNext()) {
-				QName item = i.next();
-				if(item.equals(qname)) {
-					canonicalId = item;
-				}	
-			}
-			if (canonicalId != null) {
-				return canonicalId;
-			} else {
-				throw new NoSuchElementException(
-						String.format("No query with id %s configured.", qname.toString()));
-			}
-			
-		}
 	}
 	
 	private enum XPathImpls {
@@ -421,9 +353,6 @@ public class Config {
 				NS_PREFIX + ":query"),
 		N_ABS_QUERY(XPathOpNodeImpl.class,
 				N_BASE.s_expr + "/" + N_QUERY.s_expr),
-		N_ABS_QUERY_BY_ID(XPathOpNodeImpl.class,
-				N_ABS_QUERY.s_expr + "[@id=$queryId]",
-				new Object[][]{{"queryId", ""}}),
 		N_PATIENTS_JSON(XPathOpNodeImpl.class,
 				NS_PREFIX + ":patients"),
 		N_ABS_PATIENTS_JSON(XPathOpNodeImpl.class,
@@ -451,6 +380,8 @@ public class Config {
 				"@id"),
 		A_ABS_QUERY_ID(XPathOpAttrImpl.class,
 				N_ABS_QUERY.s_expr + "/" + A_ID.s_expr),
+		A_CONCEPT_REF(XPathOpAttrImpl.class,
+				"@concept-ref"),
 
 		// Compound paths
 		C_INDEX_WEBSERVICE(XPathOpCompoundImpl.class, N_ABS_INDEX, N_WEBSERVICE_INDEX),
@@ -515,9 +446,11 @@ public class Config {
 		LOCAL_FILE(XPathImpls.C_LOCAL_FILE),
 		DEFAULT_FIELD(XPathImpls.A_ABS_DEFAULT_FIELD, "content"),
 		RESULT_LIMIT(XPathImpls.A_ABS_RESULT_LIMIT, "1000"),
-		QUERY_IDS(XPathImpls.A_ABS_QUERY_ID),
-		QUERY_BY_ID(XPathImpls.N_ABS_QUERY_BY_ID),
-		PATIS_FILE_JASON(XPathImpls.C_PATIENTS_JSON_FILE);
+		QUERY(XPathImpls.N_ABS_QUERY),
+		ID(XPathImpls.A_ID),
+		PATIS_FILE_JASON(XPathImpls.N_ABS_PATIENTS_JSON),
+		CONCEPT_REF(XPathImpls.A_CONCEPT_REF),
+		FILE(XPathImpls.A_FILE);
 
 		private final XPathOp delegate;
 		private final String defaultValue;
@@ -586,7 +519,6 @@ public class Config {
 	private static final String NS = "http://search.aida.eureca.maastro.nl/zylabpatisclient/config";
 	private static final String NS_PREFIX = "zpsc";
 	private static final String SCHEMA_RESOURCE = "/zylabPatisClientConfig.xsd";
-	private static final String QNAME_SEP = ":";
 	
 	private static Config singleton = null;
 	
@@ -597,6 +529,8 @@ public class Config {
 	private final ForkJoinPool taskPool;
 	private Element configDoc = null;
 	private NameSpaceResolver namespaces = null; 
+	private Map<QName, Query> queries = null;
+	private Map<QName, File> jsonFiles = null;
 
 	private Searcher searcher = null;
 	
@@ -644,6 +578,26 @@ public class Config {
 	}
 
 	public QueryProvider getConfiguredQueries() {
+		if(queries == null) {
+			List<? extends Content> nodes = XPaths.QUERY.getAllNodes(getConfigDoc());
+			queries = new HashMap<>(nodes.size());
+			for (Content n : nodes) {
+				final QName id = readId(getNamespaces(), getConfigDoc(), XPaths.ID);
+				final String value = n.getValue();
+				queries.put(id, new StringQueryBase() {
+
+					@Override
+					public String getRepresentation() {
+						return value;
+					}
+
+					@Override
+					public QName getName() {
+						return id;
+					}
+				});
+			}
+		}
 		return this.new QueryPatterns();
 	}
 
@@ -759,23 +713,30 @@ public class Config {
 	}
 
 	private File getLocalIndexFile() {
-		return getFile(XPaths.LOCAL_FILE, 
+		return getFile(getConfigDoc(), XPaths.LOCAL_FILE, 
 				"Local index URI (%s) malformed",
 				"Local index file is not configured.");
 	}
 
 	private File getPatientsJsonFile(QName concept) {
-		// TODO replace concept with a (canonical) string
-		XPaths.PATIS_FILE_JASON.setVariable("conceptRef", concept);
-		return getFile(XPaths.PATIS_FILE_JASON,
-				"Json file of patients URI (%s) malforme.d",
-				"Json file of ptient not configued.");
+		if(jsonFiles == null) {
+			List<? extends Content> nodes = XPaths.PATIS_FILE_JASON.getAllNodes(getConfigDoc());
+			jsonFiles = new HashMap<>(nodes.size());
+			for (Content n : nodes) {
+				QName id = readId(getNamespaces(), n, XPaths.CONCEPT_REF);
+				File f = getFile(n, XPaths.FILE,
+						"Json file of patients URI (%s) malforme.d",
+						"Json file of ptient not configued.");
+				jsonFiles.put(id, f);
+			}
+		}
+		return jsonFiles.get(concept);
 	}
 
-	private File getFile(final XPathOp fileAttr, 
+	private File getFile(final Content context, final XPathOp fileAttr, 
 			final String msg_UriSyntaxException, 
 			final String msg_notConfigured) {
-		String addr = fileAttr.getAttrValue(getConfigDoc());
+		String addr = fileAttr.getAttrValue(context);
 		if(addr != null) {
 			try {
 				return new File(new URI(addr));
@@ -800,6 +761,25 @@ public class Config {
 			Content n = nodes.get(i);
 			System.out.print(String.format("[%d]\t",i));
 			dumpNode(n);
+		}
+	}
+	
+	private static QName readId(NameSpaceResolver context, Content n, XPaths attrExpr) {
+		NameSpaceResolver nsr = context.pushContext();
+		List<Attribute> attrs = attrExpr.getAllAttributes(n);
+		if(attrs.isEmpty() || attrs.size() != 1) {
+			throw new Error(new IllegalStateException(String.format(
+					"Expected one id (%s @ %s).", attrExpr.toString(), n.toString())));
+		}
+		Attribute attr = attrs.get(0);
+		try {
+			nsr.addAll(attr.getNamespacesInScope());
+			QName id = nsr.createQName(attr.getValue());
+			return id;
+		} catch (URISyntaxException ex) {
+			throw new Error(String.format(
+					"Namespace URI in config file is not well formed."),
+					ex);
 		}
 	}
 

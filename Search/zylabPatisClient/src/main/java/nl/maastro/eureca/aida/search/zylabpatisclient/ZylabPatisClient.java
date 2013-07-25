@@ -47,7 +47,7 @@ import org.jdom2.Namespace;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-@SuppressWarnings({"deprecation", "serial"})
+@SuppressWarnings({"serial"})
 public class ZylabPatisClient extends HttpServlet {
 	/**
 	 * Request parameters specified as servlet 
@@ -73,6 +73,7 @@ public class ZylabPatisClient extends HttpServlet {
 				InputSanitation.PATTIS_NR) {
 			
 			@Override
+			@SuppressWarnings({"unchecked"})
 			protected PatisNumber convertValue(
 					final ZylabPatisClient context, final String value) {
 				return PatisNumber.create(value);
@@ -95,6 +96,7 @@ public class ZylabPatisClient extends HttpServlet {
 				InputSanitation.QNAME) {
 			
 			@Override
+			@SuppressWarnings({"unchecked"})
 			protected QName convertValue(
 					final ZylabPatisClient context, final String value) {
 				try {

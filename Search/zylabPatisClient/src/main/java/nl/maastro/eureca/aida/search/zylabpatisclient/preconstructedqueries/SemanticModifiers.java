@@ -5,14 +5,18 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
+import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.LexicalPattern;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObjectBase;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTree;
@@ -39,7 +43,7 @@ import org.apache.lucene.search.spans.SpanQuery;
  *
  * @author kasper
  */
-public enum SemanticModifiers implements SemanticModifier {
+public enum SemanticModifiers {
 	NEGATED(2, EligibilityClassification.UNCERTAIN,
 			LexicalPatterns.ANY_NEGATION),
 	SUSPICION(4, EligibilityClassification.UNCERTAIN,
@@ -48,18 +52,115 @@ public enum SemanticModifiers implements SemanticModifier {
 	private final LexicalPatterns[] modifierPatterns;
 	private final int distance;
 	private final EligibilityClassification classification;
-	private final ClassMap<Query, ClassMap<Query, QueryAdapterBuilder<? extends Query, ? extends Query>>> adapters;
+	private final Map<Config, SemanticModifier> instances =
+			new HashMap<>();
 
+	private class Impl implements SemanticModifier {
+		private final Iterable<LexicalPattern> modifierPatterns;
+		private final Config config;
+		private final ClassMap<Query, ClassMap<Query, QueryAdapterBuilder<? extends Query, ? extends Query>>> adapters;
+
+		public Impl(final Config config_,
+				final Iterable<LexicalPattern> modifierPatterns_) {
+			this.modifierPatterns = modifierPatterns_;
+			this.config = config_;
+			
+			adapters = new ClassMap<>(ClassMap.RetrievalStrategies.SUBCLASS);
+			adapters.put(LuceneObject.class,
+				createSingletonMapping(LuceneObject.class, getAdapter_luceneObject()));
+			adapters.put(ParseTree.class,
+				createSingletonMapping(ParseTree.class, getAdapter_parseTree()));
+		}
+		
+
+		@Override
+		@SuppressWarnings(value = "unchecked")
+		public <TIn extends Query, TOut extends Query> QueryAdapterBuilder<TIn, TOut> getAdapterBuilder(Class<TIn> inClass, Class<TOut> outClass) throws IllegalArgumentException {
+			return (QueryAdapterBuilder<TIn, TOut>) (adapters.get(inClass).get(outClass));
+		}
+
+		@Override
+		public Map<Class<? extends Query>, Set<Class<? extends Query>>> getSupportedTypes() {
+			Map<Class<? extends Query>, Set<Class<? extends Query>>> result = new HashMap<>();
+			for (Class<? extends Query> inClass : adapters.keySet()) {
+				result.put(inClass, adapters.get(inClass).keySet());
+			}
+			return result;
+		}
+
+		@Override
+		public EligibilityClassification getClassification() {
+			return classification;
+		}
+		
+		public QueryNode compose(QueryNode query) {
+			List<QueryNode> modifyingNodes = LexicalPatterns.containedNodes(modifierPatterns);
+			List<QueryNode> nodes = new ArrayList<>(2);
+			nodes.add(new OrQueryNode(modifyingNodes));
+			nodes.add(new ModifierQueryNode(query, ModifierQueryNode.Modifier.MOD_REQ));
+			return new ProximityQueryNode(nodes, config.getDefaultField(), ProximityQueryNode.Type.NUMBER, distance, false);
+		}
+
+		public SpanQuery compose(org.apache.lucene.search.Query query) {
+			SpanQuery modifyingNodes = new SpanOrQuery(LexicalPatterns.containedSpans(modifierPatterns));
+			SpanQuery tmp;
+			if (query instanceof SpanQuery) {
+				tmp = (SpanQuery) query;
+			} else if (query instanceof MultiTermQuery) {
+				tmp = new SpanMultiTermQueryWrapper<>((MultiTermQuery) query);
+			} else {
+				throw new ClassCastException(String.format("Cannot convert obect of type %s to SpanQuery.", query.getClass().getName()));
+			}
+			return new SpanNearQuery(new SpanQuery[]{modifyingNodes, tmp}, distance, false);
+		}
+
+		private QueryAdapterBuilder<LuceneObject, LuceneObject> getAdapter_luceneObject() {
+			return new QueryAdapterBuilder<LuceneObject, LuceneObject>() {
+				@Override
+				public LuceneObject adapt(final LuceneObject adapted) {
+					return new LuceneObjectBase() {
+						@Override
+						public org.apache.lucene.search.Query getRepresentation() {
+							return compose(adapted.getRepresentation());
+						}
+
+						@Override
+						public QName getName() {
+							return QNameUtil.instance().append(adapted.getName(),
+									"-" + SemanticModifiers.this.name());
+						}
+					};
+				}
+			};
+		}
+
+		private QueryAdapterBuilder<ParseTree, ParseTree> getAdapter_parseTree() {
+			return new QueryAdapterBuilder<ParseTree, ParseTree>() {
+				@Override
+				public ParseTree adapt(final ParseTree adapted) {
+					return new ParseTreeBase() {
+						@Override
+						public QueryNode getRepresentation() {
+							return compose(adapted.getRepresentation());
+						}
+
+						@Override
+						public QName getName() {
+							return QNameUtil.instance().append(adapted.getName(),
+									"-" + SemanticModifiers.this.name());
+						}
+					};
+				}
+			};
+		}
+
+	}
+	
 	private SemanticModifiers(int distance_, EligibilityClassification classification_,
 			LexicalPatterns... pats) {
 		distance = distance_;
 		modifierPatterns = pats;
 		classification = classification_;
-		adapters = new ClassMap<>(ClassMap.RetrievalStrategies.SUBCLASS);
-		adapters.put(LuceneObject.class,
-			createSingletonMapping(LuceneObject.class, getAdapter_luceneObject()));
-		adapters.put(ParseTree.class,
-			createSingletonMapping(ParseTree.class, getAdapter_parseTree()));
 	}
 
 	private static <T extends Query> ClassMap<Query, QueryAdapterBuilder<? extends Query, ? extends Query>>
@@ -69,18 +170,54 @@ public enum SemanticModifiers implements SemanticModifier {
 				Collections.singletonMap(type, adapter));
 	}
 
-	@Override
-	public EligibilityClassification getClassification() {
-		return classification;
+	public static Iterable<SemanticModifier> toModifierIterable(
+			final Config config,
+			final Iterable<SemanticModifiers> items) {
+		return new Iterable<SemanticModifier>() {
+			final Iterator<SemanticModifiers> delegate = items.iterator();
+			@Override
+			public Iterator<SemanticModifier> iterator() {
+				return new Iterator<SemanticModifier>() {
+					@Override
+					public boolean hasNext() {
+						return delegate.hasNext();
+					}
+
+					@Override
+					public SemanticModifier next() {
+						return delegate.next().getModifier(config);
+					}
+
+					@Override
+					public void remove() {
+						delegate.remove();
+					}
+				};
+			}
+		};
 	}
 
+	public SemanticModifier getModifier(final Config config) {
+		if(!instances.containsKey(config)) {
+			SemanticModifier semmod = 
+					new Impl(config,
+					LexicalPatterns.toPatternIterable(
+						config,
+						Arrays.asList(modifierPatterns)));
+			instances.put(config, semmod);
+		}
+		return instances.get(config);
+	}
+	
+	@Deprecated
 	public QueryNodeProcessor getProcessor() {
 		return new QueryNodeProcessor() {
 			private QueryConfigHandler ignoredConfigHandler = null;
 
 			@Override
 			public QueryNode process(QueryNode queryTree) throws QueryNodeException {
-				return compose(queryTree);
+//				return compose(queryTree);
+				throw new UnsupportedOperationException("Not yet implemeted");
 			}
 
 			@Override
@@ -94,105 +231,4 @@ public enum SemanticModifiers implements SemanticModifier {
 			}
 		};
 	}
-
-	@Override
-    @SuppressWarnings(value = "unchecked")
-	public <TIn extends Query, TOut extends Query> QueryAdapterBuilder<TIn, TOut> getAdapterBuilder(Class<TIn> inClass, Class<TOut> outClass) throws IllegalArgumentException {
-		return (QueryAdapterBuilder<TIn, TOut>) (adapters.get(inClass).get(outClass));
-	}
-
-	@Override
-	public Map<Class<? extends Query>, Set<Class<? extends Query>>> getSupportedTypes() {
-		Map<Class<? extends Query>, Set<Class<? extends Query>>> result = new HashMap<>();
-		for (Class<? extends Query> inClass : adapters.keySet()) {
-			result.put(inClass, adapters.get(inClass).keySet());
-		}
-		return result;
-	}
-
-	public QueryAdapterBuilder<LuceneObject, LuceneObject> getAdapter_luceneObject() {
-		return new QueryAdapterBuilder<LuceneObject, LuceneObject>() {
-			@Override
-			public LuceneObject adapt(final LuceneObject adapted) {
-				return new LuceneObjectBase() {
-					@Override
-					public org.apache.lucene.search.Query getRepresentation() {
-						return compose(adapted.getRepresentation());
-					}
-
-					@Override
-					public QName getName() {
-						return QNameUtil.instance().append(adapted.getName(),
-								"-" + SemanticModifiers.this.name());
-					}
-				};
-			}
-		};
-	}
-
-	public QueryAdapterBuilder<ParseTree, ParseTree> getAdapter_parseTree() {
-		return new QueryAdapterBuilder<ParseTree, ParseTree>() {
-			@Override
-			public ParseTree adapt(final ParseTree adapted) {
-				return new ParseTreeBase() {
-					@Override
-					public QueryNode getRepresentation() {
-						return compose(adapted.getRepresentation());
-					}
-
-					@Override
-					public QName getName() {
-						return QNameUtil.instance().append(adapted.getName(),
-								"-" + SemanticModifiers.this.name());
-					}
-				};
-			}
-		};
-	}
-
-	public QueryAdapterBuilder<Query, Query> getAdapter_dynamic() {
-		return new QueryAdapterBuilder<Query, Query>() {
-			@Override
-			public Query adapt(final Query adapted) {
-				return adapted.accept(new Query.Visitor<Query>() {
-					@Override
-					public Query visit(LuceneObject element) {
-						return getAdapter_luceneObject().adapt(element);
-					}
-
-					@Override
-					public Query visit(StringQuery element) {
-						throw new Error(new IllegalArgumentException("Cannot modify StringQueries."));
-					}
-
-					@Override
-					public Query visit(ParseTree element) {
-						return getAdapter_parseTree().adapt(element);
-					}
-				});
-			}
-		};
-	}
-	
-	private QueryNode compose(QueryNode query) {
-		List<QueryNode> modifyingNodes = LexicalPatterns.containedNodes(modifierPatterns);
-		List<QueryNode> nodes = new ArrayList<>(2);
-		nodes.add(new OrQueryNode(modifyingNodes));
-		nodes.add(new ModifierQueryNode(query, ModifierQueryNode.Modifier.MOD_REQ));
-		return new ProximityQueryNode(nodes, PreconstructedQueries.instance().getDefaultField(), ProximityQueryNode.Type.NUMBER, distance, false);
-	}
-
-	private SpanQuery compose(org.apache.lucene.search.Query query) {
-		SpanQuery modifyingNodes = new SpanOrQuery(LexicalPatterns.containedSpans(modifierPatterns));
-		SpanQuery tmp;
-		if (query instanceof SpanQuery) {
-			tmp = (SpanQuery) query;
-		} else if (query instanceof MultiTermQuery) {
-			tmp = new SpanMultiTermQueryWrapper<>((MultiTermQuery) query);
-		} else {
-			throw new ClassCastException(String.format("Cannot convert obect of type %s to SpanQuery.", query.getClass().getName()));
-		}
-		return new SpanNearQuery(new SpanQuery[]{modifyingNodes, tmp}, distance, false);
-	}
-
 }

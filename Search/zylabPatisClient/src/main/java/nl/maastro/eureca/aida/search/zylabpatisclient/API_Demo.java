@@ -13,8 +13,6 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -23,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.rpc.ServiceException;
-import nl.maastro.eureca.aida.search.zylabpatisclient.ChainedSearcher.CombinationStrategy;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.InterDocOverride;
@@ -92,7 +89,7 @@ public class API_Demo {
 		public static void init(Config config, Searcher defaultSearcher) {
 			for (SearchedConcepts e : SearchedConcepts.values()) {
 				if(e.isSimulated()) {
-					e.addExpected(config.getPatients(e.getConcept().getName()), true);
+					e.addExpected(config.getPatients(e.getConcept(config).getName()), true);
 				} else {
 					e.setSearcher(defaultSearcher);
 				}
@@ -136,8 +133,8 @@ public class API_Demo {
 			return expected.keySet();
 		}
 		
-		public Concepts getConcept() {
-			return concept;
+		public Concept getConcept(Config config) {
+			return concept.getConcept(config);
 		}
 	}
 
@@ -153,8 +150,8 @@ public class API_Demo {
 		this.searcher = initSearcher(config);
 		initSearchedConcepts(config, searcher);
 		this.patients = initPatients();
-		this.modifiers = initSemanticModifiers();
-		this.classifier = initClassifier();
+		this.modifiers = initSemanticModifiers(config);
+		this.classifier = initClassifier(config);
 		HtmlFormatter tmp = new HtmlFormatter();
 		tmp.setShowSnippetsStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW);
 		this.formatter = tmp;
@@ -192,20 +189,22 @@ public class API_Demo {
 		return result;
 	}
 
-	private static List<SemanticModifier> initSemanticModifiers() {
+	private static List<SemanticModifier> initSemanticModifiers(Config config) {
 		List<SemanticModifier> result = new ArrayList<>(SemanticModifiers.values().length + 1);
 		result.add(SemanticModifier.Constants.NULL_MODIFIER);
-		result.addAll(Arrays.asList(SemanticModifiers.values()));
+		for (SemanticModifiers semmod : SemanticModifiers.values()) {
+			result.add(semmod.getModifier(config));
+		}
 		return result;
 	}
 	
-	private static Classifier initClassifier() {
+	private static Classifier initClassifier(Config config) {
 		Classifier instance = Classifier.instance();
 		instance.appendRule(new IntraDocOverride(
-				SemanticModifiers.NEGATED,
+				SemanticModifiers.NEGATED.getModifier(config),
 				SemanticModifier.Constants.NULL_MODIFIER));
 		instance.appendRule(new IntraDocOverride(
-				SemanticModifiers.SUSPICION,
+				SemanticModifiers.SUSPICION.getModifier(config),
 				SemanticModifier.Constants.NULL_MODIFIER));
 		instance.appendRule(new InterDocOverride(
 				EligibilityClassification.UNCERTAIN,
@@ -215,7 +214,7 @@ public class API_Demo {
 
 	private Iterable<SearchResult> searchConcept(SearchedConcepts concept) {
 		Iterable<SearchResult> results = concept.getSearcher().searchForAll(
-				concept.getConcept(), modifiers, patients);
+				concept.getConcept(config), modifiers, patients);
 		List<SearchResult> conclusions = new LinkedList<>();
 		for (SearchResult searchResult : results) {
 			conclusions.add(classifier.resolve(searchResult));

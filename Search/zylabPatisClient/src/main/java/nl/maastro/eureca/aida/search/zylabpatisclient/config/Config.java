@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.concurrent.ForkJoinPool;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -36,6 +37,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.WebserviceSearcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 import nl.maastro.eureca.aida.search.zylabpatisclient.input.PatisReader;
+import nl.maastro.eureca.aida.search.zylabpatisclient.query.DualRepresentationQuery;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.DynamicAdapter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.ParseTree;
@@ -483,6 +485,10 @@ public class Config {
 				}
 			}
 		}
+
+		public String getDefaultValue() {
+			return this.defaultValue;
+		}
 		
 		@Override
 		public Content getFirstNode(Content context) {
@@ -507,18 +513,57 @@ public class Config {
 	}
 
 	public enum PropertyKeys {
-		VERSION("nl.maastro.eureca.aida.search.version");
+		VERSION("nl.maastro.eureca.aida.search.version"),
+		PRECONSTRUCTED_URI(
+				"nl.maastro.eureca.aida.search.zylabpatisclient.preconstructed.namespace.uri",
+				"http://clinisearch.ad.maastro.nl/zylabpatis/"),
+		PRECONSTRUCTED_PREFIX(
+				"nl.maastro.eureca.aida.search.zylabpatisclient.preconstructed.namespace.prefix",
+				"pcq"),
+//		CONFIG_NS("nl.maastro.eureca.aida.search.zylabpatisclient.config.namespace.uri",  "http://search.aida.eureca.maastro.nl/zylabpatisclient/config"),
+//		CONFIG_NS_PREFIX("nl.maastro.eureca.aida.search.zylabpatisclient.config.namespace.prefix", "zpsc")
+		DOCUMENT_SERVER("nl.maastro.eureca.aida.search.zylabpatisclient.documentServer",
+				"http://clinisearch.ad.maastro.nl:80/search/item/"),
+		;
 
+		private static Properties props = null;
 		private final String key;
+		private final String defaultValue;
 		
 		private PropertyKeys(final String key_) {
+			this(key_, "");
+		}
+
+		private PropertyKeys(final String key_, final String defaultValue_) {
 			key = key_;
+			defaultValue = defaultValue_;
+		}
+
+		public String getValue() {
+			return getProperties().getProperty(key, defaultValue);
+		}
+
+		private static Properties getProperties() {
+			if(props == null) {
+				InputStream propertyFile = Config.PropertyKeys.class.getResourceAsStream(SEARCH_PROPERTY_RESOURCE);
+				Properties props = new Properties();
+				try {
+					props.load(propertyFile);
+				} catch (IOException ex) {
+					throw new Error(ex);
+				}
+			}
+			return props;
 		}
 	}
 	
 	private static final String NS = "http://search.aida.eureca.maastro.nl/zylabpatisclient/config";
 	private static final String NS_PREFIX = "zpsc";
 	private static final String SCHEMA_RESOURCE = "/zylabPatisClientConfig.xsd";
+	private static final String SEARCH_PROPERTY_RESOURCE = "/search.properties";
+	private static final DualRepresentationQuery.Visitable VISITABLE_DELEGATE =
+			DualRepresentationQuery.Visitable.AS_LUCENE_OBJECT;
+
 	
 	private static Config singleton = null;
 	
@@ -557,6 +602,14 @@ public class Config {
 					"Call init(…) before calling instance()");
 		}
 		return singleton;
+	}
+
+	public static String getHardcodedDefaultField() {
+		return XPaths.DEFAULT_FIELD.getDefaultValue();
+	}
+
+	public static DualRepresentationQuery.Visitable getDefaultVisitableDelegate() {
+		return VISITABLE_DELEGATE;
 	}
 
 	public Searcher getSearcher() throws ServiceException, IOException {
@@ -620,11 +673,10 @@ public class Config {
 		String defaultField = XPaths.DEFAULT_FIELD.getAttrValue(getConfigDoc());
 		return defaultField;
 	}
-	
-	// TODO replace hardcoded with value from config file
+
 	public URI getDocumentServer() {
 		try {
-			return new URI("http://clinisearch.ad.maastro.nl:80/search/item/");
+			return new URI(PropertyKeys.DOCUMENT_SERVER.getValue());
 		} catch (URISyntaxException ex) {
 			throw new Error(ex);
 		}

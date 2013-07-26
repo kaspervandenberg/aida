@@ -4,7 +4,6 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 import java.util.ArrayList;
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
-import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.PreconstructedQueries;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.flexible.core.nodes.FieldQueryNode;
 import org.apache.lucene.queryparser.flexible.core.nodes.FuzzyQueryNode;
@@ -123,7 +122,7 @@ public class LexicalPatternBuilder {
 			try {
 				return Config.instance().getDefaultField();
 			} catch (IllegalStateException ex) {
-				return PreconstructedQueries.instance().getDefaultField();
+				return Config.getHardcodedDefaultField();
 			}
 		}
 	}

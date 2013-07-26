@@ -40,7 +40,12 @@ enum LexicalPatterns {
 
 	CHEMO("chemo*"),
 	KUUR("kuur"),
-	ANY_CHEMOKUUR(OrBuilder.class, CHEMO, KUUR),
+	KUREN("kuren"),
+	GEMCITABINE("gemcitabine"),
+	CARBOPLATINE_EN("carboplatin"),
+	CARBOPLATINE_NL("carboplatine"),
+	CARBOPLATINE(OrBuilder.class, CARBOPLATINE_NL, CARBOPLATINE_EN),
+	ANY_CHEMOKUUR(OrBuilder.class, CHEMO, KUUR, KUREN, GEMCITABINE),
 	
 	NOT_NL1("geen"),
 	NOT_NL2("niet"),

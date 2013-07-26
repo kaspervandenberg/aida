@@ -174,10 +174,10 @@ enum LexicalPatterns {
 	static Iterable<LexicalPattern> toPatternIterable(
 			final Config config, final Iterable<LexicalPatterns> items) {
 		return new Iterable<LexicalPattern>() {
-			private final Iterator<LexicalPatterns> delegate = items.iterator();
 
 			@Override
 			public Iterator<LexicalPattern> iterator() {
+				final Iterator<LexicalPatterns> delegate = items.iterator();
 				return new Iterator<LexicalPattern>() {
 
 					@Override

@@ -201,10 +201,13 @@ public class API_Demo {
 	private static Classifier initClassifier(Config config) {
 		Classifier instance = Classifier.instance();
 		instance.appendRule(new IntraDocOverride(
-				SemanticModifiers.NEGATED.getModifier(config),
+				SemanticModifiers.NEGATED_PREFIX.getModifier(config),
 				SemanticModifier.Constants.NULL_MODIFIER));
 		instance.appendRule(new IntraDocOverride(
-				SemanticModifiers.SUSPICION.getModifier(config),
+				SemanticModifiers.SUSPICION_PREFIX.getModifier(config),
+				SemanticModifier.Constants.NULL_MODIFIER));
+		instance.appendRule(new IntraDocOverride(
+				SemanticModifiers.SUSPICION_ANY_ORDER.getModifier(config),
 				SemanticModifier.Constants.NULL_MODIFIER));
 		instance.appendRule(new InterDocOverride(
 				EligibilityClassification.UNCERTAIN,

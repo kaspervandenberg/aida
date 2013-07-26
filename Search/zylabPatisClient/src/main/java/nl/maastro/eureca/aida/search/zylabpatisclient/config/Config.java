@@ -546,7 +546,7 @@ public class Config {
 		private static Properties getProperties() {
 			if(props == null) {
 				InputStream propertyFile = Config.PropertyKeys.class.getResourceAsStream(SEARCH_PROPERTY_RESOURCE);
-				Properties props = new Properties();
+				props = new Properties();
 				try {
 					props.load(propertyFile);
 				} catch (IOException ex) {

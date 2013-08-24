@@ -40,7 +40,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Sema
  */
 public class API_Demo {
 	private enum SearchedConcepts {
-		EXPECTED_METASTASIS(Concepts.METASTASIS, Strategy.SIMULATED),
+		EXPECTED(Concepts.METASTASIS, Strategy.SIMULATED),
 		METASTASIS(Concepts.METASTASIS, Strategy.REAL),
 //		EXPECTED_CHEMOKUUR(Concepts.CHEMOKUUR, Strategy.SIMULATED),
 		CHEMOKUUR(Concepts.CHEMOKUUR, Strategy.REAL),
@@ -98,7 +98,7 @@ public class API_Demo {
 		public static void init(Config config, Searcher defaultSearcher) {
 			for (SearchedConcepts e : SearchedConcepts.values()) {
 				if(e.isSimulated()) {
-					if(e.equals(EXPECTED_METASTASIS)) {
+					if(e.equals(EXPECTED)) {
 						e.addExpected(config.getPatients(), true);
 					} else {
 						throw new UnsupportedOperationException("Not yet implemented");
@@ -189,7 +189,7 @@ public class API_Demo {
 	}
 
 	private static void initSearchedConcepts(Config config, Searcher searcher) {
-		SearchedConcepts.EXPECTED_METASTASIS.addExpected(Patients.instance().getExpectedMetastasis(), false);
+//		SearchedConcepts.EXPECTED.addExpected(Patients.instance().getExpectedMetastasis(), false);
 		SearchedConcepts.init(config, searcher);
 	}
 

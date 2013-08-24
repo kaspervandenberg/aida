@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>search</artifactId>
-	<version>0.86.1-SNAPSHOT</version>
+	<version>0.87.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>AIDA::Search</name>
 	<description>
@@ -60,14 +60,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.0</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
 
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>

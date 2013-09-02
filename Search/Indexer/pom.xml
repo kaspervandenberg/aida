@@ -4,7 +4,7 @@
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>indexer</artifactId>
 	<packaging>jar</packaging>
-	<version>0.87</version>
+	<version>0.87-SNAPSHOT</version>
 	<name>AIDA::Indexer</name>
 	<description>
 		Build the index of documents in which AIDA::Search can
@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
 		<artifactId>maven-parent-serviceServlet</artifactId>
-		<version>0.4</version>
+		<version>0.6-SNAPSHOT</version>
 		<relativePath>../../maven-parent-serviceServlet</relativePath>
 	</parent>
 
@@ -95,14 +95,33 @@
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
-			<version>4.1.0</version>
 			<!-- used in indexer.* -->
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers-common</artifactId>
-			<version>4.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-parsers</artifactId>
+			<!--
+				provides text and metadata extraction from a plethora of different 
+				file formats
+			-->
+			<!--
+				used in indexer.BaseIndexing and
+				nl.maastro.eureca.aida.indexer.ParseData
+			-->
+		</dependency>
+		
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+			<!-- provides file access utilities -->
+			<!-- used in nl.maastro.eureca.aida.indexer.ParseData -->
 		</dependency>
 		
 		<dependency>
@@ -136,12 +155,6 @@
 			<!-- used in nl.uva.science.wsdtf.StreamClient, 
 					nl.uva.science.wsdtf.utilities.*, and 
 					nl.uva.science.wsdtf.protocols.* -->
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.tika</groupId>
-			<artifactId>tika-parsers</artifactId>
-			<version>1.3</version>
 		</dependency>
 
 		<dependency>

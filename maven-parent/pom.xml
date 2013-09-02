@@ -3,7 +3,7 @@
 
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>maven-parent</artifactId>
-	<version>0.4</version>
+	<version>0.6-SNAPSHOT</version>
 	<name>AIDA parent</name>
 	<description>
 		Common entries for AIDA
@@ -77,6 +77,58 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-core</artifactId>
+				<version>4.4.0</version>
+				<!--
+					used in org.vle.aid.client.*, org.aid.vle.lucene.*, 
+					org.apache.lucene.aid.LuceneFilter
+				-->
+			</dependency>
+			
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-highlighter</artifactId>
+				<version>4.4.0</version>
+				<!-- provides org.apache.lucene.search.highlight -->
+				<!-- used in org.vle.aid.lucene.tools.Snippet -->
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-queries</artifactId>
+				<version>4.4.0</version>
+				<!-- Provides additional org.apache.lucene.search.filters -->
+				<!-- used in org.apache.lucene.aid.LuceneFilter -->
+			</dependency>
+				
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-analyzers-common</artifactId>
+				<version>4.4.0</version>
+				<!-- used in org.vcle.aid.client.search -->
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-queryparser</artifactId>
+				<version>4.4.0</version>
+				<!-- used in org.vcle.aid.client.search -->
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.tika</groupId>
+				<artifactId>tika-core</artifactId>
+				<version>1.4</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.tika</groupId>
+				<artifactId>tika-parsers</artifactId>
+				<version>1.4</version>
+			</dependency>
+
 			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-library</artifactId>

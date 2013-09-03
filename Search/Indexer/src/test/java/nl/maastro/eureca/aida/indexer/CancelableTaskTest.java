@@ -1,5 +1,5 @@
 // © Maastro Clinic, 2013
-package nl.maastro.eureca.indexer;
+package nl.maastro.eureca.aida.indexer;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;

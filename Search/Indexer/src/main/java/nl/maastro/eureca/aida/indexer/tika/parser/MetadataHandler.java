@@ -119,7 +119,7 @@ public class MetadataHandler extends DefaultHandler {
 			@Override
 			public State startElement(MetadataHandler context, String uri, String localName, String qName, Attributes attributes) throws SAXException {
 				if(XmlTags.TAG_FIELD.equalTo(localName)) {
-					String id = XmlAttributes.ATTR_ID.getValue(attributes);
+					String id = XmlAttributes.ATTR_ID.getValue(attributes).toLowerCase();
 					context.currentField.push(new FieldParsingContents(id));
 					return EXPECT_FIELD_CONTENTS;
 				} else {

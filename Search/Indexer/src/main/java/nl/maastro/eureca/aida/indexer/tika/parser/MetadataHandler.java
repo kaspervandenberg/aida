@@ -1,17 +1,11 @@
 // © Maastro, 2013
 package nl.maastro.eureca.aida.indexer.tika.parser;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Deque;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import org.apache.tika.metadata.DublinCore;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.Property;
+import nl.maastro.eureca.aida.indexer.ZylabData;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -22,7 +16,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-class MetadataHandler extends DefaultHandler {
+public class MetadataHandler extends DefaultHandler {
 	/**
 	 * Tags and attributes recognised in XmlFields by {@link State}.
 	 */
@@ -53,23 +47,13 @@ class MetadataHandler extends DefaultHandler {
 	/**
 	 * Xml attributes recognised in XmlFields by {@link State}.
 	 */
-	private static enum XmlAttributes {
+	public static enum XmlAttributes {
 		ATTR_PATH("path"),
 		ATTR_NAME("name"),
 		ATTR_KEY("key"),
-		ATTR_DOC_DATE("date"),
+		ATTR_GUID("guid"),
 		ATTR_ID("id");
 		
-		private static final Map<XmlAttributes, Property> STORED_IN_METADATA;
-		static {
-			EnumMap<XmlAttributes, Property>	 result = 
-					new EnumMap<>(XmlAttributes.class);
-			result.put(ATTR_KEY, DublinCore.SUBJECT);
-			result.put(ATTR_DOC_DATE, DublinCore.DATE);
-
-			STORED_IN_METADATA = Collections.unmodifiableMap(result);
-		}
-
 		private final String s;
 
 		private XmlAttributes(final String s_) {
@@ -88,16 +72,6 @@ class MetadataHandler extends DefaultHandler {
 		 */
 		public String getValue(Attributes attrs) {
 			return attrs.getValue("", s);
-		}
-		
-		/**
-		 * @return	the attributes that should be stored in 
-		 * 		{@link #extractedMetadata} mapped to the 
-		 * 		{@link org.apache.tika.metadata.Property} they should be 
-		 * 		stored under.
-		 */		
-		public static Map<XmlAttributes, Property> getStoredInMetadata() {
-			return STORED_IN_METADATA;
 		}
 	}
 	
@@ -124,12 +98,10 @@ class MetadataHandler extends DefaultHandler {
 					String refName = XmlAttributes.ATTR_NAME.getValue(attributes);
 					context.about = new ZylabMetadataXml.FileRef(refPath, refName);
 
-					for (XmlAttributes attr : XmlAttributes.getStoredInMetadata().keySet()) {
+					for (XmlAttributes attr : context.attributesToStore.keySet()) {
 						String value = attr.getValue(attributes);
 						if(value != null) {
-							context.extractedMetadata.add(
-									XmlAttributes.getStoredInMetadata().get(attr),
-									value);
+							context.zylabData.setField(context.attributesToStore.get(attr), value);
 						}
 					}
 					return EXPECT_FIELD_OPEN_TAG;
@@ -165,11 +137,7 @@ class MetadataHandler extends DefaultHandler {
 			@Override
 			public State endElement(MetadataHandler context, String uri, String localName, String qName) throws SAXException {
 				FieldParsingContents field = context.currentField.pop();
-				Property prop = Property.get(field.fieldId);
-				if(prop == null) {
-					prop = Property.externalText(field.fieldId);
-				}
-				context.extractedMetadata.add(prop, field.getValue());
+				context.zylabData.setField(field.fieldId, field.getValue());
 				
 				return EXPECT_FIELD_OPEN_TAG;
 			}
@@ -269,8 +237,12 @@ class MetadataHandler extends DefaultHandler {
 	/**
 	 * Store the fields encountered while handling the SAX events.
 	 */
-	private final Metadata extractedMetadata;
+//	private final Metadata extractedMetadata;
+//	private final List<Field> fields = new LinkedList<>();
+//	private final Map<String, String> fields = new HashMap<>();
 
+	private final ZylabData zylabData;
+	private final Map<XmlAttributes, ZylabData.Fields> attributesToStore;	
 	/**
 	 * The file of which {@code this} is the metadata.
 	 */
@@ -280,9 +252,15 @@ class MetadataHandler extends DefaultHandler {
 
 	private final Deque<FieldParsingContents> currentField = new LinkedList<>();
 
-	public MetadataHandler(Metadata extractedMetadata_) {
-		this.extractedMetadata = extractedMetadata_;
+	public MetadataHandler(ZylabData zylabData_) {
+		this.zylabData = zylabData_;
+		attributesToStore = new HashMap<>();
+		for (Map.Entry<ZylabData.Fields, XmlAttributes> entry : ZylabData.getFieldSourceEntries(ZylabData.DocumentParts.METADATA, XmlAttributes.class)) {
+			XmlAttributes attr_source = entry.getValue();
+			attributesToStore.put(attr_source, entry.getKey());
+		}
 	}
+			
 
 	public ZylabMetadataXml.FileRef getAboutDocument() {
 		return about;
@@ -302,5 +280,4 @@ class MetadataHandler extends DefaultHandler {
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		state = state.characters(this, ch, start, length);
 	}
-	
 }

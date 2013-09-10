@@ -34,22 +34,6 @@ import org.apache.tika.metadata.TikaCoreProperties;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class ZylabData {
-	public final static FieldType DEFAULT_FIELD_SETTINGS = new FieldType()
-		{{
-			setIndexed(true);
-			setStored(true);
-			setTokenized(true);
-			setStoreTermVectors(true);
-			setStoreTermVectorOffsets(true);
-			setStoreTermVectorPositions(true);
-			setStoreTermVectorPayloads(false);
-			setOmitNorms(false);
-			setIndexOptions(
-				FieldInfo.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
-			setDocValueType(null);
-		
-			freeze();
-		}};
 
 	/**
 	 * ZylabData is spread over two files.

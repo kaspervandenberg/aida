@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import nl.maastro.eureca.aida.indexer.tika.parser.MetadataHandler;
@@ -26,9 +26,12 @@ import org.apache.lucene.document.LongField;
 import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
+import org.apache.tika.metadata.Property;
+import org.apache.tika.metadata.TikaCoreProperties;
 
 /**
- *
+ * Store the data found and when parsing the parts of Zylab documents an store the data used to coordinate this parsing.
+ * 
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class ZylabData {
@@ -206,10 +209,17 @@ public class ZylabData {
 	}
 	
 	/**
-	 * For each {@link DocumentParts} the fields that it is expected to provide and per field optionally an object that specifies
-	 * the field's value's origin.
+	 * For each {@link DocumentParts} the fields that the part is expected to provide.
 	 * 
-	 * <i>NOTE: ZylabData, ignores these objects but other parts of the indexer depend on them.</i>
+	 * Optionally per field an object that specifies the field's value's origin.  To centralise information about which fields are 
+	 * stored and their sources, this data is provided here.  Thereby intentionally violating encapsulatinon and decoupling 
+	 * principles: i.e. {@code ZylabData} ignores these objects while other parts of Indexer depend on them:
+	 * <ul><li>{@link ParseData#storeMetadata(org.apache.tika.metadata.Metadata)} inserts all fields of part 
+	 * 		{@code DATA} that have a {@link Property}-value, Tika's predefined properties are in {@link TikaCoreProperties}.</li>
+	 * <li>{@link ParseZylabMetadata#ParseZylabMetadata(nl.maastro.eureca.aida.indexer.ZylabData, 
+	 * 		java.net.URL, nl.maastro.eureca.aida.indexer.tika.parser.ReferenceResolver) ParseZylabMetadata.ParseZylabMetadata(…)}
+	 * 		constructs the attributes to store from entries in {@code METADATA} that have a 
+	 * 		{@link nl.maastro.eureca.aida.indexer.tika.parser.MetadataHandler.XmlAttributes}-value.</li></ul>
 	 */
 	@SuppressWarnings("serial")
 	public static final Map<DocumentParts, Map<Fields, Object>> FIELD_SOURCES =
@@ -217,7 +227,8 @@ public class ZylabData {
 				put(DocumentParts.DATA, Collections.unmodifiableMap(
 						new EnumMap<Fields, Object>(Fields.class) {{
 							put(Fields.CONTENT, null);
-							put(Fields.TITLE, null);
+							put(Fields.TITLE, TikaCoreProperties.TITLE);
+							put(Fields.KEYWORD, TikaCoreProperties.KEYWORDS);
 						}}));
 				put(DocumentParts.METADATA, Collections.unmodifiableMap(
 						new EnumMap<Fields, Object>(Fields.class) {{
@@ -256,7 +267,7 @@ public class ZylabData {
 	private final Document luceneDoc;
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private boolean frozen = false;
-	private final EnumMap<DocumentParts, FutureTask<?>> parsetasks = 
+	private final EnumMap<DocumentParts, Future<?>> parsetasks = 
 			new EnumMap<>(DocumentParts.class);
 
 	public ZylabData() {
@@ -426,7 +437,7 @@ public class ZylabData {
 		}
 	}
 
-	public FutureTask<?> setParseData(DocumentParts part, FutureTask<?> task) {
+	public Future<?> setParseData(DocumentParts part, Future<?> task) {
 		lock.writeLock().lock();
 		try {
 			return this.parsetasks.put(part, task);
@@ -446,7 +457,7 @@ public class ZylabData {
 		}
 	}
 
-	public Set<Map.Entry<DocumentParts, FutureTask<?>>> getTasks() {
+	public Set<Map.Entry<DocumentParts, Future<?>>> getTasks() {
 		lock.readLock().lock();
 		try {
 			return Collections.unmodifiableSet(this.parsetasks.entrySet());
@@ -460,7 +471,7 @@ public class ZylabData {
 			boolean allComplete = true;
 			boolean anyCanceled = false;
 			
-			for (Map.Entry<ZylabData.DocumentParts, FutureTask<?>> entry : getTasks()) {
+			for (Map.Entry<ZylabData.DocumentParts, Future<?>> entry : getTasks()) {
 				allComplete &= entry.getValue().isDone();
 				anyCanceled |= entry.getValue().isCancelled();
 			}
@@ -485,7 +496,7 @@ public class ZylabData {
 	private void insertAllTasks(ZylabData other) {
 		lock.writeLock().lock();
 		try {
-			for (Map.Entry<DocumentParts, FutureTask<?>> entry : other.getTasks()) {
+			for (Map.Entry<DocumentParts, Future<?>> entry : other.getTasks()) {
 				if(this.parsetasks.containsKey(entry.getKey())) {
 					throw new IllegalStateException(
 							"Cannot merge parse tasks for duplicate document parts");

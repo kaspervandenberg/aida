@@ -6,9 +6,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import nl.maastro.eureca.aida.indexer.tika.parser.ReferenceResolver;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
-import org.apache.lucene.index.IndexableField;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
@@ -16,9 +13,9 @@ import org.junit.Before;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import static org.hamcrest.Matchers.*;
-import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import static nl.maastro.eureca.aida.indexer.LunceneMatchers.*;
 
 /**
  *
@@ -84,7 +81,7 @@ public class ParseZylabMetadataTest {
 
 		assertThat("has correct PatisNr", data.getFields(), hasItem(allOf(
 				fieldNamed(ZylabData.Fields.PATISNUMMER.fieldName),
-				fieldValue(EXP_PATIS_NR))));
+				fieldValue(ParseZylabMetadataTest.EXP_PATIS_NR))));
 	}
 
 	@Test
@@ -92,34 +89,5 @@ public class ParseZylabMetadataTest {
 		testee.call();
 
 		assertThat("Data URL as expected", data.getDataUrl(), is(dataUrl));
-	}
-
-	public static Matcher<IndexableField> fieldNamed(final String targetName) {
-		return new TypeSafeDiagnosingMatcher<IndexableField>() {
-			@Override
-			protected boolean matchesSafely(IndexableField item, Description mismatchDescription) {
-				return targetName.equals(item.name());
-			}
-
-			@Override
-			public void describeTo(Description description) {
-				description.appendText(String.format("field named %s", targetName));
-			}
-		};
-	}
-
-	public static Matcher<IndexableField> fieldValue(final String targetValue) {
-		return new TypeSafeDiagnosingMatcher<IndexableField>() {
-
-			@Override
-			protected boolean matchesSafely(IndexableField item, Description mismatchDescription) {
-				return targetValue.equals(item.stringValue());
-			}
-
-			@Override
-			public void describeTo(Description description) {
-				description.appendText(String.format("field with value %s", targetValue));
-			}
-		};
 	}
 }

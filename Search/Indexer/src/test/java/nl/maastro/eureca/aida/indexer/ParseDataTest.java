@@ -16,7 +16,7 @@ import org.junit.experimental.theories.Theories;
 import org.junit.runner.RunWith;
 import static org.hamcrest.Matchers.*;
 import static nl.maastro.eureca.aida.indexer.LunceneMatchers.*;
-import nl.maastro.eureca.aida.indexer.ZylabData.Fields;
+import nl.maastro.eureca.aida.indexer.FieldsToIndex;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.experimental.theories.Theory;
 
@@ -38,14 +38,14 @@ public class ParseDataTest {
 	public final static String[] RESOURCES = { DATA_ZYLAB_RESOURCE, DATA_WORD_RESOURCE}; 
 
 	@DataPoints
-	public final static Fields[] fields() {
+	public final static FieldsToIndex[] fields() {
 //		System.out.println("fields() called");
-		Set<Map.Entry<ZylabData.Fields, Object>> fieldSourceEntries = ZylabData.getFieldSourceEntries(ZylabData.DocumentParts.DATA);
+		Set<Map.Entry<FieldsToIndex, Object>> fieldSourceEntries = ZylabData.getFieldSourceEntries(ZylabData.DocumentParts.DATA);
 //		System.out.println("entries: " + fieldSourceEntries);
-		ZylabData.Fields[] result = new ZylabData.Fields[fieldSourceEntries.size()];
+		FieldsToIndex[] result = new FieldsToIndex[fieldSourceEntries.size()];
 		
 		int i = 0;
-		for (Map.Entry<ZylabData.Fields, Object> entry : fieldSourceEntries) {
+		for (Map.Entry<FieldsToIndex, Object> entry : fieldSourceEntries) {
 //			System.out.println("\t entry: " + entry.getKey().fieldName);
 			result[i] = entry.getKey();
 			i++;
@@ -75,18 +75,18 @@ public class ParseDataTest {
 	@Theory
 	public void testHasContent() throws Exception {
 		testee.call();
-		assertThat("has content field", data.getFields(), hasItem(fieldNamed(ZylabData.Fields.CONTENT.fieldName)));
+		assertThat("has content field", data.getFields(), hasItem(fieldNamed(FieldsToIndex.CONTENT.fieldName)));
 	}
 
 	@Theory
 	public void testHasTitle() throws Exception {
 		assumeThat("is not plain txt", FilenameUtils.getExtension(resource).toLowerCase(), not("txt"));
 		testee.call();
-		assertThat("has title field", data.getFields(), hasItem(fieldNamed(ZylabData.Fields.TITLE.fieldName)));
+		assertThat("has title field", data.getFields(), hasItem(fieldNamed(FieldsToIndex.TITLE.fieldName)));
 	}
 
 	@Theory
-	public void testHasField(Fields field) throws Exception {
+	public void testHasField(FieldsToIndex field) throws Exception {
 		assumeThat("is not plain txt", FilenameUtils.getExtension(resource).toLowerCase(), not("txt"));
 		testee.call();
 		assertThat("has field", data.getFields(), hasItem(fieldNamed(field.fieldName)));

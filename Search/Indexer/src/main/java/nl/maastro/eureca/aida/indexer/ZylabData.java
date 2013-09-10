@@ -17,7 +17,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import nl.maastro.eureca.aida.indexer.tika.parser.MetadataHandler;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -51,145 +50,6 @@ public class ZylabData {
 		
 			freeze();
 		}};
-	
-	/**
-	 * Types of fieldswith different functionality.
-	 */
-	public enum FieldFunctionality {
-		/**
-		 * The field's value is indexed and stored as a single token; it is not
-		 * analyzed.  Use for identifiers, filenames and hierarchical classification (in
-		 * combination with prefix wildcard queries).
-		 */
-		SINGLE_TOKEN(new FieldType(DEFAULT_FIELD_SETTINGS) {{
-			setTokenized(false);
-			setStoreTermVectors(false);
-			freeze();
-		}}),
-		
-		/**
-		 * The field's value is analysed, indexed, and stored including positions of the terms relative to other terms and character
-		 * positions.  Use for large portions of text. 
-		 */
-		TEXT(DEFAULT_FIELD_SETTINGS),
-
-		/**
-		 * Field that contains a Date; the field is indexed and stored using Lucene's numeric buckets to quickly find dates within
-		 * a range.
-		 *
-		 */
-		DATE(new FieldType(SINGLE_TOKEN.getFieldType()) {{ 
-			setNumericType(NumericType.LONG);
-			setNumericPrecisionStep(8);
-		}}),
-		
-		/**
-		 * Metadata from the application's pespective (metadata from the user's perspective should be stored as {@link #SINGLE_TOKEN}, 
-		 * {@link #TEXT}, or {@link #DATE}) are values used internally by the Indexer (and possibly searcher); metadata is stored 
-		 * but not indexed, meaning that searching for metadata is not possible.
-		 */
-		METADATA(new FieldType(DEFAULT_FIELD_SETTINGS) {{
-			setIndexed(false);
-		}}),
-
-		/**
-		 * A date stored as metadata uses the same representation as {@link #DATE}, but is not indexed and therefore cannot be
-		 * searched on. 
-		 */
-		METADATA_DATE(new FieldType(METADATA.getFieldType()) {{ 
-			setNumericType(NumericType.LONG);
-			setNumericPrecisionStep(8);
-		}}),
-		
-		;
-		
-		private final FieldType fieldType;
-
-		private FieldFunctionality(final FieldType type) {
-			this.fieldType = type;
-		}
-		
-		public FieldType getFieldType() {
-			return fieldType;
-		}
-	}
-	
-	/**
-	 * Expected fields with an application defined purpose.  ZylabData supports adding other fields as well.
-	 */
-	public enum Fields {
-		ID(FieldFunctionality.SINGLE_TOKEN),
-		TITLE(FieldFunctionality.TEXT),
-		PATISNUMMER(FieldFunctionality.SINGLE_TOKEN),
-		CONTENT(FieldFunctionality.TEXT),
-		ZYLAB_DATA_URL(FieldFunctionality.METADATA),
-		ZYLAB_METADATA_URL(FieldFunctionality.METADATA),
-		BCK_DATA_URL(FieldFunctionality.METADATA),
-		BCK_METADATA_URL(FieldFunctionality.METADATA),
-
-		DOCUMENT_DATE(FieldFunctionality.DATE),
-		KEYWORD(FieldFunctionality.TEXT),
-		
-		DATA_LAST_MODIFIED(FieldFunctionality.METADATA_DATE) {
-			@Override
-			public Field createField(String value) {
-				throw new IllegalArgumentException(
-						String.format("Use createField(Date) to create %s-fields", this.name()));
-			}
-
-			@Override
-			public Field createField(Date value) {
-				return new LongField(fieldName, value.getTime(), type);
-			} },
-		
-		METADATA_LAST_MODIFIED(FieldFunctionality.METADATA_DATE) {
-			@Override
-			public Field createField(String value) {
-				throw new IllegalArgumentException(
-						String.format("Use createField(Date) to create %s-fields", this.name()));
-			}
-
-			@Override
-			public Field createField(Date value) {
-				return new LongField(fieldName, value.getTime(), type);
-			} };
-
-		protected final String fieldName;
-		protected final FieldType type;
-
-		private static final Map<String, Fields> fieldsByName = new HashMap<>();
-		static {
-			for (Fields field : values()) {
-				fieldsByName.put(field.fieldName, field);
-			}
-		}
-
-		private Fields(String fieldName_, FieldFunctionality usage) {
-			this.fieldName = fieldName_;
-			this.type = usage.getFieldType();
-		}
-		
-		private Fields(FieldFunctionality usage) {
-			this.fieldName = this.name().toLowerCase();
-			this.type = usage.getFieldType();
-		}
-
-		public Field createField(String value) {
-			return new Field(fieldName, value, type);
-		};
-
-		public Field createField(Date value) {
-			throw new IllegalStateException("Field does not supports dates");
-		}
-
-		public static Field createField(String fieldName, String value) {
-			if(fieldsByName.containsKey(fieldName)) {
-				return fieldsByName.get(fieldName).createField(value);
-			} else {
-				return new Field(fieldName, value, DEFAULT_FIELD_SETTINGS);
-			}
-		}
-	}
 
 	/**
 	 * ZylabData is spread over two files.
@@ -222,18 +82,18 @@ public class ZylabData {
 	 * 		{@link nl.maastro.eureca.aida.indexer.tika.parser.MetadataHandler.XmlAttributes}-value.</li></ul>
 	 */
 	@SuppressWarnings("serial")
-	public static final Map<DocumentParts, Map<Fields, Object>> FIELD_SOURCES =
-			Collections.unmodifiableMap(new EnumMap<DocumentParts, Map<Fields, Object>>(DocumentParts.class) {{
+	public static final Map<DocumentParts, Map<FieldsToIndex, Object>> FIELD_SOURCES =
+			Collections.unmodifiableMap(new EnumMap<DocumentParts, Map<FieldsToIndex, Object>>(DocumentParts.class) {{
 				put(DocumentParts.DATA, Collections.unmodifiableMap(
-						new EnumMap<Fields, Object>(Fields.class) {{
-							put(Fields.CONTENT, null);
-							put(Fields.TITLE, TikaCoreProperties.TITLE);
-							put(Fields.KEYWORD, TikaCoreProperties.KEYWORDS);
+						new EnumMap<FieldsToIndex, Object>(FieldsToIndex.class) {{
+							put(FieldsToIndex.CONTENT, null);
+							put(FieldsToIndex.TITLE, TikaCoreProperties.TITLE);
+							put(FieldsToIndex.KEYWORD, TikaCoreProperties.KEYWORDS);
 						}}));
 				put(DocumentParts.METADATA, Collections.unmodifiableMap(
-						new EnumMap<Fields, Object>(Fields.class) {{
-							put(Fields.ID, MetadataHandler.XmlAttributes.ATTR_GUID);
-							put(Fields.KEYWORD, MetadataHandler.XmlAttributes.ATTR_KEY);
+						new EnumMap<FieldsToIndex, Object>(FieldsToIndex.class) {{
+							put(FieldsToIndex.ID, MetadataHandler.XmlAttributes.ATTR_GUID);
+							put(FieldsToIndex.KEYWORD, MetadataHandler.XmlAttributes.ATTR_KEY);
 						}}));
 			}});
 
@@ -243,10 +103,10 @@ public class ZylabData {
 	 * @see #getLastModified(nl.maastro.eureca.aida.indexer.ZylabData.DocumentParts) 
 	 */
 	@SuppressWarnings("serial")
-	private static final Map<DocumentParts, Fields> MODICATION_DATES =
-			Collections.unmodifiableMap(new EnumMap<DocumentParts, Fields>(DocumentParts.class) {{
-				put(DocumentParts.DATA, Fields.DATA_LAST_MODIFIED);
-				put(DocumentParts.METADATA, Fields.METADATA_LAST_MODIFIED);
+	private static final Map<DocumentParts, FieldsToIndex> MODICATION_DATES =
+			Collections.unmodifiableMap(new EnumMap<DocumentParts, FieldsToIndex>(DocumentParts.class) {{
+				put(DocumentParts.DATA, FieldsToIndex.DATA_LAST_MODIFIED);
+				put(DocumentParts.METADATA, FieldsToIndex.METADATA_LAST_MODIFIED);
 			}});
 
 	/**
@@ -255,12 +115,12 @@ public class ZylabData {
 	 * @see #getPartPointedTo(java.net.URL) 
 	 */
 	@SuppressWarnings("serial")
-	private static final Map<DocumentParts, Set<Fields>> URLS =
-			Collections.unmodifiableMap(new EnumMap<DocumentParts, Set<Fields>>(DocumentParts.class) {{
+	private static final Map<DocumentParts, Set<FieldsToIndex>> URLS =
+			Collections.unmodifiableMap(new EnumMap<DocumentParts, Set<FieldsToIndex>>(DocumentParts.class) {{
 				put(DocumentParts.DATA, Collections.unmodifiableSet(EnumSet.of(
-						Fields.BCK_DATA_URL, Fields.ZYLAB_DATA_URL)));
+						FieldsToIndex.BCK_DATA_URL, FieldsToIndex.ZYLAB_DATA_URL)));
 				put(DocumentParts.METADATA, Collections.unmodifiableSet(EnumSet.of(
-						Fields.BCK_METADATA_URL, Fields.ZYLAB_METADATA_URL)));
+						FieldsToIndex.BCK_METADATA_URL, FieldsToIndex.ZYLAB_METADATA_URL)));
 			}});
 
 	private URL dataURL = null;
@@ -278,7 +138,7 @@ public class ZylabData {
 		luceneDoc = doc_;
 	}
 
-	public static boolean hasFieldSource(DocumentParts part, Fields field) {
+	public static boolean hasFieldSource(DocumentParts part, FieldsToIndex field) {
 		if(FIELD_SOURCES.containsKey(part)) {
 			return FIELD_SOURCES.get(part).containsKey(field);
 		} else {
@@ -289,7 +149,7 @@ public class ZylabData {
 	/**
 	 * Access {@link #FIELD_SOURCES}
 	 */
-	public static Set<Map.Entry<Fields, Object>> getFieldSourceEntries(
+	public static Set<Map.Entry<FieldsToIndex, Object>> getFieldSourceEntries(
 			DocumentParts part) {
 		if(FIELD_SOURCES.containsKey(part)) {
 			return FIELD_SOURCES.get(part).entrySet();
@@ -301,13 +161,13 @@ public class ZylabData {
 	/**
 	 * Access {@link #FIELD_SOURCES} and cast the result to the expected type
 	 */
-	public static <T> Set<Map.Entry<Fields, T>> getFieldSourceEntries(
+	public static <T> Set<Map.Entry<FieldsToIndex, T>> getFieldSourceEntries(
 			DocumentParts part, Class<T> filter) {
-		Set<Map.Entry<Fields, Object>> src = getFieldSourceEntries(part);
-		Set<Map.Entry<Fields, T>> result = new HashSet<>(src.size());
-		for (Map.Entry<Fields, Object> obj_entry : src) {
+		Set<Map.Entry<FieldsToIndex, Object>> src = getFieldSourceEntries(part);
+		Set<Map.Entry<FieldsToIndex, T>> result = new HashSet<>(src.size());
+		for (Map.Entry<FieldsToIndex, Object> obj_entry : src) {
 			if(filter.isInstance(obj_entry.getValue())) {
-				HashMap.SimpleImmutableEntry<Fields, T> entry =
+				HashMap.SimpleImmutableEntry<FieldsToIndex, T> entry =
 						new AbstractMap.SimpleImmutableEntry<>(
 						obj_entry.getKey(),
 						filter.cast(obj_entry.getValue()));
@@ -324,7 +184,7 @@ public class ZylabData {
 	public Term getId() {
 		this.lock.readLock().lock();
 		try {
-			return new Term(Fields.ID.fieldName, luceneDoc.get(Fields.ID.fieldName));
+			return new Term(FieldsToIndex.ID.fieldName, luceneDoc.get(FieldsToIndex.ID.fieldName));
 		} finally {
 			this.lock.readLock().unlock();
 		}
@@ -343,9 +203,9 @@ public class ZylabData {
 
 	public DocumentParts getPartPointedTo(URL target) {
 		EnumMap<DocumentParts, Set<String>> urls = new EnumMap<>(DocumentParts.class);
-		for (Map.Entry<DocumentParts, Set<Fields>> urlEntry : URLS.entrySet()) {
+		for (Map.Entry<DocumentParts, Set<FieldsToIndex>> urlEntry : URLS.entrySet()) {
 			Set<String> values = new HashSet<>(urlEntry.getValue().size());
-			for (Fields field : urlEntry.getValue()) {
+			for (FieldsToIndex field : urlEntry.getValue()) {
 				String value = luceneDoc.get(field.fieldName);
 				if(value != null) {
 					values.add(FilenameUtils.getFullPath(value) + FilenameUtils.getName(value));
@@ -393,7 +253,7 @@ public class ZylabData {
 		this.lock.writeLock().lock();
 		try {
 			if(!frozen) {
-				luceneDoc.add(Fields.createField(fieldName, value));
+				luceneDoc.add(FieldsToIndex.createField(fieldName, value));
 			} else {
 				throw new IllegalStateException("Document is frozen.");
 			}
@@ -402,7 +262,7 @@ public class ZylabData {
 		}
 	}
 
-	public void setField(Fields field, String value) {
+	public void setField(FieldsToIndex field, String value) {
 		this.lock.writeLock().lock();
 		try {
 			if(!frozen) {
@@ -415,7 +275,7 @@ public class ZylabData {
 		}
 	}
 
-	public void setField(Fields field, Date value) {
+	public void setField(FieldsToIndex field, Date value) {
 		this.lock.writeLock().lock();
 		try {
 			if(!frozen) {

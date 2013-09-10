@@ -1,5 +1,5 @@
 // © Maastro, 2013
-package nl.maastro.eureca.aida.indexer.tika.parser;
+package nl.maastro.eureca.aida.indexer;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.maastro.eureca.aida.indexer.util.NullStringComperator;
+import nl.maastro.eureca.aida.indexer.util.StringToURI;
+import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
 
 /**
  * Use a table of URIs to resolve references

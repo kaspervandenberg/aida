@@ -4,8 +4,6 @@ package nl.maastro.eureca.aida.indexer;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import nl.maastro.eureca.aida.indexer.tika.parser.MetadataHandler;
-import nl.maastro.eureca.aida.indexer.tika.parser.ReferenceResolver;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml.FileRef;
 import org.xml.sax.InputSource;

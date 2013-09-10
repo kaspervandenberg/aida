@@ -1,5 +1,5 @@
 // © Maastro, 2013
-package nl.maastro.eureca.aida.indexer.tika.parser;
+package nl.maastro.eureca.aida.indexer.util;
 
 import java.util.Comparator;
 

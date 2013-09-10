@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.maastro.eureca.aida.indexer.tika.parser;
+package nl.maastro.eureca.aida.indexer.util;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;

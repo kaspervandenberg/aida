@@ -10,7 +10,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
-import nl.maastro.eureca.aida.indexer.tika.parser.ReferenceResolver;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -85,13 +84,13 @@ public class ZylabDataTest {
 	public final static MetadataResources[] METADATA_RESOURCES = MetadataResources.values();
 
 	@DataPoints
-	public final static ZylabData.Fields[] fields() {
+	public final static FieldsToIndex[] fields() {
 		ZylabData.getFieldSourceEntries(ZylabData.DocumentParts.DATA);	// Using a method call to ensure ZylabData.Fields is initialised
-		ZylabData.Fields[] result = new ZylabData.Fields[4];
-		result[0] = ZylabData.Fields.CONTENT;
-		result[1] = ZylabData.Fields.KEYWORD;
-		result[2] = ZylabData.Fields.TITLE;
-		result[3] = ZylabData.Fields.ID;
+		FieldsToIndex[] result = new FieldsToIndex[4];
+		result[0] = FieldsToIndex.CONTENT;
+		result[1] = FieldsToIndex.KEYWORD;
+		result[2] = FieldsToIndex.TITLE;
+		result[3] = FieldsToIndex.ID;
 		return result;
 	}
 	
@@ -140,7 +139,7 @@ public class ZylabDataTest {
 			assumeNoException(ex);
 		}
 		
-		assertThat("has ID", testee.getFields(), hasItem(fieldNamed(ZylabData.Fields.ID.fieldName)));
+		assertThat("has ID", testee.getFields(), hasItem(fieldNamed(FieldsToIndex.ID.fieldName)));
 	}
 
 	@Theory
@@ -152,11 +151,11 @@ public class ZylabDataTest {
 			assumeNoException(ex);
 		}
 		
-		assertThat("has content", testee.getFields(), hasItem(fieldNamed(ZylabData.Fields.CONTENT.fieldName)));
+		assertThat("has content", testee.getFields(), hasItem(fieldNamed(FieldsToIndex.CONTENT.fieldName)));
 	}
 	
 	@Theory
-	public void testMergeExpectedFields(ZylabData.Fields field) {
+	public void testMergeExpectedFields(FieldsToIndex field) {
 		assumeThat(FilenameUtils.getExtension(data.resource).toLowerCase(), not("txt"));
 		try {
 			dataParser.call();

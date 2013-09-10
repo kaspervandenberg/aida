@@ -1,11 +1,11 @@
 // © Maastro, 2013
-package nl.maastro.eureca.aida.indexer.tika.parser;
+package nl.maastro.eureca.aida.indexer;
 
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import nl.maastro.eureca.aida.indexer.ZylabData;
+import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -242,7 +242,7 @@ public class MetadataHandler extends DefaultHandler {
 //	private final Map<String, String> fields = new HashMap<>();
 
 	private final ZylabData zylabData;
-	private final Map<XmlAttributes, ZylabData.Fields> attributesToStore;	
+	private final Map<XmlAttributes, FieldsToIndex> attributesToStore;	
 	/**
 	 * The file of which {@code this} is the metadata.
 	 */
@@ -255,7 +255,7 @@ public class MetadataHandler extends DefaultHandler {
 	public MetadataHandler(ZylabData zylabData_) {
 		this.zylabData = zylabData_;
 		attributesToStore = new HashMap<>();
-		for (Map.Entry<ZylabData.Fields, XmlAttributes> entry : ZylabData.getFieldSourceEntries(ZylabData.DocumentParts.METADATA, XmlAttributes.class)) {
+		for (Map.Entry<FieldsToIndex, XmlAttributes> entry : ZylabData.getFieldSourceEntries(ZylabData.DocumentParts.METADATA, XmlAttributes.class)) {
 			XmlAttributes attr_source = entry.getValue();
 			attributesToStore.put(attr_source, entry.getKey());
 		}

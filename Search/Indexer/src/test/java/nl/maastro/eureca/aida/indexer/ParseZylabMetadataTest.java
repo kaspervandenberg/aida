@@ -4,7 +4,6 @@ package nl.maastro.eureca.aida.indexer;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import nl.maastro.eureca.aida.indexer.tika.parser.ReferenceResolver;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -65,14 +64,14 @@ public class ParseZylabMetadataTest {
 	public void testIdParsed() throws Exception {
 		testee.call();
 
-		assertThat("has field id", data.getFields(), hasItem(fieldNamed(ZylabData.Fields.ID.fieldName)));
+		assertThat("has field id", data.getFields(), hasItem(fieldNamed(FieldsToIndex.ID.fieldName)));
 	}
 
 	@Test
 	public void testHasPatisNumberParsed() throws Exception {
 		testee.call();
 
-		assertThat("has field PatisNr", data.getFields(), hasItem(fieldNamed(ZylabData.Fields.PATISNUMMER.fieldName)));
+		assertThat("has field PatisNr", data.getFields(), hasItem(fieldNamed(FieldsToIndex.PATISNUMMER.fieldName)));
 	}
 
 	@Test
@@ -80,7 +79,7 @@ public class ParseZylabMetadataTest {
 		testee.call();
 
 		assertThat("has correct PatisNr", data.getFields(), hasItem(allOf(
-				fieldNamed(ZylabData.Fields.PATISNUMMER.fieldName),
+				fieldNamed(FieldsToIndex.PATISNUMMER.fieldName),
 				fieldValue(ParseZylabMetadataTest.EXP_PATIS_NR))));
 	}
 

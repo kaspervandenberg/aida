@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.maastro.eureca.aida.indexer;
+package nl.maastro.eureca.aida.indexer.util;
 
+import nl.maastro.eureca.aida.indexer.util.CancelableTask;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;

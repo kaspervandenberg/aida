@@ -38,8 +38,8 @@ public class ParseData extends ZylabData.DataTask<Void> {
 		Tika tika = new Tika();
 		try {
 			String content = tika.parseToString(data.openStream(), tikaMetadata);
-			if(ZylabData.hasFieldSource(ZylabData.DocumentParts.DATA, ZylabData.Fields.CONTENT)) {
-				getData().setField(ZylabData.Fields.CONTENT, content);
+			if(ZylabData.hasFieldSource(ZylabData.DocumentParts.DATA, FieldsToIndex.CONTENT)) {
+				getData().setField(FieldsToIndex.CONTENT, content);
 			}
 		} catch (TikaException ex) {
 			Logger.getLogger(ParseData.class.getName()).log(Level.SEVERE, 
@@ -49,7 +49,7 @@ public class ParseData extends ZylabData.DataTask<Void> {
 	}
 
 	public void storeMetadata(Metadata tikaMetadata) {
-		for (Map.Entry<ZylabData.Fields, Property> entry : ZylabData.getFieldSourceEntries(ZylabData.DocumentParts.DATA, Property.class)) {
+		for (Map.Entry<FieldsToIndex, Property> entry : ZylabData.getFieldSourceEntries(ZylabData.DocumentParts.DATA, Property.class)) {
 			Property fieldSource = entry.getValue();
 			String value = tikaMetadata.get(fieldSource);
 			if(value != null) {

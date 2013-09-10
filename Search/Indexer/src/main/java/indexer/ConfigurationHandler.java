@@ -24,8 +24,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import nl.maastro.eureca.aida.indexer.tika.parser.ReferenceResolver;
-import nl.maastro.eureca.aida.indexer.tika.parser.StringToURI;
+import nl.maastro.eureca.aida.indexer.ReferenceResolver;
+import nl.maastro.eureca.aida.indexer.util.StringToURI;
 
 
 /**

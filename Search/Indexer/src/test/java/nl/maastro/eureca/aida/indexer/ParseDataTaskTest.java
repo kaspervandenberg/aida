@@ -25,14 +25,14 @@ import org.junit.experimental.theories.Theory;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 @RunWith(Theories.class)
-public class ParseDataTest {
+public class ParseDataTaskTest {
 	private static final String DATA_ZYLAB_RESOURCE = "/referenced-data/txt/2012/52/00000000/50003BX4.TXT";
 	private static final String DATA_WORD_RESOURCE = "/datadir/Grant Update 1-2.doc";
 	private final String resource;
 	
 	private ZylabData data;
 	private URL dataUrl;
-	private ParseData testee;
+	private ParseDataTask testee;
 	
 	@DataPoints
 	public final static String[] RESOURCES = { DATA_ZYLAB_RESOURCE, DATA_WORD_RESOURCE}; 
@@ -55,16 +55,16 @@ public class ParseDataTest {
 	}
 
 	
-	public ParseDataTest(String resource_) {
+	public ParseDataTaskTest(String resource_) {
 		resource = resource_;
 	}
 
 	@Before
 	public void setup() {
 		data = new ZylabData();
-		dataUrl = ParseDataTest.class.getResource(resource);
+		dataUrl = ParseDataTaskTest.class.getResource(resource);
 
-		testee = new ParseData(data, dataUrl);
+		testee = new ParseDataTask(data, dataUrl);
 	}
 
 	@Theory

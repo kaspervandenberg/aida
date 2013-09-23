@@ -18,11 +18,11 @@ import org.apache.tika.metadata.Property;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class ParseData implements Callable<ZylabData> {
+public class ParseDataTask implements Callable<ZylabData> {
 	private final URL dataLocation;
 	private final ZylabData data;
 	
-	public ParseData(ZylabData existingData, URL dataLocation_) {
+	public ParseDataTask(ZylabData existingData, URL dataLocation_) {
 		this.data = existingData;
 		this.dataLocation = dataLocation_;
 	}
@@ -44,7 +44,7 @@ public class ParseData implements Callable<ZylabData> {
 				data.setField(FieldsToIndex.CONTENT, content);
 			}
 		} catch (TikaException ex) {
-			Logger.getLogger(ParseData.class.getName()).log(Level.SEVERE, 
+			Logger.getLogger(ParseDataTask.class.getName()).log(Level.SEVERE, 
 					String.format("Cannot parse %s", dataLocation), ex);
 		}
 
@@ -70,7 +70,7 @@ public class ParseData implements Callable<ZylabData> {
 				result.add(Metadata.CONTENT_TYPE, contentType);
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(ParseData.class.getName()).log(Level.WARNING,
+			Logger.getLogger(ParseDataTask.class.getName()).log(Level.WARNING,
 					String.format("Unable to open a connection to %s, therefore no content-type header can be read", url), ex);
 		}
 
@@ -80,7 +80,7 @@ public class ParseData implements Callable<ZylabData> {
 				result.add(Metadata.CONTENT_ENCODING, contentEncoding);
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(ParseData.class.getName()).log(Level.WARNING,
+			Logger.getLogger(ParseDataTask.class.getName()).log(Level.WARNING,
 					String.format("Unable to open a connection to %s, therefore no content-type header can be read", url), ex);
 		}
 

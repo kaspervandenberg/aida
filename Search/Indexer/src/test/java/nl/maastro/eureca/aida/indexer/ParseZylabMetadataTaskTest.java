@@ -13,17 +13,17 @@ import nl.maastro.eureca.aida.indexer.mocked.Resolver;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class ParseZylabMetadataTest {
+public class ParseZylabMetadataTaskTest {
 	private static final String ID = "{C2212583-3E6D-4AB2-8F80-2C8934833CAB}"; 
 	private static final String EXP_PATIS_NR = "12345";
 			
 	
 	private ZylabData data;
-	private ParseZylabMetadata testee;
+	private ParseZylabMetadataTask testee;
 	private Resolver mockedResolver;
 	private ReferenceResolver referenceResolver;
 	
-	public ParseZylabMetadataTest() {
+	public ParseZylabMetadataTaskTest() {
 	}
 
 	@Before
@@ -34,7 +34,7 @@ public class ParseZylabMetadataTest {
 		mockedResolver = new Resolver();
 		referenceResolver = mockedResolver.getResolver();
 
-		testee = new ParseZylabMetadata(data, mockedResolver.getMetadataURL(), referenceResolver);
+		testee = new ParseZylabMetadataTask(data, mockedResolver.getMetadataURL(), referenceResolver);
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class ParseZylabMetadataTest {
 
 		assertThat("has correct PatisNr", data.getFields(), hasItem(allOf(
 				fieldNamed(FieldsToIndex.PATISNUMMER.fieldName),
-				fieldValue(ParseZylabMetadataTest.EXP_PATIS_NR))));
+				fieldValue(ParseZylabMetadataTaskTest.EXP_PATIS_NR))));
 	}
 
 	@Test

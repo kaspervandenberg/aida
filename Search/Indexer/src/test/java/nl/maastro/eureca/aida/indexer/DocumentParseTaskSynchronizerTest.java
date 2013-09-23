@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import nl.maastro.eureca.aida.indexer.mocked.Resolver;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
@@ -41,14 +40,14 @@ public class DocumentParseTaskSynchronizerTest {
 	public void testArriveMetadataFile() {
 		testee.arrive(metadataLocation);
 		
-		verify (executor).submit(isA(ParseZylabMetadata.class));
+		verify (executor).submit(isA(ParseZylabMetadataTask.class));
 	}
 
 	@Test
 	public void testArriveDataFile() {
 		testee.arrive(dataLocation);
 
-		verify (executor).submit(isA(ParseData.class));
+		verify (executor).submit(isA(ParseDataTask.class));
 	}
 
 	@Test
@@ -56,8 +55,8 @@ public class DocumentParseTaskSynchronizerTest {
 		testee.arrive(dataLocation);
 		testee.arrive(metadataLocation);
 		
-		verify (executor).submit(isA(ParseData.class));
-		verify (executor).submit(isA(ParseZylabMetadata.class));
+		verify (executor).submit(isA(ParseDataTask.class));
+		verify (executor).submit(isA(ParseZylabMetadataTask.class));
 	}
 	
 	@Test
@@ -65,7 +64,7 @@ public class DocumentParseTaskSynchronizerTest {
 		testee.arrive(metadataLocation);
 		testee.arrive(dataLocation);
 		
-		verify (executor).submit(isA(ParseData.class));
-		verify (executor).submit(isA(ParseZylabMetadata.class));
+		verify (executor).submit(isA(ParseDataTask.class));
+		verify (executor).submit(isA(ParseZylabMetadataTask.class));
 	}
 }

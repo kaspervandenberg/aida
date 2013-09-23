@@ -36,11 +36,11 @@ public class DocumentParseTaskSynchronizer {
 	}
 
 	private Callable<ZylabData> createMetadataTask(URL location) {
-		return new ParseZylabMetadata(data, location, referenceResolver);
+		return new ParseZylabMetadataTask(data, location, referenceResolver);
 	}
 
 	private Callable<ZylabData> createDataTask(URL location) {
-		return new ParseData(data, location);
+		return new ParseDataTask(data, location);
 	}
 
 }

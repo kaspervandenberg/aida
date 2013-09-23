@@ -15,12 +15,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class ParseZylabMetadata implements Callable<ZylabData>  {
+public class ParseZylabMetadataTask implements Callable<ZylabData>  {
 	private final URL metadataLocation;
 	private final ReferenceResolver filerefResolver;
 	private final ZylabData data;
 	
-	public ParseZylabMetadata(
+	public ParseZylabMetadataTask(
 			ZylabData existingData,
 			URL metadataURL_,
 			ReferenceResolver filerefResolver_) {

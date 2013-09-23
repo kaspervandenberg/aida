@@ -55,8 +55,8 @@ public class ZylabDataTest {
 			return DataResources.class.getResource(resource);
 		}
 
-		public ParseData createDataParser(ZylabData container) {
-			return new ParseData(container, getUrl());
+		public ParseDataTask createDataParser(ZylabData container) {
+			return new ParseDataTask(container, getUrl());
 		}
 	}
 	@DataPoints
@@ -76,8 +76,8 @@ public class ZylabDataTest {
 			return DataResources.class.getResource(resource);
 		}
 
-		public ParseZylabMetadata createMetadataParser(ZylabData container, ReferenceResolver refernceResolver) {
-			return new ParseZylabMetadata(container, getUrl(), refernceResolver);
+		public ParseZylabMetadataTask createMetadataParser(ZylabData container, ReferenceResolver refernceResolver) {
+			return new ParseZylabMetadataTask(container, getUrl(), refernceResolver);
 		}
 	}
 	@DataPoints
@@ -96,8 +96,8 @@ public class ZylabDataTest {
 	
 
 	protected ZylabData testee;
-	protected ParseData dataParser;
-	protected ParseZylabMetadata metadataParser;
+	protected ParseDataTask dataParser;
+	protected ParseZylabMetadataTask metadataParser;
 	@Mock protected ReferenceResolver referenceResolver;
 	
 	protected final MetadataResources metadata;

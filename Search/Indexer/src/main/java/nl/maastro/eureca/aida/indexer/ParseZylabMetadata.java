@@ -4,6 +4,7 @@ package nl.maastro.eureca.aida.indexer;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.Callable;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml.FileRef;
 import org.xml.sax.InputSource;
@@ -14,27 +15,28 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class ParseZylabMetadata extends ZylabData.DataTask<Void> {
-	private final URL metadataURL;
+public class ParseZylabMetadata implements Callable<ZylabData>  {
+	private final URL metadataLocation;
 	private final ReferenceResolver filerefResolver;
+	private final ZylabData data;
 	
 	public ParseZylabMetadata(
-			ZylabData context,
+			ZylabData existingData,
 			URL metadataURL_,
 			ReferenceResolver filerefResolver_) {
-		context.super();
-		this.metadataURL = metadataURL_;
+		this.metadataLocation = metadataURL_;
 		this.filerefResolver = filerefResolver_;
+		this.data = existingData;
 	}
 
 	@Override
-	public Void call() throws Exception {
-		MetadataHandler metadataHandler = new MetadataHandler(getData());
+	public ZylabData call() throws Exception {
+		MetadataHandler metadataHandler = new MetadataHandler(data);
 		
 		// Parse metadata
 		XMLReader reader = XMLReaderFactory.createXMLReader();
 		reader.setContentHandler(metadataHandler);
-		try (InputStream metadataStream = metadataURL.openStream()) {
+		try (InputStream metadataStream = metadataLocation.openStream()) {
 			InputSource iSource = new InputSource(metadataStream);
 			reader.parse(iSource);
 		}
@@ -42,10 +44,10 @@ public class ParseZylabMetadata extends ZylabData.DataTask<Void> {
 		try {
 			FileRef ref_aboutDoc = metadataHandler.getAboutDocument();
 			URL aboutDoc = filerefResolver.resolve(ref_aboutDoc);
-			getData().initDataUrl(aboutDoc);
+			data.initDataUrl(aboutDoc);
 		} catch (URISyntaxException ex) {
 			String msg = String.format("Document metadata file %s is about not found (ref: %s, %s)",
-					metadataURL.toString(),
+					metadataLocation.toString(),
 					metadataHandler.getAboutDocument().refPath,
 					metadataHandler.getAboutDocument().refName);
 			throw new ZylabMetadataXml.ReferencedDocumentNotFound(msg, ex);

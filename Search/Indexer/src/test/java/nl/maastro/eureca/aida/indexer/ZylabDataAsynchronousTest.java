@@ -27,21 +27,21 @@ import static org.hamcrest.Matchers.*;
  */
 @RunWith(Theories.class)
 public class ZylabDataAsynchronousTest extends ZylabDataTest {
-	private static class Blocking implements Callable<Void> {
-		final Callable<Void> delegate;
+	private static class Blocking<T> implements Callable<T> {
+		final Callable<T> delegate;
 		final Semaphore start = new Semaphore(0);
 		final Semaphore end = new Semaphore(0);
 
-		public Blocking(Callable<Void> delegate_) {
+		public Blocking(Callable<T> delegate_) {
 			this.delegate = delegate_;
 		}
 		
 		@Override
-		public Void call() throws Exception {
+		public T call() throws Exception {
 			start.acquire();
-			delegate.call();
+			T result = delegate.call();
 			end.acquire();
-			return null;
+			return result;
 		}
 	}
 	
@@ -49,7 +49,7 @@ public class ZylabDataAsynchronousTest extends ZylabDataTest {
 		SUBMIT_DATA {
 			@Override
 			public void exec(ZylabDataAsynchronousTest context) {
-				context.blockableDataParser = new Blocking(context.dataParser);
+				context.blockableDataParser = new Blocking<>(context.dataParser);
 				Future<?> parseDataTask = context.parsetaskExecutor.submit(context.blockableDataParser);
 				context.testee.setParseData(ZylabData.DocumentParts.DATA, parseDataTask);
 			} },
@@ -116,9 +116,9 @@ public class ZylabDataAsynchronousTest extends ZylabDataTest {
 	};
 	
 
-	private Blocking blockableDataParser;
-	private Blocking blockableMetadataParser;
-	private CompletionService<Void> parsetaskExecutor;
+	private Blocking<ZylabData> blockableDataParser;
+	private Blocking<ZylabData> blockableMetadataParser;
+	private CompletionService<ZylabData> parsetaskExecutor;
 	
 	public ZylabDataAsynchronousTest(MetadataResources metadata_, DataResources data_) {
 		super(metadata_, data_);
@@ -147,11 +147,11 @@ public class ZylabDataAsynchronousTest extends ZylabDataTest {
 	}
 
 	private void submitAllTasks() {
-		blockableDataParser = new Blocking(dataParser);
+		blockableDataParser = new Blocking<>(dataParser);
 		Future<?> parseDataTask = parsetaskExecutor.submit(blockableDataParser);
 		testee.setParseData(ZylabData.DocumentParts.DATA, parseDataTask);
 		
-		blockableMetadataParser = new Blocking(metadataParser);
+		blockableMetadataParser = new Blocking<>(metadataParser);
 		Future<?> parseMetadataTask = parsetaskExecutor.submit(blockableMetadataParser);
 		testee.setParseData(ZylabData.DocumentParts.METADATA, parseMetadataTask);
 	}

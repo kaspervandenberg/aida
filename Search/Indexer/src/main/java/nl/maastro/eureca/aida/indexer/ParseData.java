@@ -4,6 +4,7 @@ package nl.maastro.eureca.aida.indexer;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
@@ -17,33 +18,34 @@ import org.apache.tika.metadata.Property;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class ParseData extends ZylabData.DataTask<Void> {
-	private final URL data;
+public class ParseData implements Callable<ZylabData> {
+	private final URL dataLocation;
+	private final ZylabData data;
 	
-	public ParseData(ZylabData container, URL data_) {
-		container.super();
-		this.data = data_;
+	public ParseData(ZylabData existingData, URL dataLocation_) {
+		this.data = existingData;
+		this.dataLocation = dataLocation_;
 	}
 
 	@Override
-	public Void call() throws Exception {
-		Metadata tikaMetadata = initMetadata(data);
+	public ZylabData call() throws Exception {
+		Metadata tikaMetadata = initMetadata(dataLocation);
 		storeContent(tikaMetadata);
 		storeMetadata(tikaMetadata);
 
-		return null;
+		return data;
 	}
 
 	public void storeContent(Metadata tikaMetadata) throws IOException {
 		Tika tika = new Tika();
 		try {
-			String content = tika.parseToString(data.openStream(), tikaMetadata);
+			String content = tika.parseToString(dataLocation.openStream(), tikaMetadata);
 			if(ZylabData.hasFieldSource(ZylabData.DocumentParts.DATA, FieldsToIndex.CONTENT)) {
-				getData().setField(FieldsToIndex.CONTENT, content);
+				data.setField(FieldsToIndex.CONTENT, content);
 			}
 		} catch (TikaException ex) {
 			Logger.getLogger(ParseData.class.getName()).log(Level.SEVERE, 
-					String.format("Cannot parse %s", data), ex);
+					String.format("Cannot parse %s", dataLocation), ex);
 		}
 
 	}
@@ -53,7 +55,7 @@ public class ParseData extends ZylabData.DataTask<Void> {
 			Property fieldSource = entry.getValue();
 			String value = tikaMetadata.get(fieldSource);
 			if(value != null) {
-				getData().setField(entry.getKey(), value);
+				data.setField(entry.getKey(), value);
 			}
 		}
 	}

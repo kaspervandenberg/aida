@@ -43,17 +43,23 @@ public class Resolver {
 	}
 
 	public ReferenceResolver getResolver() {
-		if(!isInitialised) {
-			init();
-		}
+		initIfNeeded();
 		return referenceResolver;
 	}
 
 	public URL getMetadataURL() {
+		initIfNeeded();
 		return metadataUrl;
 	}
 
 	public URL getDataUrl() {
+		initIfNeeded();
 		return dataUrl;
+	}
+
+	private void initIfNeeded() {
+		if(!isInitialised) {
+			init();
+		}
 	}
 }

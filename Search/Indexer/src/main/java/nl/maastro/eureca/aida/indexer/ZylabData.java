@@ -42,15 +42,6 @@ public class ZylabData {
 		DATA,
 		METADATA
 	}
-
-	/**
-	 * A callable that has access to {@code ZylabDate}
-	 */
-	public abstract class DataTask<T> implements Callable<T> {
-		protected ZylabData getData() {
-			return ZylabData.this;
-		}
-	}
 	
 	/**
 	 * For each {@link DocumentParts} the fields that the part is expected to provide.

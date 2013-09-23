@@ -4,13 +4,11 @@
  */
 package nl.maastro.eureca.aida.indexer;
 
-import java.util.concurrent.Callable;
+import nl.maastro.eureca.aida.indexer.concurrencyTestUtils.Blocking;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
-import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 import org.junit.Before;
@@ -27,23 +25,6 @@ import static org.hamcrest.Matchers.*;
  */
 @RunWith(Theories.class)
 public class ZylabDataAsynchronousTest extends ZylabDataTest {
-	private static class Blocking<T> implements Callable<T> {
-		final Callable<T> delegate;
-		final Semaphore start = new Semaphore(0);
-		final Semaphore end = new Semaphore(0);
-
-		public Blocking(Callable<T> delegate_) {
-			this.delegate = delegate_;
-		}
-		
-		@Override
-		public T call() throws Exception {
-			start.acquire();
-			T result = delegate.call();
-			end.acquire();
-			return result;
-		}
-	}
 	
 	public enum ConcurrentActions {
 		SUBMIT_DATA {
@@ -63,22 +44,22 @@ public class ZylabDataAsynchronousTest extends ZylabDataTest {
 		START_DATA {
 			@Override
 			public void exec(ZylabDataAsynchronousTest context) {
-				context.blockableDataParser.start.release();
+				context.blockableDataParser.enableStart();
 			} },
 		START_METADATA {
 			@Override
 			public void exec(ZylabDataAsynchronousTest context) {
-				context.blockableMetadataParser.start.release();
+				context.blockableMetadataParser.enableEnd();
 			} },
 		END_DATA {
 			@Override
 			public void exec(ZylabDataAsynchronousTest context) {
-				context.blockableDataParser.end.release();
+				context.blockableDataParser.enableEnd();
 			} },
 		END_METADATA {
 			@Override
 			public void exec(ZylabDataAsynchronousTest context) {
-				context.blockableMetadataParser.end.release();
+				context.blockableMetadataParser.enableStart();
 			} },
 		TAKE_COMPLETED_TASK {
 			@Override
@@ -157,10 +138,10 @@ public class ZylabDataAsynchronousTest extends ZylabDataTest {
 	}
 	
 	private void releaseAllSemaphores() {
-		blockableDataParser.start.release();
-		blockableDataParser.end.release();
-		blockableMetadataParser.start.release();
-		blockableMetadataParser.end.release();
+		blockableDataParser.enableStart();
+		blockableDataParser.enableEnd();
+		blockableMetadataParser.enableStart();
+		blockableMetadataParser.enableEnd();
 	}
 
 	private void retrieveAllTasks() {

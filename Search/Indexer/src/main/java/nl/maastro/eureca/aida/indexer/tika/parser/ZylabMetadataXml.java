@@ -1,13 +1,18 @@
 // © Maastro, 2013
 package nl.maastro.eureca.aida.indexer.tika.parser;
 
+import nl.maastro.eureca.aida.indexer.ReferenceResolver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
+import nl.maastro.eureca.aida.indexer.ZylabData;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexableField;
 import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
@@ -199,9 +204,12 @@ public class ZylabMetadataXml extends AbstractParser {
 		return SUPPORTED_TYPE;
 	}
 
+	@Deprecated
 	@Override
 	public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) throws IOException, SAXException, TikaException {
-		MetadataHandler metadataHandler = new MetadataHandler(metadata);
+		throw new UnsupportedOperationException("Refactor to Use ParseZylabMetadata and the future ParseData.");
+/*
+		MetadataHandler metadataHandler = new MetadataHandler(context.get(ZylabData.class, new ZylabData()));
 		
 		// Parse metadata
 		XMLReader reader = XMLReaderFactory.createXMLReader();
@@ -209,6 +217,15 @@ public class ZylabMetadataXml extends AbstractParser {
 		InputSource iSource = new InputSource(stream);
 		reader.parse(iSource);
 		stream.close();
+
+		// TODO When parsing for Lucene prefer using ZylabData and ParseZylabMetadata directly 
+		for (IndexableField field : context.get(ZylabData.class, new ZylabData()).getFields()) {
+			Property prop = Property.get(field.name());
+			if(prop == null) {
+				prop = Property.externalText(field.name());
+			}
+			metadata.add(prop, field.stringValue());
+		}
 
 		try {
 			FileRef ref_aboutDoc = metadataHandler.getAboutDocument();
@@ -233,6 +250,7 @@ public class ZylabMetadataXml extends AbstractParser {
 					metadataHandler.getAboutDocument().refName);
 			throw new ReferencedDocumentNotFound(msg, ex);
 		}
+*/
 	}
 
 	private Parser getParser(ParseContext context) {

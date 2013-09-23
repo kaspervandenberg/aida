@@ -14,7 +14,7 @@ import static org.mockito.Mockito.*;
 import static org.hamcrest.Matchers.*;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import static nl.maastro.eureca.aida.indexer.LunceneMatchers.*;
+import static nl.maastro.eureca.aida.indexer.matchers.LunceneMatchers.*;
 
 /**
  *

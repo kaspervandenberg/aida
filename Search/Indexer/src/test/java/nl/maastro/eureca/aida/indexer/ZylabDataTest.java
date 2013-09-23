@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.when;
 import static org.hamcrest.Matchers.*;
-import static nl.maastro.eureca.aida.indexer.LunceneMatchers.*;
+import static nl.maastro.eureca.aida.indexer.matchers.LunceneMatchers.*;
 import org.apache.commons.io.FilenameUtils;
 
 /**

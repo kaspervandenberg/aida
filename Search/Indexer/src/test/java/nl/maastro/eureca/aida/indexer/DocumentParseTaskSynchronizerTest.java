@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.indexer;
 
+import nl.maastro.eureca.aida.indexer.concurrencyTestUtils.MockedFuture;
 import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -23,25 +24,6 @@ import static org.junit.Assert.*;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class DocumentParseTaskSynchronizerTest {
-	private static class MockedFuture {
-		@Mock public Future<ZylabData> future;
-		public boolean finished;
-
-		public MockedFuture() {
-			this.finished = false;
-		}
-		
-		public void setup() {
-			MockitoAnnotations.initMocks(this);
-
-			when (future.isCancelled()) .thenReturn(false);
-			when (future.isDone()) .thenAnswer(new Answer<Boolean>() {
-				@Override
-				public Boolean answer(InvocationOnMock invocation) throws Throwable {
-					return finished;
-				} });
-		}
-	}
 	
 	private static final String DATA_RESOURCE = "/referenced-data/txt/2012/52/00000000/50003BX4.TXT";
 	

@@ -255,7 +255,7 @@ public class MetadataHandler extends DefaultHandler {
 	public MetadataHandler(ZylabData zylabData_) {
 		this.zylabData = zylabData_;
 		attributesToStore = new HashMap<>();
-		for (Map.Entry<FieldsToIndex, XmlAttributes> entry : ZylabData.getFieldSourceEntries(ZylabData.DocumentParts.METADATA, XmlAttributes.class)) {
+		for (Map.Entry<FieldsToIndex, XmlAttributes> entry : ZylabData.getFieldSourceEntries(DocumentParts.METADATA, XmlAttributes.class)) {
 			XmlAttributes attr_source = entry.getValue();
 			attributesToStore.put(attr_source, entry.getKey());
 		}

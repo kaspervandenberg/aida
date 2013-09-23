@@ -40,7 +40,7 @@ public class ParseData implements Callable<ZylabData> {
 		Tika tika = new Tika();
 		try {
 			String content = tika.parseToString(dataLocation.openStream(), tikaMetadata);
-			if(ZylabData.hasFieldSource(ZylabData.DocumentParts.DATA, FieldsToIndex.CONTENT)) {
+			if(ZylabData.hasFieldSource(DocumentParts.DATA, FieldsToIndex.CONTENT)) {
 				data.setField(FieldsToIndex.CONTENT, content);
 			}
 		} catch (TikaException ex) {
@@ -51,7 +51,7 @@ public class ParseData implements Callable<ZylabData> {
 	}
 
 	public void storeMetadata(Metadata tikaMetadata) {
-		for (Map.Entry<FieldsToIndex, Property> entry : ZylabData.getFieldSourceEntries(ZylabData.DocumentParts.DATA, Property.class)) {
+		for (Map.Entry<FieldsToIndex, Property> entry : ZylabData.getFieldSourceEntries(DocumentParts.DATA, Property.class)) {
 			Property fieldSource = entry.getValue();
 			String value = tikaMetadata.get(fieldSource);
 			if(value != null) {

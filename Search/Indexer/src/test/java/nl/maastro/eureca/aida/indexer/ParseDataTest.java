@@ -40,7 +40,7 @@ public class ParseDataTest {
 	@DataPoints
 	public final static FieldsToIndex[] fields() {
 //		System.out.println("fields() called");
-		Set<Map.Entry<FieldsToIndex, Object>> fieldSourceEntries = ZylabData.getFieldSourceEntries(ZylabData.DocumentParts.DATA);
+		Set<Map.Entry<FieldsToIndex, Object>> fieldSourceEntries = ZylabData.getFieldSourceEntries(DocumentParts.DATA);
 //		System.out.println("entries: " + fieldSourceEntries);
 		FieldsToIndex[] result = new FieldsToIndex[fieldSourceEntries.size()];
 		

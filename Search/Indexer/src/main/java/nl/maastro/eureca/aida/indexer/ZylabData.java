@@ -34,14 +34,6 @@ import org.apache.tika.metadata.TikaCoreProperties;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class ZylabData {
-
-	/**
-	 * ZylabData is spread over two files.
-	 */
-	public enum DocumentParts {
-		DATA,
-		METADATA
-	}
 	
 	/**
 	 * For each {@link DocumentParts} the fields that the part is expected to provide.
@@ -306,7 +298,7 @@ public class ZylabData {
 			boolean allComplete = true;
 			boolean anyCanceled = false;
 			
-			for (Map.Entry<ZylabData.DocumentParts, Future<?>> entry : getTasks()) {
+			for (Map.Entry<DocumentParts, Future<?>> entry : getTasks()) {
 				allComplete &= entry.getValue().isDone();
 				anyCanceled |= entry.getValue().isCancelled();
 			}
@@ -347,7 +339,7 @@ public class ZylabData {
 			String target, EnumMap<DocumentParts, Set<String>> partValues) {
 		EnumMap<DocumentParts,Set<String>> matching = new EnumMap<>(DocumentParts.class);
 		String targetLastPart = FilenameUtils.getName(target);
-		for (Map.Entry<ZylabData.DocumentParts, Set<String>> entry : partValues.entrySet()) {
+		for (Map.Entry<DocumentParts, Set<String>> entry : partValues.entrySet()) {
 			for (String partValue : entry.getValue()) {
 				if(targetLastPart.equals(FilenameUtils.getName(partValue))) {
 					if(!matching.containsKey(entry.getKey())) {

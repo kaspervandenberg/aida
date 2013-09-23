@@ -51,14 +51,14 @@ public class ZylabDataAsynchronousTest extends ZylabDataTest {
 			public void exec(ZylabDataAsynchronousTest context) {
 				context.blockableDataParser = new Blocking<>(context.dataParser);
 				Future<?> parseDataTask = context.parsetaskExecutor.submit(context.blockableDataParser);
-				context.testee.setParseData(ZylabData.DocumentParts.DATA, parseDataTask);
+				context.testee.setParseData(DocumentParts.DATA, parseDataTask);
 			} },
 		SUBMIT_METADATA {
 			@Override
 			public void exec(ZylabDataAsynchronousTest context) {
 				context.blockableMetadataParser = new Blocking(context.metadataParser);
 				Future<?> parseMetadataTask = context.parsetaskExecutor.submit(context.blockableMetadataParser);
-				context.testee.setParseData(ZylabData.DocumentParts.METADATA, parseMetadataTask);
+				context.testee.setParseData(DocumentParts.METADATA, parseMetadataTask);
 			} },
 		START_DATA {
 			@Override
@@ -149,11 +149,11 @@ public class ZylabDataAsynchronousTest extends ZylabDataTest {
 	private void submitAllTasks() {
 		blockableDataParser = new Blocking<>(dataParser);
 		Future<?> parseDataTask = parsetaskExecutor.submit(blockableDataParser);
-		testee.setParseData(ZylabData.DocumentParts.DATA, parseDataTask);
+		testee.setParseData(DocumentParts.DATA, parseDataTask);
 		
 		blockableMetadataParser = new Blocking<>(metadataParser);
 		Future<?> parseMetadataTask = parsetaskExecutor.submit(blockableMetadataParser);
-		testee.setParseData(ZylabData.DocumentParts.METADATA, parseMetadataTask);
+		testee.setParseData(DocumentParts.METADATA, parseMetadataTask);
 	}
 	
 	private void releaseAllSemaphores() {

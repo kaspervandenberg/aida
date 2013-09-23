@@ -85,7 +85,7 @@ public class ZylabDataTest {
 
 	@DataPoints
 	public final static FieldsToIndex[] fields() {
-		ZylabData.getFieldSourceEntries(ZylabData.DocumentParts.DATA);	// Using a method call to ensure ZylabData.Fields is initialised
+		ZylabData.getFieldSourceEntries(DocumentParts.DATA);	// Using a method call to ensure ZylabData.Fields is initialised
 		FieldsToIndex[] result = new FieldsToIndex[4];
 		result[0] = FieldsToIndex.CONTENT;
 		result[1] = FieldsToIndex.KEYWORD;

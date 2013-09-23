@@ -4,6 +4,7 @@ package nl.maastro.eureca.aida.indexer;
 import java.net.URL;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -16,14 +17,16 @@ public class DocumentParseTaskSynchronizer {
 	private final ReferenceResolver referenceResolver;
 	private final ZylabData data;
 	private final Map<DocumentParts, Future<ZylabData>> parseTasks;
-	private /*@Nullable*/Future<?> indexTask;
+	private final Queue<ZylabData> dataToIndex;
+	private boolean dataQueued;
 
-	DocumentParseTaskSynchronizer(ExecutorService executor_, ReferenceResolver referenceResolver_) {
+	DocumentParseTaskSynchronizer(ExecutorService executor_, ReferenceResolver referenceResolver_, Queue<ZylabData> dataToIndex_) {
 		this.executor = executor_;
 		this.referenceResolver = referenceResolver_;
 		this.data = new ZylabData();
 		this.parseTasks = new EnumMap<>(DocumentParts.class);
-		this.indexTask = null;
+		this.dataToIndex = dataToIndex_;
+		this.dataQueued = false;
 	}
 
 	public synchronized void arrive(URL location) {
@@ -32,7 +35,7 @@ public class DocumentParseTaskSynchronizer {
 
 	public synchronized void finish(URL dataLocation) {
 		if (allPartsFinished()) {
-			startIndexing();
+			queueIndexData();
 		}
 	}
 
@@ -87,18 +90,11 @@ public class DocumentParseTaskSynchronizer {
 		}
 	}
 
-	private void startIndexing() {
-		if(!isIndexingStarted()) {
-			indexTask = submitIndexTask();
+	private synchronized void queueIndexData() {
+		if(!dataQueued) {
+			dataToIndex.add(data);
+			dataQueued = true;
 		}
-	}
-
-	private boolean isIndexingStarted() {
-		return indexTask != null;
-	}
-	
-	private Future<?> submitIndexTask() {
-		return executor.submit(new IndexTask());
 	}
 
 }

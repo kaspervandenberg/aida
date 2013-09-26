@@ -4,6 +4,7 @@
  */
 package nl.maastro.eureca.aida.indexer.testdata;
 
+import nl.maastro.eureca.aida.indexer.FieldsToIndex;
 import nl.maastro.eureca.aida.indexer.matchers.LuceneMatchers;
 import org.apache.lucene.index.IndexableField;
 import org.hamcrest.Matcher;
@@ -30,5 +31,9 @@ public class UnknownField implements Term {
 	public Matcher<IndexableField> hasName() {
 		return LuceneMatchers.fieldNamed(name);
 	}
-	
+
+	@Override
+	public IndexableField toIndexableField() {
+		return FieldsToIndex.createField(name, value);
+	}
 }

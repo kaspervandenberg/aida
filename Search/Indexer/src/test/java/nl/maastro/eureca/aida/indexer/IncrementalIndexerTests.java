@@ -13,11 +13,12 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	nl.maastro.eureca.aida.indexer.ParseZylabMetadataTaskTest.class,
+	nl.maastro.eureca.aida.indexer.ZylabDocumentReferenceTest.class,
 	nl.maastro.eureca.aida.indexer.DocumentPartTypeDetectorTest.class,
 	nl.maastro.eureca.aida.indexer.DocumentParseTaskSynchronizerTest.class,
-	nl.maastro.eureca.aida.indexer.ZylabDataTest.class,
 	nl.maastro.eureca.aida.indexer.ParseDataTaskTest.class,
+	nl.maastro.eureca.aida.indexer.ParseZylabMetadataTaskTest.class,
+	nl.maastro.eureca.aida.indexer.ZylabDataTest.class
 })
 public class IncrementalIndexerTests {
 	

@@ -14,7 +14,9 @@ public enum Fields implements Term {
 	ANY_ID(new KnownFieldAnyValue(FieldsToIndex.ID)),
 	ANY_CONTENT(new KnownFieldAnyValue(FieldsToIndex.CONTENT)),
 	ANY_KEYWORD(new KnownFieldAnyValue(FieldsToIndex.KEYWORD)),
-	ANY_TITLE(new KnownFieldAnyValue(FieldsToIndex.TITLE))
+	ANY_TITLE(new KnownFieldAnyValue(FieldsToIndex.TITLE)),
+	DUMMY_PATIS1(new KnownFieldValuePair(FieldsToIndex.PATISNUMMER, "1")),
+	DUMMY_PATIS2(new KnownFieldValuePair(FieldsToIndex.PATISNUMMER, "2")),
 	;
 
 	final Term delegate;
@@ -32,5 +34,9 @@ public enum Fields implements Term {
 	public Matcher<IndexableField> hasName() {
 		return delegate.hasName();
 	}
-	
+
+	@Override
+	public IndexableField toIndexableField() {
+		return delegate.toIndexableField();
+	}
 }

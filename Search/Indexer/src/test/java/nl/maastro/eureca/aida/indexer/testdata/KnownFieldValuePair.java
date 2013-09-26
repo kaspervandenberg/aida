@@ -28,5 +28,10 @@ public class KnownFieldValuePair implements Term {
 		final String fieldName = field.createField(value).name();
 		return LuceneMatchers.fieldNamed(fieldName);
 	}
+
+	@Override
+	public IndexableField toIndexableField() {
+		return field.createField(value);
+	}
 	
 }

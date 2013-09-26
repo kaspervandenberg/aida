@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.indexer.testdata;
 
+import java.util.Random;
 import nl.maastro.eureca.aida.indexer.FieldsToIndex;
 import nl.maastro.eureca.aida.indexer.matchers.LuceneMatchers;
 import org.apache.lucene.index.IndexableField;
@@ -27,5 +28,8 @@ public class KnownFieldAnyValue implements Term {
 		return LuceneMatchers.fieldNamed(fieldName);
 	}
 
-	
+	@Override
+	public IndexableField toIndexableField() {
+		return field.createField("value-", Double.toString(Math.random()));
+	}
 }

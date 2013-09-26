@@ -10,4 +10,5 @@ import org.hamcrest.Matcher;
 public interface Term {
 	public Matcher<IndexableField> hasValue();	
 	public Matcher<IndexableField> hasName();	
+	public IndexableField toIndexableField(); 
 }

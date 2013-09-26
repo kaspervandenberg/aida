@@ -11,12 +11,7 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class LunceneMatchers {
-
-	/**
-	 *
-	 * @param targetValue the value of targetValue
-	 */
+public class LuceneMatchers {
 	public static Matcher<IndexableField> fieldValue(final String targetValue) {
 		return new TypeSafeDiagnosingMatcher<IndexableField>() {
 			@Override

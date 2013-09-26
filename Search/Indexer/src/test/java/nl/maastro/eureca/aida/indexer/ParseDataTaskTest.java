@@ -12,7 +12,7 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.runner.RunWith;
 import static org.hamcrest.Matchers.*;
-import static nl.maastro.eureca.aida.indexer.matchers.LunceneMatchers.*;
+import static nl.maastro.eureca.aida.indexer.matchers.LuceneMatchers.*;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.experimental.theories.Theory;
 

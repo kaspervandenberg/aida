@@ -10,7 +10,7 @@ import static org.junit.Assume.*;
 import org.junit.Before;
 import static org.hamcrest.Matchers.*;
 import org.mockito.MockitoAnnotations;
-import static nl.maastro.eureca.aida.indexer.matchers.LunceneMatchers.*;
+import static nl.maastro.eureca.aida.indexer.matchers.LuceneMatchers.*;
 import nl.maastro.eureca.aida.indexer.mocked.Resolver;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;

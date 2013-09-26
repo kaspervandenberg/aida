@@ -88,4 +88,39 @@ public class ParseDataTaskTest {
 
 		assertThat("has field", data.getFields(), hasItem(fieldNamed(field.fieldName)));
 	}
+
+	@Theory
+	public void testSwitchTo_copyExistingField(FieldsToIndex field) throws Exception {
+		assumeThat("is not plain txt", FilenameUtils.getExtension(resource).toLowerCase(), not("txt"));
+		ZylabData freshDocument = new ZylabData();
+		testee.call();
+		assumeThat("testee inserted field", data.getFields(), hasItem(fieldNamed(field.fieldName)));
+		assumeThat("fresh data does not have field", freshDocument.getFields(), not(hasItem(fieldNamed(field.fieldName))));
+		
+		testee.switchTo(freshDocument);
+
+		assertThat("has field", freshDocument.getFields(), hasItem(fieldNamed(field.fieldName)));
+	}
+
+	@Theory
+	public void testSwitchTo_createFieldInFreshDoc(FieldsToIndex field) throws Exception {
+		assumeThat("is not plain txt", FilenameUtils.getExtension(resource).toLowerCase(), not("txt"));
+		ZylabData freshDocument = new ZylabData();
+		assumeThat("fresh data does not have field", freshDocument.getFields(), not(hasItem(fieldNamed(field.fieldName))));
+		
+		testee.switchTo(freshDocument);
+		testee.call();
+
+		assertThat("has field", freshDocument.getFields(), hasItem(fieldNamed(field.fieldName)));
+	}
+
+	@Test
+	public void testSwitchTo_callReturnsFresh() throws Exception {
+		ZylabData freshDocument = new ZylabData();
+
+		testee.switchTo(freshDocument);
+		ZylabData result = testee.call();
+
+		assertThat(result, equalTo(freshDocument));
+	}
 }

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
@@ -20,11 +22,13 @@ import org.apache.tika.metadata.Property;
  */
 public class ParseDataTask implements Callable<ZylabData> {
 	private final URL dataLocation;
-	private final ZylabData data;
+	private ZylabData document;
+	private final ReadWriteLock documentLock;
 	
 	public ParseDataTask(ZylabData existingData, URL dataLocation_) {
-		this.data = existingData;
+		this.document = existingData;
 		this.dataLocation = dataLocation_;
+		this.documentLock = new ReentrantReadWriteLock();
 	}
 
 	@Override
@@ -33,7 +37,12 @@ public class ParseDataTask implements Callable<ZylabData> {
 		storeContent(tikaMetadata);
 		storeMetadata(tikaMetadata);
 
-		return data;
+		try {
+			documentLock.readLock().lock();
+			return document;
+		} finally {
+			documentLock.readLock().unlock();
+		}
 	}
 
 	public void storeContent(Metadata tikaMetadata) throws IOException {
@@ -41,7 +50,7 @@ public class ParseDataTask implements Callable<ZylabData> {
 		try {
 			String content = tika.parseToString(dataLocation.openStream(), tikaMetadata);
 			if(ZylabData.hasFieldSource(DocumentParts.DATA, FieldsToIndex.CONTENT)) {
-				data.setField(FieldsToIndex.CONTENT, content);
+				addField(FieldsToIndex.CONTENT, content);
 			}
 		} catch (TikaException ex) {
 			Logger.getLogger(ParseDataTask.class.getName()).log(Level.SEVERE, 
@@ -55,11 +64,23 @@ public class ParseDataTask implements Callable<ZylabData> {
 			Property fieldSource = entry.getValue();
 			String value = tikaMetadata.get(fieldSource);
 			if(value != null) {
-				data.setField(entry.getKey(), value);
+				addField(entry.getKey(), value);
 			}
 		}
 	}
 
+	public void switchTo(ZylabData freshDocument) {
+		try {
+			documentLock.writeLock().lock();
+			
+			ZylabData currentDocument = this.document;
+			freshDocument.merge(currentDocument);
+			this.document = freshDocument;
+		} finally {
+			documentLock.writeLock().unlock();
+		}
+	}
+	
 	private static Metadata initMetadata(URL url) {
 		Metadata result = new Metadata();
 		result.add(Metadata.RESOURCE_NAME_KEY, FilenameUtils.getName(url.getPath()));
@@ -85,5 +106,14 @@ public class ParseDataTask implements Callable<ZylabData> {
 		}
 
 		return result;
+	}
+
+	private void addField(FieldsToIndex field, String value) {
+		try {
+			documentLock.readLock().lock();
+			document.setField(field, value);
+		} finally {
+			documentLock.readLock().unlock();
+		}
 	}
 }

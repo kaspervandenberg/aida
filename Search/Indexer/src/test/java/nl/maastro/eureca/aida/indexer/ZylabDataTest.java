@@ -55,7 +55,7 @@ public class ZylabDataTest {
 			return DataResources.class.getResource(resource);
 		}
 
-		public ParseDataTask createDataParser(ZylabData container) {
+		public ParseDataTask createDataParser(ZylabDocument container) {
 			return new ParseDataTask(container, getUrl());
 		}
 	}
@@ -76,7 +76,7 @@ public class ZylabDataTest {
 			return DataResources.class.getResource(resource);
 		}
 
-		public ParseZylabMetadataTask createMetadataParser(ZylabData container, ReferenceResolver refernceResolver) {
+		public ParseZylabMetadataTask createMetadataParser(ZylabDocument container, ReferenceResolver refernceResolver) {
 			return new ParseZylabMetadataTask(container, getUrl(), refernceResolver);
 		}
 	}
@@ -85,7 +85,7 @@ public class ZylabDataTest {
 
 	@DataPoints
 	public final static FieldsToIndex[] fields() {
-		ZylabData.getFieldSourceEntries(DocumentParts.DATA);	// Using a method call to ensure ZylabData.Fields is initialised
+		ZylabDocumentImpl.getFieldSourceEntries(DocumentParts.DATA);	// Using a method call to ensure ZylabData.Fields is initialised
 		FieldsToIndex[] result = new FieldsToIndex[4];
 		result[0] = FieldsToIndex.CONTENT;
 		result[1] = FieldsToIndex.KEYWORD;
@@ -95,7 +95,7 @@ public class ZylabDataTest {
 	}
 	
 
-	protected ZylabData testee;
+	protected ZylabDocument testee;
 	protected ParseDataTask dataParser;
 	protected ParseZylabMetadataTask metadataParser;
 	@Mock protected ReferenceResolver referenceResolver;
@@ -118,7 +118,7 @@ public class ZylabDataTest {
 			assumeNoException(ex);
 		}
 		
-		testee = new ZylabData();
+		testee = new ZylabDocumentImpl();
 		dataParser = data.createDataParser(testee);
 		metadataParser = metadata.createMetadataParser(testee, referenceResolver);
 	}

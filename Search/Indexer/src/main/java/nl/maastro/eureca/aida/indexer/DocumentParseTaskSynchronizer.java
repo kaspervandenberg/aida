@@ -15,15 +15,15 @@ import java.util.concurrent.Future;
 public class DocumentParseTaskSynchronizer {
 	private final ExecutorService executor;
 	private final ReferenceResolver referenceResolver;
-	private final ZylabData data;
-	private final Map<DocumentParts, Future<ZylabData>> parseTasks;
-	private final Queue<ZylabData> dataToIndex;
+	private final ZylabDocument data;
+	private final Map<DocumentParts, Future<ZylabDocument>> parseTasks;
+	private final Queue<ZylabDocument> dataToIndex;
 	private boolean dataQueued;
 
-	DocumentParseTaskSynchronizer(ExecutorService executor_, ReferenceResolver referenceResolver_, Queue<ZylabData> dataToIndex_) {
+	DocumentParseTaskSynchronizer(ExecutorService executor_, ReferenceResolver referenceResolver_, Queue<ZylabDocument> dataToIndex_) {
 		this.executor = executor_;
 		this.referenceResolver = referenceResolver_;
-		this.data = new ZylabData();
+		this.data = new ZylabDocumentImpl();
 		this.parseTasks = new EnumMap<>(DocumentParts.class);
 		this.dataToIndex = dataToIndex_;
 		this.dataQueued = false;
@@ -41,20 +41,20 @@ public class DocumentParseTaskSynchronizer {
 
 	private void submitTask(URL location) {
 		DocumentParts part = new DocumentPartTypeDetector().determinePartOf(location);
-		Future<ZylabData> submittedTask = submitTaskForNewPart(part, location);
+		Future<ZylabDocument> submittedTask = submitTaskForNewPart(part, location);
 		parseTasks.put(part, submittedTask);
 	}
 
-	private Future<ZylabData> submitTaskForNewPart(DocumentParts part, URL location) {
+	private Future<ZylabDocument> submitTaskForNewPart(DocumentParts part, URL location) {
 		if (!parseTasks.containsKey(part)) {
-			Callable<ZylabData> task = createTaskForPart(part, location);
+			Callable<ZylabDocument> task = createTaskForPart(part, location);
 			return executor.submit(task);
 		} else {
 			throw new IllegalStateException(String.format("task for part %s already exists", part.name()));
 		}
 	}
 	
-	private Callable<ZylabData> createTaskForPart(DocumentParts part, URL location) {
+	private Callable<ZylabDocument> createTaskForPart(DocumentParts part, URL location) {
 		switch (part) {
 			case METADATA:
 				return createMetadataTask(location);
@@ -65,11 +65,11 @@ public class DocumentParseTaskSynchronizer {
 		}
 	}
 
-	private Callable<ZylabData> createMetadataTask(URL location) {
+	private Callable<ZylabDocument> createMetadataTask(URL location) {
 		return new ParseZylabMetadataTask(data, location, referenceResolver);
 	}
 
-	private Callable<ZylabData> createDataTask(URL location) {
+	private Callable<ZylabDocument> createDataTask(URL location) {
 		return new ParseDataTask(data, location);
 	}
 

@@ -10,7 +10,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import nl.maastro.eureca.aida.indexer.ZylabData;
+import nl.maastro.eureca.aida.indexer.ZylabDocumentImpl;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexableField;
 import org.apache.tika.Tika;

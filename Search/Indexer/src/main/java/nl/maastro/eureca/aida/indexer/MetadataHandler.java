@@ -241,7 +241,7 @@ public class MetadataHandler extends DefaultHandler {
 //	private final List<Field> fields = new LinkedList<>();
 //	private final Map<String, String> fields = new HashMap<>();
 
-	private final ZylabData zylabData;
+	private final ZylabDocument zylabData;
 	private final Map<XmlAttributes, FieldsToIndex> attributesToStore;	
 	/**
 	 * The file of which {@code this} is the metadata.
@@ -252,10 +252,10 @@ public class MetadataHandler extends DefaultHandler {
 
 	private final Deque<FieldParsingContents> currentField = new LinkedList<>();
 
-	public MetadataHandler(ZylabData zylabData_) {
+	public MetadataHandler(ZylabDocument zylabData_) {
 		this.zylabData = zylabData_;
 		attributesToStore = new HashMap<>();
-		for (Map.Entry<FieldsToIndex, XmlAttributes> entry : ZylabData.getFieldSourceEntries(DocumentParts.METADATA, XmlAttributes.class)) {
+		for (Map.Entry<FieldsToIndex, XmlAttributes> entry : ZylabDocumentImpl.getFieldSourceEntries(DocumentParts.METADATA, XmlAttributes.class)) {
 			XmlAttributes attr_source = entry.getValue();
 			attributesToStore.put(attr_source, entry.getKey());
 		}

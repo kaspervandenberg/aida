@@ -20,19 +20,19 @@ import org.apache.tika.metadata.Property;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class ParseDataTask implements Callable<ZylabData> {
+public class ParseDataTask implements Callable<ZylabDocument> {
 	private final URL dataLocation;
-	private ZylabData document;
+	private ZylabDocument document;
 	private final ReadWriteLock documentLock;
 	
-	public ParseDataTask(ZylabData existingData, URL dataLocation_) {
+	public ParseDataTask(ZylabDocument existingData, URL dataLocation_) {
 		this.document = existingData;
 		this.dataLocation = dataLocation_;
 		this.documentLock = new ReentrantReadWriteLock();
 	}
 
 	@Override
-	public ZylabData call() throws Exception {
+	public ZylabDocument call() throws Exception {
 		Metadata tikaMetadata = initMetadata(dataLocation);
 		storeContent(tikaMetadata);
 		storeMetadata(tikaMetadata);
@@ -49,7 +49,7 @@ public class ParseDataTask implements Callable<ZylabData> {
 		Tika tika = new Tika();
 		try {
 			String content = tika.parseToString(dataLocation.openStream(), tikaMetadata);
-			if(ZylabData.hasFieldSource(DocumentParts.DATA, FieldsToIndex.CONTENT)) {
+			if(ZylabDocumentImpl.hasFieldSource(DocumentParts.DATA, FieldsToIndex.CONTENT)) {
 				addField(FieldsToIndex.CONTENT, content);
 			}
 		} catch (TikaException ex) {
@@ -60,7 +60,7 @@ public class ParseDataTask implements Callable<ZylabData> {
 	}
 
 	public void storeMetadata(Metadata tikaMetadata) {
-		for (Map.Entry<FieldsToIndex, Property> entry : ZylabData.getFieldSourceEntries(DocumentParts.DATA, Property.class)) {
+		for (Map.Entry<FieldsToIndex, Property> entry : ZylabDocumentImpl.getFieldSourceEntries(DocumentParts.DATA, Property.class)) {
 			Property fieldSource = entry.getValue();
 			String value = tikaMetadata.get(fieldSource);
 			if(value != null) {
@@ -69,18 +69,6 @@ public class ParseDataTask implements Callable<ZylabData> {
 		}
 	}
 
-	public void switchTo(ZylabData freshDocument) {
-		try {
-			documentLock.writeLock().lock();
-			
-			ZylabData currentDocument = this.document;
-			freshDocument.merge(currentDocument);
-			this.document = freshDocument;
-		} finally {
-			documentLock.writeLock().unlock();
-		}
-	}
-	
 	private static Metadata initMetadata(URL url) {
 		Metadata result = new Metadata();
 		result.add(Metadata.RESOURCE_NAME_KEY, FilenameUtils.getName(url.getPath()));

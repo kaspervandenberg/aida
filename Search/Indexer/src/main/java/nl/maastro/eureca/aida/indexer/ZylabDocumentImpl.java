@@ -13,16 +13,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FieldType;
-import org.apache.lucene.document.LongField;
-import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.tika.metadata.Property;
@@ -33,7 +28,7 @@ import org.apache.tika.metadata.TikaCoreProperties;
  * 
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class ZylabData {
+public class ZylabDocumentImpl implements ZylabDocument {
 	
 	/**
 	 * For each {@link DocumentParts} the fields that the part is expected to provide.
@@ -97,11 +92,11 @@ public class ZylabData {
 	private final EnumMap<DocumentParts, Future<?>> parsetasks = 
 			new EnumMap<>(DocumentParts.class);
 
-	public ZylabData() {
+	public ZylabDocumentImpl() {
 		luceneDoc = new Document();
 	}
 
-	public ZylabData(Document doc_) {
+	public ZylabDocumentImpl(Document doc_) {
 		luceneDoc = doc_;
 	}
 
@@ -144,10 +139,12 @@ public class ZylabData {
 		return result;
 	}
 	
+	@Override
 	public URL getDataUrl() {
 		return dataURL;
 	}
 
+	@Override
 	public Term getId() {
 		this.lock.readLock().lock();
 		try {
@@ -185,7 +182,8 @@ public class ZylabData {
 		return selectdocumentPart(target.getPath(), urls);
 	}
 
-	public void merge(ZylabData other) 
+	@Override
+	public void merge(nl.maastro.eureca.aida.indexer.ZylabDocument other) 
 			throws IllegalArgumentException {
 		try {
 			if(other.getDataUrl() != null) {
@@ -196,9 +194,12 @@ public class ZylabData {
 		}
 
 		insertAllFields(other);
-		insertAllTasks(other);
+		if(other instanceof ZylabDocumentImpl) {
+			insertAllTasks((ZylabDocumentImpl)other);
+		}
 	}
 
+	@Override
 	public void initDataUrl(final URL value) throws IllegalStateException {
 		if(dataURL == null || dataURL.equals(value)) {
 			dataURL = value;
@@ -207,6 +208,7 @@ public class ZylabData {
 		}
 	}
 
+	@Override
 	public List<IndexableField> getFields() {
 		this.lock.readLock().lock();
 		try {
@@ -216,6 +218,7 @@ public class ZylabData {
 		}
 	}
 
+	@Override
 	public void setField(String fieldName, String value) {
 		this.lock.writeLock().lock();
 		try {
@@ -229,6 +232,7 @@ public class ZylabData {
 		}
 	}
 
+	@Override
 	public void setField(FieldsToIndex field, String value) {
 		this.lock.writeLock().lock();
 		try {
@@ -242,6 +246,7 @@ public class ZylabData {
 		}
 	}
 
+	@Override
 	public void setField(FieldsToIndex field, Date value) {
 		this.lock.writeLock().lock();
 		try {
@@ -309,7 +314,7 @@ public class ZylabData {
 
 	}
 	
-	private void insertAllFields(ZylabData other) {
+	private void insertAllFields(ZylabDocument other) {
 		lock.writeLock().lock();
 		try {
 			for (IndexableField field : other.getFields()) {
@@ -320,7 +325,7 @@ public class ZylabData {
 		}
 	}
 
-	private void insertAllTasks(ZylabData other) {
+	private void insertAllTasks(ZylabDocumentImpl other) {
 		lock.writeLock().lock();
 		try {
 			for (Map.Entry<DocumentParts, Future<?>> entry : other.getTasks()) {

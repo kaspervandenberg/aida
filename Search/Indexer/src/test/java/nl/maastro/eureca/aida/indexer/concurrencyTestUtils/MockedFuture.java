@@ -2,7 +2,7 @@
 package nl.maastro.eureca.aida.indexer.concurrencyTestUtils;
 
 import java.util.concurrent.Future;
-import nl.maastro.eureca.aida.indexer.ZylabData;
+import nl.maastro.eureca.aida.indexer.ZylabDocument;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -15,7 +15,7 @@ import org.mockito.stubbing.Answer;
  */
 public class MockedFuture {
 	@Mock
-	public Future<ZylabData> future;
+	public Future<ZylabDocument> future;
 	public boolean finished;
 
 	public MockedFuture() {

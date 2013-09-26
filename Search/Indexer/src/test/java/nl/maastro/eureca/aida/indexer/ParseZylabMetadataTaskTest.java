@@ -37,7 +37,7 @@ public class ParseZylabMetadataTaskTest {
 		FieldsToIndex.ID, FieldsToIndex.PATISNUMMER
 	};
 	
-	private ZylabData data;
+	private ZylabDocument data;
 	private ParseZylabMetadataTask testee;
 	private Resolver mockedResolver;
 	private ReferenceResolver referenceResolver;
@@ -48,7 +48,7 @@ public class ParseZylabMetadataTaskTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		data = new ZylabData();
+		data = new ZylabDocumentImpl();
 
 		mockedResolver = new Resolver();
 		referenceResolver = mockedResolver.getResolver();

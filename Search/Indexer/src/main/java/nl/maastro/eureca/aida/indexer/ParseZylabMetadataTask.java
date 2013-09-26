@@ -15,13 +15,13 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class ParseZylabMetadataTask implements Callable<ZylabData>  {
+public class ParseZylabMetadataTask implements Callable<ZylabDocument>  {
 	private final URL metadataLocation;
 	private final ReferenceResolver filerefResolver;
-	private final ZylabData data;
+	private final ZylabDocument data;
 	
 	public ParseZylabMetadataTask(
-			ZylabData existingData,
+			ZylabDocument existingData,
 			URL metadataURL_,
 			ReferenceResolver filerefResolver_) {
 		this.metadataLocation = metadataURL_;
@@ -30,7 +30,7 @@ public class ParseZylabMetadataTask implements Callable<ZylabData>  {
 	}
 
 	@Override
-	public ZylabData call() throws Exception {
+	public ZylabDocument call() throws Exception {
 		MetadataHandler metadataHandler = new MetadataHandler(data);
 		
 		// Parse metadata
@@ -55,5 +55,4 @@ public class ParseZylabMetadataTask implements Callable<ZylabData>  {
 
 		return null;
 	}
-	
 }

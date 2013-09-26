@@ -30,7 +30,7 @@ public class DocumentParseTaskSynchronizerTest {
 	private Resolver mockedResolver;
 	private URL metadataLocation;
 	private URL dataLocation;
-	private ConcurrentLinkedQueue<ZylabData> dataToIndex;
+	private ConcurrentLinkedQueue<ZylabDocument> dataToIndex;
 	private DocumentParseTaskSynchronizer testee;
 	
 	@Before
@@ -137,7 +137,7 @@ public class DocumentParseTaskSynchronizerTest {
 		assertTrue(dataToIndex.isEmpty());
 	}
 
-	private MockedFuture createMockedTaskFuture(Class<? extends Callable<ZylabData>> submittedClass) {
+	private MockedFuture createMockedTaskFuture(Class<? extends Callable<ZylabDocument>> submittedClass) {
 		MockedFuture mocked = new MockedFuture();
 		mocked.setup();
 		when (executor.submit(isA(submittedClass))) .thenReturn(mocked.future);

@@ -3,15 +3,7 @@ package nl.maastro.eureca.aida.indexer;
 
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.Semaphore;
 import nl.maastro.eureca.aida.indexer.tika.parser.ZylabMetadataXml;
-import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 import org.junit.Before;
@@ -19,14 +11,16 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.when;
 import static org.hamcrest.Matchers.*;
 import static nl.maastro.eureca.aida.indexer.matchers.LuceneMatchers.*;
+import nl.maastro.eureca.aida.indexer.testdata.Fields;
+import nl.maastro.eureca.aida.indexer.testdata.Term;
 import org.apache.commons.io.FilenameUtils;
+import org.junit.Test;
 
 /**
  * @see ParseZylabMetadataTest
@@ -84,15 +78,12 @@ public class ZylabDataTest {
 	public final static MetadataResources[] METADATA_RESOURCES = MetadataResources.values();
 
 	@DataPoints
-	public final static FieldsToIndex[] fields() {
-		ZylabDocumentImpl.getFieldSourceEntries(DocumentParts.DATA);	// Using a method call to ensure ZylabData.Fields is initialised
-		FieldsToIndex[] result = new FieldsToIndex[4];
-		result[0] = FieldsToIndex.CONTENT;
-		result[1] = FieldsToIndex.KEYWORD;
-		result[2] = FieldsToIndex.TITLE;
-		result[3] = FieldsToIndex.ID;
-		return result;
-	}
+	public final static Term[] fields = {
+		Fields.ANY_CONTENT,
+		Fields.ANY_ID,
+		Fields.ANY_KEYWORD,
+		Fields.ANY_TITLE
+	};
 	
 
 	protected ZylabDocument testee;
@@ -123,14 +114,14 @@ public class ZylabDataTest {
 		metadataParser = metadata.createMetadataParser(testee, referenceResolver);
 	}
 
-	@Theory
+	@Test
 	public void testMergeNoExceptions() throws Exception {
 		dataParser.call();
 		metadataParser.call();
 	}
 
 
-	@Theory
+	@Test
 	public void testMergeExpectedFieldId() {
 		try {
 			dataParser.call();
@@ -142,7 +133,7 @@ public class ZylabDataTest {
 		assertThat("has ID", testee.getFields(), hasItem(fieldNamed(FieldsToIndex.ID.fieldName)));
 	}
 
-	@Theory
+	@Test
 	public void testMergeExpectedFieldContent() {
 		try {
 			dataParser.call();
@@ -155,7 +146,7 @@ public class ZylabDataTest {
 	}
 	
 	@Theory
-	public void testMergeExpectedFields(FieldsToIndex field) {
+	public void testMergeExpectedFields(Term field) {
 		assumeThat(FilenameUtils.getExtension(data.resource).toLowerCase(), not("txt"));
 		try {
 			dataParser.call();
@@ -164,10 +155,10 @@ public class ZylabDataTest {
 			assumeNoException(ex);
 		}
 		
-		assertThat(testee.getFields(), hasItem(fieldNamed(field.fieldName)));
+		assertThat(testee.getFields(), hasItem(fieldNamed(field)));
 	}
 
-	@Theory
+	@Test
 	public void testDataUrl()  {
 		try {
 			dataParser.call();

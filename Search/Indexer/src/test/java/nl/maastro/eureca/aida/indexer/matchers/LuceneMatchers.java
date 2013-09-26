@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.indexer.matchers;
 
+import nl.maastro.eureca.aida.indexer.testdata.Term;
 import org.apache.lucene.index.IndexableField;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -26,10 +27,10 @@ public class LuceneMatchers {
 		};
 	}
 
-	/**
-	 *
-	 * @param targetName the value of targetName
-	 */
+	public static Matcher<IndexableField> fieldValue(final Term targetValue) {
+		return targetValue.hasValue();
+	}
+
 	public static Matcher<IndexableField> fieldNamed(final String targetName) {
 		return new TypeSafeDiagnosingMatcher<IndexableField>() {
 			@Override
@@ -44,4 +45,7 @@ public class LuceneMatchers {
 		};
 	}
 	
+	public static Matcher<IndexableField> fieldNamed(final Term targetField) {
+		return targetField.hasName();
+	}
 }

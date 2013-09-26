@@ -63,18 +63,18 @@ public class ParseDataTaskTest {
 		testee = new ParseDataTask(data, dataUrl);
 	}
 
-	@Theory
+	@Test
 	public void testCall() throws Exception {
 		testee.call();
 	}
 
-	@Theory
+	@Test
 	public void testHasContent() throws Exception {
 		testee.call();
 		assertThat("has content field", data.getFields(), hasItem(fieldNamed(FieldsToIndex.CONTENT.fieldName)));
 	}
 
-	@Theory
+	@Test
 	public void testHasTitle() throws Exception {
 		assumeThat("is not plain txt", FilenameUtils.getExtension(resource).toLowerCase(), not("txt"));
 		testee.call();

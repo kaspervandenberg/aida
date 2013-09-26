@@ -6,15 +6,12 @@ import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import nl.maastro.eureca.aida.indexer.mocked.Resolver;
 import org.junit.Test;
 import org.junit.Before;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import static org.junit.Assert.*;
 //import static org.hamcrest.Matchers.*;
 		

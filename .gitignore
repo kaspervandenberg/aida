@@ -9,3 +9,8 @@
 /Search/zylabPatisClient/target/
 /Search/zylabPatisClient/results/
 /Search/zylabPatisClient/data
+
+# Eclipse files
+.project
+.classpath
+.settings

@@ -2,9 +2,6 @@
 package nl.maastro.eureca.aida.indexer;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.junit.Test;
@@ -16,7 +13,6 @@ import org.junit.experimental.theories.Theories;
 import org.junit.runner.RunWith;
 import static org.hamcrest.Matchers.*;
 import static nl.maastro.eureca.aida.indexer.matchers.LunceneMatchers.*;
-import nl.maastro.eureca.aida.indexer.FieldsToIndex;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.experimental.theories.Theory;
 
@@ -71,20 +67,25 @@ public class ParseDataTaskTest {
 	@Test
 	public void testHasContent() throws Exception {
 		testee.call();
+		
 		assertThat("has content field", data.getFields(), hasItem(fieldNamed(FieldsToIndex.CONTENT.fieldName)));
 	}
 
 	@Test
 	public void testHasTitle() throws Exception {
 		assumeThat("is not plain txt", FilenameUtils.getExtension(resource).toLowerCase(), not("txt"));
+		
 		testee.call();
+		
 		assertThat("has title field", data.getFields(), hasItem(fieldNamed(FieldsToIndex.TITLE.fieldName)));
 	}
 
 	@Theory
 	public void testHasField(FieldsToIndex field) throws Exception {
 		assumeThat("is not plain txt", FilenameUtils.getExtension(resource).toLowerCase(), not("txt"));
+		
 		testee.call();
+
 		assertThat("has field", data.getFields(), hasItem(fieldNamed(field.fieldName)));
 	}
 }

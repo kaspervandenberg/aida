@@ -39,18 +39,14 @@ public class ParseDataTaskTest {
 
 	@DataPoints
 	public final static FieldsToIndex[] fields() {
-//		System.out.println("fields() called");
 		Set<Map.Entry<FieldsToIndex, Object>> fieldSourceEntries = ZylabData.getFieldSourceEntries(DocumentParts.DATA);
-//		System.out.println("entries: " + fieldSourceEntries);
 		FieldsToIndex[] result = new FieldsToIndex[fieldSourceEntries.size()];
 		
 		int i = 0;
 		for (Map.Entry<FieldsToIndex, Object> entry : fieldSourceEntries) {
-//			System.out.println("\t entry: " + entry.getKey().fieldName);
 			result[i] = entry.getKey();
 			i++;
 		}
-//		System.out.println("result: " + result);
 		return result;
 	}
 

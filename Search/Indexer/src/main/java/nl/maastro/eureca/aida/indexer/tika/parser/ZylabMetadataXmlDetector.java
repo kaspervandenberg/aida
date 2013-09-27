@@ -4,11 +4,10 @@ package nl.maastro.eureca.aida.indexer.tika.parser;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Scanner;
+
 import org.apache.tika.detect.Detector;
 import org.apache.tika.detect.EncodingDetector;
 import org.apache.tika.metadata.Metadata;
@@ -21,6 +20,7 @@ import org.apache.tika.parser.txt.UniversalEncodingDetector;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
+@SuppressWarnings("serial")
 public class ZylabMetadataXmlDetector implements Detector {
 	private static final int MAX_READ = 200;
 	private static final String ZYLAB_TAG = "<zylab>";
@@ -36,6 +36,7 @@ public class ZylabMetadataXmlDetector implements Detector {
 			try { 
 				Charset cs = getEncodingDetector().detect(input, metadata);
 				if(cs != null) {
+					@SuppressWarnings("resource")	// Tika requires input not to be closed
 					Scanner scanner = new Scanner(input, cs.name());
 					String firstXmlTag = scanner.findWithinHorizon("<\\w.*\\w>", MAX_READ);
 					

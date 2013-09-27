@@ -11,26 +11,34 @@ import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 import static org.hamcrest.Matchers.*;
+
 import org.hamcrest.Matchers;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
+
 import static java.nio.file.StandardWatchEventKinds.*;
+
 import java.nio.file.WatchEvent.Kind;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+
 import org.hamcrest.collection.IsEmptyCollection;
 import org.mockito.Mock;
+
 import static org.mockito.Mockito.*;
+
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -158,7 +166,6 @@ public class FilesystemWatchTaskTest {
 		}
 	}
 	@Theory
-	@SuppressWarnings({"serial", "unchecked"})
 	public void testSingleEventsOneCreateIndexTask(final WatchEvent.Kind<Object> kind) {
 		assumeThat(kind,
 				Matchers.<Kind<?>>isOneOf(StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY));
@@ -177,7 +184,6 @@ public class FilesystemWatchTaskTest {
 	}
 
 	@Test
-	@SuppressWarnings({"unchecked", "serial"})
 	public void testSingleIgnoredEventsNotCreateIndexTask() {
 		try {
 			when (key.pollEvents()). thenAnswer(nextSingleEvent());
@@ -192,8 +198,8 @@ public class FilesystemWatchTaskTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Theory
-	@SuppressWarnings({"serial", "unchecked"})
 	public void testMultipleEventsCreateIndexTasks(Kind<?> eventSequence[]) {
 //		final WatchEvent.Kind<?>[] eventSequence = new WatchEvent.Kind<?>[] {
 //			ENTRY_CREATE, ENTRY_CREATE

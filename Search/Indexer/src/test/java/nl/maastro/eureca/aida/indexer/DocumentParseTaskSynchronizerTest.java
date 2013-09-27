@@ -34,7 +34,6 @@ public class DocumentParseTaskSynchronizerTest {
 	private DocumentParseTaskSynchronizer testee;
 	
 	@Before
-	@SuppressWarnings("unchecked")
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		mockedResolver = new Resolver();
@@ -81,7 +80,6 @@ public class DocumentParseTaskSynchronizerTest {
 	}
 	
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testFinishDataBeforeMetadata() {
 		testee.arrive(metadataLocation);
 		testee.arrive(dataLocation);
@@ -94,7 +92,6 @@ public class DocumentParseTaskSynchronizerTest {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testFinishMetadataBeforeData_queueData() {
 		testee.arrive(metadataLocation);
 		testee.arrive(dataLocation);
@@ -107,7 +104,6 @@ public class DocumentParseTaskSynchronizerTest {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testFinishBothBeforeEventsSent_queueData() {
 		testee.arrive(metadataLocation);
 		testee.arrive(dataLocation);

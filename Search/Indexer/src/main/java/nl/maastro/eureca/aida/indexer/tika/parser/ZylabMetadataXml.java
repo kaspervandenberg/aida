@@ -1,20 +1,14 @@
 // © Maastro, 2013
 package nl.maastro.eureca.aida.indexer.tika.parser;
 
-import nl.maastro.eureca.aida.indexer.ReferenceResolver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
-import nl.maastro.eureca.aida.indexer.ZylabDocumentImpl;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexableField;
-import org.apache.tika.Tika;
-import org.apache.tika.config.TikaConfig;
+
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.Property;
@@ -23,10 +17,9 @@ import org.apache.tika.parser.AbstractParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
+
+import com.googlecode.mp4parser.util.Path;
 
 /**
  * Parse Zylab XmlFields files.
@@ -38,6 +31,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
+@SuppressWarnings("serial")
 public class ZylabMetadataXml extends AbstractParser {
 	public static class ReferencedDocumentNotFound extends TikaException {
 
@@ -144,18 +138,6 @@ public class ZylabMetadataXml extends AbstractParser {
 	}
 
 	/**
-	 * Tika {@link org.apache.tika.metadata.Parser} to parse the file the 
-	 * metadata is about.
-	 */
-	private Parser defaultContentsParser = null;
-
-	/**
-	 * Used to convert Zylab's local path–name-reference to a file that AIDA 
-	 * can access.
-	 */
-	private FileRefResolver defaultResolver = null;
-	
-	/**
 	 * Create a parser using {@link org.apache.tika.parser.DefaultParser} to 
 	 * parse the file the metadata is about (unless an other is specified in 
 	 * the call to {@link #parse(java.io.InputStream, org.xml.sax.ContentHandler,
@@ -191,8 +173,6 @@ public class ZylabMetadataXml extends AbstractParser {
 	 * 		the {@code ParseContext}.</li></ul>
 	 */
 	public ZylabMetadataXml(Parser contentsParser_, FileRefResolver resolver_) {
-		this.defaultContentsParser = contentsParser_;
-		defaultResolver = resolver_;
 	}
 
 	/**
@@ -208,76 +188,6 @@ public class ZylabMetadataXml extends AbstractParser {
 	@Override
 	public void parse(InputStream stream, ContentHandler handler, Metadata metadata, ParseContext context) throws IOException, SAXException, TikaException {
 		throw new UnsupportedOperationException("Refactor to Use ParseZylabMetadata and the future ParseData.");
-/*
-		MetadataHandler metadataHandler = new MetadataHandler(context.get(ZylabData.class, new ZylabData()));
-		
-		// Parse metadata
-		XMLReader reader = XMLReaderFactory.createXMLReader();
-		reader.setContentHandler(metadataHandler);
-		InputSource iSource = new InputSource(stream);
-		reader.parse(iSource);
-		stream.close();
-
-		// TODO When parsing for Lucene prefer using ZylabData and ParseZylabMetadata directly 
-		for (IndexableField field : context.get(ZylabData.class, new ZylabData()).getFields()) {
-			Property prop = Property.get(field.name());
-			if(prop == null) {
-				prop = Property.externalText(field.name());
-			}
-			metadata.add(prop, field.stringValue());
-		}
-
-		try {
-			FileRef ref_aboutDoc = metadataHandler.getAboutDocument();
-			context.set(ZylabMetadataXml.FileRef.class, ref_aboutDoc);
-			URL aboutDoc = getResolver(context).resolve(ref_aboutDoc);
-			try (InputStream aboutDocStream = aboutDoc.openStream()) {
-				// Parse document this metadata is about
-				metadata.add(FixedProperties.ABOUT_RESOLVED.get(), aboutDoc.toString());
-				metadata.remove(Metadata.RESOURCE_NAME_KEY);
-				metadata.add(Metadata.RESOURCE_NAME_KEY, metadataHandler.getAboutDocument().refName);
-				
-				metadata.remove(Metadata.CONTENT_TYPE);
-				String mediaType = new Tika().detect(aboutDocStream, metadata);
-				metadata.add(Metadata.CONTENT_TYPE, mediaType);
-			
-				getParser(context).parse(aboutDocStream, handler, metadata, context);
-			}
-		} catch (URISyntaxException | MalformedURLException ex) {
-			String msg = String.format("Document metadata file %s is about not found (ref: %s, %s)",
-					metadata.get(Metadata.RESOURCE_NAME_KEY),
-					metadataHandler.getAboutDocument().refPath,
-					metadataHandler.getAboutDocument().refName);
-			throw new ReferencedDocumentNotFound(msg, ex);
-		}
-*/
-	}
-
-	private Parser getParser(ParseContext context) {
-		Parser result = context.get(ContentsParser.class);
-		if (result != null) {
-			return result;
-		}
-		if (defaultContentsParser == null) {
-			// Use get parser from TikaConfig; using TikaConfig from context 
-			// (or defaultconfig if context has no TikaConfig)
-			defaultContentsParser = context.get(
-					TikaConfig.class,
-					TikaConfig.getDefaultConfig()).getParser();
-		}
-		return defaultContentsParser;
-		
-	}
-
-	private FileRefResolver getResolver(ParseContext context) {
-		FileRefResolver result = context.get(FileRefResolver.class);
-		if(result != null) {
-			return result;
-		}
-		if(defaultResolver == null) {
-			defaultResolver = new ReferenceResolver();
-		}
-		return defaultResolver;
 	}
 }
 /* vim: set shiftwidth=4 tabstop=4 noexpandtab fo=ctwan ai : */

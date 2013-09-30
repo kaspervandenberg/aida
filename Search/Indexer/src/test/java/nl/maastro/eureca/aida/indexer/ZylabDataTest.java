@@ -78,13 +78,7 @@ public class ZylabDataTest {
 	public final static MetadataResources[] METADATA_RESOURCES = MetadataResources.values();
 
 	@DataPoints
-	public final static Term[] fields = {
-		Fields.ANY_CONTENT,
-		Fields.ANY_ID,
-		Fields.ANY_KEYWORD,
-		Fields.ANY_TITLE
-	};
-	
+	public final static Term[] FIELDS = Fields.values();
 
 	protected ZylabDocument testee;
 	protected ParseDataTask dataParser;

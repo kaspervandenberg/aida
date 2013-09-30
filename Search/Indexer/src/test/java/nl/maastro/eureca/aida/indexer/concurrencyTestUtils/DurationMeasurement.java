@@ -31,4 +31,14 @@ public class DurationMeasurement {
 		return unit.convert(nsResult, TimeUnit.NANOSECONDS);
 	}
 			
+	@Override
+	public String toString() {
+		try {
+			long duration = getDuration(TimeUnit.NANOSECONDS);
+			double durationInSec = duration / 1.0E-9;
+			return Double.toString(durationInSec) +"s";
+		} catch(IllegalStateException ex) {
+			return super.toString();
+		}
+	}
 }

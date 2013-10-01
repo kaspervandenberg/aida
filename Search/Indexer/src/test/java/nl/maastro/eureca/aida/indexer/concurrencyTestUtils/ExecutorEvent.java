@@ -17,19 +17,19 @@ import org.junit.Assume;
  * @author kasper
  */
 public class ExecutorEvent<T> {
-	private ObservableExecutorService<T> source;
+	private ObservableExecutorService source;
 	private Future<T> task;
 	private T value;
 	private DurationMeasurement getDuration;
 
-	public ExecutorEvent(ObservableExecutorService<T> source_, Future<T> task_, T value_, DurationMeasurement getDuration_) {
+	public ExecutorEvent(ObservableExecutorService source_, Future<T> task_, T value_, DurationMeasurement getDuration_) {
 		this.source = source_;
 		this.task = task_;
 		this.value = value_;
 		this.getDuration = getDuration_;
 	}
 
-	public static <T> ExecutorEvent<T> register(ObservableExecutorService<T> source, Future<T> task) {
+	public static <T> ExecutorEvent<T> register(ObservableExecutorService source, Future<T> task) {
 		try {
 			DurationMeasurement stopwatch = new DurationMeasurement();
 			stopwatch.start();

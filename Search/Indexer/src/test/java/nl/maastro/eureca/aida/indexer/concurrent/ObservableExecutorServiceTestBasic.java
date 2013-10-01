@@ -39,11 +39,11 @@ public class ObservableExecutorServiceTestBasic {
 	static private final int N_PARALLEL_TASKS = 50;
 	
 	@Mock private Callable<String> mockedTask;
-	@Mock private ObservableExecutorService.Observer<String> mockedObserver;
+	@Mock private ObservableExecutorService.CompletionObserver<String> mockedObserver;
 	private Callable<String> task;
-	private ObservableExecutorService.Observer<String> observer;
+	private ObservableExecutorService.CompletionObserver<String> observer;
 
-	private ObservableExecutorService<String> testee;
+	private ObservableExecutorService testee;
 	
 	private DurationMeasurement stopwatch;
 	private AtomicInteger timesCalled;
@@ -59,7 +59,7 @@ public class ObservableExecutorServiceTestBasic {
 		observer = createObserver();
 
 		doAnswer(createOnTaskfinished()) 
-				.when(mockedObserver) .taskFinished((ObservableExecutorService<String>)any(), (Future<String>)any());
+				.when(mockedObserver) .taskFinished((ObservableExecutorService)any(), (Future<String>)any());
 
 		stopwatch = new DurationMeasurement();
 		timesCalled = new AtomicInteger(0);
@@ -67,7 +67,7 @@ public class ObservableExecutorServiceTestBasic {
 		tasksFinished = new Semaphore(0);
 		startNext = new Semaphore(N_PARALLEL_TASKS);
 		 
-		testee = new ObservableExecutorService<>(Executors.newCachedThreadPool());
+		testee = new ObservableExecutorService(Executors.newCachedThreadPool());
 	}
 	
 	@Test
@@ -131,7 +131,7 @@ public class ObservableExecutorServiceTestBasic {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testFuture() {
-		Future<String> future = testee.submit(mockedObserver, mockedTask);
+		Future<String> future = testee.subscribeAndSubmit(mockedObserver, mockedTask);
 		
 		try {
 			future.get(MAX_TIME_MSEC, TimeUnit.MILLISECONDS);
@@ -149,10 +149,10 @@ public class ObservableExecutorServiceTestBasic {
 			} };
 	}
 
-	private ObservableExecutorService.Observer<String> createObserver() {
-		return new ObservableExecutorService.Observer<String>() {
+	private ObservableExecutorService.CompletionObserver<String> createObserver() {
+		return new ObservableExecutorService.CompletionObserver<String>() {
 			@Override
-			public void taskFinished(ObservableExecutorService<String> source, Future<String> task) {
+			public void taskFinished(ObservableExecutorService source, Future<String> task) {
 				timesNotified.incrementAndGet();
 				tasksFinished.release();
 				startNext.release();
@@ -170,10 +170,10 @@ public class ObservableExecutorServiceTestBasic {
 			} };
 	}
 
-	private void submit(int count, Callable<String> task, ObservableExecutorService.Observer<String> observer) {
+	private void submit(int count, Callable<String> task, ObservableExecutorService.CompletionObserver<String> observer) {
 		for (int i = 0; i < count; i++) {
 			waitForAvailableThread();
-			testee.submit(observer, task);
+			testee.subscribeAndSubmit(observer, task);
 		}
 	}
 

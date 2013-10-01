@@ -20,12 +20,12 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
  *
  * @author kasper
  */
-public class DummyExecutorObserver<T> implements ObservableExecutorService.Observer<T> {
+public class DummyExecutorObserver<T> implements ObservableExecutorService.CompletionObserver<T> {
 	private List<ExecutorEvent<T>> eventsReceived = new LinkedList<>();
 	private ReadWriteLock eventLock = new ReentrantReadWriteLock();
 
 	@Override
-	public void taskFinished(ObservableExecutorService<T> source, Future<T> task) {
+	public void taskFinished(ObservableExecutorService source, Future<T> task) {
 		ExecutorEvent<T> receivedEvent = ExecutorEvent.register(source, task);
 		add(receivedEvent);
 	}

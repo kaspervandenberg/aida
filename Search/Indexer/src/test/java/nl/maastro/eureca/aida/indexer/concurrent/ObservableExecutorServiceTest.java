@@ -45,7 +45,7 @@ public class ObservableExecutorServiceTest implements ConcurrentTestContext<Stri
 	private ConcurrentMap<Integer, Future<String>> submittedTasks;
 	private ExecutorService executor;  
 	
-	private ObservableExecutorService<String> testee;
+	private ObservableExecutorService testee;
 	private final ActionSequence<String> sequence;
 
 	public ObservableExecutorServiceTest(ActionSequence<String> sequence_) {
@@ -60,7 +60,7 @@ public class ObservableExecutorServiceTest implements ConcurrentTestContext<Stri
 
 		executor = Executors.newSingleThreadExecutor();
 		
-		testee = new ObservableExecutorService<>(executor);
+		testee = new ObservableExecutorService(executor);
 	}
 
 	@After
@@ -116,7 +116,7 @@ public class ObservableExecutorServiceTest implements ConcurrentTestContext<Stri
 	@Override
 	@SuppressWarnings("unchecked")
 	public void submit(int taskId, Callable<? extends String> task) {
-		Future<String> submittedTask = testee.submit(observer, (Callable<String>)task);
+		Future<String> submittedTask = testee.subscribeAndSubmit(observer, (Callable<String>)task);
 		submittedTasks.put(taskId, submittedTask);
 	}
 	

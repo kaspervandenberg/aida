@@ -26,7 +26,7 @@ public class ObservableExecutorServiceTestMulti {
 	public void testScheduleReleaseBlockingTaskOnce() {
 		Blocking<String> task = Blocking.createDummy("task1-scheduleReleaseBlocking");
 		DummyExecutorObserver<String> observer = new DummyExecutorObserver<>();
-		ObservableExecutorService<String> testee = new ObservableExecutorService<>(Executors.newSingleThreadExecutor());
+		ObservableExecutorService testee = new ObservableExecutorService(Executors.newSingleThreadExecutor());
 		
 		Future<String> future = scheduleAndRelease(testee, observer, task);
 		waitUntilFinished(future);
@@ -46,21 +46,21 @@ public class ObservableExecutorServiceTestMulti {
 	public void testReinitialise() {
 		Blocking<String> task;
 		DummyExecutorObserver<String> observer;
-		ObservableExecutorService<String> testee;
+		ObservableExecutorService testee;
 		
 		for (int i = 0; i < N_RUNS; i++) {
 			task = Blocking.createDummy("task2a-reinitialise");
 			observer = new DummyExecutorObserver<>();
-			testee = new ObservableExecutorService<>(Executors.newSingleThreadExecutor());
+			testee = new ObservableExecutorService(Executors.newSingleThreadExecutor());
 			
 			Future<String> futureResult = scheduleAndRelease(testee, observer, task);
 			waitUntilFinished(futureResult);
 		}
 	}
 
-	private static <T> Future<T> scheduleAndRelease(ObservableExecutorService<T> testee, 
-			ObservableExecutorService.Observer<T> observer, Blocking<T> task) {
-		Future<T> result = testee.submit(observer, task);
+	private static <T> Future<T> scheduleAndRelease(ObservableExecutorService testee, 
+			ObservableExecutorService.CompletionObserver<T> observer, Blocking<T> task) {
+		Future<T> result = testee.subscribeAndSubmit(observer, task);
 		task.enableStart();
 		task.enableEnd();
 		return result;

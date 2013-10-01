@@ -16,6 +16,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import nl.maastro.eureca.aida.indexer.concurrencyTestUtils.DurationMeasurement;
 import nl.maastro.eureca.aida.indexer.matchers.DurationMatcher;
+import nl.maastro.eureca.aida.indexer.util.DefaultObserverCollectionFactory;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.*;
@@ -39,9 +40,9 @@ public class ObservableExecutorServiceTestBasic {
 	static private final int N_PARALLEL_TASKS = 50;
 	
 	@Mock private Callable<String> mockedTask;
-	@Mock private ObservableExecutorService.CompletionObserver<String> mockedObserver;
+	@Mock private CompletionObserver<String> mockedObserver;
 	private Callable<String> task;
-	private ObservableExecutorService.CompletionObserver<String> observer;
+	private CompletionObserver<String> observer;
 
 	private ObservableExecutorService testee;
 	
@@ -67,7 +68,7 @@ public class ObservableExecutorServiceTestBasic {
 		tasksFinished = new Semaphore(0);
 		startNext = new Semaphore(N_PARALLEL_TASKS);
 		 
-		testee = new ObservableExecutorService(Executors.newCachedThreadPool());
+		testee = new ObservableExecutorService(new DefaultObserverCollectionFactory(), Executors.newCachedThreadPool());
 	}
 	
 	@Test
@@ -149,8 +150,8 @@ public class ObservableExecutorServiceTestBasic {
 			} };
 	}
 
-	private ObservableExecutorService.CompletionObserver<String> createObserver() {
-		return new ObservableExecutorService.CompletionObserver<String>() {
+	private CompletionObserver<String> createObserver() {
+		return new CompletionObserver<String>() {
 			@Override
 			public void taskFinished(ObservableExecutorService source, Future<String> task) {
 				timesNotified.incrementAndGet();
@@ -170,7 +171,7 @@ public class ObservableExecutorServiceTestBasic {
 			} };
 	}
 
-	private void submit(int count, Callable<String> task, ObservableExecutorService.CompletionObserver<String> observer) {
+	private void submit(int count, Callable<String> task, CompletionObserver<String> observer) {
 		for (int i = 0; i < count; i++) {
 			waitForAvailableThread();
 			testee.subscribeAndSubmit(observer, task);

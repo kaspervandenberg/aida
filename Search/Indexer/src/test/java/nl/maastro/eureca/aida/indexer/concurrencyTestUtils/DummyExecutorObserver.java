@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import nl.maastro.eureca.aida.indexer.concurrent.CompletionObserver;
 import nl.maastro.eureca.aida.indexer.concurrent.ObservableExecutorService;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -20,7 +21,7 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
  *
  * @author kasper
  */
-public class DummyExecutorObserver<T> implements ObservableExecutorService.CompletionObserver<T> {
+public class DummyExecutorObserver<T> implements CompletionObserver<T> {
 	private List<ExecutorEvent<T>> eventsReceived = new LinkedList<>();
 	private ReadWriteLock eventLock = new ReentrantReadWriteLock();
 

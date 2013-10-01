@@ -28,6 +28,8 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static nl.maastro.eureca.aida.indexer.concurrencyTestUtils.DummyExecutorObserver.receivedAnyEvent;
 import static nl.maastro.eureca.aida.indexer.concurrencyTestUtils.ExecutorEvent.withValue;
+import nl.maastro.eureca.aida.indexer.util.DefaultObserverCollectionFactory;
+import nl.maastro.eureca.aida.indexer.util.ObserverCollectionFactory;
 import org.junit.Test;
 
 /**
@@ -44,6 +46,7 @@ public class ObservableExecutorServiceTest implements ConcurrentTestContext<Stri
 	private DummyExecutorObserver<String> observer;
 	private ConcurrentMap<Integer, Future<String>> submittedTasks;
 	private ExecutorService executor;  
+	private ObserverCollectionFactory factory;
 	
 	private ObservableExecutorService testee;
 	private final ActionSequence<String> sequence;
@@ -59,8 +62,9 @@ public class ObservableExecutorServiceTest implements ConcurrentTestContext<Stri
 		submittedTasks = new ConcurrentHashMap<>(N_TEST_TASKS);
 
 		executor = Executors.newSingleThreadExecutor();
+		factory = new DefaultObserverCollectionFactory();
 		
-		testee = new ObservableExecutorService(executor);
+		testee = new ObservableExecutorService(factory, executor);
 	}
 
 	@After

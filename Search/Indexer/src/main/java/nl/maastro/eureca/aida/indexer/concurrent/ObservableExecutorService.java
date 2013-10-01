@@ -1,32 +1,18 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.indexer.concurrent;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nl.maastro.eureca.aida.indexer.util.ObserverCollection;
-import nl.maastro.eureca.aida.indexer.util.StaleReferenceFilter;
+import nl.maastro.eureca.aida.indexer.util.ObserverCollectionFactory;
 
 /**
  * ExecutorService that notifies the registered {@link Observers} when a submitted task completes.
@@ -35,74 +21,13 @@ import nl.maastro.eureca.aida.indexer.util.StaleReferenceFilter;
  * 
  */
 public class ObservableExecutorService extends AbstractExecutorService implements ExecutorService {
-	/**
-	 * Observer pattern: interface required of observers.
-	 * 
-	 * @param <T> 
-	 */
-	public interface CompletionObserver<T> {
-		public void taskFinished(ObservableExecutorService source, Future<T> task);
-	}
-
-	private class Task<T> extends FutureTask<T> {
-		private final ObserverCollection<CompletionObserver<T>, ObservableExecutorService> observers;
-
-		@SuppressWarnings("unchecked")
-		public Task(Runnable inner, T result) {
-			super(inner, result);
-			this.observers = createObserverSupport();
-		}
-
-		public Task(Callable<T> inner) {
-			super(inner);
-			this.observers = createObserverSupport();
-		}
-
-		public Task(Collection<CompletionObserver<T>> initialObservers, Runnable inner, T result) {
-			super(inner, result);
-			this.observers = createObserverSupport();
-			observers.addAll(initialObservers);
-		}
-
-		public Task(Collection<CompletionObserver<T>> initialObservers, Callable<T> inner) {
-			super(inner);
-			this.observers = createObserverSupport();
-			observers.addAll(initialObservers);
-		}
-
-		public boolean subscribe(CompletionObserver<T> observer) {
-			return observers.add(observer);
-		}
-
-		public boolean unsubscribe(CompletionObserver<T> observer) {
-			return observers.remove(observer);
-		}
-
-		@SuppressWarnings("unchecked")
-		private ObserverCollection<CompletionObserver<T>, ObservableExecutorService> createObserverSupport() {
-			return new ObserverCollection<>(ObservableExecutorService.this,
-					(Class<CompletionObserver<T>>)(Object)CompletionObserver.class, OBSERVER_METHOD);
-		}
-
-		@Override
-		protected void done() {
-			observers.fireEvent(this);
-		}
-	}
-
-	private static final Method OBSERVER_METHOD;
-	static {
-		try {
-			OBSERVER_METHOD = CompletionObserver.class.getDeclaredMethod("taskFinished", ObservableExecutorService.class, Future.class);
-		} catch (NoSuchMethodException | SecurityException ex) {
-			throw new Error("Error initialising OBSERVER_METHOD", ex);
-		}
-	}
 
 	private final ExecutorService delegate;
+	private final ObserverCollectionFactory observerCollectionFactory;
 	
-	public ObservableExecutorService(ExecutorService delegate_) {
+	public ObservableExecutorService(ObserverCollectionFactory observerCollectionFactory_, ExecutorService delegate_) {
 		this.delegate = delegate_;
+		this.observerCollectionFactory = observerCollectionFactory_;
 	}
 
 	public <T> Future<T> subscribeAndSubmit(CompletionObserver<T> observer, Callable<T> task) {
@@ -110,39 +35,41 @@ public class ObservableExecutorService extends AbstractExecutorService implement
 	}
 	
 	public <T> Future<T> subscribeAndSubmit(Collection<CompletionObserver<T>> observers, Callable<T> task) {
-		Task<T> decoratedTask = new Task<>(observers, task);
+		ObservableTask<ObservableExecutorService, T> decoratedTask = newTaskFor(observers, task);
 		delegate.execute(decoratedTask);
 		return decoratedTask;
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	public <T> boolean subscribe(CompletionObserver<T> observer, Future<T> task) {
-		if(task instanceof Task) {
-			return subscribeToTask(observer, (Task<T>)task);
+		if(task instanceof ObservableTask) {
+			return subscribeToTask(observer, (ObservableTask<ObservableExecutorService, T>)task);
 		} else {
 			return false;
 		}
 	}
 
-	private <T> boolean subscribeToTask(CompletionObserver<T> observer, Task<T> task) {
+	private <T> boolean subscribeToTask(CompletionObserver<T> observer, ObservableTask<ObservableExecutorService, T> task) {
 		return task.subscribe(observer);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> boolean unsubscribe(CompletionObserver<T> observer, Future<T> task) {
-		if(task instanceof Task) {
-			return unsubscribetoTask(observer, (Task<T>)task);
+		if(task instanceof ObservableTask) {
+			return unsubscribetoTask(observer, (ObservableTask<ObservableExecutorService, T>)task);
 		} else {
 			return false;
 		}
 	}
 	
-	private <T> boolean unsubscribetoTask(CompletionObserver<T> observer, Task<T> task) {
+	private <T> boolean unsubscribetoTask(CompletionObserver<T> observer, ObservableTask<ObservableExecutorService, T> task) {
 		return task.unsubscribe(observer);
 	}
 	
 	@Override
 	public void execute(Runnable command) {
-		if(command instanceof Task) {
+		if(command instanceof ObservableTask) {
 			delegate.execute(command);
 		} else {
 			delegate.execute(newTaskFor(command, null));
@@ -150,13 +77,27 @@ public class ObservableExecutorService extends AbstractExecutorService implement
 	}
 	
 	@Override
-	protected <T> RunnableFuture<T> newTaskFor(Runnable runnable, T value) {
-		return new Task<>(runnable, value);
+	protected <T> ObservableTask<ObservableExecutorService, T> newTaskFor(Runnable runnable, T value) {
+		return newTaskFor(Collections.<CompletionObserver<T>>emptyList(), runnable, value);
 	}
 
 	@Override
 	protected <T> RunnableFuture<T> newTaskFor(Callable<T> callable) {
-		return new Task<>(callable);
+		return newTaskFor(Collections.<CompletionObserver<T>>emptyList(), callable);
+	}
+
+	private <T> ObservableTask<ObservableExecutorService, T> newTaskFor(
+			Collection<CompletionObserver<T>> initialObservers, Runnable runnable, T value) {
+		ObserverCollection<CompletionObserver<T>, ObservableExecutorService> observerSupport =
+				createObserverSupport(initialObservers);
+		return new ObservableTask<>(observerSupport, runnable, value);
+	}
+
+	private <T> ObservableTask<ObservableExecutorService, T> newTaskFor(
+			Collection<CompletionObserver<T>> initialObservers, Callable<T> callable) {
+		ObserverCollection<CompletionObserver<T>, ObservableExecutorService> observerSupport =
+				createObserverSupport(initialObservers);
+		return new ObservableTask<>(observerSupport, callable);
 	}
 
 	@Override
@@ -183,4 +124,13 @@ public class ObservableExecutorService extends AbstractExecutorService implement
 	public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
 		return delegate.awaitTermination(timeout, unit);
 	}
+
+	@SuppressWarnings(value = "unchecked")
+	private <T> ObserverCollection<CompletionObserver<T>, ObservableExecutorService> createObserverSupport(
+			Collection<CompletionObserver<T>> initialObservers) {
+		ObserverCollection<CompletionObserver<T>, ObservableExecutorService> result = observerCollectionFactory.<T>createObserverSupport(this);
+		result.addAll(initialObservers);
+		return result;
+	}
+
 }

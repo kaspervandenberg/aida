@@ -80,23 +80,32 @@ public class ObservableExecutorServiceTest implements ConcurrentTestContext<Stri
 	}
 
 	@Test
-	public void testFuture() throws InterruptedException, ExecutionException, TimeoutException {
-		assumeTrue(sequence.willStart(0));
-
-		sequence.execute(this);
+	public void testFuture() {
+		try {
+			assumeTrue(sequence.willStart(0));
+	
+			sequence.execute(this);
 		
-		blockUntilTasksFinished();
-		submittedTasks.get(0).get(2, TimeUnit.SECONDS);
+			blockUntilTasksFinished();
+			submittedTasks.get(0).get(2, TimeUnit.SECONDS);
+		} catch (ExecutionException | InterruptedException | TimeoutException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@Test
 	public void testObserveTask() {
+		try {
 		assumeTrue(sequence.willFinish(0));
 		
 		sequence.execute(this);
 
 		blockUntilTasksFinished();
 		assertThat(observer, receivedAnyEvent(withValue(createResultFor(0))));
+		} catch (Throwable ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
 	}
 	
 	@Override
@@ -139,6 +148,7 @@ public class ObservableExecutorServiceTest implements ConcurrentTestContext<Stri
 		try {
 			task.get(2000, TimeUnit.MILLISECONDS);
 		} catch (ExecutionException | InterruptedException | TimeoutException ex) {
+			ex.printStackTrace();
 			assumeNoException(ex);
 		}
 	}

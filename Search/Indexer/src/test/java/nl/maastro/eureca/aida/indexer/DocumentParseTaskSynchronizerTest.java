@@ -5,7 +5,8 @@ import nl.maastro.eureca.aida.indexer.concurrencyTestUtils.MockedFuture;
 import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
+import nl.maastro.eureca.aida.indexer.concurrent.CompletionObserver;
+import nl.maastro.eureca.aida.indexer.concurrent.ObservableExecutorService;
 import nl.maastro.eureca.aida.indexer.mocked.Resolver;
 import org.junit.Test;
 import org.junit.Before;
@@ -24,7 +25,7 @@ public class DocumentParseTaskSynchronizerTest {
 	
 	private static final String DATA_RESOURCE = "/referenced-data/txt/2012/52/00000000/50003BX4.TXT";
 	
-	@Mock private ExecutorService executor;
+	@Mock private ObservableExecutorService executor;
 	private MockedFuture parseMetadataFuture;
 	private MockedFuture parseDataFuture;
 	private Resolver mockedResolver;
@@ -48,45 +49,47 @@ public class DocumentParseTaskSynchronizerTest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testArriveMetadataFile() {
 		testee.arrive(metadataLocation);
 		
-		verify (executor).submit(isA(ParseZylabMetadataTask.class));
+		verify (executor).subscribeAndSubmit(isA(CompletionObserver.class), isA(ParseZylabMetadataTask.class));
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testArriveDataFile() {
 		testee.arrive(dataLocation);
 
-		verify (executor).submit(isA(ParseDataTask.class));
+		verify (executor).subscribeAndSubmit(isA(CompletionObserver.class), isA(ParseDataTask.class));
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testArriveDataBeforeMetadata() {
 		testee.arrive(dataLocation);
 		testee.arrive(metadataLocation);
 		
-		verify (executor).submit(isA(ParseDataTask.class));
-		verify (executor).submit(isA(ParseZylabMetadataTask.class));
+		verify (executor).subscribeAndSubmit(isA(CompletionObserver.class), isA(ParseDataTask.class));
+		verify (executor).subscribeAndSubmit(isA(CompletionObserver.class), isA(ParseZylabMetadataTask.class));
 	}
 	
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testArriveMetadataBeforeData() {
 		testee.arrive(metadataLocation);
 		testee.arrive(dataLocation);
 		
-		verify (executor).submit(isA(ParseDataTask.class));
-		verify (executor).submit(isA(ParseZylabMetadataTask.class));
+		verify (executor).subscribeAndSubmit(isA(CompletionObserver.class), isA(ParseDataTask.class));
+		verify (executor).subscribeAndSubmit(isA(CompletionObserver.class), isA(ParseZylabMetadataTask.class));
 	}
-	
+
 	@Test
-	public void testFinishDataBeforeMetadata() {
+	public void testFinishDataBeforeMetadata_queData() {
 		testee.arrive(metadataLocation);
 		testee.arrive(dataLocation);
-		parseDataFuture.finished = true;
-		testee.finish(dataLocation);
-		parseMetadataFuture.finished = true;
-		testee.finish(metadataLocation);
+		parseDataFuture.finish();
+		parseMetadataFuture.finish();
 
 		assertThat(dataToIndex.size(), org.hamcrest.Matchers.greaterThanOrEqualTo(1));
 	}
@@ -95,31 +98,16 @@ public class DocumentParseTaskSynchronizerTest {
 	public void testFinishMetadataBeforeData_queueData() {
 		testee.arrive(metadataLocation);
 		testee.arrive(dataLocation);
-		parseMetadataFuture.finished = true;
-		testee.finish(metadataLocation);
-		parseDataFuture.finished = true;
-		testee.finish(dataLocation);
+		parseMetadataFuture.finish();
+		parseDataFuture.finish();
 
 		assertThat(dataToIndex.size(), org.hamcrest.Matchers.greaterThanOrEqualTo(1));
 	}
 
 	@Test
-	public void testFinishBothBeforeEventsSent_queueData() {
-		testee.arrive(metadataLocation);
-		testee.arrive(dataLocation);
-		parseMetadataFuture.finished = true;
-		parseDataFuture.finished = true;
-		testee.finish(metadataLocation);
-		testee.finish(dataLocation);
-
-		assertThat(dataToIndex.size(), org.hamcrest.Matchers.equalTo(1));
-	}
-
-	@Test
 	public void testArriveAndFinishOnlyData_doNotQueueData() {
 		testee.arrive(dataLocation);
-		parseDataFuture.finished = true;
-		testee.finish(dataLocation);
+		parseDataFuture.finish();
 		
 		assertTrue(dataToIndex.isEmpty());
 	}
@@ -127,16 +115,20 @@ public class DocumentParseTaskSynchronizerTest {
 	@Test
 	public void testArriveAndFinishOnlyMetadata_doNotQueueData() {
 		testee.arrive(dataLocation);
-		parseDataFuture.finished = true;
-		testee.finish(dataLocation);
+		parseDataFuture.finish();
 		
 		assertTrue(dataToIndex.isEmpty());
 	}
 
+	@SuppressWarnings("unchecked")
 	private MockedFuture createMockedTaskFuture(Class<? extends Callable<ZylabDocument>> submittedClass) {
 		MockedFuture mocked = new MockedFuture();
 		mocked.setup();
-		when (executor.submit(isA(submittedClass))) .thenReturn(mocked.future);
+		mocked.mockExecutorCalls(executor, 
+				org.hamcrest.Matchers.any((Class<CompletionObserver<ZylabDocument>>)(Object)CompletionObserver.class),
+				org.hamcrest.Matchers.any(submittedClass));
+		
 		return mocked;
 	}
+
 }

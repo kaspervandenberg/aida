@@ -6,21 +6,30 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import nl.maastro.eureca.aida.indexer.concurrent.CompletionObserver;
+import nl.maastro.eureca.aida.indexer.concurrent.ObservableExecutorService;
 
 /**
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class DocumentParseTaskSynchronizer {
-	private final ExecutorService executor;
+	private final ObservableExecutorService executor;
 	private final ReferenceResolver referenceResolver;
 	private final ZylabDocument data;
 	private final Map<DocumentParts, Future<ZylabDocument>> parseTasks;
+	private final CompletionObserver<ZylabDocument> observer = new CompletionObserver<ZylabDocument>() {
+		@Override
+		public void taskFinished(ObservableExecutorService source, Future<ZylabDocument> task) {
+			if(allPartsFinished()) {
+				queueIndexData();
+			}
+		}
+	};
 	private final Queue<ZylabDocument> dataToIndex;
 	private boolean dataQueued;
 
-	DocumentParseTaskSynchronizer(ExecutorService executor_, ReferenceResolver referenceResolver_, Queue<ZylabDocument> dataToIndex_) {
+	DocumentParseTaskSynchronizer(ObservableExecutorService executor_, ReferenceResolver referenceResolver_, Queue<ZylabDocument> dataToIndex_) {
 		this.executor = executor_;
 		this.referenceResolver = referenceResolver_;
 		this.data = new ZylabDocumentImpl();
@@ -33,12 +42,6 @@ public class DocumentParseTaskSynchronizer {
 		submitTask(location);
 	}
 
-	public synchronized void finish(URL dataLocation) {
-		if (allPartsFinished()) {
-			queueIndexData();
-		}
-	}
-
 	private void submitTask(URL location) {
 		DocumentParts part = new DocumentPartTypeDetector().determinePartOf(location);
 		Future<ZylabDocument> submittedTask = submitTaskForNewPart(part, location);
@@ -48,7 +51,7 @@ public class DocumentParseTaskSynchronizer {
 	private Future<ZylabDocument> submitTaskForNewPart(DocumentParts part, URL location) {
 		if (!parseTasks.containsKey(part)) {
 			Callable<ZylabDocument> task = createTaskForPart(part, location);
-			return executor.submit(task);
+			return executor.subscribeAndSubmit(observer, task);
 		} else {
 			throw new IllegalStateException(String.format("task for part %s already exists", part.name()));
 		}

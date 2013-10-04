@@ -101,6 +101,11 @@ public class ZylabDocumentReference implements ZylabDocument {
 		}
 	}
 	
+	@Override
+	public void subscribe(DataAssociationObserver<ZylabDocument> observer) {
+		referenced.subscribe(observer);
+	}
+
 	public void switchToAndMerge(ZylabDocument newReferenced) {
 		try {
 			referenceLock.writeLock().lock();
@@ -111,6 +116,7 @@ public class ZylabDocumentReference implements ZylabDocument {
 			referenceLock.writeLock().unlock();
 		}
 	};
+
 	public void switchTo(ZylabDocument newReferenced) {
 		try {
 			referenceLock.writeLock().lock();

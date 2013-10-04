@@ -16,6 +16,8 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import nl.maastro.eureca.aida.indexer.util.DataAssociationObserverCollectionFactory;
+import nl.maastro.eureca.aida.indexer.util.ObserverCollection;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
@@ -91,13 +93,16 @@ public class ZylabDocumentImpl implements ZylabDocument {
 	private boolean frozen = false;
 	private final EnumMap<DocumentParts, Future<?>> parsetasks = 
 			new EnumMap<>(DocumentParts.class);
+	private final ObserverCollection<DataAssociationObserver<ZylabDocument>, ZylabDocument> observers;
 
 	public ZylabDocumentImpl() {
 		luceneDoc = new Document();
+		observers = new DataAssociationObserverCollectionFactory<ZylabDocument>().createObserverSupport(this);
 	}
 
 	public ZylabDocumentImpl(Document doc_) {
 		luceneDoc = doc_;
+		observers = new DataAssociationObserverCollectionFactory<ZylabDocument>().createObserverSupport(this);
 	}
 
 	public static boolean hasFieldSource(DocumentParts part, FieldsToIndex field) {
@@ -202,7 +207,9 @@ public class ZylabDocumentImpl implements ZylabDocument {
 	@Override
 	public void initDataUrl(final URL value) throws IllegalStateException {
 		if(dataURL == null || dataURL.equals(value)) {
+			URL oldValue = dataURL;
 			dataURL = value;
+			observers.fireChangeEvent(oldValue, dataURL);
 		} else {
 			throw new IllegalStateException("Set dataURL once.");
 		}
@@ -311,9 +318,13 @@ public class ZylabDocumentImpl implements ZylabDocument {
 			return allComplete && !anyCanceled;
 		}
 		return false;
-
 	}
-	
+
+	@Override
+	public void subscribe(DataAssociationObserver<ZylabDocument> observer) {
+		observers.add(observer);
+	}
+
 	private void insertAllFields(ZylabDocument other) {
 		lock.writeLock().lock();
 		try {

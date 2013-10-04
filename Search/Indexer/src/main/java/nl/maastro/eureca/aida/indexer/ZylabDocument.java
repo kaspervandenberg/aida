@@ -27,4 +27,6 @@ public interface ZylabDocument {
 	public void setField(FieldsToIndex field, String value);
 
 	public void setField(FieldsToIndex field, Date value);
+
+	public void subscribe(DataAssociationObserver<ZylabDocument> observer);
 }

@@ -33,6 +33,7 @@ public class ParseDataTask implements Callable<ZylabDocument> {
 
 	@Override
 	public ZylabDocument call() throws Exception {
+		document.initDataUrl(dataLocation);
 		Metadata tikaMetadata = initMetadata(dataLocation);
 		storeContent(tikaMetadata);
 		storeMetadata(tikaMetadata);

@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.hamcrest.Matchers.*;
 import static nl.maastro.eureca.aida.indexer.matchers.LuceneMatchers.*;
 import nl.maastro.eureca.aida.indexer.testdata.Fields;
@@ -163,6 +163,35 @@ public class ZylabDataTest {
 		assertThat(testee.getDataUrl(), is(data.getUrl()));
 	}
 
+	@Test
+	public void testMetadataParseObserveDataUrl() {
+		@SuppressWarnings("unchecked")
+		DataAssociationObserver<ZylabDocument> observer = mock(DataAssociationObserver.class);
 
+		try {
+			testee.subscribe(observer);
+			metadataParser.call();
+		} catch (Exception ex) {
+			assumeNoException(ex);
+		}
 
+		verify (observer) .dataAssociationChanged(eq(testee), org.mockito.Mockito.any(URL.class), eq(data.getUrl()));
+		
+	}
+
+	@Test
+	public void testDataParseObserveDataUrl() {
+		@SuppressWarnings("unchecked")
+		DataAssociationObserver<ZylabDocument> observer = mock(DataAssociationObserver.class);
+
+		try {
+			testee.subscribe(observer);
+			dataParser.call();
+		} catch (Exception ex) {
+			assumeNoException(ex);
+		}
+
+		verify (observer) .dataAssociationChanged(eq(testee), org.mockito.Mockito.any(URL.class), eq(data.getUrl()));
+		
+	}
 }

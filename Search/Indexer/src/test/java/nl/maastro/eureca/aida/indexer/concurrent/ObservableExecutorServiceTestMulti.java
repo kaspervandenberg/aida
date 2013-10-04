@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import nl.maastro.eureca.aida.indexer.concurrencyTestUtils.Blocking;
 import nl.maastro.eureca.aida.indexer.concurrencyTestUtils.DummyExecutorObserver;
-import nl.maastro.eureca.aida.indexer.util.DefaultObserverCollectionFactory;
+import nl.maastro.eureca.aida.indexer.util.CompletionObserverCollectionFactory;
 import nl.maastro.eureca.aida.indexer.util.ObserverCollection;
 import nl.maastro.eureca.aida.indexer.util.ObserverCollectionFactory;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class ObservableExecutorServiceTestMulti {
 	public void testScheduleReleaseBlockingTaskOnce() {
 		Blocking<String> task = Blocking.createDummy("task1-scheduleReleaseBlocking");
 		DummyExecutorObserver<String> observer = new DummyExecutorObserver<>();
-		ObservableExecutorService testee = new ObservableExecutorService(new DefaultObserverCollectionFactory(), Executors.newSingleThreadExecutor());
+		ObservableExecutorService testee = new ObservableExecutorService(new CompletionObserverCollectionFactory(), Executors.newSingleThreadExecutor());
 		
 		Future<String> future = scheduleAndRelease(testee, observer, task);
 		waitUntilFinished(future);
@@ -58,7 +58,7 @@ public class ObservableExecutorServiceTestMulti {
 		for (int i = 0; i < N_RUNS; i++) {
 			task = Blocking.createDummy("task2a-reinitialise");
 			observer = new DummyExecutorObserver<>();
-			testee = new ObservableExecutorService(new DefaultObserverCollectionFactory(), Executors.newSingleThreadExecutor());
+			testee = new ObservableExecutorService(new CompletionObserverCollectionFactory(), Executors.newSingleThreadExecutor());
 			
 			Future<String> futureResult = scheduleAndRelease(testee, observer, task);
 			waitUntilFinished(futureResult);

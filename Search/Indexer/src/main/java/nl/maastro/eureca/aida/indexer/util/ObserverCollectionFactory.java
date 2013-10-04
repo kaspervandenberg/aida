@@ -11,7 +11,7 @@ import nl.maastro.eureca.aida.indexer.concurrent.ObservableExecutorService;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  *
  */
-public interface ObserverCollectionFactory {
-	public <T> ObserverCollection<CompletionObserver<T>, ObservableExecutorService> createObserverSupport(ObservableExecutorService source); 
+public interface ObserverCollectionFactory<TObserver, TSource> {
+	public ObserverCollection<TObserver, TSource> createObserverSupport(TSource source); 
 		
 }

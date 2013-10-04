@@ -9,7 +9,7 @@ import nl.maastro.eureca.aida.indexer.concurrent.ObservableExecutorService;
 /**
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class DefaultObserverCollectionFactory implements ObserverCollectionFactory {
+public class CompletionObserverCollectionFactory implements ObserverCollectionFactory<CompletionObserver<?>, ObservableExecutorService> {
 	private static final Method OBSERVER_METHOD;
 	static {
 		try {
@@ -21,8 +21,7 @@ public class DefaultObserverCollectionFactory implements ObserverCollectionFacto
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> ObserverCollection<CompletionObserver<T>, ObservableExecutorService> createObserverSupport(ObservableExecutorService source) {
-		return new ObserverCollection<>(source, (Class<CompletionObserver<T>>)(Object)CompletionObserver.class, OBSERVER_METHOD);
+	public ObserverCollection<CompletionObserver<?>, ObservableExecutorService> createObserverSupport(ObservableExecutorService source) {
+		return new ObserverCollection<>(source, (Class<CompletionObserver<?>>)(Object)CompletionObserver.class, OBSERVER_METHOD);
 	}
-	
 }

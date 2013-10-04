@@ -16,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import nl.maastro.eureca.aida.indexer.concurrencyTestUtils.DurationMeasurement;
 import nl.maastro.eureca.aida.indexer.matchers.DurationMatcher;
-import nl.maastro.eureca.aida.indexer.util.DefaultObserverCollectionFactory;
+import nl.maastro.eureca.aida.indexer.util.CompletionObserverCollectionFactory;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.*;
@@ -68,7 +68,7 @@ public class ObservableExecutorServiceTestBasic {
 		tasksFinished = new Semaphore(0);
 		startNext = new Semaphore(N_PARALLEL_TASKS);
 		 
-		testee = new ObservableExecutorService(new DefaultObserverCollectionFactory(), Executors.newCachedThreadPool());
+		testee = new ObservableExecutorService(new CompletionObserverCollectionFactory(), Executors.newCachedThreadPool());
 	}
 	
 	@Test

@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.maastro.vocab.axis.services.SearcherWS.SearcherWS;
+import nl.maastro.ad.clinisearch.axis.services.SearcherWS.SearcherWS;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.search.Query;
 
@@ -18,7 +18,7 @@ import org.apache.lucene.search.Query;
  */
 public class WebserviceSearcher extends SearcherBase {
 	private static final Logger log = Logger.getLogger(WebserviceSearcher.class.getName());
-	private final nl.maastro.vocab.axis.services.SearcherWS.SearcherWS service;
+	private final nl.maastro.ad.clinisearch.axis.services.SearcherWS.SearcherWS service;
 	private final String index;
 
 	public WebserviceSearcher(SearcherWS service_, String index_, String defaultField_, int maxResults_, final ForkJoinPool taskPool_) {

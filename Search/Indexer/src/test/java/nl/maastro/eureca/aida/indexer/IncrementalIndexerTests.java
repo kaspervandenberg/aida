@@ -18,9 +18,6 @@ import org.junit.runners.Suite;
 	nl.maastro.eureca.aida.indexer.DocumentParseTaskSynchronizerTest.class,
 	nl.maastro.eureca.aida.indexer.ParseDataTaskTest.class,
 	nl.maastro.eureca.aida.indexer.ParseZylabMetadataTaskTest.class,
-	nl.maastro.eureca.aida.indexer.concurrent.ObservableExecutorServiceTest.class,
-	nl.maastro.eureca.aida.indexer.concurrent.ObservableExecutorServiceTestBasic.class,
-	nl.maastro.eureca.aida.indexer.concurrent.ObservableExecutorServiceTestMulti.class,
 	nl.maastro.eureca.aida.indexer.ZylabDataTest.class
 })
 public class IncrementalIndexerTests {

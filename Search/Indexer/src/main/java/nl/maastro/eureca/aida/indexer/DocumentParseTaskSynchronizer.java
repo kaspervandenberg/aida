@@ -2,61 +2,40 @@
 package nl.maastro.eureca.aida.indexer;
 
 import java.net.URL;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.EnumSet;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import nl.maastro.eureca.aida.indexer.concurrent.CompletionObserver;
-import nl.maastro.eureca.aida.indexer.concurrent.ObservableExecutorService;
 
 /**
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class DocumentParseTaskSynchronizer {
-	private final ObservableExecutorService executor;
 	private final ReferenceResolver referenceResolver;
 	private final ZylabDocument data;
-	private final Map<DocumentParts, Future<ZylabDocument>> parseTasks;
-	private final CompletionObserver<ZylabDocument> observer = new CompletionObserver<ZylabDocument>() {
-		@Override
-		public void taskFinished(ObservableExecutorService source, Future<ZylabDocument> task) {
-			if(allPartsFinished()) {
-				queueIndexData();
-			}
-		}
-	};
+	private final Set<DocumentParts> parsingFinished;
 	private final Queue<ZylabDocument> dataToIndex;
 	private boolean dataQueued;
 
-	DocumentParseTaskSynchronizer(ObservableExecutorService executor_, ReferenceResolver referenceResolver_, Queue<ZylabDocument> dataToIndex_) {
-		this.executor = executor_;
+	DocumentParseTaskSynchronizer(ReferenceResolver referenceResolver_, Queue<ZylabDocument> dataToIndex_) {
 		this.referenceResolver = referenceResolver_;
 		this.data = new ZylabDocumentImpl();
-		this.parseTasks = new EnumMap<>(DocumentParts.class);
+		this.parsingFinished = EnumSet.noneOf(DocumentParts.class);
 		this.dataToIndex = dataToIndex_;
 		this.dataQueued = false;
 	}
 
 	public synchronized void arrive(URL location) {
-		submitTask(location);
+		executeTask(location);
 	}
 
-	private void submitTask(URL location) {
+	private void executeTask(URL location) {
 		DocumentParts part = new DocumentPartTypeDetector().determinePartOf(location);
-		Future<ZylabDocument> submittedTask = submitTaskForNewPart(part, location);
-		parseTasks.put(part, submittedTask);
+		Callable<ZylabDocument> task = createTaskForPart(part, location);
+		execute(task);
+		finish(part);
 	}
 
-	private Future<ZylabDocument> submitTaskForNewPart(DocumentParts part, URL location) {
-		if (!parseTasks.containsKey(part)) {
-			Callable<ZylabDocument> task = createTaskForPart(part, location);
-			return executor.subscribeAndSubmit(observer, task);
-		} else {
-			throw new IllegalStateException(String.format("task for part %s already exists", part.name()));
-		}
-	}
-	
 	private Callable<ZylabDocument> createTaskForPart(DocumentParts part, URL location) {
 		switch (part) {
 			case METADATA:
@@ -76,7 +55,22 @@ public class DocumentParseTaskSynchronizer {
 		return new ParseDataTask(data, location);
 	}
 
-	private boolean allPartsFinished() {
+	private void execute(Callable<ZylabDocument> task) {
+		try {
+			task.call();
+		} catch (Exception ex) {
+			throw new Error(ex);
+		}
+	}
+
+	private void finish(DocumentParts part) {
+		parsingFinished.add(part);
+		if(isAllPartsFinished()) {
+			queueIndexData();
+		}
+	}
+
+	private boolean isAllPartsFinished() {
 		boolean result = true;
 		for (DocumentParts part : DocumentParts.values()) {
 			result &= isPartFinished(part);
@@ -85,12 +79,7 @@ public class DocumentParseTaskSynchronizer {
 	}
 
 	private boolean isPartFinished(DocumentParts part) {
-		if(parseTasks.containsKey(part)) {
-			Future<?> task = parseTasks.get(part);
-			return task.isDone() && !task.isCancelled();
-		} else {
-			return false;
-		}
+		return parsingFinished.contains(part);
 	}
 
 	private synchronized void queueIndexData() {

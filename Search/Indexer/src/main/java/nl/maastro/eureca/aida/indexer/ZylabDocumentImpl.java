@@ -211,7 +211,7 @@ public class ZylabDocumentImpl implements ZylabDocument {
 			dataURL = value;
 			observers.fireChangeEvent(oldValue, dataURL);
 		} else {
-			throw new IllegalStateException("Set dataURL once.");
+			throw new IllegalStateException(String.format("Set dataURL once (current value is %s, new value is %s.", dataURL, value));
 		}
 	}
 

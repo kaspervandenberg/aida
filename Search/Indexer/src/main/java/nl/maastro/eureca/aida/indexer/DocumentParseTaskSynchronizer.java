@@ -3,9 +3,11 @@ package nl.maastro.eureca.aida.indexer;
 
 import java.net.URL;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import nl.maastro.eureca.aida.indexer.util.ObserverCollection;
 
 /**
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
@@ -14,13 +16,26 @@ public class DocumentParseTaskSynchronizer {
 	private final ReferenceResolver referenceResolver;
 	private final ZylabDocument data;
 	private final Set<DocumentParts> parsingFinished;
+	private final ObserverCollection<DataAssociationObserver<DocumentParseTaskSynchronizer>, DocumentParseTaskSynchronizer> observers;
 	private final Queue<ZylabDocument> dataToIndex;
 	private boolean dataQueued;
+	private final DataAssociationObserver<ZylabDocument> dataAssociationChangeForwarder = new DataAssociationObserver<ZylabDocument>() {
+		@Override
+		public void dataAssociationChanged(ZylabDocument source, URL oldValue, URL currentValue) {
+			if(!Objects.equals(oldValue, currentValue)) {
+				observers.fireChangeEvent(oldValue, currentValue);
+			}
+		}
+	};
 
+	@SuppressWarnings("unchecked")
 	DocumentParseTaskSynchronizer(ReferenceResolver referenceResolver_, Queue<ZylabDocument> dataToIndex_) {
 		this.referenceResolver = referenceResolver_;
 		this.data = new ZylabDocumentImpl();
 		this.parsingFinished = EnumSet.noneOf(DocumentParts.class);
+		this.observers = new ObserverCollection<>(
+				this, (Class<DataAssociationObserver<DocumentParseTaskSynchronizer>>)(Object)DataAssociationObserver.class);
+		data.subscribe(dataAssociationChangeForwarder);
 		this.dataToIndex = dataToIndex_;
 		this.dataQueued = false;
 	}
@@ -89,4 +104,7 @@ public class DocumentParseTaskSynchronizer {
 		}
 	}
 
+	void subscribe(DataAssociationObserver<DocumentParseTaskSynchronizer> observer) {
+		observers.add(observer);
+	}
 }

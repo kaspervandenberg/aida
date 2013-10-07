@@ -16,6 +16,7 @@ import org.junit.runners.Suite;
 	nl.maastro.eureca.aida.indexer.ZylabDocumentReferenceTest.class,
 	nl.maastro.eureca.aida.indexer.DocumentPartTypeDetectorTest.class,
 	nl.maastro.eureca.aida.indexer.DocumentParseTaskSynchronizerTest.class,
+	nl.maastro.eureca.aida.indexer.DocumentParseTaskSynchronizerWithRealParsingTest.class,
 	nl.maastro.eureca.aida.indexer.ParseDataTaskTest.class,
 	nl.maastro.eureca.aida.indexer.ParseZylabMetadataTaskTest.class,
 	nl.maastro.eureca.aida.indexer.concurrent.ObservableExecutorServiceTest.class,

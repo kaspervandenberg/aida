@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import nl.maastro.eureca.aida.indexer.ZylabDocument;
 import nl.maastro.eureca.aida.indexer.concurrencyTestUtils.ActionSequence;
 import nl.maastro.eureca.aida.indexer.concurrencyTestUtils.Blocking;
 import nl.maastro.eureca.aida.indexer.concurrencyTestUtils.ConcurrentTestContext;
@@ -46,7 +47,7 @@ public class ObservableExecutorServiceTest implements ConcurrentTestContext<Stri
 	private DummyExecutorObserver<String> observer;
 	private ConcurrentMap<Integer, Future<String>> submittedTasks;
 	private ExecutorService executor;  
-	private ObserverCollectionFactory factory;
+	private ObserverCollectionFactory<CompletionObserver<?>, ObservableExecutorService> factory;
 	
 	private ObservableExecutorService testee;
 	private final ActionSequence<String> sequence;

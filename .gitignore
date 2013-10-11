@@ -1,3 +1,6 @@
+.settings
+.project
+.classpath
 /Search/indexWebClient/target/
 /Search/basicIndexClient/target/
 /Search/Indexer/nbproject/private/

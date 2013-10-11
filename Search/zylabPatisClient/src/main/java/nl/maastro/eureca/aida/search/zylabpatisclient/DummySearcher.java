@@ -29,11 +29,11 @@ public class DummySearcher extends SearcherBase {
 	@Override
 	public SearchResult searchFor(final Query query, final Iterable<SemanticModifier> modifiers, final PatisNumber patient) {
 		if (results.containsKey(patient) && results.get(patient) == EligibilityClassification.NOT_ELIGIBLE) {
-			return SearchResultImpl.createDummyNotEliligle(patient);
+			return DummySearchResult.Creators.NOT_ELIGIBLE.create(patient);
 		} else if (results.containsKey(patient) && results.get(patient) == EligibilityClassification.ELIGIBLE) {
-			return SearchResultImpl.createDummyEligible(patient);
+			return DummySearchResult.Creators.ELIGIBLE.create(patient);
 		} else {
-			return SearchResultImpl.createDummyUnknown(patient);
+			return DummySearchResult.Creators.UNKNOWN.create(patient);
 		}
 	}
 	

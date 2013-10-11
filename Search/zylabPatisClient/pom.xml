@@ -242,9 +242,13 @@
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-library</artifactId>
 			<!--<version>1.3</version>-->
-			<scope>test</scope>
-			<!-- used in org.vle.aid.lucene.SearcherWSTest -->
-			<!-- provides xml.Matcher.* -->
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.9.5</version>
 		</dependency>
 
 		<dependency>

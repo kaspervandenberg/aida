@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
@@ -173,6 +174,10 @@ public class ResultComparison {
 
 	public List<SearchResult> getResults(Qualifications qualification) {
 		return qualification.collect(this);
+	}
+
+	public Concept getConcept() {
+		return expected.getAboutConcept();
 	}
 	
 	private static EnumMap<MatchTypes, ComparisonTable> createEmptyCounterTables() {

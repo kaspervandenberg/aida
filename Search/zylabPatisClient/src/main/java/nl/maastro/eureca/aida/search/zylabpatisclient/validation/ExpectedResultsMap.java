@@ -1,13 +1,14 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.validation;
 
+import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearchResult;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
-import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
@@ -94,6 +95,32 @@ public class ExpectedResultsMap implements ExpectedResults {
 	public SearchResult createExpectedResult(PatisNumber patient) {
 		EligibilityClassification expected = getClassification(patient);
 		return DummySearchResult.Creators.valueOf(expected).create(patient);
+	}
+
+	@Override
+	public Iterable<SearchResult> createAllExpectedResults() {
+		return new Iterable<SearchResult>() {
+			@Override
+			public Iterator<SearchResult> iterator() {
+				return new Iterator<SearchResult>() {
+					private final Iterator<PatisNumber> delegate = classifications.keySet().iterator();
+
+					@Override
+					public boolean hasNext() {
+						return delegate.hasNext();
+					}
+
+					@Override
+					public SearchResult next() {
+						return createExpectedResult(delegate.next());
+					}
+
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+					}
+				}; }
+		};
 	}
 	
 	private boolean compareActualAndExpected(Set<EligibilityClassification> actual, EligibilityClassification expected) {

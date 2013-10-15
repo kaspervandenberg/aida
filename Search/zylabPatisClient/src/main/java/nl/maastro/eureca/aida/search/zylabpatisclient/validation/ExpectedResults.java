@@ -43,4 +43,8 @@ public interface ExpectedResults {
 	 */
 	public SearchResult createExpectedResult(PatisNumber patient);
 
+	/**
+	 * @return	an {@link Iterable} containing each patient in {@link #getDefinedPatients()} classified as expected. 
+	 */
+	public Iterable<SearchResult> createAllExpectedResults();
 }

@@ -14,12 +14,10 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.xml.rpc.ServiceException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
@@ -30,6 +28,8 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.output.HtmlFormatter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Concepts;
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Patients;
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.SemanticModifiers;
+import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedResults;
+import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedResultsMap;
 
 /**
  *
@@ -124,7 +124,7 @@ public class API_Demo {
 		return conclusions;
 	}
 	
-	public void writeTable(LinkedHashMap<String, Iterable<SearchResult>> results) {
+	public void writeTable(SearchResultTable results) {
 		Date now = new Date();
 		File f = new File(String.format("results-%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS.html", now));
 		try {
@@ -138,21 +138,31 @@ public class API_Demo {
 		} catch (IOException ex) {
 			throw new Error(ex);
 		}
-				
 	}
+
+	public ExpectedResults createExpectedResults(Concepts predefinedConcept) {
+		Concept concept = predefinedConcept.getConcept(config);
+		Map<PatisNumber, EligibilityClassification> expectedClassifications = config.getPatients(concept.getName());
+		
+		return ExpectedResultsMap.createWrapper(concept, expectedClassifications);
+	}
+
 	
 	static public void main(String[] args) {
 		API_Demo instance = new API_Demo();
-		LinkedHashMap<String, Iterable<SearchResult>> table = new LinkedHashMap<>();
-		table.put(SearchedConcepts.EXPECTED_METASTASIS.name(),
-				instance.searchConcept(SearchedConcepts.EXPECTED_METASTASIS));
-		table.put(SearchedConcepts.METASTASIS.name(), 
-				instance.searchConcept(SearchedConcepts.METASTASIS));
-		table.put(SearchedConcepts.EXPECTED_CHEMOKUUR.name(),
-				instance.searchConcept(SearchedConcepts.EXPECTED_CHEMOKUUR));
-		table.put(SearchedConcepts.CHEMOKUUR.name(),
-				instance.searchConcept(SearchedConcepts.CHEMOKUUR));
-//		System.out.append(SearchedConcepts.METASTASIS.getConcept().getName().toString());
+		SearchResultTable table = new SearchResultTable(instance.searcher);
+		
+		ExpectedResults metastasisValidation = instance.createExpectedResults(Concepts.METASTASIS);
+		table.addExpectedResultsColumn(metastasisValidation);
+		table.addAll(metastasisValidation.getDefinedPatients());
+		
+		table.addConceptSearchColumn(SearchedConcepts.METASTASIS.getConcept(instance.config), instance.modifiers);
+
+		ExpectedResults chemokuurValidation = instance.createExpectedResults(Concepts.CHEMOKUUR);
+		table.addExpectedResultsColumn(chemokuurValidation);
+		table.addAll(chemokuurValidation.getDefinedPatients());
+
+		table.addConceptSearchColumn(SearchedConcepts.CHEMOKUUR.getConcept(instance.config), instance.modifiers);
 		
 		instance.writeTable(table);
 	}

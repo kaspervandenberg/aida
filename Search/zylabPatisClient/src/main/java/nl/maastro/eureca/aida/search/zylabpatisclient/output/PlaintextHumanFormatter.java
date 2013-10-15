@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import nl.maastro.eureca.aida.search.zylabpatisclient.ResultDocument;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResultTable;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
 
 /**
@@ -52,7 +53,7 @@ public class PlaintextHumanFormatter extends SearchResultFormatterBase {
 		}
 
 		@Override
-		public void writeTable(Appendable out, LinkedHashMap<String, Iterable<SearchResult>> results) throws IOException {
+		public void writeTable(Appendable out, SearchResultTable results) throws IOException {
 			delegate.writeTable(out, results);
 		}
 	};

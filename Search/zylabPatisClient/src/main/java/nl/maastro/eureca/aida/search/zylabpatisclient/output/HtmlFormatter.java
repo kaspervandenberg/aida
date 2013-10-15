@@ -14,6 +14,7 @@ import java.util.Set;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.ResultDocument;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResultTable;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
@@ -227,7 +228,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		}
 
 		@Override
-		public void writeTable(Appendable out, LinkedHashMap<String, Iterable<SearchResult>> results) throws IOException {
+		public void writeTable(Appendable out, SearchResultTable results) throws IOException {
 			throw new UnsupportedOperationException("Not supported.");
 		}
 		
@@ -360,24 +361,24 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	}
 	
 	@Override
-	public void writeTable(Appendable out, LinkedHashMap<String, Iterable<SearchResult>> results) throws IOException {
+	public void writeTable(Appendable out, SearchResultTable table) throws IOException {
 		out.append(Tags.TABLE.open());
 		out.append(Tags.TABLE_HEADER.open());
 		out.append(Tags.TABLE_ROW.open());
 		out.append(Tags.TABLE_HEADER_CELL.format("PatisNr"));
-		for (String dataSetId : results.keySet()) {
+		for (String dataSetId : table.getColumnNames()) {
 			out.append(Tags.TABLE_HEADER_CELL.format(dataSetId));
 		}
 		out.append(Tags.TABLE_ROW.close());
 		out.append(Tags.TABLE_HEADER.close());
 		
-		super.writeTable(out, results); 
+		super.writeTable(out, table); 
 
 		out.append(Tags.TABLE.close());
 	}
 
 	@Override
-	protected void writeTableRow(Appendable out, Table data, PatisNumber row) throws IOException {
+	protected void writeTableRow(Appendable out, SearchResultTable data, PatisNumber row) throws IOException {
 		out.append(Tags.TABLE_ROW.open());
 		out.append("\t" + Tags.TABLE_HEADER_CELL.format(row.getValue()) + "\n");
 		super.writeTableRow(out, data, row);
@@ -385,12 +386,10 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	}
 
 	@Override
-	protected void writeTableCell(Appendable out, Table data, PatisNumber row, String col) throws IOException {
+	protected void writeTableCell(Appendable out, SearchResultTable data, PatisNumber row, String col) throws IOException {
 		out.append("\t" + Tags.TABLE_CELL.open());
-		if(data.containsKey(row) 
-				? (data.get(row).containsKey(col)
-					? (data.get(row).get(col).getTotalHits() > 0) : false) : false) {
-			SearchResult r = data.get(row).get(col);
+		if (data.getCell(row, col).getTotalHits() > 0) {
+			SearchResult r = data.getCell(row, col);
 			String innerPattern = String.format("%%s (%d hits)", r.getTotalHits());
 			writeEligibility(out, innerPattern, r.getClassification());
 			getSnippetStrategy().write(out, r);

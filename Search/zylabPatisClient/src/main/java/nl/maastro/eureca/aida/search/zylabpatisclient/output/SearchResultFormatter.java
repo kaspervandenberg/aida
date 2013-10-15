@@ -4,6 +4,7 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.output;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResultTable;
 
 /**
  * @author Kasper van den Berg <kasper@kaspervandenberg.net> <kasper.vandenberg@maastro.nl>
@@ -11,5 +12,5 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 public interface SearchResultFormatter {
 	public void write(Appendable out, SearchResult result)throws IOException;
 	public void writeList(Appendable out, Iterable<SearchResult> results) throws IOException;	
-	public void writeTable(Appendable out, LinkedHashMap<String, Iterable<SearchResult>> results) throws IOException;
+	public void writeTable(Appendable out, SearchResultTable results) throws IOException;
 }

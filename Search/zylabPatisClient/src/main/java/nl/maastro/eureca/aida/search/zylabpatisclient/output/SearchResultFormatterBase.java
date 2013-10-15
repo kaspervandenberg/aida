@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResultTable;
 
 /**
  * @author Kasper van den Berg <kasper@kaspervandenberg.net> <kasper.vandenberg@maastro.nl>
@@ -35,21 +36,20 @@ public abstract class SearchResultFormatterBase implements SearchResultFormatter
 	}
 
 	@Override
-	public void writeTable(Appendable out, LinkedHashMap<String, Iterable<SearchResult>> results) throws IOException {
-		Table data = rotate(results);
-		for (PatisNumber row : data.keySet()) {
+	public void writeTable(Appendable out, SearchResultTable data) throws IOException {
+		for (PatisNumber row : data.getPatients()) {
 			writeTableRow(out, data, row);
 		}
 	}
 
-	protected void writeTableRow(Appendable out, Table data, PatisNumber row) throws IOException {
-		for (String col : data.get(row).keySet()) {
+	protected void writeTableRow(Appendable out, SearchResultTable data, PatisNumber row) throws IOException {
+		for (String col : data.getColumnNames()) {
 			writeTableCell(out, data, row, col);
 		}
 	}
 
-	protected void writeTableCell(Appendable out, Table data, PatisNumber row, String col) throws IOException {
-		write(out, data.get(row).get(col));
+	protected void writeTableCell(Appendable out, SearchResultTable data, PatisNumber row, String col) throws IOException {
+		write(out, data.getCell(row, col));
 	}
 
 	private static Table rotate(LinkedHashMap<String, Iterable<SearchResult>> perColData) {

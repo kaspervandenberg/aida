@@ -18,6 +18,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 import nl.maastro.eureca.aida.search.zylabpatisclient.util.QNameUtil;
+import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparison;
 
 /**
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
@@ -311,6 +312,19 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		}
 		out.append(Tags.STYLE.close());
 	}
+
+	public static void writeValidationCounts(Appendable out, Iterable<ResultComparison> comparisons, 
+			Iterable<ResultComparison.Qualifications> qualifications) throws IOException {
+		out.append(HtmlFormatter.Tags.TABLE.open());
+		writeTableHeaderSingleRow(out, 1, qualifications);
+		
+		for (ResultComparison comp : comparisons) {
+			writeValidationCountRow(out, comp, qualifications);
+		}
+		
+		out.append(HtmlFormatter.Tags.TABLE.close());
+	}
+
 	
 	@Override
 	public void write(Appendable out, SearchResult result) throws IOException {
@@ -404,5 +418,34 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		}
 		out.append("\t\t" + String.format(pattern, tmpClassifications.toString()));
 		out.append("\t\t" + Tags.ELIGIBILITY_CLASS.close() + "\n");
+	}
+
+	private static <T extends Enum<T>> void writeTableHeaderSingleRow(Appendable out, int nEmptyCells, Iterable<T> headerItems)
+			throws IOException {
+		out.append(HtmlFormatter.Tags.TABLE_HEADER.open());
+		out.append(HtmlFormatter.Tags.TABLE_ROW.open());
+		
+		for (int i = 0; i < nEmptyCells; i++) {
+			out.append(HtmlFormatter.Tags.TABLE_HEADER_CELL.format(""));
+		}
+		for (T item : headerItems) {
+			out.append(HtmlFormatter.Tags.TABLE_HEADER_CELL.format(item.name()));
+		}
+		
+		out.append(HtmlFormatter.Tags.TABLE_ROW.close());
+		out.append(HtmlFormatter.Tags.TABLE_HEADER.close());
+	}
+
+	private static void writeValidationCountRow(Appendable out, ResultComparison comparison, 
+			Iterable<ResultComparison.Qualifications> qualifications)
+			throws IOException {
+		out.append(HtmlFormatter.Tags.TABLE_ROW.open());
+		out.append(HtmlFormatter.Tags.TABLE_HEADER_CELL.format(comparison.getConcept().getName().getLocalPart()));
+		
+		for (ResultComparison.Qualifications qual : qualifications) {
+			out.append(HtmlFormatter.Tags.TABLE_CELL.format(Integer.toString(comparison.getCount(qual))));
+		}
+
+		out.append(HtmlFormatter.Tags.TABLE_ROW.close());
 	}
 }

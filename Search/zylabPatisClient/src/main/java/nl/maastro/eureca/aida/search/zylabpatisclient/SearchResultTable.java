@@ -40,7 +40,7 @@ public class SearchResultTable {
 
 		@Override
 		public String getName() {
-			return this.concept.getName().getLocalPart();
+			return getNameFor(concept);
 		}
 
 		@Override
@@ -58,7 +58,7 @@ public class SearchResultTable {
 
 		@Override
 		public String getName() {
-			return expectedResults.getAboutConcept().getName().getLocalPart() + VALIDATION_COLUMN_NAME_SUFFIX;
+			return getNameFor(expectedResults);
 		}
 
 		@Override
@@ -94,8 +94,24 @@ public class SearchResultTable {
 		}
 	}
 
+	public SearchResult getCell(PatisNumber row, ExpectedResults column) {
+		return getCell(row, getNameFor(column));
+	}
+
+	public SearchResult getCell(PatisNumber row, Concept column) {
+		return getCell(row, getNameFor(column));
+	}
+
 	public boolean containsColumn(String columnName) {
 		return columns.containsKey(columnName);
+	}
+
+	public boolean containsColumn(ExpectedResults expectedCol) {
+		return containsColumn(getNameFor(expectedCol));
+	}
+
+	public boolean containsColumn(Concept conceptCol) {
+		return containsColumn(getNameFor(conceptCol));
 	}
 
 	public boolean containsPatient(PatisNumber patient) {
@@ -114,5 +130,13 @@ public class SearchResultTable {
 
 	public void addAll(Collection<PatisNumber> patients) {
 		rows.addAll(patients);
+	}
+
+	private static String getNameFor(Concept concept) {
+		return concept.getName().getLocalPart();
+	}
+
+	private static String getNameFor(ExpectedResults expected) {
+		return expected.getAboutConcept().getName().getLocalPart() + VALIDATION_COLUMN_NAME_SUFFIX;
 	}
 }

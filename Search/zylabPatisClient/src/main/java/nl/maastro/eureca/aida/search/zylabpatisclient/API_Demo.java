@@ -133,7 +133,7 @@ public class API_Demo {
 		return conclusions;
 	}
 	
-	public void writeTable(Set<ResultComparison.Qualifications> validationQualifications) {
+	public void writeTable() {
 		Date now = new Date();
 		File f = new File(String.format("results-%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS.html", now));
 		try {
@@ -170,6 +170,10 @@ public class API_Demo {
 		resultTable.addConceptSearchColumn(concept.getConcept(config), modifiers);
 	}
 
+	public void setValidationQualifications(Set<ResultComparison.Qualifications> newValidationQualifications) {
+		validationComparisonTable.setQualifications(newValidationQualifications);
+	}
+
 	
 	static public void main(String[] args) {
 		API_Demo instance = new API_Demo();
@@ -186,9 +190,11 @@ public class API_Demo {
 
 		instance.addConceptSearchColumn(Concepts.CHEMOKUUR);
 		
-		instance.writeTable(EnumSet.of(
+		instance.setValidationQualifications(EnumSet.of(
 				ACTUAL_MATCHING_EXPECTED, ACTUAL_CONTAINIG_EXPECTED_AND_OTHERS, 
 				ACTUAL_DIFFERING_FROM_EXPECTED, EXTRA_ACTUAL_RESULTS, MISSING_ACTUAL_RESULTS));
+
+		instance.writeTable();
 	}
 
 }

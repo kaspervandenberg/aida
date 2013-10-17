@@ -14,10 +14,12 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.xml.rpc.ServiceException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
@@ -30,6 +32,9 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Pati
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.SemanticModifiers;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedResults;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedResultsMap;
+import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparison;
+import static nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparison.Qualifications.*;
+import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparisonTable;
 
 /**
  *
@@ -43,7 +48,8 @@ public class API_Demo {
 	private final List<SemanticModifier> modifiers;
 	private final Classifier classifier;
 	private final SearchResultFormatter formatter;
-	private final SearchResultTable table;
+	private final SearchResultTable resultTable;
+	private final ResultComparisonTable validationComparisonTable;
 
 	public API_Demo() {
 		this.config = initConfig();
@@ -55,7 +61,8 @@ public class API_Demo {
 		HtmlFormatter tmp = new HtmlFormatter();
 		tmp.setShowSnippetsStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW);
 		this.formatter = tmp;
-		this.table = new SearchResultTable(searcher);
+		this.resultTable = new SearchResultTable(searcher);
+		this.validationComparisonTable = new ResultComparisonTable(resultTable);
 	}
 
 	
@@ -126,7 +133,7 @@ public class API_Demo {
 		return conclusions;
 	}
 	
-	public void writeTable() {
+	public void writeTable(Set<ResultComparison.Qualifications> validationQualifications) {
 		Date now = new Date();
 		File f = new File(String.format("results-%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS.html", now));
 		try {
@@ -134,7 +141,8 @@ public class API_Demo {
 					new FileOutputStream(f)), StandardCharsets.UTF_8);
 			HtmlFormatter.writeDocStart(out,
 					String.format("Results of %1$tT (on %1$ta %1$te %1$tb)\n", now));
-			formatter.writeTable(out, table);
+			HtmlFormatter.writeValidationCounts(out, validationComparisonTable);
+			formatter.writeTable(out, resultTable);
 			HtmlFormatter.writeDocEnd(out);
 			out.close();
 		} catch (IOException ex) {
@@ -150,15 +158,16 @@ public class API_Demo {
 	}
 
 	public void addExpectedResultsColumn(ExpectedResults newColumn) {
-		table.addExpectedResultsColumn(newColumn);
+		resultTable.addExpectedResultsColumn(newColumn);
+		validationComparisonTable.addExpectedResult(newColumn);
 	}
 
 	public void addDefinedPatients(ExpectedResults patientSource) {
-		table.addAll(patientSource.getDefinedPatients());
+		resultTable.addAll(patientSource.getDefinedPatients());
 	}
 
 	public void addConceptSearchColumn(Concepts concept) {
-		table.addConceptSearchColumn(concept.getConcept(config), modifiers);
+		resultTable.addConceptSearchColumn(concept.getConcept(config), modifiers);
 	}
 
 	
@@ -177,7 +186,9 @@ public class API_Demo {
 
 		instance.addConceptSearchColumn(Concepts.CHEMOKUUR);
 		
-		instance.writeTable();
+		instance.writeTable(EnumSet.of(
+				ACTUAL_MATCHING_EXPECTED, ACTUAL_CONTAINIG_EXPECTED_AND_OTHERS, 
+				ACTUAL_DIFFERING_FROM_EXPECTED, EXTRA_ACTUAL_RESULTS, MISSING_ACTUAL_RESULTS));
 	}
 
 }

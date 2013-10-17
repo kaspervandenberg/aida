@@ -20,6 +20,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
 import nl.maastro.eureca.aida.search.zylabpatisclient.util.QNameUtil;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparison;
+import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparisonTable;
 
 /**
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
@@ -314,13 +315,12 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		out.append(Tags.STYLE.close());
 	}
 
-	public static void writeValidationCounts(Appendable out, Iterable<ResultComparison> comparisons, 
-			Iterable<ResultComparison.Qualifications> qualifications) throws IOException {
+	public static void writeValidationCounts(Appendable out, ResultComparisonTable table) throws IOException {
 		out.append(HtmlFormatter.Tags.TABLE.open());
-		writeTableHeaderSingleRow(out, 1, qualifications);
+		writeTableHeaderSingleRow(out, 1, table.getQualifications());
 		
-		for (ResultComparison comp : comparisons) {
-			writeValidationCountRow(out, comp, qualifications);
+		for (ResultComparison comp : table.getComparisons()) {
+			writeValidationCountRow(out, comp, table.getQualifications());
 		}
 		
 		out.append(HtmlFormatter.Tags.TABLE.close());

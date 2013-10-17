@@ -43,6 +43,7 @@ public class API_Demo {
 	private final List<SemanticModifier> modifiers;
 	private final Classifier classifier;
 	private final SearchResultFormatter formatter;
+	private final SearchResultTable table;
 
 	public API_Demo() {
 		this.config = initConfig();
@@ -54,6 +55,7 @@ public class API_Demo {
 		HtmlFormatter tmp = new HtmlFormatter();
 		tmp.setShowSnippetsStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW);
 		this.formatter = tmp;
+		this.table = new SearchResultTable(searcher);
 	}
 
 	
@@ -124,7 +126,7 @@ public class API_Demo {
 		return conclusions;
 	}
 	
-	public void writeTable(SearchResultTable results) {
+	public void writeTable() {
 		Date now = new Date();
 		File f = new File(String.format("results-%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS.html", now));
 		try {
@@ -132,7 +134,7 @@ public class API_Demo {
 					new FileOutputStream(f)), StandardCharsets.UTF_8);
 			HtmlFormatter.writeDocStart(out,
 					String.format("Results of %1$tT (on %1$ta %1$te %1$tb)\n", now));
-			formatter.writeTable(out, results);
+			formatter.writeTable(out, table);
 			HtmlFormatter.writeDocEnd(out);
 			out.close();
 		} catch (IOException ex) {
@@ -147,24 +149,35 @@ public class API_Demo {
 		return ExpectedResultsMap.createWrapper(concept, expectedClassifications);
 	}
 
+	public void addExpectedResultsColumn(ExpectedResults newColumn) {
+		table.addExpectedResultsColumn(newColumn);
+	}
+
+	public void addDefinedPatients(ExpectedResults patientSource) {
+		table.addAll(patientSource.getDefinedPatients());
+	}
+
+	public void addConceptSearchColumn(Concepts concept) {
+		table.addConceptSearchColumn(concept.getConcept(config), modifiers);
+	}
+
 	
 	static public void main(String[] args) {
 		API_Demo instance = new API_Demo();
-		SearchResultTable table = new SearchResultTable(instance.searcher);
 		
 		ExpectedResults metastasisValidation = instance.createExpectedResults(Concepts.METASTASIS);
-		table.addExpectedResultsColumn(metastasisValidation);
-		table.addAll(metastasisValidation.getDefinedPatients());
+		instance.addExpectedResultsColumn(metastasisValidation);
+		instance.addDefinedPatients(metastasisValidation);
 		
-		table.addConceptSearchColumn(SearchedConcepts.METASTASIS.getConcept(instance.config), instance.modifiers);
+		instance.addConceptSearchColumn(Concepts.METASTASIS);
 
 		ExpectedResults chemokuurValidation = instance.createExpectedResults(Concepts.CHEMOKUUR);
-		table.addExpectedResultsColumn(chemokuurValidation);
-		table.addAll(chemokuurValidation.getDefinedPatients());
+		instance.addExpectedResultsColumn(chemokuurValidation);
+		instance.addDefinedPatients(chemokuurValidation);
 
-		table.addConceptSearchColumn(SearchedConcepts.CHEMOKUUR.getConcept(instance.config), instance.modifiers);
+		instance.addConceptSearchColumn(Concepts.CHEMOKUUR);
 		
-		instance.writeTable(table);
+		instance.writeTable();
 	}
 
 }

@@ -4,6 +4,7 @@ package nl.maastro.eureca.aida.search.zylabpatisclient;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -68,12 +69,12 @@ public class SearchResultTable {
 
 	private static final String VALIDATION_COLUMN_NAME_SUFFIX = "-expected";
 	private final Searcher searcher;
-	private final Map<String, Column> columns;
+	private final LinkedHashMap<String, Column> columns;
 	private final LinkedHashSet<PatisNumber> rows;
 
 	public SearchResultTable(Searcher searcher_) {
 		this.searcher = searcher_;
-		this.columns = new HashMap<>();
+		this.columns = new LinkedHashMap<>();
 		this.rows = new LinkedHashSet<>();
 	}
 

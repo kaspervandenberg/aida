@@ -388,14 +388,10 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	@Override
 	protected void writeTableCell(Appendable out, SearchResultTable data, PatisNumber row, String col) throws IOException {
 		out.append("\t" + Tags.TABLE_CELL.open());
-		if (data.getCell(row, col).getTotalHits() > 0) {
-			SearchResult r = data.getCell(row, col);
-			String innerPattern = String.format("%%s (%d hits)", r.getTotalHits());
-			writeEligibility(out, innerPattern, r.getClassification());
-			getSnippetStrategy().write(out, r);
-		} else {
-			writeEligibility(out, "%s", Collections.singleton(EligibilityClassification.ELIGIBLE));
-		}
+		SearchResult r = data.getCell(row, col);
+		String innerPattern = String.format("%%s (%d hits)", r.getTotalHits());
+		writeEligibility(out, innerPattern, r.getClassification());
+		getSnippetStrategy().write(out, r);
 		out.append(Tags.TABLE_CELL.close() + "\n");
 	}
 

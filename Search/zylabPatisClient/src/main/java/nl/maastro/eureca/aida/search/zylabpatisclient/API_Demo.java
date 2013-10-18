@@ -44,9 +44,7 @@ public class API_Demo {
 
 	private final Config config;
 	private final Searcher searcher;
-	private final LinkedHashSet<PatisNumber> patients;
 	private final List<SemanticModifier> modifiers;
-	private final Classifier classifier;
 	private final SearchResultFormatter formatter;
 	private final SearchResultTable resultTable;
 	private final ResultComparisonTable validationComparisonTable;
@@ -55,9 +53,7 @@ public class API_Demo {
 		this.config = initConfig();
 		this.searcher = initSearcher(config);
 		initSearchedConcepts(config, searcher);
-		this.patients = initPatients();
 		this.modifiers = initSemanticModifiers(config);
-		this.classifier = initClassifier(config);
 		HtmlFormatter tmp = new HtmlFormatter();
 		tmp.setShowSnippetsStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW);
 		this.formatter = tmp;
@@ -88,15 +84,6 @@ public class API_Demo {
 		SearchedConcepts.init(config, searcher);
 	}
 
-	private static LinkedHashSet<PatisNumber> initPatients() {
-		LinkedHashSet<PatisNumber> result = new LinkedHashSet<>();
-		for (SearchedConcepts e : SearchedConcepts.values()) {
-			result.addAll(e.getPatients());
-		}
-
-		return result;
-	}
-
 	private static List<SemanticModifier> initSemanticModifiers(Config config) {
 		List<SemanticModifier> result = new ArrayList<>(SemanticModifiers.values().length + 1);
 		result.add(SemanticModifier.Constants.NULL_MODIFIER);
@@ -121,16 +108,6 @@ public class API_Demo {
 				EligibilityClassification.UNCERTAIN,
 				EligibilityClassification.NOT_ELIGIBLE));
 		return instance;
-	}
-
-	private Iterable<SearchResult> searchConcept(SearchedConcepts concept) {
-		Iterable<SearchResult> results = concept.getSearcher().searchForAll(
-				concept.getConcept(config), modifiers, patients);
-		List<SearchResult> conclusions = new LinkedList<>();
-		for (SearchResult searchResult : results) {
-			conclusions.add(classifier.resolve(searchResult));
-		}
-		return conclusions;
 	}
 	
 	public void writeTable() {

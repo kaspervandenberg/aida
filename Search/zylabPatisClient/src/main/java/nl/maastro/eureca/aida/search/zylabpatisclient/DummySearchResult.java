@@ -21,10 +21,10 @@ public class DummySearchResult implements SearchResult {
 	 * {@code classification} as expected classification for {@code patient}.
 	 */
 	public enum Creators {
-		NOT_ELIGIBLE(EligibilityClassification.NOT_ELIGIBLE, 0),
+		NOT_ELIGIBLE(EligibilityClassification.NOT_ELIGIBLE, 1),
 		UNCERTAIN(EligibilityClassification.UNCERTAIN, 1),
-		ELIGIBLE(EligibilityClassification.ELIGIBLE, 1),
-		UNKNOWN(EligibilityClassification.UNKNOWN, 0);
+		ELIGIBLE(EligibilityClassification.ELIGIBLE, 0),
+		UNKNOWN(EligibilityClassification.UNKNOWN, 1);
 
 		private static final Map<EligibilityClassification, Creators> classificationToCreator;
 		static {

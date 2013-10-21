@@ -62,6 +62,12 @@ public class DummySearchResult implements SearchResult {
 		this.classification = Collections.singleton(classification_);
 	}
 
+	public DummySearchResult(PatisNumber patient_, Set<EligibilityClassification> classification_, int hitCount) {
+		this.patient = patient_;
+		this.totalHits = hitCount;
+		this.classification = classification_;
+	}
+
 	@Override
 	public Set<EligibilityClassification> getClassification() {
 		return Collections.unmodifiableSet(classification);

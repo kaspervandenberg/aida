@@ -108,28 +108,7 @@ public class ExpectedResultsMap implements ExpectedResults {
 
 	@Override
 	public Iterable<SearchResult> createAllExpectedResults() {
-		return new Iterable<SearchResult>() {
-			@Override
-			public Iterator<SearchResult> iterator() {
-				return new Iterator<SearchResult>() {
-					private final Iterator<PatisNumber> delegate = classifications.keySet().iterator();
-
-					@Override
-					public boolean hasNext() {
-						return delegate.hasNext();
-					}
-
-					@Override
-					public SearchResult next() {
-						return createExpectedResult(delegate.next());
-					}
-
-					@Override
-					public void remove() {
-						throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-					}
-				}; }
-		};
+		return new ExpectedResultsToSearchResultsConvertor(this);
 	}
 	
 	private boolean compareStrictlyActualAndExpected(Set<EligibilityClassification> actual, EligibilityClassification expected) {

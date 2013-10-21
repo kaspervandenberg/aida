@@ -137,6 +137,8 @@ public class ResultComparisonTest {
 				ActualResults.ACTUAL_2_SINGLETON_ELIGIBLE, ActualResults.ACTUAL_1_SINGLETON_NOT_ELIGIBLE),
 		TWO_SAME_CAT_SINGLETON_DIFFERING(
 				ActualResults.ACTUAL_1_SINGLETON_NOT_ELIGIBLE, ActualResults.ACTUAL_2_SINGLETON_NOT_ELIGIBLE),
+		TWO_SAME_CAT_1_SET_WEAK_EXPECTED_2_SET_WEAK_EXPECTED(
+				ActualResults.ACTUAL_1_WEAKLY_AS_EXPECTED, ActualResults.ACTUAL_2_WEAKLY_AS_EXPECTED),
 		TWO_SINGLETON_DIVERSE_CAT_DIFFERING(
 				ActualResults.ACTUAL_1_SINGLETON_NOT_ELIGIBLE, ActualResults.ACTUAL_3_SINGLTON_DIFFERING),
 		THREE_MIXED_SET_SINGLETON_MIXED_CAT_DIFFERING(
@@ -223,6 +225,23 @@ public class ResultComparisonTest {
 							ActualResultLists.SINGLE_7_UNDEFINED,
 							ActualResultLists.TWO_SINGLETON_DIVERSE_CAT_1_EXPECTED_3_EXPECTED,
 							ActualResultLists.TWO_SINGLETON_SAME_CAT_1_EXPECTED_2_EXPECTED)));
+				put(Qualifications.ACTUAL_CONTAINIG_EXPECTED_AND_OTHERS, new CombinedSearchResults(
+						EnumSet.of(
+							ActualResultLists.EMPTY,
+							ActualResultLists.SINGLE_1_SET_WEAK_EXPECTED,
+							ActualResultLists.SINGLE_2_SET_WEAK_EXPECTED,
+							ActualResultLists.TWO_SAME_CAT_1_SET_WEAK_EXPECTED_2_SET_WEAK_EXPECTED),
+						EnumSet.of(
+							ActualResultLists.EMPTY,
+							ActualResultLists.SINGLE_1_SINGLETON_EXPECTED,
+							ActualResultLists.SINGLE_1_SINGLETON_DIFFERING1,
+							ActualResultLists.SINGLE_1_SINGLETON_DIFFERING2,
+							ActualResultLists.SINGLE_2_SINGLETON_EXPECTED,
+							ActualResultLists.SINGLE_7_UNDEFINED,
+							ActualResultLists.TWO_SINGLETON_SAME_CAT_1_EXPECTED_2_EXPECTED,
+							ActualResultLists.TWO_SINGLETON_1_DIFFERING_2_DIFFERING,
+							ActualResultLists.TWO_SINGLETON_DIVERSE_CAT_1_EXPECTED_3_EXPECTED
+						)));
 			}};
 
 	@Mock private Concept searchedConcept; 

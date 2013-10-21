@@ -26,14 +26,12 @@ public class ResultComparison {
 		WEAK__EXPECTED_AND_OTHERS,
 		DIFFERING__CONTAINS_NO_EXPECTED;
 
-		public static MatchTypes valueOf(ResultComparison context, SearchResult result) {
+		public static MatchTypes valueOf(ResultComparison context, SearchResult actual) {
 			ExpectedResults expectations = context.getExpected();
-			if(expectations.isAsExpected(result)) {
-				if(result.getClassification().size() == 1) {
-					return STRICT__SINGLETONS_ONLY;
-				} else {
+			if(expectations.isAsExpected(actual)) {
+				return STRICT__SINGLETONS_ONLY;
+			} else if (expectations.containsExpected(actual)) {
 					return WEAK__EXPECTED_AND_OTHERS;
-				}
 			} else {
 				return DIFFERING__CONTAINS_NO_EXPECTED;
 			}

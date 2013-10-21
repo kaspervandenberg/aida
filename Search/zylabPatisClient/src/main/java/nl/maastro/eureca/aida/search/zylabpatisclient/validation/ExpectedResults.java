@@ -29,6 +29,12 @@ public interface ExpectedResults {
 	public boolean isAsExpected(SearchResult searchResult);
 
 	/**
+	 * Does {@code searchResult} contain the expected result for 
+	 * {@code searchResult.}{@link SearchResult#getPatient()}?
+	 */
+	public boolean containsExpected(SearchResult searchResult);
+
+	/**
 	 * Is {@code patient} among the {@code PatisNumber}s for which {@code this} defines expected results?
 	 */
 	public boolean isInDefined(PatisNumber patient);

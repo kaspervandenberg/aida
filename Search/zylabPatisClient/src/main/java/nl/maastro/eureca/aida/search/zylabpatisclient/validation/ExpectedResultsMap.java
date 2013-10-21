@@ -74,7 +74,16 @@ public class ExpectedResultsMap implements ExpectedResults {
 		Set<EligibilityClassification> actual = searchResult.getClassification();
 
 		EligibilityClassification expected = getClassification(patient);
-		return compareActualAndExpected(actual, expected);
+		return compareStrictlyActualAndExpected(actual, expected);
+	}
+
+	@Override
+	public boolean containsExpected(SearchResult searchResult) {
+		PatisNumber patient = searchResult.getPatient();
+		Set<EligibilityClassification> actual = searchResult.getClassification();
+
+		EligibilityClassification expected = getClassification(patient);
+		return actual.contains(expected);
 	}
 
 	@Override
@@ -123,7 +132,7 @@ public class ExpectedResultsMap implements ExpectedResults {
 		};
 	}
 	
-	private boolean compareActualAndExpected(Set<EligibilityClassification> actual, EligibilityClassification expected) {
+	private boolean compareStrictlyActualAndExpected(Set<EligibilityClassification> actual, EligibilityClassification expected) {
 		return (actual.size() == 1) && actual.contains(expected);
 	}
 

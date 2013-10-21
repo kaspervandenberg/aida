@@ -1,6 +1,8 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.validation;
 
+import nl.maastro.eureca.aida.search.zylabpatisclient.validation.data.ActualResultLists;
+import nl.maastro.eureca.aida.search.zylabpatisclient.validation.data.ActualResults;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -79,85 +81,6 @@ public class ResultComparisonTest {
 				contents.put(item.patis, item.expectedClassification);
 			}
 			return ExpectedResultsMap.createIndependentCopy(context.searchedConcept, contents);
-		}
-	}
-
-	private enum ActualResults {
-		ACTUAL_1_SINGLETON_ELIGIBLE("1", ELIGIBLE),
-		ACTUAL_1_SINGLETON_NOT_ELIGIBLE("1", NOT_ELIGIBLE),
-		ACTUAL_1_SINGLETON_UNCERTAIN("1", UNCERTAIN),
-		ACTUAL_1_WEAKLY_AS_EXPECTED("1", UNCERTAIN, ELIGIBLE),
-		ACTUAL_1_SET_DIFFERING1("1", NOT_ELIGIBLE, UNCERTAIN),
-		ACTUAL_1_SET_DIFFERING2("1", UNKNOWN, NOT_ELIGIBLE),
-		ACTUAL_2_SINGLETON_ELIGIBLE("2", ELIGIBLE),
-		ACTUAL_2_SINGLETON_NOT_ELIGIBLE("2", NOT_ELIGIBLE),
-		ACTUAL_2_SINGLETON_UNCERTAIN("2", UNCERTAIN),
-		ACTUAL_2_WEAKLY_AS_EXPECTED("2", ELIGIBLE, UNKNOWN),
-		ACTUAL_2_SET_DIFFERING1("2", NOT_ELIGIBLE, UNCERTAIN),
-		ACTUAL_2_SET_DIFFERING2("2", UNKNOWN, NOT_ELIGIBLE),
-		ACTUAL_3_SINGLETON_AS_EXPECTED("3", NOT_ELIGIBLE),
-		ACTUAL_3_SINGLTON_DIFFERING("3", ELIGIBLE),
-		ACTUAL_5_SINGLETON_AS_EXPECTED("5", UNCERTAIN),
-		ACTUAL_7_UNEXPECTED("7", NOT_ELIGIBLE)
-		;
-		private final PatisNumber patient;
-		private final Set<EligibilityClassification> classifications;
-		private final SearchResult result;
-
-		private ActualResults(String patentID, EligibilityClassification... classification_) {
-			this.patient = PatisNumber.create(patentID);
-			this.classifications = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(classification_)));
-			
-			this.result = Mockito.mock(SearchResult.class);
-			Mockito.when (result.getPatient()) .thenReturn(patient);
-			Mockito.when (result.getClassification()) .thenReturn(classifications);
-		}
-	}
-
-	private enum ActualResultLists {
-		EMPTY(),
-		SINGLE_1_SINGLETON_EXPECTED(ActualResults.ACTUAL_1_SINGLETON_ELIGIBLE),
-		SINGLE_1_SINGLETON_DIFFERING1(ActualResults.ACTUAL_1_SINGLETON_NOT_ELIGIBLE),
-		SINGLE_1_SINGLETON_DIFFERING2(ActualResults.ACTUAL_1_SINGLETON_UNCERTAIN),
-		SINGLE_1_SET_WEAK_EXPECTED(ActualResults.ACTUAL_1_WEAKLY_AS_EXPECTED),
-		SINGLE_1_SET_WEAK_DIFFERING1(ActualResults.ACTUAL_1_SET_DIFFERING1),
-		SINGLE_1_SET_WEAK_DIFFERING2(ActualResults.ACTUAL_1_SET_DIFFERING2),
-		SINGLE_2_SINGLETON_EXPECTED(ActualResults.ACTUAL_2_SINGLETON_ELIGIBLE),
-		SINGLE_2_SET_WEAK_EXPECTED(ActualResults.ACTUAL_2_WEAKLY_AS_EXPECTED),
-		SINGLE_3_SINGLETON_EXPECTED(ActualResults.ACTUAL_3_SINGLETON_AS_EXPECTED),		
-		SINGLE_5_SINGLETON_EXPECTED(ActualResults.ACTUAL_5_SINGLETON_AS_EXPECTED),
-		SINGLE_7_UNDEFINED(ActualResults.ACTUAL_7_UNEXPECTED),
-		TWO_SINGLETON_SAME_CAT_1_EXPECTED_2_EXPECTED(
-				ActualResults.ACTUAL_1_SINGLETON_ELIGIBLE, ActualResults.ACTUAL_2_SINGLETON_ELIGIBLE),
-		TWO_SINGLETON_1_DIFFERING_2_DIFFERING(
-				ActualResults.ACTUAL_1_SINGLETON_NOT_ELIGIBLE, ActualResults.ACTUAL_2_SINGLETON_NOT_ELIGIBLE),
-		TWO_SINGLETON_DIVERSE_CAT_1_EXPECTED_3_EXPECTED(
-				ActualResults.ACTUAL_1_SINGLETON_ELIGIBLE, ActualResults.ACTUAL_3_SINGLETON_AS_EXPECTED),
-		TWO_SAME_CAT_2_EXPECTED_1_DIFFERING(
-				ActualResults.ACTUAL_2_SINGLETON_ELIGIBLE, ActualResults.ACTUAL_1_SINGLETON_NOT_ELIGIBLE),
-		TWO_SAME_CAT_SINGLETON_DIFFERING(
-				ActualResults.ACTUAL_1_SINGLETON_NOT_ELIGIBLE, ActualResults.ACTUAL_2_SINGLETON_NOT_ELIGIBLE),
-		TWO_SAME_CAT_1_SET_WEAK_EXPECTED_2_SET_WEAK_EXPECTED(
-				ActualResults.ACTUAL_1_WEAKLY_AS_EXPECTED, ActualResults.ACTUAL_2_WEAKLY_AS_EXPECTED),
-		TWO_SINGLETON_DIVERSE_CAT_DIFFERING(
-				ActualResults.ACTUAL_1_SINGLETON_NOT_ELIGIBLE, ActualResults.ACTUAL_3_SINGLTON_DIFFERING),
-		THREE_MIXED_SET_SINGLETON_MIXED_CAT_DIFFERING(
-				ActualResults.ACTUAL_1_SET_DIFFERING2, ActualResults.ACTUAL_2_SINGLETON_NOT_ELIGIBLE, ActualResults.ACTUAL_3_SINGLTON_DIFFERING),
-		FOUR_SINGLETON_1_EXPECTED_2_EXPECTED_3_EXPECTED_5_EXPECTED(
-				ActualResults.ACTUAL_1_SINGLETON_ELIGIBLE, ActualResults.ACTUAL_2_SINGLETON_ELIGIBLE, ActualResults.ACTUAL_5_SINGLETON_AS_EXPECTED, 
-				ActualResults.ACTUAL_3_SINGLETON_AS_EXPECTED);
-
-		;
-			
-		private final ActualResults[] items;
-		private final List<SearchResult> result;
-
-		private ActualResultLists(ActualResults... items_) {
-			this.items = items_;
-			this.result = new ArrayList<>(items.length);
-			for (ActualResults item : items) {
-				result.add(item.result);
-			}
 		}
 	}
 

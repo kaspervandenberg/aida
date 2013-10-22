@@ -1,19 +1,31 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.validation;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
+import java.io.Reader;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
 import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 
 /**
  * Expect the results as produced by earlier Lucene invokations.
@@ -37,12 +49,38 @@ public class ExpectedPreviousResults implements ExpectedResults {
 			}
 			return this;
 		}
+
+		public Builder addMap(Map<String, ? extends Set<? extends Set<String>>> items) {
+			for (Map.Entry<String, ? extends Set<? extends Set<String>>> entry : items.entrySet()) {
+				PatisNumber targetKey = PatisNumber.create(entry.getKey());
+				Set<Set<EligibilityClassification>> toAdd = convert(entry.getValue());
+				Set<Set<EligibilityClassification>> targetValues = getOrCreateClassifications(targetKey);
+				targetValues.addAll(toAdd);
+			}
+			return this;
+		}
 		
 		public Builder makeAllUnmodifiable() {
 			for (PatisNumber key : itemsToInsert.keySet()) {
 				makeUnmodifiable(key);
 			}
 			return this;
+		}
+
+		private static Set<Set<EligibilityClassification>> convert(Set<? extends Set<String>> items) {
+			Set<Set<EligibilityClassification>> result = new HashSet<>(items.size());
+			for (Set<String> innerSet : items) {
+				result.add(convertInner(innerSet));
+			}
+			return result;
+		}
+
+		private static Set<EligibilityClassification> convertInner(Set<String> items) {
+			Set<EligibilityClassification> result = EnumSet.noneOf(EligibilityClassification.class);
+			for (String id : items) {
+				result.add(EligibilityClassification.valueOf(id));
+			}
+			return result;
 		}
 		
 		private void add(SearchResult previousResult) {
@@ -75,11 +113,53 @@ public class ExpectedPreviousResults implements ExpectedResults {
 		this.expected = expected_;
 	}
 	
-	public static ExpectedResults create(Concept about, Iterable<SearchResult> previousResults) {
+	public static ExpectedPreviousResults create(Concept about, Iterable<SearchResult> previousResults) {
 		return new Builder()
 				.addAll(previousResults)
 				.makeAllUnmodifiable()
 				.build(about);
+	}
+
+	public static ExpectedPreviousResults read(Concept about, Reader input) {
+		JsonObject obj_root = parse(input);
+		Builder b = new Builder();
+		
+		b.addMap(readClassifications(obj_root));
+		b.makeAllUnmodifiable();
+		return b.build(about);
+	}
+
+	private static JsonObject parse(Reader input) {
+		JsonParser parser = new JsonParser();
+		JsonElement el_root = parser.parse(input);
+		JsonObject obj_root = el_root.getAsJsonObject();
+		return obj_root;
+	}
+
+	private static Map<String, Set<Set<String>>> readClassifications(JsonObject root) {
+		if(root.has("expected")) {
+			try {
+				JsonElement entries = root.get("expected");
+				Type mapType = new TypeToken<HashMap<String, HashSet<HashSet<String>>>>() {}.getType();
+				Map<String, Set<Set<String>>> result = new Gson().fromJson(entries, mapType);
+				return result;
+			} catch (Exception ex) {
+				ex.printStackTrace(System.err);
+				throw ex;
+			}
+		} else {
+			throw new NoSuchElementException("no 'expected'-field in json");
+		}
+	}
+
+	public void writeAsJson(Appendable out) {
+		Type mapType = new TypeToken<HashMap<PatisNumber, HashSet<HashSet<EligibilityClassification>>>>() {}.getType();
+		Gson gson = new Gson();
+		
+		JsonObject root = new JsonObject();
+		root.add("expected", gson.toJsonTree(expected, mapType));
+		
+		gson.toJson(root, out);
 	}
 
 	@Override

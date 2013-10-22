@@ -18,14 +18,11 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
-import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
 import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
-import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 
 /**
  * Expect the results as produced by earlier Lucene invokations.
@@ -52,8 +49,7 @@ public class ExpectedPreviousResults implements ExpectedResults {
 
 		public Builder parseJson(Reader input) {
 			JsonObject jsonRoot = parse(input);
-			Map<String, Set<Set<String>>> idMapping = readClassifications(jsonRoot);
-			addMap(idMapping);
+			readClassifications(jsonRoot);
 
 			return this;
 		}
@@ -72,48 +68,6 @@ public class ExpectedPreviousResults implements ExpectedResults {
 			return obj_root;
 		}
 
-		private static Map<String, Set<Set<String>>> readClassifications(JsonObject root) {
-			if(root.has("expected")) {
-				try {
-					JsonElement entries = root.get("expected");
-					Type mapType = new TypeToken<HashMap<String, HashSet<HashSet<String>>>>() {}.getType();
-					Map<String, Set<Set<String>>> result = new Gson().fromJson(entries, mapType);
-					return result;
-				} catch (Exception ex) {
-					ex.printStackTrace(System.err);
-					throw ex;
-				}
-			} else {
-				throw new NoSuchElementException("no 'expected'-field in json");
-			}
-		}
-
-		private Builder addMap(Map<String, ? extends Set<? extends Set<String>>> items) {
-			for (Map.Entry<String, ? extends Set<? extends Set<String>>> entry : items.entrySet()) {
-				PatisNumber targetKey = PatisNumber.create(entry.getKey());
-				Set<Set<EligibilityClassification>> toAdd = convert(entry.getValue());
-				Set<Set<EligibilityClassification>> targetValues = getOrCreateClassifications(targetKey);
-				targetValues.addAll(toAdd);
-			}
-			return this;
-		}
-
-		private static Set<Set<EligibilityClassification>> convert(Set<? extends Set<String>> items) {
-			Set<Set<EligibilityClassification>> result = new HashSet<>(items.size());
-			for (Set<String> innerSet : items) {
-				result.add(convertInner(innerSet));
-			}
-			return result;
-		}
-
-		private static Set<EligibilityClassification> convertInner(Set<String> items) {
-			Set<EligibilityClassification> result = EnumSet.noneOf(EligibilityClassification.class);
-			for (String id : items) {
-				result.add(EligibilityClassification.valueOf(id));
-			}
-			return result;
-		}
-		
 		private void add(SearchResult previousResult) {
 			PatisNumber key = previousResult.getPatient();
 			Set<EligibilityClassification> expectedClassifications = 
@@ -129,6 +83,38 @@ public class ExpectedPreviousResults implements ExpectedResults {
 			}
 			return itemsToInsert.get(patient);
 		}
+
+		private void readClassifications(JsonObject root) {
+			if(root.has("expected")) {
+				JsonObject entries = root.getAsJsonObject("expected");
+				for (Map.Entry<String, JsonElement> mapping : entries.entrySet()) {
+					readMapping(mapping);
+				}
+			} else {
+				throw new NoSuchElementException("no 'expected'-field in json");
+			}
+		}
+		
+		private void readMapping(Map.Entry<String, JsonElement> jsonEntry) {
+			PatisNumber key = PatisNumber.create(jsonEntry.getKey());
+			Set<Set<EligibilityClassification>> target = getOrCreateClassifications(key);
+			JsonArray setsToAdd = jsonEntry.getValue().getAsJsonArray();
+			for (JsonElement innerSet : setsToAdd) {
+				readClassificationSet(target, innerSet);
+			}
+		}
+
+		private static void readClassificationSet(Set<Set<EligibilityClassification>> target, JsonElement innerSet) {
+			Set<EligibilityClassification> classificationSet = EnumSet.noneOf(EligibilityClassification.class);
+			JsonArray ids = innerSet.getAsJsonArray();
+			for (JsonElement json_id : ids) {
+				String str_id = json_id.getAsString();
+				EligibilityClassification classification = EligibilityClassification.valueOf(str_id);
+				classificationSet.add(classification);
+			}
+			target.add(Collections.unmodifiableSet(classificationSet));
+		}
+				
 
 		private void makeUnmodifiable(PatisNumber key) {
 			Set<Set<EligibilityClassification>> values = itemsToInsert.get(key);

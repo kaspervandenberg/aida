@@ -16,8 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -114,7 +112,7 @@ public class API_Demo {
 	
 	public void writeTable() {
 		Date now = new Date();
-		File f = new File(String.format("results-%1$tY%1$tm%1$td-%1$tH%1$tM%1$tS.html", now));
+		File f = new FileNames().createHtmlResultsFile();
 		try {
 			OutputStreamWriter out = new OutputStreamWriter(new BufferedOutputStream(
 					new FileOutputStream(f)), StandardCharsets.UTF_8);
@@ -158,12 +156,11 @@ public class API_Demo {
 		Concept concept = preConstructedConcept.getConcept(config);
 		Iterable<SearchResult> toStore = resultTable.getColumn(concept);
 		ExpectedPreviousResults resultStorer = ExpectedPreviousResults.create(concept, toStore);
-		String fileName = String.format("results-%s-%2$tY%2$tm%2$td.json", concept.getName().getLocalPart(), new Date());
-		FileWriter outputFile = new FileWriter(fileName);
+		File f = new FileNames().createJsonResultsFile(concept);
+		FileWriter outputFile = new FileWriter(f);
 		resultStorer.writeAsJson(outputFile);
 	}
 
-	
 	static public void main(String[] args) throws IOException {
 		API_Demo instance = new API_Demo();
 		

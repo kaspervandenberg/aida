@@ -50,19 +50,50 @@ public class ExpectedPreviousResults implements ExpectedResults {
 			return this;
 		}
 
-		public Builder addMap(Map<String, ? extends Set<? extends Set<String>>> items) {
+		public Builder parseJson(Reader input) {
+			JsonObject jsonRoot = parse(input);
+			Map<String, Set<Set<String>>> idMapping = readClassifications(jsonRoot);
+			addMap(idMapping);
+
+			return this;
+		}
+
+		public Builder makeAllUnmodifiable() {
+			for (PatisNumber key : itemsToInsert.keySet()) {
+				makeUnmodifiable(key);
+			}
+			return this;
+		}
+		
+		private static JsonObject parse(Reader input) {
+			JsonParser parser = new JsonParser();
+			JsonElement el_root = parser.parse(input);
+			JsonObject obj_root = el_root.getAsJsonObject();
+			return obj_root;
+		}
+
+		private static Map<String, Set<Set<String>>> readClassifications(JsonObject root) {
+			if(root.has("expected")) {
+				try {
+					JsonElement entries = root.get("expected");
+					Type mapType = new TypeToken<HashMap<String, HashSet<HashSet<String>>>>() {}.getType();
+					Map<String, Set<Set<String>>> result = new Gson().fromJson(entries, mapType);
+					return result;
+				} catch (Exception ex) {
+					ex.printStackTrace(System.err);
+					throw ex;
+				}
+			} else {
+				throw new NoSuchElementException("no 'expected'-field in json");
+			}
+		}
+
+		private Builder addMap(Map<String, ? extends Set<? extends Set<String>>> items) {
 			for (Map.Entry<String, ? extends Set<? extends Set<String>>> entry : items.entrySet()) {
 				PatisNumber targetKey = PatisNumber.create(entry.getKey());
 				Set<Set<EligibilityClassification>> toAdd = convert(entry.getValue());
 				Set<Set<EligibilityClassification>> targetValues = getOrCreateClassifications(targetKey);
 				targetValues.addAll(toAdd);
-			}
-			return this;
-		}
-		
-		public Builder makeAllUnmodifiable() {
-			for (PatisNumber key : itemsToInsert.keySet()) {
-				makeUnmodifiable(key);
 			}
 			return this;
 		}
@@ -121,35 +152,11 @@ public class ExpectedPreviousResults implements ExpectedResults {
 	}
 
 	public static ExpectedPreviousResults read(Concept about, Reader input) {
-		JsonObject obj_root = parse(input);
 		Builder b = new Builder();
 		
-		b.addMap(readClassifications(obj_root));
+		b.parseJson(input);
 		b.makeAllUnmodifiable();
 		return b.build(about);
-	}
-
-	private static JsonObject parse(Reader input) {
-		JsonParser parser = new JsonParser();
-		JsonElement el_root = parser.parse(input);
-		JsonObject obj_root = el_root.getAsJsonObject();
-		return obj_root;
-	}
-
-	private static Map<String, Set<Set<String>>> readClassifications(JsonObject root) {
-		if(root.has("expected")) {
-			try {
-				JsonElement entries = root.get("expected");
-				Type mapType = new TypeToken<HashMap<String, HashSet<HashSet<String>>>>() {}.getType();
-				Map<String, Set<Set<String>>> result = new Gson().fromJson(entries, mapType);
-				return result;
-			} catch (Exception ex) {
-				ex.printStackTrace(System.err);
-				throw ex;
-			}
-		} else {
-			throw new NoSuchElementException("no 'expected'-field in json");
-		}
 	}
 
 	public void writeAsJson(Appendable out) {

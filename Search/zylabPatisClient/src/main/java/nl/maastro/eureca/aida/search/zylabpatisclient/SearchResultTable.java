@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import net.kaspervandenberg.apps.common.util.cache.MultiCache;
@@ -20,6 +22,7 @@ public class SearchResultTable {
 	private interface Column {
 		public String getName();
 		public SearchResult getCell(PatisNumber patient);
+		public Iterable<SearchResult> getValues(Iterable<PatisNumber> patients);
 	}
 
 	private class SearchedColumn implements Column {
@@ -47,6 +50,15 @@ public class SearchResultTable {
 		public SearchResult getCell(PatisNumber patient) {
 			return results.get(patient);
 		}
+
+		@Override
+		public Iterable<SearchResult> getValues(Iterable<PatisNumber> patients) {
+			List<SearchResult> resultList = new LinkedList<>();
+			for (PatisNumber patient : patients) {
+				resultList.add(getCell(patient));
+			}
+			return resultList;
+		}
 	}
 
 	private class ValidationColumn implements Column {
@@ -64,6 +76,15 @@ public class SearchResultTable {
 		@Override
 		public SearchResult getCell(PatisNumber patient) {
 			return expectedResults.createExpectedResult(patient);
+		}
+
+		@Override
+		public Iterable<SearchResult> getValues(Iterable<PatisNumber> patients) {
+			List<SearchResult> resultList = new LinkedList<>();
+			for (PatisNumber patient : patients) {
+				resultList.add(getCell(patient));
+			}
+			return resultList;
 		}
 	}
 
@@ -112,6 +133,18 @@ public class SearchResultTable {
 
 	public boolean containsColumn(Concept conceptCol) {
 		return containsColumn(getNameFor(conceptCol));
+	}
+
+	public Iterable<SearchResult> getColumn(String columnName) {
+		return columns.get(columnName).getValues(getPatients());
+	}
+
+	public Iterable<SearchResult> getColumn(ExpectedResults expectedCol) {
+		return getColumn(getNameFor(expectedCol));
+	}
+
+	public Iterable<SearchResult> getColumn(Concept conceptCol) {
+		return getColumn(getNameFor(conceptCol));
 	}
 
 	public boolean containsPatient(PatisNumber patient) {

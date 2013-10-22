@@ -8,6 +8,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.SearchResultFormatter;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -30,6 +31,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.output.HtmlFormatter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Concepts;
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Patients;
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.SemanticModifiers;
+import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedPreviousResults;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedResults;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedResultsMap;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparison;
@@ -143,16 +145,26 @@ public class API_Demo {
 		resultTable.addAll(patientSource.getDefinedPatients());
 	}
 
-	public void addConceptSearchColumn(Concepts concept) {
-		resultTable.addConceptSearchColumn(concept.getConcept(config), modifiers);
+	public void addConceptSearchColumn(Concepts preConstructedConcept) {
+		Concept concept = preConstructedConcept.getConcept(config);
+		resultTable.addConceptSearchColumn(concept, modifiers);
 	}
 
 	public void setValidationQualifications(Set<ResultComparison.Qualifications> newValidationQualifications) {
 		validationComparisonTable.setQualifications(newValidationQualifications);
 	}
 
+	public void storeResults(Concepts preConstructedConcept) throws IOException {
+		Concept concept = preConstructedConcept.getConcept(config);
+		Iterable<SearchResult> toStore = resultTable.getColumn(concept);
+		ExpectedPreviousResults resultStorer = ExpectedPreviousResults.create(concept, toStore);
+		String fileName = String.format("results-%s-%2$tY%2$tm%2$td.json", concept.getName().getLocalPart(), new Date());
+		FileWriter outputFile = new FileWriter(fileName);
+		resultStorer.writeAsJson(outputFile);
+	}
+
 	
-	static public void main(String[] args) {
+	static public void main(String[] args) throws IOException {
 		API_Demo instance = new API_Demo();
 		
 		ExpectedResults metastasisValidation = instance.createExpectedResults(Concepts.METASTASIS);
@@ -171,6 +183,9 @@ public class API_Demo {
 				ACTUAL_MATCHING_EXPECTED, ACTUAL_CONTAINIG_EXPECTED_AND_OTHERS, 
 				ACTUAL_DIFFERING_FROM_EXPECTED, EXTRA_ACTUAL_RESULTS, MISSING_ACTUAL_RESULTS));
 
+		instance.storeResults(Concepts.METASTASIS);
+		instance.storeResults(Concepts.CHEMOKUUR);
+		
 		instance.writeTable();
 	}
 

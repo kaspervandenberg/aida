@@ -79,7 +79,7 @@ public class ExpectedPreviousResultsTest {
 	}
 
 	@Theory
-	public void testCreateFromPrevious_(ActualResultLists data, ActualResultLists other) {
+	public void testCreateFromPrevious_allResultsAsExpected(ActualResultLists data, ActualResultLists other) {
 		List<SearchResult> combinedData = combineAndShuffle(data, other);
 		
 		ExpectedResults testee = ExpectedPreviousResults.create(searchedConcept, combinedData);
@@ -97,11 +97,25 @@ public class ExpectedPreviousResultsTest {
 		StringWriter store = new StringWriter();
 
 		toWrite.writeAsJson(store);
-		System.out.println(store.toString());
 		StringReader reader = new StringReader(store.toString());
 		ExpectedPreviousResults readResults = ExpectedPreviousResults.read(searchedConcept, reader);
 		
 		assertThat(readResults.getDefinedPatients(), containsInAnyOrder(expectedPatients));
+	}
+
+	@Theory
+	public void testWriteRead_allResultsAsExpected(ActualResultLists data, ActualResultLists other) {
+		List<SearchResult> combinedData = combineAndShuffle(data, other);
+		ExpectedPreviousResults toWrite = ExpectedPreviousResults.create(searchedConcept, combinedData);
+		StringWriter store = new StringWriter();
+
+		toWrite.writeAsJson(store);
+		StringReader reader = new StringReader(store.toString());
+		ExpectedPreviousResults readResults = ExpectedPreviousResults.read(searchedConcept, reader);
+		
+		for (ActualResults item : data.items) {
+			assertTrue(readResults.isAsExpected(item.result));
+		}
 	}
 
 	private Set<PatisNumber> patientsInTestdata(ActualResultLists data) {

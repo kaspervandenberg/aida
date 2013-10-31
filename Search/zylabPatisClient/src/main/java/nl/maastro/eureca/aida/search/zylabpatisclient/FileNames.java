@@ -33,8 +33,8 @@ public class FileNames {
 		}
 	}
 	
-	private static final String FILENAME_FORMAT = "results%1-%2$tY%2$tm%2$td-%2$tH%2$tM%2$tS.%3";
-	private static final String GLOB_FORMAT = "results%1-*-*.%3";
+	private static final String FILENAME_FORMAT = "results%1$s-%2$tY%2$tm%2$td-%2$tH%2$tM%2$tS.%3$s";
+	private static final String GLOB_FORMAT = "results-%s-*-*.%s";
 	private static final Pattern FILE_DATE;
 	static {
 		try {
@@ -54,7 +54,11 @@ public class FileNames {
 	private Path workingDirectory;
 
 	public FileNames() {
-		workingDirectory = Paths.get("");
+		this.workingDirectory = Paths.get("");
+	}
+
+	public FileNames(Path workingDirectory_) {
+		this.workingDirectory = workingDirectory_;
 	}
 	
 	public File createHtmlResultsFile() {
@@ -77,7 +81,7 @@ public class FileNames {
 		String seperatedConceptPart = prependSeparator(conceptPart);
 		Date now = new Date();
 		String fileName = String.format(FILENAME_FORMAT, seperatedConceptPart, now, extension);
-		File f = new File(fileName);
+		File f = workingDirectory.resolve(fileName).toFile();
 
 		return f;
 	}

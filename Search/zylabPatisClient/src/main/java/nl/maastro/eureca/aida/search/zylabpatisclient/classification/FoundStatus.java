@@ -12,6 +12,11 @@ public enum FoundStatus {
 	FOUND,
 
 	/**
+	 * When a concept is modified by a semantic modifier.
+	 */
+	UNCERTAIN,
+	
+	/**
 	 * When it's unknown whether the concept (should) be found; for example within 
 	 * {@link nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedResults} for patients/documents 
 	 * that are not in 

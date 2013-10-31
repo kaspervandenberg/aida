@@ -3,12 +3,10 @@ package nl.maastro.eureca.aida.search.zylabpatisclient;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import net.kaspervandenberg.apps.common.util.cache.MultiCache;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedResults;
@@ -87,8 +85,6 @@ public class SearchResultTable {
 			return resultList;
 		}
 	}
-
-	private static final String VALIDATION_COLUMN_NAME_SUFFIX = "-expected";
 	private final Searcher searcher;
 	private final LinkedHashMap<String, Column> columns;
 	private final LinkedHashSet<PatisNumber> rows;
@@ -170,6 +166,6 @@ public class SearchResultTable {
 	}
 
 	private static String getNameFor(ExpectedResults expected) {
-		return expected.getAboutConcept().getName().getLocalPart() + VALIDATION_COLUMN_NAME_SUFFIX;
+		return expected.getTitle();
 	}
 }

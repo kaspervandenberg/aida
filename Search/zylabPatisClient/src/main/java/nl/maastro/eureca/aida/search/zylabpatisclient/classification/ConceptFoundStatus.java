@@ -7,7 +7,7 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.classification;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public enum FoundStatus {
+public enum ConceptFoundStatus {
 	NOT_FOUND,
 	FOUND,
 

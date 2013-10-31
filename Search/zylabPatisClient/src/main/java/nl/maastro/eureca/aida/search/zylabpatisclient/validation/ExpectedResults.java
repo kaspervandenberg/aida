@@ -14,6 +14,11 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Eligibility
  */
 public interface ExpectedResults {
 	/**
+	 * @return	the title to use when displaying this concept. 
+	 */
+	public String getTitle();
+
+	/**
 	 * @return 	the {@link Concept} for which these are the expected results.
 	 */
 	public Concept getAboutConcept();

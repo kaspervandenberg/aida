@@ -11,6 +11,7 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,9 +36,10 @@ public class ExpectedPreviousResults implements ExpectedResults {
 	
 	private static class Builder {
 		private final Map<PatisNumber, Set<Set<EligibilityClassification>>> itemsToInsert = new ConcurrentHashMap<>();
+		private Date searchDate = new Date();
 
 		public ExpectedPreviousResults build(Concept about) {
-			return new ExpectedPreviousResults(about, Collections.unmodifiableMap(itemsToInsert));
+			return new ExpectedPreviousResults(about, searchDate, Collections.unmodifiableMap(itemsToInsert));
 		}
 		
 		public Builder addAll(Iterable<SearchResult> previousResults) {
@@ -49,10 +51,22 @@ public class ExpectedPreviousResults implements ExpectedResults {
 
 		public Builder parseJson(Reader input) {
 			JsonObject jsonRoot = parse(input);
+			readDate(jsonRoot);
 			readClassifications(jsonRoot);
 
 			return this;
 		}
+
+		public Builder setSearchDateToNow() {
+			searchDate = new Date();
+			return this;
+		}
+
+		public Builder setSearchDate(Date newValue) {
+			searchDate = new Date(newValue.getTime());
+			return this;
+		}
+				
 
 		public Builder makeAllUnmodifiable() {
 			for (PatisNumber key : itemsToInsert.keySet()) {
@@ -82,6 +96,16 @@ public class ExpectedPreviousResults implements ExpectedResults {
 				itemsToInsert.put(patient, new HashSet<Set<EligibilityClassification>>());
 			}
 			return itemsToInsert.get(patient);
+		}
+
+		private void readDate(JsonObject root) {
+			if(root.has("searchDate")) {
+				JsonElement json_searchDate = root.get("searchDate");
+				Date value = new Gson().fromJson(json_searchDate, Date.class);
+				setSearchDate(value);
+			} else {
+				setSearchDateToNow();
+			}
 		}
 
 		private void readClassifications(JsonObject root) {
@@ -123,16 +147,20 @@ public class ExpectedPreviousResults implements ExpectedResults {
 	}
 	
 	private final Concept about;
+	private final Date searchDate;
 	private final Map<PatisNumber, Set<Set<EligibilityClassification>>> expected;
 
-	private ExpectedPreviousResults(Concept about_, Map<PatisNumber, Set<Set<EligibilityClassification>>> expected_) {
+	private ExpectedPreviousResults(Concept about_, Date searchDate_, 
+			Map<PatisNumber, Set<Set<EligibilityClassification>>> expected_) {
 		this.about = about_;
+		this.searchDate = new Date(searchDate_.getTime());
 		this.expected = expected_;
 	}
 	
 	public static ExpectedPreviousResults create(Concept about, Iterable<SearchResult> previousResults) {
 		return new Builder()
 				.addAll(previousResults)
+				.setSearchDateToNow()
 				.makeAllUnmodifiable()
 				.build(about);
 	}
@@ -150,11 +178,19 @@ public class ExpectedPreviousResults implements ExpectedResults {
 		Gson gson = new Gson();
 		
 		JsonObject root = new JsonObject();
+		root.add("searchDate", gson.toJsonTree(searchDate));
 		root.add("expected", gson.toJsonTree(expected, mapType));
 		
 		gson.toJson(root, out);
 	}
 
+	@Override
+	public String getTitle() {
+		String result = String.format("Results for %1$s (on %2$ta %2$tF %2$tR", 
+				about.getName().getLocalPart(), searchDate);
+		return result;
+	}
+	
 	@Override
 	public Concept getAboutConcept() {
 		return about;

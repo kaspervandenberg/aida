@@ -59,6 +59,13 @@ public class ExpectedResultsMap implements ExpectedResults {
 	}
 
 	@Override
+	public String getTitle() {
+		String result = String.format("Expected results for %s", 
+				about.getName().getLocalPart());
+		return result;
+	}
+	
+	@Override
 	public Concept getAboutConcept() {
 		return about;
 	}

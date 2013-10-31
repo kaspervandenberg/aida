@@ -69,7 +69,7 @@ public class FileNames {
 		return createResultsFile(concept.getName().getLocalPart(), "json");
 	}
 
-	public File getMostRecentJson(Concept concept) throws IOException {
+	public File getMostRecentJson(Concept concept) throws IOException, IllegalArgumentException {
 		String glob = getGlobPattern(concept, "json");
 		DirectoryStream<Path> dir = Files.newDirectoryStream(workingDirectory, glob);
 		Path mostRecent = getMostRecent(dir);

@@ -186,7 +186,7 @@ public class ExpectedPreviousResults implements ExpectedResults {
 
 	@Override
 	public String getTitle() {
-		String result = String.format("Results for %1$s (on %2$ta %2$tF %2$tR", 
+		String result = String.format("Results for %1$s (on %2$ta %2$tF %2$tR)", 
 				about.getName().getLocalPart(), searchDate);
 		return result;
 	}

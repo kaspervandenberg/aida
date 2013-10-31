@@ -6,8 +6,10 @@ package nl.maastro.eureca.aida.search.zylabpatisclient;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.SearchResultFormatter;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +21,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.rpc.ServiceException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
@@ -134,6 +138,15 @@ public class API_Demo {
 		return ExpectedResultsMap.createWrapper(concept, expectedClassifications);
 	}
 
+	public ExpectedResults readExpectedPreviousResults(Concepts predefinedConcept) 
+			throws FileNotFoundException, IOException, IllegalArgumentException {
+		Concept concept = predefinedConcept.getConcept(config);
+		File file = new FileNames().getMostRecentJson(concept);
+		FileReader input = new FileReader(file);
+		
+		return ExpectedPreviousResults.read(concept, input);
+	}
+
 	public void addExpectedResultsColumn(ExpectedResults newColumn) {
 		resultTable.addExpectedResultsColumn(newColumn);
 		validationComparisonTable.addExpectedResult(newColumn);
@@ -159,6 +172,7 @@ public class API_Demo {
 		File f = new FileNames().createJsonResultsFile(concept);
 		FileWriter outputFile = new FileWriter(f);
 		resultStorer.writeAsJson(outputFile);
+		outputFile.flush();
 	}
 
 	static public void main(String[] args) throws IOException {
@@ -167,12 +181,30 @@ public class API_Demo {
 		ExpectedResults metastasisValidation = instance.createExpectedResults(Concepts.METASTASIS);
 		instance.addExpectedResultsColumn(metastasisValidation);
 		instance.addDefinedPatients(metastasisValidation);
+
+		try {
+			ExpectedResults metastasisPrevious = instance.readExpectedPreviousResults(Concepts.METASTASIS);
+			instance.addExpectedResultsColumn(metastasisPrevious);
+			instance.addDefinedPatients(metastasisPrevious);
+		} catch (IOException | IllegalArgumentException ex) {
+			// Log and skip column
+			Logger.getLogger(API_Demo.class.getName()).log(Level.WARNING, "No previous metastasis results", ex);
+		}
 		
 		instance.addConceptSearchColumn(Concepts.METASTASIS);
 
 		ExpectedResults chemokuurValidation = instance.createExpectedResults(Concepts.CHEMOKUUR);
 		instance.addExpectedResultsColumn(chemokuurValidation);
 		instance.addDefinedPatients(chemokuurValidation);
+
+		try {
+			ExpectedResults chemokuurPrevious = instance.readExpectedPreviousResults(Concepts.CHEMOKUUR);
+			instance.addExpectedResultsColumn(chemokuurPrevious);
+			instance.addDefinedPatients(chemokuurPrevious);
+		} catch (IOException | IllegalArgumentException ex) {
+			// Log and skip column
+			Logger.getLogger(API_Demo.class.getName()).log(Level.WARNING, "No previous chemokuur results", ex);
+		}
 
 		instance.addConceptSearchColumn(Concepts.CHEMOKUUR);
 		

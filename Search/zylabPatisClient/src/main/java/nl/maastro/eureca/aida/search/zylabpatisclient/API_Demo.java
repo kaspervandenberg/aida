@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+// © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
 import java.io.BufferedOutputStream;
@@ -41,8 +38,19 @@ import static nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultCo
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparisonTable;
 
 /**
+ * Demostrates how to use the classes in {@link nl.maastro.eureca.aida.search.zylabpatisclient}.
  *
- * @author kasper2
+ * Use the following methods of the {@link API_Demo} instance to define the report structure:
+ * <ul><li>{@link #addExpectedResultsColumn(ExpectedResults)};</li>
+ * 		<li>{@link #addConceptSearchColumn(Concepts)}; and<li>
+ *		<li>{@link #addDefinedPatients(ExpectedResults)}.</li></ul>
+ * Create ExpectedResults with:
+ * <ul><li>{@link #createExpectedResults(Concepts)}; or
+ *		<li>{@link #readExpectedPreviousResults(Concepts)}.</li></ul>
+ * Finally, store for later use with:
+ * <ul><li>{@link storeResults(Concepts)}</li></ul>.
+ * 
+ * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class API_Demo {
 
@@ -131,6 +139,11 @@ public class API_Demo {
 		}
 	}
 
+	/**
+	 * @return an {@link ExpectedResults}-object containing the expected results of {@code predefinedConcept}
+	 * 		as read from a json file as via {@link Config}.
+
+	 */
 	public ExpectedResults createExpectedResults(Concepts predefinedConcept) {
 		Concept concept = predefinedConcept.getConcept(config);
 		Map<PatisNumber, ConceptFoundStatus> expectedClassifications = config.getPatients(concept.getName());
@@ -138,6 +151,13 @@ public class API_Demo {
 		return ExpectedResultsMap.createWrapper(concept, expectedClassifications);
 	}
 
+	/**
+	 * @return	an {@link ExpectedResults}-object of the results of a previous report stored by using 
+	 * 		{@link #storeResults(Concepts) }.
+
+	 * @throws IllegalArgumentException 	when the current directory contains no file for
+	 * 		{@code predefinedConcept}.
+	 */
 	public ExpectedResults readExpectedPreviousResults(Concepts predefinedConcept) 
 			throws FileNotFoundException, IOException, IllegalArgumentException {
 		Concept concept = predefinedConcept.getConcept(config);
@@ -147,15 +167,31 @@ public class API_Demo {
 		return ExpectedPreviousResults.read(concept, input);
 	}
 
+	/**
+	 * Add a column containing the expected results to the report.
+	 * 
+	 * The {@link ExpectedResults#getDefinedPatients() patients} in {@code newColumn} are not added automatically,
+	 * call {@link #addDefinedPatients(ExpectedResults)} to add them. 
+	 */
 	public void addExpectedResultsColumn(ExpectedResults newColumn) {
 		resultTable.addExpectedResultsColumn(newColumn);
 		validationComparisonTable.addExpectedResult(newColumn);
 	}
 
+	/**
+	 * Add rows for all patients for whom {@code patientSource} defines expected results.
+	 * 
+	 * Each added patient has a single row: adding a patient multiple times results only in a single row.  Adding 
+	 * a patient multiple times will occur, for example, when multiple ExpectedResults define results the same 
+	 * patient.
+	 */
 	public void addDefinedPatients(ExpectedResults patientSource) {
 		resultTable.addAll(patientSource.getDefinedPatients());
 	}
 
+	/**
+	 * Add a column containing results of searching for a concept.
+	 */
 	public void addConceptSearchColumn(Concepts preConstructedConcept) {
 		Concept concept = preConstructedConcept.getConcept(config);
 		resultTable.addConceptSearchColumn(concept, modifiers);
@@ -165,6 +201,12 @@ public class API_Demo {
 		validationComparisonTable.setQualifications(newValidationQualifications);
 	}
 
+	/**
+	 * Store the lucene search results per concept in a json file.
+	 * 
+	 * Use {@code storeResults(Concepts)} to be able to read and show the results in the next rapport with 
+	 * {@link #readExpectedPreviousResults(Concepts)}.
+	 */
 	public void storeResults(Concepts preConstructedConcept) throws IOException {
 		Concept concept = preConstructedConcept.getConcept(config);
 		Iterable<SearchResult> toStore = resultTable.getColumn(concept);
@@ -175,6 +217,19 @@ public class API_Demo {
 		outputFile.flush();
 	}
 
+	/**
+	 * {@code main()} drives API_Demo and defines the structure of the report.
+	 * 
+	 * Use the following methods of the {@link API_Demo} instance to define the report structure:
+	 * <ul><li>{@link #addExpectedResultsColumn(ExpectedResults)};</li>
+	 * 		<li>{@link #addConceptSearchColumn(Concepts)}; and<li>
+	 *		<li>{@link #addDefinedPatients(ExpectedResults)}.</li></ul>
+	 * Create ExpectedResults with:
+	 * <ul><li>{@link #createExpectedResults(Concepts)}; or
+	 *		<li>{@link #readExpectedPreviousResults(Concepts)}.</li></ul>
+	 * Finally, store for later use with:
+	 * <ul><li>{@link storeResults(Concepts)}</li></ul>.
+	 */
 	static public void main(String[] args) throws IOException {
 		API_Demo instance = new API_Demo();
 		

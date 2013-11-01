@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+// © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries;
 
 import java.net.URISyntaxException;
@@ -20,8 +17,27 @@ import org.apache.lucene.queryparser.flexible.core.nodes.QueryNode;
 import org.apache.lucene.search.spans.SpanQuery;
 
 /**
+ * Preconstructed patterns used by the {@link nl.maastro.eureca.aida.search.zylabpatisclient.Searcher} to search 
+ * for (modified) concepts.
+ * 
+ * Extend the list of preconstructed lexical by adding new enum values.C  onstruct the value using one of the
+ * following constructors:
+ * <ul><li>{@link #LexicalPatterns(String)};</li>
+ * 		<li>{@link #LexicalPatterns(int, LexicalPatterns[])}; or</li>
+ * 		<li>{@link #LexicalPatterns(Class, LexicalPatterns[])}.</li></ul>
+ * 
+ * Examples of using the constructors:
+ * <ul><li>{@code MY_CONCEPT(“concept”)}, a pattern that searches for “concept”.</li>
+ * 		<li>{@code MY_CONCEPT(“con*”)}, a wildcard pattern that searches for all words starting with “con”.</li>
+ * 		<li>{@code MY_CONCEPT(“concept~”)}, a fuzy concept that searches for any work similar to “concept”,
+ * 			words such as “koncept”, “concapt” match the pattern.</li>
+ * 		<li>{@code MY_CONCEPT(3, METASTASIS_NL, CHEMO)}, a ‘near’ pattern that matches documents that match the
+ * 			lexical patterns {@link #METASTASIS_NL} and {@link #CHEMO} within a distance of 3 words.  You can 
+ * 			specify two or more lexical patterns.</li>
+ * 		<li>{@code MY_CONCEPT(OrBuilder.class METASTASIS_NL, CHEMO)}, an ‘or’ pattern that matches any document
+ * 			that matches either the lexical pattern {@link #METASTASIS_NL}, or {@link #CHEMO}, or both.</li></ul>
  *
- * @author kasper
+ * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 enum LexicalPatterns {
 	METASTASIS_NL("*metastase*"),

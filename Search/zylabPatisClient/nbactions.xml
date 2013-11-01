@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-run-generate report</actionName>
+            <displayName>run-generate report</displayName>
+            <goals>
+                <goal>exec:java</goal>
+            </goals>
+            <properties>
+                <exec.mainClass>nl.maastro.eureca.aida.search.zylabpatisclient.API_Demo</exec.mainClass>
+            </properties>
+        </action>
+    </actions>

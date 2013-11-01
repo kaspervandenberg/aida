@@ -1,7 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import com.google.gson.Gson;
 import java.util.Collection;
 import java.util.Collections;
@@ -163,16 +163,16 @@ public class SearchResultImpl implements SearchResult {
 	}
 
 	@Override
-	public Set<EligibilityClassification> getClassification() {
-		Set<EligibilityClassification> result = new HashSet<>();
+	public Set<ConceptFoundStatus> getClassification() {
+		Set<ConceptFoundStatus> result = new HashSet<>();
 		for (ResultDocument doc : getMatchingDocuments()) {
 			result.addAll(doc.getClassifiers());
 		}
 		if(result.isEmpty()) {
 			if(getTotalHits() > 0) {
-				result.add(EligibilityClassification.NOT_ELIGIBLE);
+				result.add(ConceptFoundStatus.FOUND);
 			} else {
-				result.add(EligibilityClassification.ELIGIBLE);
+				result.add(ConceptFoundStatus.NOT_FOUND);
 			}
 		}
 		return result;

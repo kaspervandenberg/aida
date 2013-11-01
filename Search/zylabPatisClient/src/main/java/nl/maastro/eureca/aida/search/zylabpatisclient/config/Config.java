@@ -35,7 +35,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.WebserviceSearcher;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.input.PatisReader;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.DualRepresentationQuery;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.DynamicAdapter;
@@ -682,7 +682,7 @@ public class Config {
 		}
 	}
 
-	public Map<PatisNumber, EligibilityClassification> getPatients(QName concept) {
+	public Map<PatisNumber, ConceptFoundStatus> getPatients(QName concept) {
 		File f = getPatientsJsonFile(concept);
 		PatisReader p = new PatisReader();
 		try {

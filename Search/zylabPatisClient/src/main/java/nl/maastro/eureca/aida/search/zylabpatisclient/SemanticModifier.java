@@ -1,7 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,19 +80,19 @@ public interface SemanticModifier {
 	 * when documents a concept modified with this {@code SemanticModifier}
 	 * matches a document.
 	 */
-	public EligibilityClassification getClassification();
+	public ConceptFoundStatus getClassification();
 	
 	public enum Constants implements SemanticModifier {
 		/**
 		 * The {@code NULL_MODIFIER} indicates that a concept is not modified.
 		 */
-		NULL_MODIFIER(EligibilityClassification.NOT_ELIGIBLE),
+		NULL_MODIFIER(ConceptFoundStatus.FOUND),
 
 		/**
 		 * The {@code UNKNOWN_MODIFIER} indicates that the {@link SemanticModifier}
 		 * for the {@code SearchResult} was not specified.
 		 */
-		UNKNOWN_MODIFIER(EligibilityClassification.UNKNOWN);
+		UNKNOWN_MODIFIER(ConceptFoundStatus.FOUND_CONCEPT_UNKNOWN);
 
 		private static final Map<Class<? extends Query>, Set<Class<? extends Query>>>
 				supportedConversions; 
@@ -107,9 +107,9 @@ public interface SemanticModifier {
 			supportedConversions = Collections.unmodifiableMap(tmp);
 		}
 
-		private final EligibilityClassification classification;
+		private final ConceptFoundStatus classification;
 		
-		private Constants(final EligibilityClassification classification_) {
+		private Constants(final ConceptFoundStatus classification_) {
 			this.classification = classification_;
 		}
 			
@@ -131,7 +131,7 @@ public interface SemanticModifier {
 		}
 
 		@Override
-		public EligibilityClassification getClassification() {
+		public ConceptFoundStatus getClassification() {
 			return classification;
 		}
 		

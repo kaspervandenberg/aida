@@ -25,7 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.rpc.ServiceException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.InterDocOverride;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.IntraDocOverride;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
@@ -109,8 +109,8 @@ public class API_Demo {
 				SemanticModifiers.SUSPICION_ANY_ORDER.getModifier(config),
 				SemanticModifier.Constants.NULL_MODIFIER));
 		instance.appendRule(new InterDocOverride(
-				EligibilityClassification.UNCERTAIN,
-				EligibilityClassification.NOT_ELIGIBLE));
+				ConceptFoundStatus.UNCERTAIN,
+				ConceptFoundStatus.FOUND));
 		return instance;
 	}
 	
@@ -133,7 +133,7 @@ public class API_Demo {
 
 	public ExpectedResults createExpectedResults(Concepts predefinedConcept) {
 		Concept concept = predefinedConcept.getConcept(config);
-		Map<PatisNumber, EligibilityClassification> expectedClassifications = config.getPatients(concept.getName());
+		Map<PatisNumber, ConceptFoundStatus> expectedClassifications = config.getPatients(concept.getName());
 		
 		return ExpectedResultsMap.createWrapper(concept, expectedClassifications);
 	}

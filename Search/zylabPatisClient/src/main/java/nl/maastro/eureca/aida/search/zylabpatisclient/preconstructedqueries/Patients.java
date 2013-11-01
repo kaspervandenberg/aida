@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Searcher;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
 /**
  *
@@ -14,7 +14,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Eligibility
 public class Patients {
 	private static Patients instance = null;
 
-	private final LinkedHashMap<PatisNumber, EligibilityClassification> expectedMetastasis;
+	private final LinkedHashMap<PatisNumber, ConceptFoundStatus> expectedMetastasis;
 
 	private Patients() {
 		expectedMetastasis = initExpectedMetastasis();
@@ -27,7 +27,7 @@ public class Patients {
 		return instance;
 	}
 	
-	public LinkedHashMap<PatisNumber, EligibilityClassification> getExpectedMetastasis() {
+	public LinkedHashMap<PatisNumber, ConceptFoundStatus> getExpectedMetastasis() {
 		return expectedMetastasis;
 	}
 
@@ -35,48 +35,48 @@ public class Patients {
 		return new DummySearcher(getExpectedMetastasis());
 	}
 
-	private static LinkedHashMap<PatisNumber, EligibilityClassification> initExpectedMetastasis() {
+	private static LinkedHashMap<PatisNumber, ConceptFoundStatus> initExpectedMetastasis() {
 		// Dummy list of patients; reading a list of patisnumbers is not yet in API
-		LinkedHashMap<PatisNumber, EligibilityClassification> result = new LinkedHashMap<>();
-		result.put(PatisNumber.create("71358"), EligibilityClassification.ELIGIBLE);// Exp 0
-		result.put(PatisNumber.create("71314"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71415"), EligibilityClassification.ELIGIBLE); // Exp 0
-		result.put(PatisNumber.create("71539"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71586"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("70924"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71785"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71438"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71375"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71448"), EligibilityClassification.ELIGIBLE);
+		LinkedHashMap<PatisNumber, ConceptFoundStatus> result = new LinkedHashMap<>();
+		result.put(PatisNumber.create("71358"), ConceptFoundStatus.NOT_FOUND);// Exp 0
+		result.put(PatisNumber.create("71314"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71415"), ConceptFoundStatus.NOT_FOUND); // Exp 0
+		result.put(PatisNumber.create("71539"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71586"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("70924"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71785"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71438"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71375"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71448"), ConceptFoundStatus.NOT_FOUND);
 		
-		result.put(PatisNumber.create("71681"), EligibilityClassification.NOT_ELIGIBLE); // Exp 1
-		result.put(PatisNumber.create("71692"), EligibilityClassification.NOT_ELIGIBLE);
-		result.put(PatisNumber.create("71757"), EligibilityClassification.NOT_ELIGIBLE);
-		result.put(PatisNumber.create("70986"), EligibilityClassification.NOT_ELIGIBLE);
-		result.put(PatisNumber.create("46467"), EligibilityClassification.NOT_ELIGIBLE);
+		result.put(PatisNumber.create("71681"), ConceptFoundStatus.FOUND); // Exp 1
+		result.put(PatisNumber.create("71692"), ConceptFoundStatus.FOUND);
+		result.put(PatisNumber.create("71757"), ConceptFoundStatus.FOUND);
+		result.put(PatisNumber.create("70986"), ConceptFoundStatus.FOUND);
+		result.put(PatisNumber.create("46467"), ConceptFoundStatus.FOUND);
 		
-		result.put(PatisNumber.create("71441"), EligibilityClassification.NOT_ELIGIBLE);
-		result.put(PatisNumber.create("71121"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71089"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("70657"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("70979"), EligibilityClassification.ELIGIBLE);
+		result.put(PatisNumber.create("71441"), ConceptFoundStatus.FOUND);
+		result.put(PatisNumber.create("71121"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71089"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("70657"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("70979"), ConceptFoundStatus.NOT_FOUND);
 
-		result.put(PatisNumber.create("71367"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71369"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71118"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71363"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("70933"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71105"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71190"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("70946"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71074"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("70996"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71422"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71193"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71454"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71169"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71739"), EligibilityClassification.ELIGIBLE);
-		result.put(PatisNumber.create("71464"), EligibilityClassification.ELIGIBLE);
+		result.put(PatisNumber.create("71367"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71369"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71118"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71363"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("70933"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71105"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71190"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("70946"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71074"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("70996"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71422"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71193"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71454"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71169"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71739"), ConceptFoundStatus.NOT_FOUND);
+		result.put(PatisNumber.create("71464"), ConceptFoundStatus.NOT_FOUND);
 		return result;
 
 	}

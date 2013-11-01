@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
 /**
  * Read a list of {@link PatisNumber}s from a comma separated file.
@@ -19,7 +19,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Eligibility
  */
 public class PatisCsvReader {
 	public interface Classifier {
-		public EligibilityClassification expectedClassification(PatisNumber patient,
+		public ConceptFoundStatus expectedClassification(PatisNumber patient,
 				String[] textFields); 
 	}
 
@@ -27,23 +27,23 @@ public class PatisCsvReader {
 		private int column = 10;
 
 		@Override
-		public EligibilityClassification expectedClassification(PatisNumber patient, String[] textFields) {
+		public ConceptFoundStatus expectedClassification(PatisNumber patient, String[] textFields) {
 			if (textFields.length > column) {
 				if(!textFields[column].isEmpty()) {
-					return EligibilityClassification.ELIGIBLE;
+					return ConceptFoundStatus.NOT_FOUND;
 				} else {
-					return EligibilityClassification.NOT_ELIGIBLE;
+					return ConceptFoundStatus.FOUND;
 				}
 			} else {
-				return EligibilityClassification.NOT_ELIGIBLE;
+				return ConceptFoundStatus.FOUND;
 			}
 		}
 	}
 
 	public static class AllUnknown implements Classifier {
 		@Override
-		public EligibilityClassification expectedClassification(PatisNumber patient, String[] textFields) {
-			return EligibilityClassification.UNKNOWN;
+		public ConceptFoundStatus expectedClassification(PatisNumber patient, String[] textFields) {
+			return ConceptFoundStatus.FOUND_CONCEPT_UNKNOWN;
 		}
 		
 	}
@@ -58,17 +58,17 @@ public class PatisCsvReader {
 		return new ArrayList<>(
 				read(input, new Classifier() {
 					@Override
-					public EligibilityClassification expectedClassification(PatisNumber patient, String[] textFields) {
-						return EligibilityClassification.UNKNOWN;
+					public ConceptFoundStatus expectedClassification(PatisNumber patient, String[] textFields) {
+						return ConceptFoundStatus.FOUND_CONCEPT_UNKNOWN;
 					}
 				}).keySet());
 	}
 	
-	public LinkedHashMap<PatisNumber, EligibilityClassification> read(
+	public LinkedHashMap<PatisNumber, ConceptFoundStatus> read(
 			InputStreamReader input,
 			Classifier classifier) {
 		BufferedReader reader = new BufferedReader(input);
-		LinkedHashMap<PatisNumber, EligibilityClassification> result = new LinkedHashMap<>();
+		LinkedHashMap<PatisNumber, ConceptFoundStatus> result = new LinkedHashMap<>();
 		try {
 			String line = reader.readLine();
 			int linesRead = 0;
@@ -81,7 +81,7 @@ public class PatisCsvReader {
 				try {
 					if(fields.length > column) {
 						PatisNumber p = PatisNumber.create(fields[column]);
-						EligibilityClassification classification = classifier.expectedClassification(p, fields);
+						ConceptFoundStatus classification = classifier.expectedClassification(p, fields);
 						result.put(p, classification);
 					}
 				} catch (IllegalArgumentException ex) {

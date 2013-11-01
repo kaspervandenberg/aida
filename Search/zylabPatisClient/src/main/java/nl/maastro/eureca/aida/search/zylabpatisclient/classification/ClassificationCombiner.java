@@ -52,7 +52,7 @@ public abstract class ClassificationCombiner implements Rule {
 		}
 
 		@Override
-		public Set<EligibilityClassification> getClassification() {
+		public Set<ConceptFoundStatus> getClassification() {
 			return ClassificationCombiner.this.getClassification(delegate);
 		}
 
@@ -72,7 +72,7 @@ public abstract class ClassificationCombiner implements Rule {
 		}
 	}
 
-	protected abstract Set<EligibilityClassification> getClassification(SearchResult base);
+	protected abstract Set<ConceptFoundStatus> getClassification(SearchResult base);
 
 	@Override
 	public SearchResult apply(SearchResult searchResult) throws Inapplicable {

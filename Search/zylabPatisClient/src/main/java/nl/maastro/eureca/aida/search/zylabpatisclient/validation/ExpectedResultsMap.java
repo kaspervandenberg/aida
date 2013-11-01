@@ -11,7 +11,7 @@ import java.util.Set;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
 
 /**
@@ -20,16 +20,16 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Eligibility
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class ExpectedResultsMap implements ExpectedResults {
-	private static final EligibilityClassification DEFAULT_CLASSIFICATION = EligibilityClassification.UNKNOWN;
+	private static final ConceptFoundStatus DEFAULT_CLASSIFICATION = ConceptFoundStatus.FOUND_CONCEPT_UNKNOWN;
 	private final Concept about;
-	private final Map<PatisNumber, EligibilityClassification> classifications;
+	private final Map<PatisNumber, ConceptFoundStatus> classifications;
 
 	private ExpectedResultsMap(Concept about_) {
 		this.about = about_;
 		this.classifications = new HashMap<>();
 	}
 
-	private ExpectedResultsMap(Concept about_, Map<PatisNumber, EligibilityClassification> classifications_) {
+	private ExpectedResultsMap(Concept about_, Map<PatisNumber, ConceptFoundStatus> classifications_) {
 		this.about = about_;
 		this.classifications = classifications_;
 	}
@@ -44,7 +44,7 @@ public class ExpectedResultsMap implements ExpectedResults {
 	 * 
 	 * @see #createIndependentCopy(nl.maastro.eureca.aida.search.zylabpatisclient.Concept, java.util.Map) createIndependentCopy
 	 */
-	public static ExpectedResultsMap createWrapper(Concept about, Map<PatisNumber, EligibilityClassification> classifications) {
+	public static ExpectedResultsMap createWrapper(Concept about, Map<PatisNumber, ConceptFoundStatus> classifications) {
 		return new ExpectedResultsMap(about, classifications);
 	}
 
@@ -53,8 +53,8 @@ public class ExpectedResultsMap implements ExpectedResults {
 	 * 		{@code classifications} have no effect on {@code this}, neither do changes in {@code this} affect {@code classifications}.
 	 * 		
 	 */	
-	public static ExpectedResultsMap createIndependentCopy(Concept about, Map<PatisNumber, EligibilityClassification> classifications) {
-		Map<PatisNumber, EligibilityClassification> copy = new HashMap<>(classifications);
+	public static ExpectedResultsMap createIndependentCopy(Concept about, Map<PatisNumber, ConceptFoundStatus> classifications) {
+		Map<PatisNumber, ConceptFoundStatus> copy = new HashMap<>(classifications);
 		return new ExpectedResultsMap(about, copy);
 	}
 
@@ -78,18 +78,18 @@ public class ExpectedResultsMap implements ExpectedResults {
 	@Override
 	public boolean isAsExpected(SearchResult searchResult) {
 		PatisNumber patient = searchResult.getPatient();
-		Set<EligibilityClassification> actual = searchResult.getClassification();
+		Set<ConceptFoundStatus> actual = searchResult.getClassification();
 
-		EligibilityClassification expected = getClassification(patient);
+		ConceptFoundStatus expected = getClassification(patient);
 		return compareStrictlyActualAndExpected(actual, expected);
 	}
 
 	@Override
 	public boolean containsExpected(SearchResult searchResult) {
 		PatisNumber patient = searchResult.getPatient();
-		Set<EligibilityClassification> actual = searchResult.getClassification();
+		Set<ConceptFoundStatus> actual = searchResult.getClassification();
 
-		EligibilityClassification expected = getClassification(patient);
+		ConceptFoundStatus expected = getClassification(patient);
 		return actual.contains(expected);
 	}
 
@@ -99,7 +99,7 @@ public class ExpectedResultsMap implements ExpectedResults {
 	}
 
 	@Override
-	public EligibilityClassification getClassification(PatisNumber patient) {
+	public ConceptFoundStatus getClassification(PatisNumber patient) {
 		if (isInDefined(patient)) {
 			return classifications.get(patient);
 		} else {
@@ -109,7 +109,7 @@ public class ExpectedResultsMap implements ExpectedResults {
 
 	@Override
 	public SearchResult createExpectedResult(PatisNumber patient) {
-		EligibilityClassification expected = getClassification(patient);
+		ConceptFoundStatus expected = getClassification(patient);
 		return DummySearchResult.Creators.valueOf(expected).create(patient);
 	}
 
@@ -118,7 +118,7 @@ public class ExpectedResultsMap implements ExpectedResults {
 		return new ExpectedResultsToSearchResultsConvertor(this);
 	}
 	
-	private boolean compareStrictlyActualAndExpected(Set<EligibilityClassification> actual, EligibilityClassification expected) {
+	private boolean compareStrictlyActualAndExpected(Set<ConceptFoundStatus> actual, ConceptFoundStatus expected) {
 		return (actual.size() == 1) && actual.contains(expected);
 	}
 

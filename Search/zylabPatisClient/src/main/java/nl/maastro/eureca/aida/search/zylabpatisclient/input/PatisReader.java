@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
 /**
  * Read a collection of {@link PatisNumber} and expected eligibility from
@@ -32,18 +32,18 @@ public class PatisReader {
 		return getCsvReader().read(csvSource);
 	}
 
-	public Map<PatisNumber, EligibilityClassification> readFromJSON(InputStreamReader jsonSource) {
-		Type mapT = new TypeToken<LinkedHashMap<String, EligibilityClassification>>(){ }.getType();
-		LinkedHashMap<String, EligibilityClassification> items = getGson().fromJson(jsonSource, mapT);
-		LinkedHashMap<PatisNumber, EligibilityClassification> result = new LinkedHashMap<>(items.size());
-		for (Map.Entry<String, EligibilityClassification> entry : items.entrySet()) {
+	public Map<PatisNumber, ConceptFoundStatus> readFromJSON(InputStreamReader jsonSource) {
+		Type mapT = new TypeToken<LinkedHashMap<String, ConceptFoundStatus>>(){ }.getType();
+		LinkedHashMap<String, ConceptFoundStatus> items = getGson().fromJson(jsonSource, mapT);
+		LinkedHashMap<PatisNumber, ConceptFoundStatus> result = new LinkedHashMap<>(items.size());
+		for (Map.Entry<String, ConceptFoundStatus> entry : items.entrySet()) {
 			result.put(PatisNumber.create(entry.getKey()), entry.getValue());
 		}
 		return result;
 	}
 
 	public void writeToJSON(Appendable jsonDest, 
-			Map<PatisNumber, EligibilityClassification> expectedMatches) {
+			Map<PatisNumber, ConceptFoundStatus> expectedMatches) {
 		getGson().toJson(expectedMatches, jsonDest);
 	}
 
@@ -70,17 +70,17 @@ public class PatisReader {
 
 	public DummySearcher getDummySearcherFromCsv(InputStreamReader csvSource,
 			PatisCsvReader.Classifier classifier) {
-		final LinkedHashMap<PatisNumber, EligibilityClassification> read =
+		final LinkedHashMap<PatisNumber, ConceptFoundStatus> read =
 				getCsvReader().read(csvSource, classifier);
 		return getDummySearcher(read);
 	}
 
 	public DummySearcher getDummySearcherFromJson(InputStreamReader jsonSource) {
-		final Map<PatisNumber, EligibilityClassification> read = readFromJSON(jsonSource);
+		final Map<PatisNumber, ConceptFoundStatus> read = readFromJSON(jsonSource);
 		return getDummySearcher(read);
 	}
 
-	private DummySearcher getDummySearcher(final Map<PatisNumber, EligibilityClassification> results) {
+	private DummySearcher getDummySearcher(final Map<PatisNumber, ConceptFoundStatus> results) {
 		return new DummySearcher(results);
 	}
 
@@ -118,7 +118,7 @@ public class PatisReader {
 		try {
 			try(FileReader in = new FileReader(args[0])) {
 				try(FileWriter out = new FileWriter(args[1])) {
-					LinkedHashMap<PatisNumber, EligibilityClassification> expected =
+					LinkedHashMap<PatisNumber, ConceptFoundStatus> expected =
 							instance.getCsvReader().read(in, classifier);
 					instance.writeToJSON(out, expected);
 				} catch (IOException ex) {

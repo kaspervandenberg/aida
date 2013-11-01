@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
 /**
  *
@@ -105,8 +105,8 @@ public class ResultDocument {
 		return result;
 	}
 
-	public Set<EligibilityClassification> getClassifiers() {
-		Set<EligibilityClassification> result = new HashSet<>();
+	public Set<ConceptFoundStatus> getClassifiers() {
+		Set<ConceptFoundStatus> result = new HashSet<>();
 		for (SemanticModifier semMod : getModifiers()) {
 			result.add(semMod.getClassification());
 		}

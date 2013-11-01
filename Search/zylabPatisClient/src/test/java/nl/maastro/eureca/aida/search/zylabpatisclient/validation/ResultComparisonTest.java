@@ -16,7 +16,7 @@ import java.util.Set;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparison.Qualifications;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +29,7 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
-import static nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification.*;
+import static nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus.*;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.mockito.Mockito;
@@ -42,17 +42,17 @@ import org.mockito.Mockito;
 @RunWith(Theories.class)
 public class ResultComparisonTest {
 	private enum Expected {
-		ELIGIBLE_1("1", ELIGIBLE),
-		ELIGIBLE_2("2", ELIGIBLE),
-		NOT_ELIGIBLE_3("3", NOT_ELIGIBLE),
-		NOT_ELIGIBLE_4("4", NOT_ELIGIBLE),
+		ELIGIBLE_1("1", NOT_FOUND),
+		ELIGIBLE_2("2", NOT_FOUND),
+		NOT_ELIGIBLE_3("3", FOUND),
+		NOT_ELIGIBLE_4("4", FOUND),
 		UNCERTAIN_5("5", UNCERTAIN),
 		UNCERTAIN_6("6", UNCERTAIN);
 
 		private final PatisNumber patis;
-		private final EligibilityClassification expectedClassification;
+		private final ConceptFoundStatus expectedClassification;
 		
-		private Expected(String patientID, EligibilityClassification classification) {
+		private Expected(String patientID, ConceptFoundStatus classification) {
 			this.patis = PatisNumber.create(patientID);
 			this.expectedClassification = classification;
 		}
@@ -76,7 +76,7 @@ public class ResultComparisonTest {
 		}
 		
 		public ExpectedResults create(ResultComparisonTest context) {
-			Map<PatisNumber, EligibilityClassification> contents = new HashMap<>(items.length);
+			Map<PatisNumber, ConceptFoundStatus> contents = new HashMap<>(items.length);
 			for (Expected item : items) {
 				contents.put(item.patis, item.expectedClassification);
 			}

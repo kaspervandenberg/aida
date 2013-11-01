@@ -4,17 +4,38 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.classification;
 /**
  * Whether the searched {@link nl.maastro.eureca.aida.search.zylabpatisclient.Concept} was found in the
  * searched documents.
- *
- * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
+ * 
+ * @author Kasper van den Berg <kasper.vandenberg@maastron.nl> <kasper@kaspervandenberg.net>
  */
 public enum ConceptFoundStatus {
+	/**
+	 * When the searched criterion is not found in documents about the patient.
+	 */
 	NOT_FOUND,
+
+	/**
+	 * The concept is not found within the patient's documents.
+	 */
 	FOUND,
 
 	/**
-	 * When a concept is modified by a semantic modifier.
+	 * An exclusion criterion is found but the criterion is modified by a
+	 * {@link SemanticModifier}.
+	 * 
+	 * <p><em>NOTE: {@code UNCERTAIN} is reserved for semantically modified
+	 * criteria.  If different documents or different matches within one
+	 * document result in different {@code Classifications}, use a set of 
+	 * {@code Classifications} and do not classify as {@code UNCERTAIN}.</em></p>
+	 * 
+	 * <p><em>NOTE: compare with {@link #UNKNOWN}</em></p>
 	 */
 	UNCERTAIN,
+
+	/**
+	 * Used for {@link SearchResult} based on queries with unknown criterion/
+	 * semantically modified criterion source.
+	 */	
+	FOUND_CONCEPT_UNKNOWN,
 	
 	/**
 	 * When it's unknown whether the concept (should) be found; for example within 

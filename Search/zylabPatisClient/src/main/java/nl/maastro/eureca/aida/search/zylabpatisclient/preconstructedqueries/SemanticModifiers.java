@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.namespace.QName;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.LuceneObject;
@@ -41,10 +41,10 @@ import static nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueri
  * @author kasper
  */
 public enum SemanticModifiers {
-	NEGATED_PREFIX(2, EligibilityClassification.UNCERTAIN,
+	NEGATED_PREFIX(2, ConceptFoundStatus.UNCERTAIN,
 			new LexicalPatterns[] {ANY_NEGATION},
 			new LexicalPatterns[] {}),
-	SUSPICION_PREFIX(3, EligibilityClassification.UNCERTAIN,
+	SUSPICION_PREFIX(3, ConceptFoundStatus.UNCERTAIN,
 			new LexicalPatterns[] {SIGNS_NL1,
 				SIGNS_NL2,
 				MOGELIJK,
@@ -53,7 +53,7 @@ public enum SemanticModifiers {
 				ZOU,
 				PAS},
 			new LexicalPatterns[] { }),
-	SUSPICION_ANY_ORDER(3, EligibilityClassification.UNCERTAIN,
+	SUSPICION_ANY_ORDER(3, ConceptFoundStatus.UNCERTAIN,
 			SUSPECT,
 			BEELD_PAST,
 			KUNNEN_ZIJN,
@@ -219,7 +219,7 @@ public enum SemanticModifiers {
 	private final LexicalPatterns[] suffixModifierPatterns;
 	private final int distance;
 	private final boolean inOrder;
-	private final EligibilityClassification classification;
+	private final ConceptFoundStatus classification;
 	private final Map<Config, SemanticModifier> instances =
 			new HashMap<>();
 
@@ -254,7 +254,7 @@ public enum SemanticModifiers {
 		}
 
 		@Override
-		public EligibilityClassification getClassification() {
+		public ConceptFoundStatus getClassification() {
 			return classification;
 		}
 		
@@ -353,7 +353,7 @@ public enum SemanticModifiers {
 
 	}
 	
-	private SemanticModifiers(int distance_, EligibilityClassification classification_,
+	private SemanticModifiers(int distance_, ConceptFoundStatus classification_,
 			LexicalPatterns... pats) {
 		this.distance = distance_;
 		this.inOrder = false;
@@ -363,7 +363,7 @@ public enum SemanticModifiers {
 	}
 
 	private SemanticModifiers(int distance_,
-			EligibilityClassification classification,
+			ConceptFoundStatus classification,
 			LexicalPatterns[] prefixPatterns,
 			LexicalPatterns[] suffixPatterns) {
 		this.distance = distance_;

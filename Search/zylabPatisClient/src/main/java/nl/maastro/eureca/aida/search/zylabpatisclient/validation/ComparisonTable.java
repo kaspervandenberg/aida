@@ -7,17 +7,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
 /**
  *
  * @author kasper
  */
 class ComparisonTable {
-	private final Map<EligibilityClassification, Map<EligibilityClassification, List<SearchResult>>> data;
+	private final Map<ConceptFoundStatus, Map<ConceptFoundStatus, List<SearchResult>>> data;
 
 	public ComparisonTable() {
-		this.data = new EnumMap<>(EligibilityClassification.class);
+		this.data = new EnumMap<>(ConceptFoundStatus.class);
 	}
 
 	public List<SearchResult> get(ActualExpectedEligibilityClassificationPair coordinate) {
@@ -62,7 +62,7 @@ class ComparisonTable {
 
 	private boolean contains(ActualExpectedEligibilityClassificationPair coordinate) {
 		if (containsRow(coordinate)) {
-			Map<EligibilityClassification, List<SearchResult>> row = getRow(coordinate);
+			Map<ConceptFoundStatus, List<SearchResult>> row = getRow(coordinate);
 			return containsCell(row, coordinate);
 		} else {
 			return false;
@@ -73,16 +73,16 @@ class ComparisonTable {
 		return data.containsKey(coordinate.actual);
 	}
 
-	private boolean containsCell(Map<EligibilityClassification, List<SearchResult>> row, ActualExpectedEligibilityClassificationPair coordinate) {
+	private boolean containsCell(Map<ConceptFoundStatus, List<SearchResult>> row, ActualExpectedEligibilityClassificationPair coordinate) {
 		return row.containsKey(coordinate.expected);
 	}
 
 	private List<SearchResult> getCell(ActualExpectedEligibilityClassificationPair coordinate) {
-		Map<EligibilityClassification, List<SearchResult>> row = getRow(coordinate);
+		Map<ConceptFoundStatus, List<SearchResult>> row = getRow(coordinate);
 		return row.get(coordinate.expected);
 	}
 
-	private Map<EligibilityClassification, List<SearchResult>> getRow(ActualExpectedEligibilityClassificationPair coordinate) {
+	private Map<ConceptFoundStatus, List<SearchResult>> getRow(ActualExpectedEligibilityClassificationPair coordinate) {
 		return data.get(coordinate.actual);
 	}
 
@@ -90,17 +90,17 @@ class ComparisonTable {
 		if (!containsRow(coordinate)) {
 			createRow(coordinate);
 		}
-		Map<EligibilityClassification, List<SearchResult>> row = getRow(coordinate);
+		Map<ConceptFoundStatus, List<SearchResult>> row = getRow(coordinate);
 		if (!containsCell(row, coordinate)) {
 			createCell(row, coordinate);
 		}
 	}
 
 	private void createRow(ActualExpectedEligibilityClassificationPair coordinate) {
-		data.put(coordinate.actual, new EnumMap<EligibilityClassification, List<SearchResult>>(EligibilityClassification.class));
+		data.put(coordinate.actual, new EnumMap<ConceptFoundStatus, List<SearchResult>>(ConceptFoundStatus.class));
 	}
 
-	private void createCell(Map<EligibilityClassification, List<SearchResult>> row, ActualExpectedEligibilityClassificationPair coordinate) {
+	private void createCell(Map<ConceptFoundStatus, List<SearchResult>> row, ActualExpectedEligibilityClassificationPair coordinate) {
 		row.put(coordinate.expected, new LinkedList<SearchResult>());
 	}
 	

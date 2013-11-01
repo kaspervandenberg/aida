@@ -7,7 +7,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
 /**
  * Search result uses as expected results.
@@ -21,29 +21,29 @@ public class DummySearchResult implements SearchResult {
 	 * {@code classification} as expected classification for {@code patient}.
 	 */
 	public enum Creators {
-		NOT_ELIGIBLE(EligibilityClassification.NOT_ELIGIBLE, 1),
-		UNCERTAIN(EligibilityClassification.UNCERTAIN, 1),
-		ELIGIBLE(EligibilityClassification.ELIGIBLE, 0),
-		UNKNOWN(EligibilityClassification.UNKNOWN, 1);
+		NOT_ELIGIBLE(ConceptFoundStatus.FOUND, 1),
+		UNCERTAIN(ConceptFoundStatus.UNCERTAIN, 1),
+		ELIGIBLE(ConceptFoundStatus.NOT_FOUND, 0),
+		UNKNOWN(ConceptFoundStatus.FOUND_CONCEPT_UNKNOWN, 1);
 
-		private static final Map<EligibilityClassification, Creators> classificationToCreator;
+		private static final Map<ConceptFoundStatus, Creators> classificationToCreator;
 		static {
-			EnumMap<EligibilityClassification, Creators> result = new EnumMap<>(EligibilityClassification.class);
-			result.put(EligibilityClassification.NOT_ELIGIBLE, NOT_ELIGIBLE);
-			result.put(EligibilityClassification.UNCERTAIN, UNCERTAIN);
-			result.put(EligibilityClassification.ELIGIBLE, ELIGIBLE);
-			result.put(EligibilityClassification.UNKNOWN, UNKNOWN);
+			EnumMap<ConceptFoundStatus, Creators> result = new EnumMap<>(ConceptFoundStatus.class);
+			result.put(ConceptFoundStatus.FOUND, NOT_ELIGIBLE);
+			result.put(ConceptFoundStatus.UNCERTAIN, UNCERTAIN);
+			result.put(ConceptFoundStatus.NOT_FOUND, ELIGIBLE);
+			result.put(ConceptFoundStatus.FOUND_CONCEPT_UNKNOWN, UNKNOWN);
 			classificationToCreator = Collections.unmodifiableMap(result);
 		}
-		private final EligibilityClassification classification;
+		private final ConceptFoundStatus classification;
 		private final int hitCount;
 
-		private Creators(EligibilityClassification classification_, int hitCount_) {
+		private Creators(ConceptFoundStatus classification_, int hitCount_) {
 			this.classification = classification_;
 			this.hitCount = hitCount_;
 		}
 
-		public static Creators valueOf(EligibilityClassification classification) {
+		public static Creators valueOf(ConceptFoundStatus classification) {
 			return classificationToCreator.get(classification);
 		}
 
@@ -54,22 +54,22 @@ public class DummySearchResult implements SearchResult {
 
 	private final PatisNumber patient;
 	private final int totalHits;
-	private final Set<EligibilityClassification> classification;
+	private final Set<ConceptFoundStatus> classification;
 
-	public DummySearchResult(PatisNumber patient_, EligibilityClassification classification_, int hitCount) {
+	public DummySearchResult(PatisNumber patient_, ConceptFoundStatus classification_, int hitCount) {
 		this.patient = patient_;
 		this.totalHits = hitCount;
 		this.classification = Collections.singleton(classification_);
 	}
 
-	public DummySearchResult(PatisNumber patient_, Set<EligibilityClassification> classification_, int hitCount) {
+	public DummySearchResult(PatisNumber patient_, Set<ConceptFoundStatus> classification_, int hitCount) {
 		this.patient = patient_;
 		this.totalHits = hitCount;
 		this.classification = classification_;
 	}
 
 	@Override
-	public Set<EligibilityClassification> getClassification() {
+	public Set<ConceptFoundStatus> getClassification() {
 		return Collections.unmodifiableSet(classification);
 	}
 	

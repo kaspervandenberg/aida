@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
 /**
  * Query the EMD for the patient's expected metastasis.
@@ -160,21 +160,21 @@ public class PatisExpectedEmdReader implements PatisCsvReader.Classifier {
 		}
 	}
 
-	public EligibilityClassification getExpectedMetastasis(PatisNumber patient) {
+	public ConceptFoundStatus getExpectedMetastasis(PatisNumber patient) {
 		try (ResultSet results = DBConnection.instance().query(patient)) {
 			while(results.next()) {
 				if(results.getBoolean("m")) {
-					return EligibilityClassification.NOT_ELIGIBLE;
+					return ConceptFoundStatus.FOUND;
 				}
 			}
-			return EligibilityClassification.ELIGIBLE;
+			return ConceptFoundStatus.NOT_FOUND;
 		} catch (SQLException ex) {
 			throw new Error(ex);
 		}
 	}
 	
-	public Map<PatisNumber, EligibilityClassification> getExpectedMetastasis(Iterable<PatisNumber> patients) {
-		Map<PatisNumber, EligibilityClassification> result = new LinkedHashMap<>();
+	public Map<PatisNumber, ConceptFoundStatus> getExpectedMetastasis(Iterable<PatisNumber> patients) {
+		Map<PatisNumber, ConceptFoundStatus> result = new LinkedHashMap<>();
 		for (PatisNumber patient : patients) {
 			result.put(patient, getExpectedMetastasis(patient));
 		}
@@ -182,7 +182,7 @@ public class PatisExpectedEmdReader implements PatisCsvReader.Classifier {
 	}
 
 	@Override
-	public EligibilityClassification expectedClassification(
+	public ConceptFoundStatus expectedClassification(
 			PatisNumber patient, String[] textFields) {
 		return getExpectedMetastasis(patient);
 	}

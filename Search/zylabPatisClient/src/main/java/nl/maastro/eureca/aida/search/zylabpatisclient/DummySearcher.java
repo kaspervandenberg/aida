@@ -2,7 +2,7 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
 import java.util.Map;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
 
 /**
@@ -19,18 +19,18 @@ public class DummySearcher extends SearcherBase {
 	 * 		<li>{@code false}, the patient's documents should not match the 
 	 * 			concept → the patient is eligiblie for clinical trials.</li></ul>
 	 */
-	private final Map<PatisNumber, EligibilityClassification> results;
+	private final Map<PatisNumber, ConceptFoundStatus> results;
 
-	public DummySearcher(Map<PatisNumber, EligibilityClassification> results) {
+	public DummySearcher(Map<PatisNumber, ConceptFoundStatus> results) {
 		super("", 0);
 		this.results = results;
 	}
 
 	@Override
 	public SearchResult searchFor(final Query query, final Iterable<SemanticModifier> modifiers, final PatisNumber patient) {
-		if (results.containsKey(patient) && results.get(patient) == EligibilityClassification.NOT_ELIGIBLE) {
+		if (results.containsKey(patient) && results.get(patient) == ConceptFoundStatus.FOUND) {
 			return DummySearchResult.Creators.NOT_ELIGIBLE.create(patient);
-		} else if (results.containsKey(patient) && results.get(patient) == EligibilityClassification.ELIGIBLE) {
+		} else if (results.containsKey(patient) && results.get(patient) == ConceptFoundStatus.NOT_FOUND) {
 			return DummySearchResult.Creators.ELIGIBLE.create(patient);
 		} else {
 			return DummySearchResult.Creators.UNKNOWN.create(patient);

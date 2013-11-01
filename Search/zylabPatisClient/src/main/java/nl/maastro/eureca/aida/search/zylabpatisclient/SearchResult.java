@@ -4,7 +4,7 @@ package nl.maastro.eureca.aida.search.zylabpatisclient;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
 /**
  * Results that {@link ZylabPatisClient} returns
@@ -35,7 +35,7 @@ public interface SearchResult {
 	
 	public Collection<ResultDocument> getMatchingDocuments();
 
-	public Set<EligibilityClassification> getClassification();
+	public Set<ConceptFoundStatus> getClassification();
 
 	public void add(ResultDocument doc);
 

@@ -9,7 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.input.PatisExpectedEmdReader;
 
 /**
@@ -48,7 +48,7 @@ public class ReadPatisEmd {
 	}
 
 	public void check() {
-		Map<PatisNumber, EligibilityClassification> found = emdReader.getExpectedMetastasis(hardcoded.keySet());
+		Map<PatisNumber, ConceptFoundStatus> found = emdReader.getExpectedMetastasis(hardcoded.keySet());
 
 		Set<PatisNumber> missing = new LinkedHashSet<>(hardcoded.keySet());
 		missing.removeAll(found.keySet());

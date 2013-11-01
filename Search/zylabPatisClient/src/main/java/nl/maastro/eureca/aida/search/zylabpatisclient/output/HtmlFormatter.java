@@ -17,7 +17,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResultTable;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.util.QNameUtil;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparison;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparisonTable;
@@ -235,13 +235,13 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		
 	}
 
-	private static final EnumMap<EligibilityClassification, Color> eligibilityColours;
+	private static final EnumMap<ConceptFoundStatus, Color> eligibilityColours;
 	static {
-		eligibilityColours = new EnumMap<>(EligibilityClassification.class);
-		eligibilityColours.put(EligibilityClassification.ELIGIBLE, Color.GREEN);
-		eligibilityColours.put(EligibilityClassification.NOT_ELIGIBLE, Color.RED);
-		eligibilityColours.put(EligibilityClassification.UNCERTAIN, Color.ORANGE);
-		eligibilityColours.put(EligibilityClassification.UNKNOWN, Color.RED.darker());
+		eligibilityColours = new EnumMap<>(ConceptFoundStatus.class);
+		eligibilityColours.put(ConceptFoundStatus.NOT_FOUND, Color.GREEN);
+		eligibilityColours.put(ConceptFoundStatus.FOUND, Color.RED);
+		eligibilityColours.put(ConceptFoundStatus.UNCERTAIN, Color.ORANGE);
+		eligibilityColours.put(ConceptFoundStatus.FOUND_CONCEPT_UNKNOWN, Color.RED.darker());
 	}
 
 	private static final String eligCssPrefix = "eligibility-";
@@ -306,7 +306,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 			+ "\t" +	"background-color:yellow;\n"
 			+ "}\n\n");
 
-		for (Map.Entry<EligibilityClassification, Color> entry : eligibilityColours.entrySet()) {
+		for (Map.Entry<ConceptFoundStatus, Color> entry : eligibilityColours.entrySet()) {
 			out.append(
 					"." + eligCssPrefix + entry.getKey().name().toLowerCase() + " {\n"
 					+ "\t" +	"background-color:#" + Integer.toHexString(entry.getValue().getRGB()).substring(2) + ";\n"
@@ -396,10 +396,10 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	}
 
 	private static void writeEligibility(Appendable out, String pattern,
-			Set<EligibilityClassification> classifications) throws IOException {
-		Set<EligibilityClassification> tmpClassifications = classifications;
+			Set<ConceptFoundStatus> classifications) throws IOException {
+		Set<ConceptFoundStatus> tmpClassifications = classifications;
 		if(classifications.isEmpty()) {
-			tmpClassifications = Collections.singleton(EligibilityClassification.ELIGIBLE);
+			tmpClassifications = Collections.singleton(ConceptFoundStatus.NOT_FOUND);
 		}
 			
 		if(tmpClassifications.size()==1) {

@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.input.PatisCsvReader;
 import nl.maastro.eureca.aida.search.zylabpatisclient.input.PatisExpectedEmdReader;
 
@@ -48,9 +48,9 @@ public class PatisJSON {
 		return singleton;
 	}
 	
-	public Map<PatisNumber, EligibilityClassification> expected(InputStreamReader patisCsv) {
+	public Map<PatisNumber, ConceptFoundStatus> expected(InputStreamReader patisCsv) {
 		List<PatisNumber> patients = fileReader.read(patisCsv);
-		LinkedHashMap<PatisNumber, EligibilityClassification> result = 
+		LinkedHashMap<PatisNumber, ConceptFoundStatus> result = 
 				new LinkedHashMap<>(patients.size());
 		return emdReader.getExpectedMetastasis(patients);
 	}

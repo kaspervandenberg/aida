@@ -5,7 +5,7 @@ import java.util.Collection;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
 /**
  * Results that a concept query should produce.
@@ -47,7 +47,7 @@ public interface ExpectedResults {
 	/**
 	 * @return	the expected {@link EligibilityClassification} of the {@code patient} for the concept {@link #getConcept()}
 	 */
-	public EligibilityClassification getClassification(PatisNumber patient);
+	public ConceptFoundStatus getClassification(PatisNumber patient);
 
 	/**
 	 * @return	a {@link SearchResult} containing {@code patient} classified as expected. 

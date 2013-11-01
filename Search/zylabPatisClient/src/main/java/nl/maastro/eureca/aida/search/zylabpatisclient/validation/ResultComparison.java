@@ -13,7 +13,7 @@ import java.util.Set;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
 /**
  * Compare {@link SearchResult}s with {@link ExpectedResults}.
@@ -211,20 +211,20 @@ public class ResultComparison {
 	private void countDefinedResult(PatisNumber patient, SearchResult searchResult) {
 		MatchTypes matchType = MatchTypes.valueOf(this, searchResult);
 		ComparisonTable table = getCounters(matchType);
-		EligibilityClassification expectClassification = expected.getClassification(patient);
+		ConceptFoundStatus expectClassification = expected.getClassification(patient);
 		insertInto(table, expectClassification, searchResult);
 	}
 
-	private void insertInto(ComparisonTable table, EligibilityClassification expectedClassification, SearchResult value) {
-		Set<EligibilityClassification> targetRows = actualClassificationsUnionExpected(value, expectedClassification);
+	private void insertInto(ComparisonTable table, ConceptFoundStatus expectedClassification, SearchResult value) {
+		Set<ConceptFoundStatus> targetRows = actualClassificationsUnionExpected(value, expectedClassification);
 		
-		for (EligibilityClassification row : targetRows) {
+		for (ConceptFoundStatus row : targetRows) {
 			table.put(new ActualExpectedEligibilityClassificationPair(row, expectedClassification), value);
 		}
 	}
 
-	private Set<EligibilityClassification> actualClassificationsUnionExpected(SearchResult searchResult, EligibilityClassification expectedClassification) {
-		Set<EligibilityClassification> result = EnumSet.copyOf(searchResult.getClassification());
+	private Set<ConceptFoundStatus> actualClassificationsUnionExpected(SearchResult searchResult, ConceptFoundStatus expectedClassification) {
+		Set<ConceptFoundStatus> result = EnumSet.copyOf(searchResult.getClassification());
 		result.add(expectedClassification);
 		
 		return result;

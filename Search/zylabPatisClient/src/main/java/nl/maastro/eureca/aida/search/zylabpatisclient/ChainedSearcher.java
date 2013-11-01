@@ -7,7 +7,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.Query;
 
 /**
@@ -27,7 +27,7 @@ public class ChainedSearcher extends SearcherBase {
 			ResultCombination first(SearchResult result) {
 				boolean doContinue =
 						(result.equals(SearchResultImpl.NO_RESULT())) ||
-						(Collections.singleton(EligibilityClassification.UNKNOWN)
+						(Collections.singleton(ConceptFoundStatus.FOUND_CONCEPT_UNKNOWN)
 							.containsAll(result.getClassification())); 
 				return new ResultCombination(doContinue, result);
 			}

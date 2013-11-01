@@ -7,7 +7,7 @@ package nl.maastro.eureca.aida.search.zylabpatisclient;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Concepts;
 
@@ -30,7 +30,7 @@ public enum SearchedConcepts {
 			}
 
 			@Override
-			public void addExpected(SearchedConcepts container, Map<PatisNumber, EligibilityClassification> expected_, boolean preserveExisting) {
+			public void addExpected(SearchedConcepts container, Map<PatisNumber, ConceptFoundStatus> expected_, boolean preserveExisting) {
 				throw new IllegalStateException("Cannot set expected; non-simulated SearchConcepts " + "use a real searcher to get their results.");
 			}
 		}, SIMULATED {
@@ -40,18 +40,18 @@ public enum SearchedConcepts {
 			}
 
 			@Override
-			public void addExpected(SearchedConcepts container, Map<PatisNumber, EligibilityClassification> expected_, boolean preserveExisting) {
+			public void addExpected(SearchedConcepts container, Map<PatisNumber, ConceptFoundStatus> expected_, boolean preserveExisting) {
 				container.addExpected_sim(expected_, preserveExisting);
 			}
 		};
 
 		public abstract void setSearcher(SearchedConcepts container, Searcher searcher_);
 
-		public abstract void addExpected(SearchedConcepts container, Map<PatisNumber, EligibilityClassification> expected_, boolean preserveExisting);
+		public abstract void addExpected(SearchedConcepts container, Map<PatisNumber, ConceptFoundStatus> expected_, boolean preserveExisting);
 	}
 	private final Concepts concept;
 	private final Strategy strat;
-	private final LinkedHashMap<PatisNumber, EligibilityClassification> expected = new LinkedHashMap<>();
+	private final LinkedHashMap<PatisNumber, ConceptFoundStatus> expected = new LinkedHashMap<>();
 	private Searcher searcher = null;
 
 	private SearchedConcepts(Concepts concept_, Strategy strat_) {
@@ -77,12 +77,12 @@ public enum SearchedConcepts {
 		this.searcher = searcher_;
 	}
 
-	public void addExpected(Map<PatisNumber, EligibilityClassification> expected_, boolean preserveExisting) {
+	public void addExpected(Map<PatisNumber, ConceptFoundStatus> expected_, boolean preserveExisting) {
 		strat.addExpected(this, expected_, preserveExisting);
 	}
 
-	private void addExpected_sim(Map<PatisNumber, EligibilityClassification> expected_, boolean preserveExisting) {
-		LinkedHashMap<PatisNumber, EligibilityClassification> toAdd = new LinkedHashMap<>(expected_);
+	private void addExpected_sim(Map<PatisNumber, ConceptFoundStatus> expected_, boolean preserveExisting) {
+		LinkedHashMap<PatisNumber, ConceptFoundStatus> toAdd = new LinkedHashMap<>(expected_);
 		if (preserveExisting) {
 			toAdd.keySet().removeAll(this.expected.keySet());
 		}

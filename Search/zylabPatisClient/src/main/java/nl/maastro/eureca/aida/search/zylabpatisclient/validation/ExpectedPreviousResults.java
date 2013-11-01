@@ -23,7 +23,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
 import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
-import nl.maastro.eureca.aida.search.zylabpatisclient.classification.EligibilityClassification;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
 /**
  * Expect the results as produced by earlier Lucene invokations.
@@ -31,11 +31,11 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Eligibility
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class ExpectedPreviousResults implements ExpectedResults {
-	private static final EligibilityClassification DEFAULT_CLASSIFICATION = EligibilityClassification.UNKNOWN;
-	private static final EligibilityClassification CONFLICTING_CLASSIFICATION = EligibilityClassification.UNKNOWN;
+	private static final ConceptFoundStatus DEFAULT_CLASSIFICATION = ConceptFoundStatus.FOUND_CONCEPT_UNKNOWN;
+	private static final ConceptFoundStatus CONFLICTING_CLASSIFICATION = ConceptFoundStatus.FOUND_CONCEPT_UNKNOWN;
 	
 	private static class Builder {
-		private final Map<PatisNumber, Set<Set<EligibilityClassification>>> itemsToInsert = new ConcurrentHashMap<>();
+		private final Map<PatisNumber, Set<Set<ConceptFoundStatus>>> itemsToInsert = new ConcurrentHashMap<>();
 		private Date searchDate = new Date();
 
 		public ExpectedPreviousResults build(Concept about) {
@@ -84,16 +84,16 @@ public class ExpectedPreviousResults implements ExpectedResults {
 
 		private void add(SearchResult previousResult) {
 			PatisNumber key = previousResult.getPatient();
-			Set<EligibilityClassification> expectedClassifications = 
+			Set<ConceptFoundStatus> expectedClassifications = 
 					Collections.unmodifiableSet(previousResult.getClassification());
 			
-			Set<Set<EligibilityClassification>> target = getOrCreateClassifications(key);
+			Set<Set<ConceptFoundStatus>> target = getOrCreateClassifications(key);
 			target.add(expectedClassifications);
 		}
 
-		private Set<Set<EligibilityClassification>> getOrCreateClassifications(PatisNumber patient) {
+		private Set<Set<ConceptFoundStatus>> getOrCreateClassifications(PatisNumber patient) {
 			if(!itemsToInsert.containsKey(patient)) {
-				itemsToInsert.put(patient, new HashSet<Set<EligibilityClassification>>());
+				itemsToInsert.put(patient, new HashSet<Set<ConceptFoundStatus>>());
 			}
 			return itemsToInsert.get(patient);
 		}
@@ -121,19 +121,19 @@ public class ExpectedPreviousResults implements ExpectedResults {
 		
 		private void readMapping(Map.Entry<String, JsonElement> jsonEntry) {
 			PatisNumber key = PatisNumber.create(jsonEntry.getKey());
-			Set<Set<EligibilityClassification>> target = getOrCreateClassifications(key);
+			Set<Set<ConceptFoundStatus>> target = getOrCreateClassifications(key);
 			JsonArray setsToAdd = jsonEntry.getValue().getAsJsonArray();
 			for (JsonElement innerSet : setsToAdd) {
 				readClassificationSet(target, innerSet);
 			}
 		}
 
-		private static void readClassificationSet(Set<Set<EligibilityClassification>> target, JsonElement innerSet) {
-			Set<EligibilityClassification> classificationSet = EnumSet.noneOf(EligibilityClassification.class);
+		private static void readClassificationSet(Set<Set<ConceptFoundStatus>> target, JsonElement innerSet) {
+			Set<ConceptFoundStatus> classificationSet = EnumSet.noneOf(ConceptFoundStatus.class);
 			JsonArray ids = innerSet.getAsJsonArray();
 			for (JsonElement json_id : ids) {
 				String str_id = json_id.getAsString();
-				EligibilityClassification classification = EligibilityClassification.valueOf(str_id);
+				ConceptFoundStatus classification = ConceptFoundStatus.valueOf(str_id);
 				classificationSet.add(classification);
 			}
 			target.add(Collections.unmodifiableSet(classificationSet));
@@ -141,17 +141,17 @@ public class ExpectedPreviousResults implements ExpectedResults {
 				
 
 		private void makeUnmodifiable(PatisNumber key) {
-			Set<Set<EligibilityClassification>> values = itemsToInsert.get(key);
+			Set<Set<ConceptFoundStatus>> values = itemsToInsert.get(key);
 			itemsToInsert.put(key, Collections.unmodifiableSet(values));
 		}
 	}
 	
 	private final Concept about;
 	private final Date searchDate;
-	private final Map<PatisNumber, Set<Set<EligibilityClassification>>> expected;
+	private final Map<PatisNumber, Set<Set<ConceptFoundStatus>>> expected;
 
 	private ExpectedPreviousResults(Concept about_, Date searchDate_, 
-			Map<PatisNumber, Set<Set<EligibilityClassification>>> expected_) {
+			Map<PatisNumber, Set<Set<ConceptFoundStatus>>> expected_) {
 		this.about = about_;
 		this.searchDate = new Date(searchDate_.getTime());
 		this.expected = expected_;
@@ -174,7 +174,7 @@ public class ExpectedPreviousResults implements ExpectedResults {
 	}
 
 	public void writeAsJson(Appendable out) {
-		Type mapType = new TypeToken<HashMap<PatisNumber, HashSet<HashSet<EligibilityClassification>>>>() {}.getType();
+		Type mapType = new TypeToken<HashMap<PatisNumber, HashSet<HashSet<ConceptFoundStatus>>>>() {}.getType();
 		Gson gson = new Gson();
 		
 		JsonObject root = new JsonObject();
@@ -204,7 +204,7 @@ public class ExpectedPreviousResults implements ExpectedResults {
 	@Override
 	public boolean isAsExpected(SearchResult actual) {
 		PatisNumber actualPatient = actual.getPatient();
-		Set<EligibilityClassification> actualClassification = actual.getClassification();
+		Set<ConceptFoundStatus> actualClassification = actual.getClassification();
 
 		if(isInDefined(actualPatient)) {
 			return expected.get(actualPatient).contains(actualClassification);
@@ -216,7 +216,7 @@ public class ExpectedPreviousResults implements ExpectedResults {
 	@Override
 	public boolean containsExpected(SearchResult actual) {
 		PatisNumber actualPatient = actual.getPatient();
-		Set<EligibilityClassification> actualClassification = actual.getClassification();
+		Set<ConceptFoundStatus> actualClassification = actual.getClassification();
 
 		if(isInDefined(actualPatient)) {
 			return containsSubset(expected.get(actualPatient), actualClassification);
@@ -231,9 +231,9 @@ public class ExpectedPreviousResults implements ExpectedResults {
 	}
 
 	@Override
-	public EligibilityClassification getClassification(PatisNumber patient) {
+	public ConceptFoundStatus getClassification(PatisNumber patient) {
 		if(isInDefined(patient)) {
-			Set<Set<EligibilityClassification>> expectedClassifications = expected.get(patient);
+			Set<Set<ConceptFoundStatus>> expectedClassifications = expected.get(patient);
 			if(isSingleton2(expectedClassifications)) {
 				return getSingletonValue2(expectedClassifications);
 			} else {
@@ -247,8 +247,8 @@ public class ExpectedPreviousResults implements ExpectedResults {
 	@Override
 	public SearchResult createExpectedResult(PatisNumber patient) {
 		if(isInDefined(patient)) {
-			Set<Set<EligibilityClassification>> allClassifications = expected.get(patient);
-			Set<EligibilityClassification> classification = mergeSets(allClassifications);
+			Set<Set<ConceptFoundStatus>> allClassifications = expected.get(patient);
+			Set<ConceptFoundStatus> classification = mergeSets(allClassifications);
 			return new DummySearchResult(patient, classification, 0);
 		} else {
 			return DummySearchResult.Creators.valueOf(DEFAULT_CLASSIFICATION).create(patient);
@@ -260,9 +260,9 @@ public class ExpectedPreviousResults implements ExpectedResults {
 		return new ExpectedResultsToSearchResultsConvertor(this);
 	}
 
-	private static boolean  containsSubset(Set<Set<EligibilityClassification>> expectedSets, 
-			Set<EligibilityClassification> actualClassification) {
-		for (Set<EligibilityClassification> expectedResult : expectedSets) {
+	private static boolean  containsSubset(Set<Set<ConceptFoundStatus>> expectedSets, 
+			Set<ConceptFoundStatus> actualClassification) {
+		for (Set<ConceptFoundStatus> expectedResult : expectedSets) {
 			if(actualClassification.containsAll(expectedResult)) {
 				return true;
 			}
@@ -300,9 +300,9 @@ public class ExpectedPreviousResults implements ExpectedResults {
 		}
 	}
 
-	private static Set<EligibilityClassification> mergeSets(Iterable<? extends Set<EligibilityClassification>> sets) {
-		Set<EligibilityClassification> result = EnumSet.noneOf(EligibilityClassification.class);
-		for (Set<EligibilityClassification> innerSet : sets) {
+	private static Set<ConceptFoundStatus> mergeSets(Iterable<? extends Set<ConceptFoundStatus>> sets) {
+		Set<ConceptFoundStatus> result = EnumSet.noneOf(ConceptFoundStatus.class);
+		for (Set<ConceptFoundStatus> innerSet : sets) {
 			result.addAll(innerSet);
 		}
 		return result;

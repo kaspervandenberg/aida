@@ -20,7 +20,7 @@ class ComparisonTable {
 		this.data = new EnumMap<>(ConceptFoundStatus.class);
 	}
 
-	public List<SearchResult> get(ActualExpectedEligibilityClassificationPair coordinate) {
+	public List<SearchResult> get(ActualExpectedConceptFoundStatusPair coordinate) {
 		if (contains(coordinate)) {
 			return Collections.unmodifiableList(getCell(coordinate));
 		} else {
@@ -28,7 +28,7 @@ class ComparisonTable {
 		}
 	}
 
-	public int count(ActualExpectedEligibilityClassificationPair coordinate) {
+	public int count(ActualExpectedConceptFoundStatusPair coordinate) {
 		if(contains(coordinate)) {
 			return getCell(coordinate).size();
 		} else {
@@ -36,31 +36,31 @@ class ComparisonTable {
 		}
 	}
 
-	public void put(ActualExpectedEligibilityClassificationPair coordinate, SearchResult actual) {
+	public void put(ActualExpectedConceptFoundStatusPair coordinate, SearchResult actual) {
 		if (!contains(coordinate)) {
 			init(coordinate);
 		}
 		getCell(coordinate).add(actual);
 	}
 
-	public List<SearchResult> collect(List<ActualExpectedEligibilityClassificationPair> coordinates) {
+	public List<SearchResult> collect(List<ActualExpectedConceptFoundStatusPair> coordinates) {
 		List<SearchResult> collected = new LinkedList<>();
-		for (ActualExpectedEligibilityClassificationPair coord : coordinates) {
+		for (ActualExpectedConceptFoundStatusPair coord : coordinates) {
 			collected.addAll(get(coord));
 		}
 
 		return collected;
 	}
 
-	public int countAll(List<ActualExpectedEligibilityClassificationPair> coordinates) {
+	public int countAll(List<ActualExpectedConceptFoundStatusPair> coordinates) {
 		int sum = 0;
-		for (ActualExpectedEligibilityClassificationPair coord : coordinates) {
+		for (ActualExpectedConceptFoundStatusPair coord : coordinates) {
 			sum += count(coord);
 		}
 		return sum;
 	}
 
-	private boolean contains(ActualExpectedEligibilityClassificationPair coordinate) {
+	private boolean contains(ActualExpectedConceptFoundStatusPair coordinate) {
 		if (containsRow(coordinate)) {
 			Map<ConceptFoundStatus, List<SearchResult>> row = getRow(coordinate);
 			return containsCell(row, coordinate);
@@ -69,24 +69,24 @@ class ComparisonTable {
 		}
 	}
 
-	private boolean containsRow(ActualExpectedEligibilityClassificationPair coordinate) {
+	private boolean containsRow(ActualExpectedConceptFoundStatusPair coordinate) {
 		return data.containsKey(coordinate.actual);
 	}
 
-	private boolean containsCell(Map<ConceptFoundStatus, List<SearchResult>> row, ActualExpectedEligibilityClassificationPair coordinate) {
+	private boolean containsCell(Map<ConceptFoundStatus, List<SearchResult>> row, ActualExpectedConceptFoundStatusPair coordinate) {
 		return row.containsKey(coordinate.expected);
 	}
 
-	private List<SearchResult> getCell(ActualExpectedEligibilityClassificationPair coordinate) {
+	private List<SearchResult> getCell(ActualExpectedConceptFoundStatusPair coordinate) {
 		Map<ConceptFoundStatus, List<SearchResult>> row = getRow(coordinate);
 		return row.get(coordinate.expected);
 	}
 
-	private Map<ConceptFoundStatus, List<SearchResult>> getRow(ActualExpectedEligibilityClassificationPair coordinate) {
+	private Map<ConceptFoundStatus, List<SearchResult>> getRow(ActualExpectedConceptFoundStatusPair coordinate) {
 		return data.get(coordinate.actual);
 	}
 
-	private void init(ActualExpectedEligibilityClassificationPair coordinate) {
+	private void init(ActualExpectedConceptFoundStatusPair coordinate) {
 		if (!containsRow(coordinate)) {
 			createRow(coordinate);
 		}
@@ -96,11 +96,11 @@ class ComparisonTable {
 		}
 	}
 
-	private void createRow(ActualExpectedEligibilityClassificationPair coordinate) {
+	private void createRow(ActualExpectedConceptFoundStatusPair coordinate) {
 		data.put(coordinate.actual, new EnumMap<ConceptFoundStatus, List<SearchResult>>(ConceptFoundStatus.class));
 	}
 
-	private void createCell(Map<ConceptFoundStatus, List<SearchResult>> row, ActualExpectedEligibilityClassificationPair coordinate) {
+	private void createCell(Map<ConceptFoundStatus, List<SearchResult>> row, ActualExpectedConceptFoundStatusPair coordinate) {
 		row.put(coordinate.expected, new LinkedList<SearchResult>());
 	}
 	

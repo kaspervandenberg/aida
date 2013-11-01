@@ -45,10 +45,10 @@ public class ResultComparison {
 		 */
 		@SuppressWarnings("serial")
 		ACTUAL_MATCHING_EXPECTED(
-				new EnumMap<MatchTypes, List<ActualExpectedEligibilityClassificationPair>>(MatchTypes.class) {{
+				new EnumMap<MatchTypes, List<ActualExpectedConceptFoundStatusPair>>(MatchTypes.class) {{
 				put(
 						MatchTypes.STRICT__SINGLETONS_ONLY,
-						ActualExpectedEligibilityClassificationPair.identityPairs()); }}),
+						ActualExpectedConceptFoundStatusPair.identityPairs()); }}),
 		
 		/**
 		 * The {@link SearchResult}s whose {@link SearchResult#getClassification()}-set contains 
@@ -56,10 +56,10 @@ public class ResultComparison {
 		 */
 		@SuppressWarnings("serial")
 		ACTUAL_CONTAINIG_EXPECTED_AND_OTHERS(
-				new EnumMap<MatchTypes, List<ActualExpectedEligibilityClassificationPair>>(MatchTypes.class) {{
+				new EnumMap<MatchTypes, List<ActualExpectedConceptFoundStatusPair>>(MatchTypes.class) {{
 				put(
 						MatchTypes.WEAK__EXPECTED_AND_OTHERS,
-						ActualExpectedEligibilityClassificationPair.identityPairs()); }}),
+						ActualExpectedConceptFoundStatusPair.identityPairs()); }}),
 
 		/**
 		 * The {@link SearchResult}s whose {@link SearchResult#getClassification()}-set does NOT contain
@@ -67,10 +67,10 @@ public class ResultComparison {
 		 */
 		@SuppressWarnings("serial")
 		ACTUAL_DIFFERING_FROM_EXPECTED(
-				new EnumMap<MatchTypes, List<ActualExpectedEligibilityClassificationPair>>(MatchTypes.class) {{
+				new EnumMap<MatchTypes, List<ActualExpectedConceptFoundStatusPair>>(MatchTypes.class) {{
 				put(
 						MatchTypes.DIFFERING__CONTAINS_NO_EXPECTED,
-						ActualExpectedEligibilityClassificationPair.identityPairs()); }}),
+						ActualExpectedConceptFoundStatusPair.identityPairs()); }}),
 		
 		/**
 		 * The {@link PatisNumber}s in {@link ExpectedResults#getDefinedPatients()} not found in the actual 
@@ -112,19 +112,19 @@ public class ResultComparison {
 			}
 		};
 
-		private final EnumMap<MatchTypes, List<ActualExpectedEligibilityClassificationPair>> coordinates;
+		private final EnumMap<MatchTypes, List<ActualExpectedConceptFoundStatusPair>> coordinates;
 		
 		private Qualifications() {
 			this.coordinates = new EnumMap<>(MatchTypes.class);
 		}
 		
-		private Qualifications(Map<MatchTypes, List<ActualExpectedEligibilityClassificationPair>> coordinates_) {
+		private Qualifications(Map<MatchTypes, List<ActualExpectedConceptFoundStatusPair>> coordinates_) {
 			this.coordinates = new EnumMap<>(coordinates_);
 		}
 		
 		protected int count(ResultComparison context) {
 			int sum = 0;
-			for (Map.Entry<MatchTypes, List<ActualExpectedEligibilityClassificationPair>> entry : coordinates.entrySet()) {
+			for (Map.Entry<MatchTypes, List<ActualExpectedConceptFoundStatusPair>> entry : coordinates.entrySet()) {
 				ComparisonTable table = context.getCounters(entry.getKey());
 				int count = table.countAll(entry.getValue());
 				sum += count;
@@ -135,7 +135,7 @@ public class ResultComparison {
 
 		protected List<SearchResult> collect(ResultComparison context) {
 			List<SearchResult> result = new LinkedList<>();
-			for (Map.Entry<MatchTypes, List<ActualExpectedEligibilityClassificationPair>> entry : coordinates.entrySet()) {
+			for (Map.Entry<MatchTypes, List<ActualExpectedConceptFoundStatusPair>> entry : coordinates.entrySet()) {
 				ComparisonTable table = context.getCounters(entry.getKey());
 				List<SearchResult> collected = table.collect(entry.getValue());
 				result.addAll(collected);
@@ -219,7 +219,7 @@ public class ResultComparison {
 		Set<ConceptFoundStatus> targetRows = actualClassificationsUnionExpected(value, expectedClassification);
 		
 		for (ConceptFoundStatus row : targetRows) {
-			table.put(new ActualExpectedEligibilityClassificationPair(row, expectedClassification), value);
+			table.put(new ActualExpectedConceptFoundStatusPair(row, expectedClassification), value);
 		}
 	}
 

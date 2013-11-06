@@ -524,6 +524,12 @@ public class Config {
 //		CONFIG_NS_PREFIX("nl.maastro.eureca.aida.search.zylabpatisclient.config.namespace.prefix", "zpsc")
 		DOCUMENT_SERVER("nl.maastro.eureca.aida.search.zylabpatisclient.documentServer",
 				"http://clinisearch.ad.maastro.nl:80/search/item/"),
+		RDF_VALIDATION_URI(
+				"nl.maastro.eureca.aida.search.zylabpatisclient.validation.namespace.uri",
+				"http://clinisearch.ad.maastro.nl/zylabpatis/"),
+		RDF_VALIDATION_PREFIX(
+				"nl.maastro.eureca.aida.search.zylabpatisclient.validation.namespace.prefix",
+				"exp"),
 		;
 
 		private static Properties props = null;

@@ -19,8 +19,9 @@ import org.openrdf.repository.RepositoryException;
  */
  public enum SparqlQueries {
 	PATIENT_QUERY(
-			PATIENT, "WHERE", "{",
-				CONCEPT, EXPECTS_RESULTS, EXPECTATION_ID, HAS_PATIENT,
+			"WHERE", "{",
+				CONCEPT, EXPECTS_RESULTS, EXPECTATION_ID, ".",
+				EXPECTATION_ID, HAS_PATIENT, "_:patient", ".", 
 				"_:patient", PATISNUMBER, PATIENT, "}") {
 
 		@Override
@@ -29,7 +30,7 @@ import org.openrdf.repository.RepositoryException;
 		}
 	},
 	
-	DEFINED_PATIENTS("SELECT", PATIENT_QUERY),
+	DEFINED_PATIENTS("SELECT", PATIENT, PATIENT_QUERY),
 
 	IS_PATIENT_DEFINED("ASK", PATIENT_QUERY) {
 		@Override
@@ -53,6 +54,10 @@ import org.openrdf.repository.RepositoryException;
 		}
 	} 
 
+	String getContents() {
+		return contents.toString();
+	}
+
 	private SparqlQueries add(String str) {
 		addSep();
 		contents.append(str);
@@ -61,7 +66,9 @@ import org.openrdf.repository.RepositoryException;
 
 	private SparqlQueries add(RdfPredicates pred) {
 		addSep();
+		contents.append("<");
 		contents.append(pred.getFullName());
+		contents.append(">");
 		return this;
 	}
 
@@ -90,6 +97,8 @@ import org.openrdf.repository.RepositoryException;
 			this.add((RdfVariableBindings) obj);
 		} else if (obj.getClass().isArray()) {
 			this.addObjects((Object[]) obj);
+		} else if (obj instanceof SparqlQueries) {
+			this.add(((SparqlQueries)obj).getValue());
 		} else {
 			throw new IllegalArgumentException(new ClassCastException(String.format("Expecting String, Predicates, or Bindings received %s", obj.getClass())));
 		}

@@ -45,6 +45,11 @@ public class SparqlQueriesTest {
 		repo.initialize();
 	}
 
+	@After
+	public void teardown() throws RepositoryException {
+		repo.shutDown();
+	}
+
 	
 	@Theory
 	public void testQueryParsable(SparqlQueries query) throws MalformedQueryException {

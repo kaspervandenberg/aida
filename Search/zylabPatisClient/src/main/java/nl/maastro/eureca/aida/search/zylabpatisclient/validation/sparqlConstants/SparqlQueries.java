@@ -19,7 +19,7 @@ import org.openrdf.repository.RepositoryException;
  */
  public enum SparqlQueries {
 	PATIENT_QUERY(
-			"WHERE", "{",
+			"{",
 				CONCEPT, EXPECTS_RESULTS, EXPECTATION_ID, ".",
 				EXPECTATION_ID, HAS_PATIENT, "_:patient", ".", 
 				"_:patient", PATISNUMBER, PATIENT, "}") {
@@ -30,7 +30,7 @@ import org.openrdf.repository.RepositoryException;
 		}
 	},
 	
-	DEFINED_PATIENTS("SELECT", PATIENT, PATIENT_QUERY),
+	DEFINED_PATIENTS("SELECT", PATIENT, "WHERE", PATIENT_QUERY),
 
 	IS_PATIENT_DEFINED("ASK", PATIENT_QUERY) {
 		@Override

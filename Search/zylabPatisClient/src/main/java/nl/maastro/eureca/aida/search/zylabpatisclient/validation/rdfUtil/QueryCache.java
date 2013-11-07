@@ -1,22 +1,17 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.validation.rdfUtil;
 
-import java.io.Closeable;
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -79,11 +74,8 @@ public class QueryCache {
 		private Object connectAndInvoke(Query query, Method method, Object args[]) throws Throwable {
 			try {
 				connectionLock.readLock().lock();
-				if(connection != null && connection.isOpen()) {
-					return method.invoke(query, args);
-				} else {
-					throw new IllegalStateException("Expecting RepossitoryConnection open");
-				}
+				checkConnectionIsOpen();
+				return method.invoke(query, args);
 			} finally {
 				connectionLock.readLock().unlock();
 			}
@@ -142,15 +134,6 @@ public class QueryCache {
 		preparedQueries = new EnumMap<>(SparqlQueries.class);
 		connectionLock = new ReentrantReadWriteLock();
 		users = new AtomicInteger(0);
-	}
-
-	/**
-	 * Clean up to avoid resource leaks: close repository connections and shutdown scheduler
-	 */
-	@Override
-	protected void finalize() throws Throwable {
-		connectionCloseTask.call();
-		super.finalize();
 	}
 
 	public AutoClosableQuery get(SparqlQueries key) throws RepositoryException {
@@ -246,6 +229,18 @@ public class QueryCache {
 			}
 		} finally {
 			connectionLock.writeLock().unlock();
+		}
+	}
+
+	private void checkConnectionIsOpen() throws RepositoryException {
+		try {
+			connectionLock.readLock().lock();
+
+			if(connection == null || !connection.isOpen()) {
+				throw new IllegalStateException("Expecting RepossitoryConnection open");
+			}
+		} finally {
+			connectionLock.readLock().unlock();
 		}
 	}
 

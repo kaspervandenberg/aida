@@ -3,7 +3,10 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.validation.sparqlConstant
 
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.util.CharacterPositionRuler;
+import nl.maastro.eureca.aida.search.zylabpatisclient.validation.rdfUtil.ClosableRepositoryConnection;
+import nl.maastro.eureca.aida.search.zylabpatisclient.validation.rdfUtil.ClosableRepositoryConnectionFactory;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.sparqlConstants.SparqlQueries;
+import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -13,6 +16,11 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.parser.sparql.SPARQLParser;
+import org.openrdf.repository.Repository;
+import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.sail.memory.MemoryStore;
 
 /**
  *
@@ -25,14 +33,19 @@ public class SparqlQueriesTest {
 
 	@DataPoint
 	public static SparqlQueries IS_PATIENT_DEFINED = SparqlQueries.IS_PATIENT_DEFINED;
+
+	private Repository repo;
 	
 	private SPARQLParser parser;
 	
 	@Before
-	public void setup() {
+	public void setup() throws RepositoryException {
 		parser = new SPARQLParser();
+		repo = new SailRepository((new MemoryStore()));
+		repo.initialize();
 	}
 
+	
 	@Theory
 	public void testQueryParsable(SparqlQueries query) throws MalformedQueryException {
 		try {
@@ -41,6 +54,17 @@ public class SparqlQueriesTest {
 			System.err.printf("\nMalformed SparQL:\n%s\n", query.getContents());
 			System.err.append(createRuler(query.getContents().length()));
 			
+			ex.printStackTrace();
+			throw ex;
+		}
+	}
+
+	@Theory
+	public void testQueryPrepare(SparqlQueries query) throws RepositoryException {
+		try (ClosableRepositoryConnection conn = 
+				ClosableRepositoryConnectionFactory.decorate(repo.getConnection())) {
+			query.prepareQuery(conn);
+		} catch (RepositoryException ex) {
 			ex.printStackTrace();
 			throw ex;
 		}

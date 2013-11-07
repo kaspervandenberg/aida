@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+// © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.validation.rdfUtil;
 
 import java.io.Closeable;
@@ -31,11 +28,19 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 /**
+ * Prepare queries, keeping the {@link RepositoryConnection} open and the queries usable until 
+ * {@link AutoClosableQuery#close()} is called.
+ * 
+ * The connection is kept open, and the queries cached and reusable, for {@link #CLOSE_DELAY_MSEC} after closing 
+ * the last query.
  *
- * @author kasper
+ * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class QueryCache {
 	
+	/**
+	 * Decorate {@link Query} with {@link AutoClosableQuery#close()}
+	 */
 	private class QueryProxyHandler implements InvocationHandler {
 		private final SparqlQueries key;
 
@@ -52,11 +57,19 @@ public class QueryCache {
 			}
 		}
 
+		/**
+		 * When the client call {@code close()}, {@link QueryCache#release()} the useage.
+		 * 
+		 * @see QueryCache#get(SparqlQueries) 
+		 */
 		private Object doClose() {
 			release();
 			return null;
 		}
 
+		/**
+		 * Forward call to the real {@link Query}
+		 */
 		private Object invokeOnReal(Method method, Object args[]) throws Throwable {
 			Query realQuery = getRealQuery(key);
 			checkMethodCallable(method, realQuery);

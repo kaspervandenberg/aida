@@ -99,6 +99,7 @@ public class ExpectedResultsRdf implements ExpectedResults {
 	}
 
 	private void addBindings(Query query) {
+		query.clearBindings();
 		RdfVariableBindings.CONCEPT.bind(valueFactory, query, about);
 		RdfVariableBindings.EXPECTATION_ID.bind(valueFactory, query, expectationId);
 	}

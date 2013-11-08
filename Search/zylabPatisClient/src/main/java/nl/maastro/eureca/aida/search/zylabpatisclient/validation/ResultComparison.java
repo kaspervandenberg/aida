@@ -161,7 +161,7 @@ public class ResultComparison {
 	private ResultComparison(ExpectedResults expected_, Iterable<SearchResult> actual_) {
 		this.expected = expected_;
 		this.actual = actual_;
-		this.notSeenInResults = new HashSet<>(expected.getDefinedPatients());
+		this.notSeenInResults = asHashSet(expected.getDefinedPatients());
 		this.unexpectedResults = new LinkedList<>();
 		this.counters = createEmptyCounterTables();
 	}
@@ -185,6 +185,18 @@ public class ResultComparison {
 		}
 		
 		return result;	
+	}
+
+	private static HashSet<PatisNumber> asHashSet(Iterable<PatisNumber> items) {
+		if(items instanceof HashSet) {
+			return (HashSet<PatisNumber>)items;
+		}
+
+		HashSet<PatisNumber> result = new HashSet<>();
+		for (PatisNumber item : items) {
+			result.add(item);
+		}
+		return result;
 	}
 
 	private void countAllActualItems() {

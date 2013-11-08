@@ -1,5 +1,7 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.validation.matchers;
 
+import java.util.LinkedList;
+import java.util.List;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedResults;
@@ -12,7 +14,11 @@ public class SearchResultsMatchers {
 	}	
 
 	public static Matcher<PatisNumber> withExpectationsDefinedBy(final ExpectedResults expectation) {
-		return isIn(expectation.getDefinedPatients());
+		List<PatisNumber> expectedPatients = new LinkedList<>();
+		for (PatisNumber item : expectation.getDefinedPatients()) {
+			expectedPatients.add(item);
+		}
+		return isIn(expectedPatients);
 	}
 
 	public static Matcher<SearchResult> withPatisNumer(final Matcher<? super PatisNumber> inner) {

@@ -26,7 +26,7 @@ public interface ExpectedResults {
 	/**
 	 * @return the Set of Patients for whom expended results are defined
 	 */
-	public Collection<PatisNumber> getDefinedPatients();
+	public Iterable<PatisNumber> getDefinedPatients();
 
 	/**
 	 * Is {@code searchResult} as defined in {@code this} {@code ExpectedResults}?

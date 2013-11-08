@@ -197,7 +197,7 @@ public class ExpectedPreviousResults implements ExpectedResults {
 	}
 
 	@Override
-	public Collection<PatisNumber> getDefinedPatients() {
+	public Iterable<PatisNumber> getDefinedPatients() {
 		return expected.keySet();
 	}
 

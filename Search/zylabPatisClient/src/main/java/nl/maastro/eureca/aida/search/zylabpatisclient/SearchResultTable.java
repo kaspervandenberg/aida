@@ -157,8 +157,10 @@ public class SearchResultTable {
 		columns.put(toAdd.getName(), toAdd);
 	}
 
-	public void addAll(Collection<PatisNumber> patients) {
-		rows.addAll(patients);
+	public void addAll(Iterable<PatisNumber> patients) {
+		for (PatisNumber patient : patients) {
+			rows.add(patient);
+		}
 	}
 
 	private static String getNameFor(Concept concept) {

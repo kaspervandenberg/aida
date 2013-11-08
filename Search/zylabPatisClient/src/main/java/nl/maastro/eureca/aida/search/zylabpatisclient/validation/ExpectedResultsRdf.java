@@ -18,6 +18,7 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.Query;
 import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQuery;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -69,7 +70,7 @@ public class ExpectedResultsRdf implements ExpectedResults {
 	}
 
 	@Override
-	public Collection<PatisNumber> getDefinedPatients() {
+	public Iterable<PatisNumber> getDefinedPatients() {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

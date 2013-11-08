@@ -71,7 +71,7 @@ public class ExpectedResultsMap implements ExpectedResults {
 	}
 
 	@Override
-	public Collection<PatisNumber> getDefinedPatients() {
+	public Iterable<PatisNumber> getDefinedPatients() {
 		return Collections.unmodifiableSet(classifications.keySet());
 	}
 

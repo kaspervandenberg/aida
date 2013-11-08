@@ -4,9 +4,13 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.validation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
@@ -38,6 +42,7 @@ import static org.junit.Assume.*;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import org.junit.After;
+import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theory;
 import org.mockito.MockitoAnnotations;
 import org.openrdf.query.BooleanQuery;
@@ -81,6 +86,7 @@ public class ExpectedResultsRdfTest {
 				+		"exp:status exp:found .",
 			new HashMap<PatisNumber, ConceptFoundStatus>() {{
 				put(PatisNumber.create("12345"), ConceptFoundStatus.NOT_FOUND);
+				put(PatisNumber.create("23456"), ConceptFoundStatus.FOUND);
 			}});
 
 		;
@@ -119,7 +125,9 @@ public class ExpectedResultsRdfTest {
 
 		public SearchResult createDifferingSearchResult(PatisNumber patient, Set<ConceptFoundStatus> other) {
 			Set<ConceptFoundStatus> difference = new HashSet<>(other);
-			difference.remove(definedStatuses.get(patient));
+			if(definedStatuses.containsKey(patient)) {
+				difference.remove(definedStatuses.get(patient));
+			}
 			return new DummySearchResult(patient, difference, 0);
 		}
 
@@ -160,8 +168,26 @@ public class ExpectedResultsRdfTest {
 	@DataPoint
 	public static final DataStoreContents SINGLE_PATIENT_NO_RESULTS = DataStoreContents.SINGLE_PATIENT_NO_RESULTS;
 
+	@DataPoint
+	public static final DataStoreContents TWO_PATIENTS_WITH_RESULTS = DataStoreContents.TWO_PATIENTS_WITH_RESULTS;
+
+	@DataPoints
+	public static Set<?>[] STATUS_SETS = new Set<?>[] {
+		EnumSet.noneOf(ConceptFoundStatus.class),
+		EnumSet.allOf(ConceptFoundStatus.class),
+		EnumSet.of(ConceptFoundStatus.FOUND),
+		EnumSet.of(ConceptFoundStatus.CONFLICTING),
+		EnumSet.of(ConceptFoundStatus.NOT_FOUND),
+		EnumSet.of(ConceptFoundStatus.UNKNOWN),
+		EnumSet.of(ConceptFoundStatus.FOUND, ConceptFoundStatus.UNCERTAIN),
+		EnumSet.of(ConceptFoundStatus.NOT_FOUND, ConceptFoundStatus.UNCERTAIN),
+	};
+
 	public enum Patients {
-		EXISTING_PATIENT("12345");
+		EXISTING_PATIENT("12345"),
+		P2("23456"),
+		UNEXISTING_PATIENT("78901"),
+		;
 
 		private final PatisNumber number;
 
@@ -175,6 +201,12 @@ public class ExpectedResultsRdfTest {
 	}
 	@DataPoint
 	public static final Patients EXISTING_PATIENT = Patients.EXISTING_PATIENT;
+
+	@DataPoint
+	public static final Patients P2 = Patients.P2;
+
+	@DataPoint
+	public static final Patients UNEXISTING_PATIENT = Patients.UNEXISTING_PATIENT;
 	
 	private final static String TEST_URI = "http://clinisearch.ad.maastro.nl/zylabpatis/test/";
 	private final static String TEST_PREFIX = "test";
@@ -272,6 +304,55 @@ public class ExpectedResultsRdfTest {
 		
 		try {
 			assertTrue(testee.isAsExpected(contents.createStrictlyExpectedResult(patient.getPatisNumber())));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
+	}
+
+	@Theory
+	public void testIsAsExpected_undefinedPatient(Patients patient, Set<?> obj_statuses) {
+		assumeThat(contents.getDefinedPatients(), not(hasItem(patient.getPatisNumber())));
+		
+		@SuppressWarnings("unchecked")
+		Set<ConceptFoundStatus> statuses = (Set<ConceptFoundStatus>)obj_statuses;
+		DummySearchResult dummy = new DummySearchResult(patient.getPatisNumber(), statuses, 0);
+
+		try {
+			assertFalse(testee.isAsExpected(dummy));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
+	}
+
+	@Theory
+	public void testIsAsExpected_otherStatus(Patients patient, Set<?> obj_statuses) {
+		@SuppressWarnings("unchecked")
+		Set<ConceptFoundStatus> statuses = (Set<ConceptFoundStatus>)obj_statuses;
+		SearchResult dummy = contents.createDifferingSearchResult(patient.getPatisNumber(), statuses);
+
+		try {
+			assertFalse(testee.isAsExpected(dummy));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
+		
+	}
+
+	@Theory
+	public void testIsAsExpected_weakStatus(Patients patient, Set<?> obj_statuses) {
+		assumeThat(contents.getDefinedPatients(), hasItem(patient.getPatisNumber()));
+		
+		@SuppressWarnings("unchecked")
+		Set<ConceptFoundStatus> statuses = (Set<ConceptFoundStatus>)obj_statuses;
+		SearchResult dummy = contents.createWeaklyExpectedSearchResult(patient.getPatisNumber(), statuses);
+
+		assumeThat(dummy.getClassification().size(), greaterThan(1));
+
+		try {
+			assertFalse(testee.isAsExpected(dummy));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw ex;

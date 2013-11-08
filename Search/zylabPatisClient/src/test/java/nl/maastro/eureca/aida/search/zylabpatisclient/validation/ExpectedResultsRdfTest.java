@@ -225,6 +225,18 @@ public class ExpectedResultsRdfTest {
 		}
 	}
 
+	@Theory
+	public void testPatientNotInDefined(Patients patient) {
+		assumeThat(contents.getDefinedPatients(), not(hasItem(patient.getPatisNumber())));
+
+		try {
+			assertFalse(testee.isInDefined(patient.getPatisNumber()));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
+	}
+
 	private void mockConceptQname() {
 		when (concept.getName()) .thenReturn(new QName(TEST_URI, EXISTING_CONCEPT_LOCAL_PART, TEST_PREFIX));
 	}

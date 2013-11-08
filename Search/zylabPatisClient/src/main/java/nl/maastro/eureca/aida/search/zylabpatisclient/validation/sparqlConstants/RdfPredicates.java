@@ -13,7 +13,8 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 	HAS_PATIENT("patient"),
 	PATISNUMBER("patis"),
 	PART_OF("partOf"),
-	HAS_STATUS("status");
+	HAS_STATUS("status"),
+	RESULT("result");
 
 
 	private final QName qname;

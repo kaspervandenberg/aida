@@ -39,7 +39,7 @@ import org.openrdf.repository.RepositoryException;
 	},
 	
 	IS_AS_EXPECTED("ASK", "{", PATIENT_QUERY, ".",
-			"_:patient", EXPECTS_RESULTS, "_:result", ".",
+			"_:patient", RESULT, "_:result", ".",
 			"_:result", PART_OF, EXPECTATION_ID, ";",
 				HAS_STATUS, STATUS, "}");
 

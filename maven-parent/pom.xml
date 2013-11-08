@@ -17,8 +17,8 @@
 
 	<repositories>
 		<repository>
-			<id>Kasper's Dropbox (public)</id>
-			<url>https://www.dropbox.com/sh/bjni41k0zn5rqye/vM1CHa3d8N/mvn-repository/releases</url>
+			<id>Clinisearch Repository</id>
+			<url>http://clinisearch.ad.maastro.nl:8080/java</url>
 			<!-- Contains Lingpipe -->
 		</repository>
 	</repositories>

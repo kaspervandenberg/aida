@@ -19,10 +19,9 @@ import org.openrdf.repository.RepositoryException;
  */
  public enum SparqlQueries {
 	PATIENT_QUERY(
-			"{",
 				CONCEPT, EXPECTS_RESULTS, EXPECTATION_ID, ".",
 				EXPECTATION_ID, HAS_PATIENT, "_:patient", ".", 
-				"_:patient", PATISNUMBER, PATIENT, "}") {
+				"_:patient", PATISNUMBER, PATIENT) {
 
 		@Override
 		public Query prepareQuery(RepositoryConnection connection) throws RepositoryException {
@@ -30,15 +29,19 @@ import org.openrdf.repository.RepositoryException;
 		}
 	},
 	
-	DEFINED_PATIENTS("SELECT", PATIENT, "WHERE", PATIENT_QUERY),
+	DEFINED_PATIENTS("SELECT", PATIENT, "WHERE", "{", PATIENT_QUERY, "}"),
 
-	IS_PATIENT_DEFINED("ASK", PATIENT_QUERY) {
+	IS_PATIENT_DEFINED("ASK", "{", PATIENT_QUERY, "}") {
 		@Override
 		public BooleanQuery prepareQuery(RepositoryConnection connection) throws RepositoryException {
 			return prepareBooleanQueryImpl(connection);
 		}
-		
-	};
+	},
+	
+	IS_AS_EXPECTED("ASK", "{", PATIENT_QUERY, ".",
+			"_:patient", EXPECTS_RESULTS, "_:result", ".",
+			"_:result", PART_OF, EXPECTATION_ID, ";",
+				HAS_STATUS, STATUS, "}");
 
 	private final StringBuilder contents = new StringBuilder();
 

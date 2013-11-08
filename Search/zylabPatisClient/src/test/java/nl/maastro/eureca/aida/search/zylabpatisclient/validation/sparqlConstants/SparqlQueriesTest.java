@@ -34,6 +34,9 @@ public class SparqlQueriesTest {
 	@DataPoint
 	public static SparqlQueries IS_PATIENT_DEFINED = SparqlQueries.IS_PATIENT_DEFINED;
 
+	@DataPoint
+	public static SparqlQueries IS_AS_EXPECTED = SparqlQueries.IS_AS_EXPECTED;
+
 	private Repository repo;
 	
 	private SPARQLParser parser;

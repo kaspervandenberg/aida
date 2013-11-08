@@ -7,6 +7,8 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.validation.sparqlConstant
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
+import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
+import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.query.BindingSet;
@@ -19,7 +21,8 @@ import org.openrdf.query.Query;
  public enum RdfVariableBindings {
 	PATIENT,
 	CONCEPT,
-	EXPECTATION_ID;
+	EXPECTATION_ID,
+	STATUS;
 
 	public String getQuery() {
 		return "?" + getBindingName();
@@ -38,11 +41,16 @@ import org.openrdf.query.Query;
 		bind(factory, query, concept.getName());
 	}
 
+	public void bind(ValueFactory factory, Query query, ConceptFoundStatus status) {
+		Value v = factory.createURI(Config.PropertyKeys.RDF_VALIDATION_URI.getValue(), status.name().toLowerCase());
+		bind(query, v);
+	}
+	
 	public void bind(ValueFactory factory, Query query, QName qname) {
 		Value v = factory.createURI(qname.getNamespaceURI() + qname.getLocalPart());
 		bind(query, v);
 	}
-	
+
 	public void bind(Query query, Value value) {
 		query.setBinding(name().toLowerCase(), value);
 	}

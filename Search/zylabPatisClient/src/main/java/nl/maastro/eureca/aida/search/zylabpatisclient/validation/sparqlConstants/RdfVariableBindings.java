@@ -31,6 +31,7 @@ import org.openrdf.query.Query;
 	
 	public void bind(ValueFactory factory, Query query, PatisNumber patient) {
 		Value v = factory.createLiteral(patient.getValue());
+		bind(query, v);
 	}
 	
 	public void bind(ValueFactory factory, Query query, Concept concept) {

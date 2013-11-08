@@ -54,11 +54,7 @@ public class ExpectedResultsRdf implements ExpectedResults {
 		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.IS_PATIENT_DEFINED)) {
 			synchronized (obj_query) {
 				addBindings(obj_query);
-				if (!(obj_query instanceof BooleanQuery)) {
-					throw new Error(new ClassCastException(String.format(
-							"Expecting query for %s to be a BooleanQuery", SparqlQueries.IS_PATIENT_DEFINED)));
-				}
-				BooleanQuery query = (BooleanQuery)obj_query;
+				BooleanQuery query = cast(BooleanQuery.class, obj_query, SparqlQueries.IS_PATIENT_DEFINED);
 				RdfVariableBindings.PATIENT.bind(valueFactory, query, patient);
 				return query.evaluate();
 			}
@@ -102,19 +98,16 @@ public class ExpectedResultsRdf implements ExpectedResults {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	
-
-	private void test() {
-		try {
-			RepositoryConnection connection = repo.getConnection();
-		} catch (RepositoryException ex) {
-			
-		}
-	}	
-
 	private void addBindings(Query query) {
 		RdfVariableBindings.CONCEPT.bind(valueFactory, query, about);
 		RdfVariableBindings.EXPECTATION_ID.bind(valueFactory, query, expectationId);
 	}
 	
+	private static <T extends Query> T cast(Class<T> targetClass, Query query, SparqlQueries id) {
+		if (!targetClass.isInstance(query)) {
+			throw new Error(new ClassCastException(String.format(
+					"Expecting query for %s to be a %s", id, targetClass.getSimpleName())));
+		}
+		return targetClass.cast(query);
+	}
 }

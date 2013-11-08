@@ -198,9 +198,9 @@ public class ExpectedResultsRdfTest {
 	@Test
 	public void testTrivialSparqlAsk() throws RepositoryException, MalformedQueryException, 
 			QueryEvaluationException {
-		try {
-			assumeThat(contents.getDefinedPatients(), not(empty()));
+		assumeThat(contents.getDefinedPatients(), not(empty()));
 		
+		try {
 			try (ClosableRepositoryConnection connection = 
 					ClosableRepositoryConnectionFactory.decorate(repo.getConnection())) {
 				BooleanQuery query = connection.prepareBooleanQuery(QueryLanguage.SPARQL, "ASK {?s ?p ?o}");
@@ -215,9 +215,9 @@ public class ExpectedResultsRdfTest {
 	
 	@Theory
 	public void testPatientInDefined(Patients patient) {
-		try {
-			assumeThat(contents.getDefinedPatients(), hasItem(patient.getPatisNumber()));
+		assumeThat(contents.getDefinedPatients(), hasItem(patient.getPatisNumber()));
 		
+		try {
 			assertTrue(testee.isInDefined(patient.getPatisNumber()));
 		} catch (Exception ex) {
 			ex.printStackTrace();

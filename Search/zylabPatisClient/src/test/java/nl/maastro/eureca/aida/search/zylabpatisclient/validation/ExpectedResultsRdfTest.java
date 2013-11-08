@@ -237,6 +237,18 @@ public class ExpectedResultsRdfTest {
 		}
 	}
 
+	@Theory
+	public void testDefinedPatients() {
+		try {
+			assertThat(testee.getDefinedPatients(), containsInAnyOrder(contents.getDefinedPatients().toArray()));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
+	}
+
+	
+
 	private void mockConceptQname() {
 		when (concept.getName()) .thenReturn(new QName(TEST_URI, EXISTING_CONCEPT_LOCAL_PART, TEST_PREFIX));
 	}

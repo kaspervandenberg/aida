@@ -9,6 +9,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.query.BindingSet;
 import org.openrdf.query.Query;
 
 /**
@@ -21,7 +22,11 @@ import org.openrdf.query.Query;
 	EXPECTATION_ID;
 
 	public String getQuery() {
-		return "?" + name().toLowerCase();
+		return "?" + getBindingName();
+	}
+
+	public String getBindingName() {
+		return this.name().toLowerCase();
 	}
 	
 	public void bind(ValueFactory factory, Query query, PatisNumber patient) {
@@ -39,5 +44,9 @@ import org.openrdf.query.Query;
 	
 	public void bind(Query query, Value value) {
 		query.setBinding(name().toLowerCase(), value);
+	}
+
+	public PatisNumber getPatient(BindingSet bindings) {
+		return PatisNumber.create(bindings.getBinding(getBindingName()).getValue().stringValue());
 	}
 }

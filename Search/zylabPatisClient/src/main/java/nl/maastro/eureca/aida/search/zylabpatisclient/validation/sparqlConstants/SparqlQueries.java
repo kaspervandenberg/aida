@@ -31,12 +31,7 @@ import org.openrdf.repository.RepositoryException;
 	
 	DEFINED_PATIENTS("SELECT", PATIENT, "WHERE", "{", PATIENT_QUERY, "}"),
 
-	IS_PATIENT_DEFINED("ASK", "{", PATIENT_QUERY, "}") {
-		@Override
-		public BooleanQuery prepareQuery(RepositoryConnection connection) throws RepositoryException {
-			return prepareBooleanQueryImpl(connection);
-		}
-	},
+	IS_PATIENT_DEFINED("ASK", "{", PATIENT_QUERY, "}"),
 	
 	IS_AS_EXPECTED("ASK", "{", PATIENT_QUERY, ".",
 			"_:patient", RESULT, "_:result", ".",

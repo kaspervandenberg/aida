@@ -41,8 +41,6 @@ import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
-import org.openrdf.rio.turtle.TurtleParser;
-import org.openrdf.rio.turtle.TurtleParserFactory;
 /**
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
@@ -53,14 +51,34 @@ public class ExpectedResultsRdfTest {
 	public enum DataStoreContents {
 		EMPTY("", Collections.<PatisNumber, ConceptFoundStatus>emptyMap()),
 		SINGLE_PATIENT_SINGLE_RESULT(
-				TEST_PREFIX + ":" + EXISTING_CONCEPT_LOCAL_PART + " exp:expectsResults " + TEST_PREFIX + ":" + EXISTING_EXPECTATION_ID + " ."
-				+ TEST_PREFIX + ":" + EXISTING_EXPECTATION_ID + " exp:patient _:p1 ."
-				+ "_:p1 exp:patis \"12345\" ."
-				+ "_:p1 exp:result exp:found .",
+				"test:existingConcept exp:expectsResults test:existingExpectation ."
+				+ "test:existingExpectation exp:patient _:p1 ."
+				+ "_:p1 exp:patis \"12345\";"
+				+ 		"exp:result _:r1 ."
+				+ "_:r1 exp:partOf test:existingExpectation ;"
+				+ 		"exp:status exp:found .",
 			new HashMap<PatisNumber, ConceptFoundStatus>() {{
 				put(PatisNumber.create("12345"), ConceptFoundStatus.FOUND);
 			}}),
-//		SINGLE_PATIENT_NO_RESULTS(),
+		SINGLE_PATIENT_NO_RESULTS(
+				"test:existingConcept exp:expectsResults test:existingExpectation ."
+				+ "_:p1 exp:patis \"12345\" .",
+			Collections.<PatisNumber, ConceptFoundStatus>emptyMap()),
+		TWO_PATIENTS_WITH_RESULTS(
+				"test:existingConcept exp:expectsResults test:existingExpectation ."
+				+ "test:existingExpectation exp:patient _:p1 ."
+				+ "_:p1 exp:patis \"12345\" ;"
+				+ 		"exp:result _:r1 ."
+				+ "_:r1 exp:partOf test:existingExpectation ;"
+				+ 		"exp:status exp:not_found ."
+				+ "test:existingExpectation exp:patient _:p2 ."
+				+ "_:p2 exp:patis \"23456\" ;"
+				+ 		"exp:result _:r2 ."
+				+ "_:r2 exp:partOf test:existingExpectation ;"
+				+		"exp:status exp:found .",
+			new HashMap<PatisNumber, ConceptFoundStatus>() {{
+				put(PatisNumber.create("12345"), ConceptFoundStatus.NOT_FOUND);
+			}});
 
 		;
 
@@ -114,11 +132,14 @@ public class ExpectedResultsRdfTest {
 		}
 	}
 
-//	@DataPoint
-//	public static final DataStoreContents EMPTY = DataStoreContents.EMPTY;
+	@DataPoint
+	public static final DataStoreContents EMPTY = DataStoreContents.EMPTY;
 
 	@DataPoint
 	public static final DataStoreContents SINGLE_PATIENT_SINGLE_RESULT = DataStoreContents.SINGLE_PATIENT_SINGLE_RESULT;
+
+	@DataPoint
+	public static final DataStoreContents SINGLE_PATIENT_NO_RESULTS = DataStoreContents.SINGLE_PATIENT_NO_RESULTS;
 
 	public enum Patients {
 		EXISTING_PATIENT("12345");

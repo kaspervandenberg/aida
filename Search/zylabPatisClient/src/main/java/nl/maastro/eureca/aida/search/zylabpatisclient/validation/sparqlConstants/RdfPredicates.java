@@ -11,7 +11,9 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
  public enum RdfPredicates {
 	EXPECTS_RESULTS("expectsResults"),
 	HAS_PATIENT("patient"),
-	PATISNUMBER("patis");
+	PATISNUMBER("patis"),
+	PART_OF("partOf"),
+	STATUS("status");
 
 
 	private final QName qname;

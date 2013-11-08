@@ -1,12 +1,11 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.validation;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.sparqlConstants.SparqlQueries;
@@ -17,8 +16,6 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.rdfUtil.AutoClosableQuery;
-import nl.maastro.eureca.aida.search.zylabpatisclient.validation.rdfUtil.ClosableRepositoryConnection;
-import nl.maastro.eureca.aida.search.zylabpatisclient.validation.rdfUtil.ClosableRepositoryConnectionFactory;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.rdfUtil.QueryCache;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.query.BindingSet;
@@ -28,7 +25,6 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
 		
@@ -62,8 +58,8 @@ public class ExpectedResultsRdf implements ExpectedResults {
 	public boolean isInDefined(PatisNumber patient) {
 		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.IS_PATIENT_DEFINED)) {
 			synchronized (obj_query) {
-				addBindings(obj_query);
 				BooleanQuery query = cast(BooleanQuery.class, obj_query, SparqlQueries.IS_PATIENT_DEFINED);
+				addCommonBindings(query);
 				RdfVariableBindings.PATIENT.bind(valueFactory, query, patient);
 				return query.evaluate();
 			}
@@ -81,8 +77,8 @@ public class ExpectedResultsRdf implements ExpectedResults {
 	public Iterable<PatisNumber> getDefinedPatients() {
 		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.DEFINED_PATIENTS)) {
 			synchronized (obj_query) {
-				addBindings(obj_query);
 				TupleQuery query = cast(TupleQuery.class, obj_query, SparqlQueries.DEFINED_PATIENTS);
+				addCommonBindings(query);
 				List<PatisNumber> result = queryResultsToList(query);
 				return result;
 			}
@@ -97,7 +93,11 @@ public class ExpectedResultsRdf implements ExpectedResults {
 
 	@Override
 	public boolean isAsExpected(SearchResult searchResult) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		if(isSingleton(searchResult.getClassification())) {
+			return isAsExpectedSingleStatus(searchResult.getPatient(), getSingleStatus(searchResult.getClassification()));
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class ExpectedResultsRdf implements ExpectedResults {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	private void addBindings(Query query) {
+	private void addCommonBindings(Query query) {
 		query.clearBindings();
 		RdfVariableBindings.CONCEPT.bind(valueFactory, query, about);
 		RdfVariableBindings.EXPECTATION_ID.bind(valueFactory, query, expectationId);
@@ -158,5 +158,35 @@ public class ExpectedResultsRdf implements ExpectedResults {
 
 	private PatisNumber extractPatient(BindingSet binding) {
 		return RdfVariableBindings.PATIENT.getPatient(binding);
+	}
+
+	private boolean isAsExpectedSingleStatus(PatisNumber patient, ConceptFoundStatus status) {
+		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.IS_AS_EXPECTED)) {
+			synchronized (obj_query) {
+				BooleanQuery query = cast(BooleanQuery.class, obj_query, SparqlQueries.IS_AS_EXPECTED);
+				addCommonBindings(query);
+				RdfVariableBindings.PATIENT.bind(valueFactory, query, patient);
+				RdfVariableBindings.STATUS.bind(valueFactory, query, status);
+				return query.evaluate();
+			}
+		} catch (RepositoryException | QueryEvaluationException ex) {
+			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, String.format(
+					"Sesame repository error while executing query %s; using empty list of expected results",
+					SparqlQueries.DEFINED_PATIENTS),
+					ex);
+			return status.equals(ConceptFoundStatus.UNKNOWN);
+		}
+	}
+
+	private static boolean isSingleton(Set<ConceptFoundStatus> statusses) {
+		return statusses.size() == 1;
+	}
+
+	private static ConceptFoundStatus getSingleStatus(Set<ConceptFoundStatus> statusSingleton) {
+		if(!isSingleton(statusSingleton)) {
+			throw new IllegalArgumentException(String.format("Set %s is not a singleton", statusSingleton));
+		}
+		Iterator<ConceptFoundStatus> i = statusSingleton.iterator();
+		return i.next();
 	}
 }

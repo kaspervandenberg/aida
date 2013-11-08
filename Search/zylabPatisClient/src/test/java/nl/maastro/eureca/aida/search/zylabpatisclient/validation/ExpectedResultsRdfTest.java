@@ -5,11 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
+import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
+import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.rdfUtil.ClosableRepositoryConnection;
@@ -102,6 +105,22 @@ public class ExpectedResultsRdfTest {
 
 		public Set<PatisNumber> getDefinedPatients() {
 			return definedStatuses.keySet();
+		}
+
+		public SearchResult createStrictlyExpectedResult(PatisNumber patient) {
+			return new DummySearchResult(patient, definedStatuses.get(patient), 0);
+		}
+
+		public SearchResult createWeaklyExpectedSearchResult(PatisNumber patient, Set<ConceptFoundStatus> other) {
+			Set<ConceptFoundStatus> expectedAndOther = new HashSet<>(other);
+			expectedAndOther.add(definedStatuses.get(patient));
+			return new DummySearchResult(patient, expectedAndOther, 0);
+		}
+
+		public SearchResult createDifferingSearchResult(PatisNumber patient, Set<ConceptFoundStatus> other) {
+			Set<ConceptFoundStatus> difference = new HashSet<>(other);
+			difference.remove(definedStatuses.get(patient));
+			return new DummySearchResult(patient, difference, 0);
 		}
 
 		private static String buildN3(String n3Contents_) {
@@ -241,6 +260,18 @@ public class ExpectedResultsRdfTest {
 	public void testDefinedPatients() {
 		try {
 			assertThat(testee.getDefinedPatients(), containsInAnyOrder(contents.getDefinedPatients().toArray()));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
+	}
+
+	@Theory
+	public void testIsAsExpected_definedPatient(Patients patient) {
+		assumeThat(contents.getDefinedPatients(), hasItem(patient.getPatisNumber()));
+		
+		try {
+			assertTrue(testee.isAsExpected(contents.createStrictlyExpectedResult(patient.getPatisNumber())));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw ex;

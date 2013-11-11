@@ -251,12 +251,10 @@ public class ExpectedResultsRdfTest {
 			QueryEvaluationException {
 		assumeThat(contents.getDefinedPatients(), not(empty()));
 		
-		try {
-			try (ClosableRepositoryConnection connection = 
-					ClosableRepositoryConnectionFactory.decorate(repo.getConnection())) {
-				BooleanQuery query = connection.prepareBooleanQuery(QueryLanguage.SPARQL, "ASK {?s ?p ?o}");
-				assertTrue(query.evaluate());
-			}
+		try (ClosableRepositoryConnection connection = 
+				ClosableRepositoryConnectionFactory.decorate(repo.getConnection())) {
+			BooleanQuery query = connection.prepareBooleanQuery(QueryLanguage.SPARQL, "ASK {?s ?p ?o}");
+			assertTrue(query.evaluate());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw ex;

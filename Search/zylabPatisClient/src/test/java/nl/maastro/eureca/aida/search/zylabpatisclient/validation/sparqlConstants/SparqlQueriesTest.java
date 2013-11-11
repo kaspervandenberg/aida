@@ -5,10 +5,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.util.CharacterPositionRuler;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.rdfUtil.ClosableRepositoryConnection;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.rdfUtil.ClosableRepositoryConnectionFactory;
-import nl.maastro.eureca.aida.search.zylabpatisclient.validation.sparqlConstants.SparqlQueries;
 import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
@@ -17,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.parser.sparql.SPARQLParser;
 import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.memory.MemoryStore;
@@ -36,6 +32,9 @@ public class SparqlQueriesTest {
 
 	@DataPoint
 	public static SparqlQueries IS_AS_EXPECTED = SparqlQueries.IS_AS_EXPECTED;
+
+	@DataPoint
+	public static SparqlQueries EXPECTED_STATUS = SparqlQueries.EXPECTED_STATUS;
 
 	private Repository repo;
 	

@@ -18,7 +18,7 @@ import org.openrdf.repository.RepositoryException;
  * @author kasper
  */
  public enum SparqlQueries {
-	PATIENT_QUERY(
+	__INTERN_PATIENT_QUERY(
 				CONCEPT, EXPECTS_RESULTS, EXPECTATION_ID, ".",
 				EXPECTATION_ID, HAS_PATIENT, "_:patient", ".", 
 				"_:patient", PATISNUMBER, PATIENT) {
@@ -28,16 +28,21 @@ import org.openrdf.repository.RepositoryException;
 			throw new UnsupportedOperationException("Not supported.");
 		}
 	},
-	
-	DEFINED_PATIENTS("SELECT", PATIENT, "WHERE", "{", PATIENT_QUERY, "}"),
-
-	IS_PATIENT_DEFINED("ASK", "{", PATIENT_QUERY, "}"),
-	
-	IS_AS_EXPECTED("ASK", "{", PATIENT_QUERY, ".",
-			"_:patient", RESULT, "_:result", ".",
+	__INTERN_EXPECTED_STATUS (
+				__INTERN_PATIENT_QUERY, ".",
+				"_:patient", RESULT, "_:result", ".",
 			"_:result", PART_OF, EXPECTATION_ID, ";",
-				HAS_STATUS, STATUS, "}");
+				HAS_STATUS, STATUS),
+	
+	
+	DEFINED_PATIENTS("SELECT", PATIENT, "WHERE", "{", __INTERN_PATIENT_QUERY, "}"),
 
+	IS_PATIENT_DEFINED("ASK", "{", __INTERN_PATIENT_QUERY, "}"),
+	
+	IS_AS_EXPECTED("ASK", "{", __INTERN_EXPECTED_STATUS, "}"),
+	
+	EXPECTED_STATUS("SELECT", STATUS, "WHERE", "{", __INTERN_EXPECTED_STATUS, "}");
+	
 	private final StringBuilder contents = new StringBuilder();
 
 	private SparqlQueries(Object... query) {
@@ -98,7 +103,8 @@ import org.openrdf.repository.RepositoryException;
 		} else if (obj instanceof SparqlQueries) {
 			this.add(((SparqlQueries)obj).getValue());
 		} else {
-			throw new IllegalArgumentException(new ClassCastException(String.format("Expecting String, Predicates, or Bindings received %s", obj.getClass())));
+			throw new IllegalArgumentException(new ClassCastException(String.format(
+					"Expecting String, Predicates, or Bindings received %s", obj.getClass())));
 		}
 	}
 

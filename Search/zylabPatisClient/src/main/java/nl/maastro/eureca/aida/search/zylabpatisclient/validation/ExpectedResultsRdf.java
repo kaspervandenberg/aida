@@ -75,9 +75,9 @@ public class ExpectedResultsRdf implements ExpectedResults {
 
 	@Override
 	public Iterable<PatisNumber> getDefinedPatients() {
-		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.DEFINED_PATIENTS)) {
+		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.SELECT_DEFINED_PATIENTS)) {
 			synchronized (obj_query) {
-				TupleQuery query = cast(TupleQuery.class, obj_query, SparqlQueries.DEFINED_PATIENTS);
+				TupleQuery query = cast(TupleQuery.class, obj_query, SparqlQueries.SELECT_DEFINED_PATIENTS);
 				addCommonBindings(query);
 				List<PatisNumber> result = queryResultsToList(query);
 				return result;
@@ -85,7 +85,7 @@ public class ExpectedResultsRdf implements ExpectedResults {
 		} catch (RepositoryException ex) {
 			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, String.format(
 					"Sesame repository error while executing query %s; using empty list of expected results",
-					SparqlQueries.DEFINED_PATIENTS),
+					SparqlQueries.SELECT_DEFINED_PATIENTS),
 					ex);
 			return Collections.emptyList();
 		}
@@ -172,7 +172,7 @@ public class ExpectedResultsRdf implements ExpectedResults {
 		} catch (RepositoryException | QueryEvaluationException ex) {
 			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, String.format(
 					"Sesame repository error while executing query %s; using empty list of expected results",
-					SparqlQueries.DEFINED_PATIENTS),
+					SparqlQueries.SELECT_DEFINED_PATIENTS),
 					ex);
 			return status.equals(ConceptFoundStatus.UNKNOWN);
 		}

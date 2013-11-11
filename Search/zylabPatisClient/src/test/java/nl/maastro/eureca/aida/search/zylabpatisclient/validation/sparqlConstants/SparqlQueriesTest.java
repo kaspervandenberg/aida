@@ -25,7 +25,7 @@ import org.openrdf.sail.memory.MemoryStore;
 @RunWith(Theories.class)
 public class SparqlQueriesTest {
 	@DataPoint
-	public static SparqlQueries DEFINED_PATIENTS = SparqlQueries.DEFINED_PATIENTS;
+	public static SparqlQueries SELECT_DEFINED_PATIENTS = SparqlQueries.SELECT_DEFINED_PATIENTS;
 
 	@DataPoint
 	public static SparqlQueries IS_PATIENT_DEFINED = SparqlQueries.IS_PATIENT_DEFINED;
@@ -34,7 +34,7 @@ public class SparqlQueriesTest {
 	public static SparqlQueries IS_AS_EXPECTED = SparqlQueries.IS_AS_EXPECTED;
 
 	@DataPoint
-	public static SparqlQueries EXPECTED_STATUS = SparqlQueries.EXPECTED_STATUS;
+	public static SparqlQueries SELECT_EXPECTED_STATUS = SparqlQueries.SELECT_EXPECTED_STATUS;
 
 	private Repository repo;
 	

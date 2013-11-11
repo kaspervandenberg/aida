@@ -35,13 +35,13 @@ import org.openrdf.repository.RepositoryException;
 				HAS_STATUS, STATUS),
 	
 	
-	DEFINED_PATIENTS("SELECT", PATIENT, "WHERE", "{", __INTERN_PATIENT_QUERY, "}"),
+	SELECT_DEFINED_PATIENTS("SELECT", PATIENT, "WHERE", "{", __INTERN_PATIENT_QUERY, "}"),
 
 	IS_PATIENT_DEFINED("ASK", "{", __INTERN_PATIENT_QUERY, "}"),
 	
 	IS_AS_EXPECTED("ASK", "{", __INTERN_EXPECTED_STATUS, "}"),
 	
-	EXPECTED_STATUS("SELECT", STATUS, "WHERE", "{", __INTERN_EXPECTED_STATUS, "}");
+	SELECT_EXPECTED_STATUS("SELECT", STATUS, "WHERE", "{", __INTERN_EXPECTED_STATUS, "}");
 	
 	private final StringBuilder contents = new StringBuilder();
 

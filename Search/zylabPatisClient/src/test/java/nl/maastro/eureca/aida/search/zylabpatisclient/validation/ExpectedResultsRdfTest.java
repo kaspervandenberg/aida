@@ -7,10 +7,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
@@ -351,6 +348,22 @@ public class ExpectedResultsRdfTest {
 
 		try {
 			assertFalse(testee.isAsExpected(dummy));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
+	}
+
+	@Theory
+	public void testContainsExpected(Patients patient, Set<?> obj_statuses) {
+		assumeThat(contents.getDefinedPatients(), hasItem(patient.getPatisNumber()));
+		
+		@SuppressWarnings("unchecked")
+		Set<ConceptFoundStatus> statuses = (Set<ConceptFoundStatus>)obj_statuses;
+		SearchResult dummy = contents.createWeaklyExpectedSearchResult(patient.getPatisNumber(), statuses);
+		
+		try {
+			assertTrue(testee.containsExpected(dummy));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw ex;

@@ -1,6 +1,11 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.classification;
 
+import java.net.URI;
+import java.util.NoSuchElementException;
+import javax.xml.namespace.QName;
+import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
+
 /**
  * Whether the searched {@link nl.maastro.eureca.aida.search.zylabpatisclient.Concept} was found in the
  * searched documents.
@@ -50,4 +55,27 @@ public enum ConceptFoundStatus {
 	 * and no conflict resolution is defined.
 	 */
 	CONFLICTING
+	
+	;
+	
+	private final QName qname;
+
+	private ConceptFoundStatus() {
+		this.qname = new QName(Config.PropertyKeys.RDF_VALIDATION_URI.getValue(), name().toLowerCase(), 
+				Config.PropertyKeys.RDF_VALIDATION_PREFIX.getValue());
+	}
+
+	public static ConceptFoundStatus valueOf(QName id) {
+		for (ConceptFoundStatus item : values()) {
+			if(item.getQName().equals(id)) {
+				return item;
+			}
+		}
+		throw new NoSuchElementException(String.format("No value for %s", id));
+	}
+	
+	public QName getQName() {
+		return qname;
+	}
+
 }

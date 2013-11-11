@@ -1,6 +1,8 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.validation;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -36,7 +38,7 @@ import org.openrdf.repository.RepositoryException;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  *
  */
-public class ExpectedResultsRdf implements ExpectedResults {
+public class ExpectedResultsRdf implements ExpectedResults, Closeable {
 	private static final ConceptFoundStatus DEFAULT_CLASSIFICATION = ConceptFoundStatus.UNKNOWN;
 	private static final ConceptFoundStatus CONFLICTING_CLASSIFICATION = ConceptFoundStatus.UNKNOWN;
 	
@@ -135,6 +137,13 @@ public class ExpectedResultsRdf implements ExpectedResults {
 	public Iterable<SearchResult> createAllExpectedResults() {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	@Override
+	public void close() {
+		preparedQueries.close();
+	}
+
+	
 
 	private void addCommonBindings(Query query) {
 		query.clearBindings();

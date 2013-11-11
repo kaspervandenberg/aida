@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.validation.rdfUtil;
 
+import java.io.Closeable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -31,7 +32,7 @@ import org.openrdf.repository.RepositoryException;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public class QueryCache {
+public class QueryCache implements Closeable {
 	
 	/**
 	 * Decorate {@link Query} with {@link AutoClosableQuery#close()}
@@ -143,6 +144,15 @@ public class QueryCache {
 		
 		return (AutoClosableQuery)Proxy.newProxyInstance(
 				QueryCache.class.getClassLoader(), interfaces, new QueryProxyHandler(key));
+	}
+
+	public void close() {
+		cancelClose();
+		try {
+			connectionCloseTask.call();
+		} catch (Exception ex) {
+			throw new Error(ex);
+		}
 	}
 
 	/**

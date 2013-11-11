@@ -240,6 +240,7 @@ public class ExpectedResultsRdfTest {
 
 	@After
 	public void tearDown() throws RepositoryException {
+		testee.close();
 		repo.shutDown();
 	}
 	

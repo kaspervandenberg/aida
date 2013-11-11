@@ -31,8 +31,8 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoun
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class ExpectedPreviousResults implements ExpectedResults {
-	private static final ConceptFoundStatus DEFAULT_CLASSIFICATION = ConceptFoundStatus.FOUND_CONCEPT_UNKNOWN;
-	private static final ConceptFoundStatus CONFLICTING_CLASSIFICATION = ConceptFoundStatus.FOUND_CONCEPT_UNKNOWN;
+	private static final ConceptFoundStatus DEFAULT_CLASSIFICATION = ConceptFoundStatus.UNKNOWN;
+	private static final ConceptFoundStatus CONFLICTING_CLASSIFICATION = ConceptFoundStatus.UNKNOWN;
 	
 	private static class Builder {
 		private final Map<PatisNumber, Set<Set<ConceptFoundStatus>>> itemsToInsert = new ConcurrentHashMap<>();

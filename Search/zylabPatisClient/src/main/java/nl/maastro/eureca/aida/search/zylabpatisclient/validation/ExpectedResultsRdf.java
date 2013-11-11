@@ -37,6 +37,9 @@ import org.openrdf.repository.RepositoryException;
  *
  */
 public class ExpectedResultsRdf implements ExpectedResults {
+	private static final ConceptFoundStatus DEFAULT_CLASSIFICATION = ConceptFoundStatus.UNKNOWN;
+	private static final ConceptFoundStatus CONFLICTING_CLASSIFICATION = ConceptFoundStatus.UNKNOWN;
+	
 	private final Repository repo;
 	private final ValueFactory valueFactory;
 	private final Concept about;
@@ -57,6 +60,11 @@ public class ExpectedResultsRdf implements ExpectedResults {
 	}
 
 	@Override
+	public String getTitle() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
 	public boolean isInDefined(PatisNumber patient) {
 		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.IS_PATIENT_DEFINED)) {
 			synchronized (obj_query) {
@@ -68,11 +76,6 @@ public class ExpectedResultsRdf implements ExpectedResults {
 		} catch (RepositoryException | QueryEvaluationException ex) {
 			throw new Error(ex);
 		}
-	}
-
-	@Override
-	public String getTitle() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
@@ -96,7 +99,7 @@ public class ExpectedResultsRdf implements ExpectedResults {
 	@Override
 	public boolean isAsExpected(SearchResult searchResult) {
 		if(isSingleton(searchResult.getClassification())) {
-			return isAsExpectedSingleStatus(searchResult.getPatient(), getSingleStatus(searchResult.getClassification()));
+			return isAsExpectedSingleStatus(searchResult.getPatient(), getSingleElement(searchResult.getClassification()));
 		} else {
 			return false;
 		}
@@ -104,24 +107,23 @@ public class ExpectedResultsRdf implements ExpectedResults {
 
 	@Override
 	public boolean containsExpected(SearchResult searchResult) {
-		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.SELECT_EXPECTED_STATUS)) {
-			TupleQuery query = cast(TupleQuery.class,obj_query, SparqlQueries.SELECT_EXPECTED_STATUS);
-			addCommonBindings(query);
-			RdfVariableBindings.PATIENT.bind(valueFactory, query, searchResult.getPatient());
-			Set<ConceptFoundStatus> expectedStatusses = queryResultsToStatusSet(query);
-			return searchResult.getClassification().containsAll(expectedStatusses);
-		} catch (RepositoryException ex) {
-			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, String.format(
-					"Sesame repository error while executing query %s; using UNKNOWN as expected results",
-					SparqlQueries.SELECT_EXPECTED_STATUS),
-					ex);
-			return searchResult.getClassification().contains(ConceptFoundStatus.UNKNOWN);
-		}
+		Set<ConceptFoundStatus> expectedStatuses = selectConceptFoundStatus(searchResult.getPatient());
+		Set<ConceptFoundStatus> actualStatuses = searchResult.getClassification();
+		return actualStatuses.containsAll(expectedStatuses);
 	}
 
 	@Override
 	public ConceptFoundStatus getClassification(PatisNumber patient) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		Set<ConceptFoundStatus> expectedStatuses = selectConceptFoundStatus(patient);
+		if(!expectedStatuses.isEmpty()) {
+			if(isSingleton(expectedStatuses)) {
+				return getSingleElement(expectedStatuses);
+			} else {
+				return CONFLICTING_CLASSIFICATION;
+			}
+		} else {
+			return DEFAULT_CLASSIFICATION;
+		}
 	}
 
 	@Override
@@ -171,18 +173,18 @@ public class ExpectedResultsRdf implements ExpectedResults {
 		return target;
 	}
 
-	private static boolean isSingleton(Set<ConceptFoundStatus> statusses) {
-		return statusses.size() == 1;
+	private static boolean isSingleton(Set<?> set) {
+		return set.size() == 1;
 	}
 
-	private static ConceptFoundStatus getSingleStatus(Set<ConceptFoundStatus> statusSingleton) {
+	private static <T> T getSingleElement(Set<T> statusSingleton) {
 		if(!isSingleton(statusSingleton)) {
 			throw new IllegalArgumentException(String.format("Set %s is not a singleton", statusSingleton));
 		}
-		Iterator<ConceptFoundStatus> i = statusSingleton.iterator();
+		Iterator<T> i = statusSingleton.iterator();
 		return i.next();
 	}
-	
+
 	private List<PatisNumber> queryResultsToPatientList(TupleQuery query) {
 		List<PatisNumber> target = new LinkedList<>();
 		addQueryResults(target, query, PatisNumber.class, RdfVariableBindings.PATIENT);
@@ -209,7 +211,24 @@ public class ExpectedResultsRdf implements ExpectedResults {
 					"Sesame repository error while executing query %s; using empty list of expected results",
 					SparqlQueries.SELECT_DEFINED_PATIENTS),
 					ex);
-			return status.equals(ConceptFoundStatus.UNKNOWN);
+			return status.equals(DEFAULT_CLASSIFICATION);
 		}
+	}
+
+	private Set<ConceptFoundStatus> selectConceptFoundStatus(PatisNumber patient) {
+		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.SELECT_EXPECTED_STATUS)) {
+			TupleQuery query = cast(TupleQuery.class,obj_query, SparqlQueries.SELECT_EXPECTED_STATUS);
+			addCommonBindings(query);
+			RdfVariableBindings.PATIENT.bind(valueFactory, query, patient);
+			Set<ConceptFoundStatus> expectedStatusses = queryResultsToStatusSet(query);
+			return expectedStatusses;
+		} catch (RepositoryException ex) {
+			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, String.format(
+					"Sesame repository error while executing query %s; using UNKNOWN as expected results",
+					SparqlQueries.SELECT_EXPECTED_STATUS),
+					ex);
+			return Collections.singleton(DEFAULT_CLASSIFICATION);
+		}
+
 	}
 }

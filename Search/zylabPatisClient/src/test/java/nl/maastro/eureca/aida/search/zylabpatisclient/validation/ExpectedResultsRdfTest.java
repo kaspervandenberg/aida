@@ -370,6 +370,31 @@ public class ExpectedResultsRdfTest {
 		}
 	}
 
+	@Theory
+	public void testGetClassification_definedPatient(Patients patient) {
+		assumeThat(contents.getDefinedPatients(), hasItem(patient.getPatisNumber()));
+
+		try {
+			assertThat(testee.getClassification(patient.getPatisNumber()), is(contents.definedStatuses.get(patient.getPatisNumber())));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
+	}
+
+	@Theory
+	public void testGetClassification_undefinedPatient(Patients patient) {
+		assumeThat(contents.getDefinedPatients(), not(hasItem(patient.getPatisNumber())));
+
+		try {
+			assertThat(testee.getClassification(patient.getPatisNumber()), is(ConceptFoundStatus.UNKNOWN));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
+		
+	}
+
 	
 
 	private void mockConceptQname() {

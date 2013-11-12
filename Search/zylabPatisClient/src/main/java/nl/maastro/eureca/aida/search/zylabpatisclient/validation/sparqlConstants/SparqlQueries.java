@@ -45,7 +45,7 @@ import org.openrdf.repository.RepositoryException;
 	
 	GET_TITLE("SELECT", TITLE, "WHERE {",
 			CONCEPT, EXPECTS_RESULTS, EXPECTATION_ID, ".",
-			EXPECTATION_ID, LABEL, TITLE, ".");
+			EXPECTATION_ID, LABEL, TITLE, "}");
 	
 	private final StringBuilder contents = new StringBuilder();
 

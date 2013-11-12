@@ -57,7 +57,8 @@ public class ExpectedResultsRdfTest {
 		EMPTY("", Collections.<PatisNumber, ConceptFoundStatus>emptyMap()),
 		SINGLE_PATIENT_SINGLE_RESULT(
 				"test:existingConcept exp:expectsResults test:existingExpectation ."
-				+ "test:existingExpectation exp:patient _:p1 ."
+				+ "test:existingExpectation	rdfs:label \"SINGLE_PATIENT_SINGLE_RESULT\" ;"
+				+ 		"exp:patient _:p1 ."
 				+ "_:p1 exp:patis \"12345\";"
 				+ 		"exp:result _:r1 ."
 				+ "_:r1 exp:partOf test:existingExpectation ;"
@@ -67,11 +68,13 @@ public class ExpectedResultsRdfTest {
 			}}),
 		SINGLE_PATIENT_NO_RESULTS(
 				"test:existingConcept exp:expectsResults test:existingExpectation ."
+				+ "test:existingExpectation	rdfs:label \"SINGLE_PATIENT_NO_RESULTS\" ."
 				+ "_:p1 exp:patis \"12345\" .",
 			Collections.<PatisNumber, ConceptFoundStatus>emptyMap()),
 		TWO_PATIENTS_WITH_RESULTS(
 				"test:existingConcept exp:expectsResults test:existingExpectation ."
-				+ "test:existingExpectation exp:patient _:p1 ."
+				+ "test:existingExpectation	rdfs:label \"TWO_PATIENTS_WITH_RESULTS\" ;"
+				+ 		"exp:patient _:p1 ."
 				+ "_:p1 exp:patis \"12345\" ;"
 				+ 		"exp:result _:r1 ."
 				+ "_:r1 exp:partOf test:existingExpectation ;"
@@ -143,6 +146,7 @@ public class ExpectedResultsRdfTest {
 							Config.PropertyKeys.PRECONSTRUCTED_PREFIX,
 							Config.PropertyKeys.PRECONSTRUCTED_URI));
 			builder.append(n3NamespacePrefix(TEST_PREFIX, TEST_URI));
+			builder.append(n3NamespacePrefix(RDFS_PREFIX, RDFS_URI));
 			builder.append("\n");
 		}
 
@@ -207,6 +211,8 @@ public class ExpectedResultsRdfTest {
 	
 	private final static String TEST_URI = "http://clinisearch.ad.maastro.nl/zylabpatis/test/";
 	private final static String TEST_PREFIX = "test";
+	private final static String RDFS_URI = "http://www.w3.org/2000/01/rdf-schema#";
+	private final static String RDFS_PREFIX = "rdfs";
 	private final static String EXISTING_CONCEPT_LOCAL_PART = "existingConcept";
 	private final static String EXISTING_EXPECTATION_ID = "existingExpectation";
 	private final static QName EXPECTATION_ID = new QName(TEST_URI, EXISTING_EXPECTATION_ID, TEST_PREFIX);
@@ -393,9 +399,20 @@ public class ExpectedResultsRdfTest {
 			ex.printStackTrace();
 			throw ex;
 		}
-		
 	}
 
+	@Test
+	public void testGetTitle() {
+		assumeThat(contents, not(is(DataStoreContents.EMPTY)));
+		String expectedTitle = String.format("Expected %s (%s)", EXISTING_CONCEPT_LOCAL_PART, contents.name());
+
+		try {
+			assertThat(testee.getTitle(), is(expectedTitle));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
+	}
 	
 
 	private void mockConceptQname() {

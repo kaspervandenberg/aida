@@ -64,7 +64,27 @@ public class ExpectedResultsRdf implements ExpectedResults, Closeable {
 
 	@Override
 	public String getTitle() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		String conceptName = getAboutConcept().getName().getLocalPart();
+		String idLabel = expectationId.getLocalPart();
+		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.GET_TITLE)) {
+			synchronized (obj_query) {
+				TupleQuery query = cast(TupleQuery.class, obj_query, SparqlQueries.GET_TITLE);
+				addCommonBindings(query);
+				Set<String> titles = queryResultsToTitleSet(query);
+				if(isSingleton(titles)) {
+					idLabel = getSingleElement(titles);
+				} else if (titles.size() > 1) {
+					idLabel = compose(titles);
+				}
+			}
+		} catch (RepositoryException ex) {
+			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, 
+					"Sesame repository error while reading title label",
+					ex);
+			idLabel = "<<ERROR>>";
+		}
+		String fullTitle = String.format("Expected %s (%s)", conceptName, idLabel);
+		return fullTitle;
 	}
 
 	@Override
@@ -209,7 +229,13 @@ public class ExpectedResultsRdf implements ExpectedResults, Closeable {
 		addQueryResults(target, query, ConceptFoundStatus.class, RdfVariableBindings.STATUS);
 		return target;
 	}
-	
+
+	private Set<String> queryResultsToTitleSet(TupleQuery query) {
+		Set<String> target = new HashSet<>();
+		addQueryResults(target, query, String.class, RdfVariableBindings.TITLE);
+		return target;
+	}
+
 	private boolean isAsExpectedSingleStatus(PatisNumber patient, ConceptFoundStatus status) {
 		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.IS_AS_EXPECTED)) {
 			synchronized (obj_query) {
@@ -242,6 +268,18 @@ public class ExpectedResultsRdf implements ExpectedResults, Closeable {
 					ex);
 			return Collections.singleton(DEFAULT_CLASSIFICATION);
 		}
+	}
 
+	private static String compose(Set<String> items) {
+		StringBuilder result = new StringBuilder();
+		result.append("{");
+		Iterator<String> iter = items.iterator();
+		while(iter.hasNext()) {
+			result.append(iter.next());
+			if(iter.hasNext()) {
+				result.append(", ");
+			}
+		}
+		return result.toString();
 	}
 }

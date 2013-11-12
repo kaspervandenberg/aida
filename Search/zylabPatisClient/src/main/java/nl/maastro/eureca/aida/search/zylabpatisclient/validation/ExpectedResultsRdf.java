@@ -16,6 +16,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.validation.sparqlConstants
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.sparqlConstants.RdfVariableBindings;
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
+import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
@@ -130,12 +131,15 @@ public class ExpectedResultsRdf implements ExpectedResults, Closeable {
 
 	@Override
 	public SearchResult createExpectedResult(PatisNumber patient) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		ConceptFoundStatus expectedStatus = getClassification(patient);
+		DummySearchResult.Creators factory = DummySearchResult.Creators.valueOf(expectedStatus);
+		DummySearchResult result = factory.create(patient);
+		return result;
 	}
 
 	@Override
 	public Iterable<SearchResult> createAllExpectedResults() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return new ExpectedResultsToSearchResultsConvertor(this);
 	}
 
 	@Override

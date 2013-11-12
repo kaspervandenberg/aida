@@ -24,7 +24,7 @@ public interface ExpectedResults {
 	public Concept getAboutConcept();
 	
 	/**
-	 * @return the Set of Patients for whom expended results are defined
+	 * @return the Set of Patients for whom expected results are defined
 	 */
 	public Iterable<PatisNumber> getDefinedPatients();
 

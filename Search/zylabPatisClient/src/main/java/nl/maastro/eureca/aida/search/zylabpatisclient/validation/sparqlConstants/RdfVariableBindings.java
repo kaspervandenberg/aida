@@ -27,9 +27,7 @@ import org.openrdf.query.Query;
 			if(valueType.isAssignableFrom(PatisNumber.class)) {
 				return valueType.cast(getPatient(boundVariables));
 			} else {
-				throw new IllegalArgumentException(String.format(
-						"PATIENT.getValue() only supports class PatisNumber; received: %s", 
-						valueType.getSimpleName()));
+				throw new IllegalArgumentException(createIllegalValueTypeMsg(PatisNumber.class, valueType));
 			}
 		}
 	},
@@ -43,9 +41,7 @@ import org.openrdf.query.Query;
 			if(valueType.isAssignableFrom(ConceptFoundStatus.class)) {
 				return valueType.cast(getFoundStatus(boundVariables));
 			} else {
-				throw new IllegalArgumentException(String.format(
-						"STATUS.getValue() only supports class ConceptFoundStatus; received: %s",
-						valueType.getSimpleName()));
+				throw new IllegalArgumentException(createIllegalValueTypeMsg(ConceptFoundStatus.class, valueType));
 			}
 		}
 	},
@@ -56,10 +52,7 @@ import org.openrdf.query.Query;
 			if(valueType.isAssignableFrom(String.class)) {
 				return valueType.cast(getStringValue(boundVariables));
 			} else {
-				throw new IllegalArgumentException(String.format(
-						"TITLE.getValue() only supports class String; received: %s",
-						valueType.getSimpleName()));
-			
+				throw new IllegalArgumentException(createIllegalValueTypeMsg(String.class, valueType));
 			}
 		}
 	};
@@ -128,6 +121,13 @@ import org.openrdf.query.Query;
 		if (result == null) {
 			throw new IllegalStateException(String.format("%s is not bound", this.name()));
 		}
+		return result;
+	}
+
+	protected String createIllegalValueTypeMsg(Class<?> acceptedType, Class<?> actualType) {
+		String result = String.format(
+				"%s.getValue() only supports class %s; received %s.",
+				this.name(), acceptedType.getSimpleName(), actualType.getSimpleName());
 		return result;
 	}
 }

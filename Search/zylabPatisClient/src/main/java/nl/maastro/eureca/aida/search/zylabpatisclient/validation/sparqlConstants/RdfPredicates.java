@@ -14,13 +14,20 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 	PATISNUMBER("patis"),
 	PART_OF("partOf"),
 	HAS_STATUS("status"),
-	RESULT("result");
+	RESULT("result"),
+	LABEL("http://www.w3.org/2000/01/rdf-schema#", "label"),
+	
+	;
 
 
 	private final QName qname;
 
 	private RdfPredicates(String localName) {
 		this.qname = new QName(Config.PropertyKeys.RDF_VALIDATION_URI.getValue(), localName, Config.PropertyKeys.RDF_VALIDATION_PREFIX.getValue());
+	}
+	
+	private RdfPredicates(String namespace, String localName) {
+		this.qname = new QName(namespace, localName);
 	}
 
 	public String getFullName() {

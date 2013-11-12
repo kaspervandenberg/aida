@@ -41,7 +41,11 @@ import org.openrdf.repository.RepositoryException;
 	
 	IS_AS_EXPECTED("ASK", "{", __INTERN_EXPECTED_STATUS, "}"),
 	
-	SELECT_EXPECTED_STATUS("SELECT", STATUS, "WHERE", "{", __INTERN_EXPECTED_STATUS, "}");
+	SELECT_EXPECTED_STATUS("SELECT", STATUS, "WHERE", "{", __INTERN_EXPECTED_STATUS, "}"),
+	
+	GET_TITLE("SELECT", TITLE, "WHERE {",
+			CONCEPT, EXPECTS_RESULTS, EXPECTATION_ID, ".",
+			EXPECTATION_ID, LABEL, TITLE, ".");
 	
 	private final StringBuilder contents = new StringBuilder();
 

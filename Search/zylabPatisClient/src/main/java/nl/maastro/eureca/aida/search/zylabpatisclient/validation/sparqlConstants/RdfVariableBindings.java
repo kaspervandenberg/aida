@@ -48,6 +48,20 @@ import org.openrdf.query.Query;
 						valueType.getSimpleName()));
 			}
 		}
+	},
+	
+	TITLE {
+		@Override
+		public <T> T getValue(Class<T> valueType, BindingSet boundVariables) {
+			if(valueType.isAssignableFrom(String.class)) {
+				return valueType.cast(getStringValue(boundVariables));
+			} else {
+				throw new IllegalArgumentException(String.format(
+						"TITLE.getValue() only supports class String; received: %s",
+						valueType.getSimpleName()));
+			
+			}
+		}
 	};
 
 	public String getQuery() {
@@ -95,7 +109,7 @@ import org.openrdf.query.Query;
 		return ConceptFoundStatus.valueOf(qname_value);
 	}
 
-	private String getStringValue(BindingSet boundVariables) {
+	protected String getStringValue(BindingSet boundVariables) {
 		Value value = getBinding(boundVariables).getValue();
 		return value.stringValue();
 	}

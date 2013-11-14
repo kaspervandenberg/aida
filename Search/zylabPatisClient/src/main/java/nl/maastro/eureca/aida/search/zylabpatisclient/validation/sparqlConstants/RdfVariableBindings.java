@@ -4,7 +4,6 @@
  */
 package nl.maastro.eureca.aida.search.zylabpatisclient.validation.sparqlConstants;
 
-import java.net.URI;
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
@@ -57,6 +56,21 @@ import org.openrdf.query.Query;
 		}
 	};
 
+	public interface Binder {
+		public void bind(ValueFactory factory, Query query);
+	}
+
+	public static Binder createCompoundBinder(final Binder... subbinders) {
+		return new Binder() {
+			@Override
+			public void bind(ValueFactory factory, Query query) {
+				for (Binder binder : subbinders) {
+					binder.bind(factory, query);
+				}
+			}
+		};
+	}
+	
 	public String getQuery() {
 		return "?" + getBindingName();
 	}
@@ -64,7 +78,43 @@ import org.openrdf.query.Query;
 	public String getBindingName() {
 		return this.name().toLowerCase();
 	}
-	
+
+	public Binder createBinder(final PatisNumber patient) {
+		return new Binder() {
+			@Override
+			public void bind(ValueFactory factory, Query query) {
+				RdfVariableBindings.this.bind(factory, query, patient);
+			}
+		};
+	}
+
+	public Binder createBinder(final Concept concept) {
+		return new Binder() {
+			@Override
+			public void bind(ValueFactory factory, Query query) {
+				RdfVariableBindings.this.bind(factory, query, concept);
+			}
+		};
+	}
+
+	public Binder createBinder(final ConceptFoundStatus status) {
+		return new Binder() {
+			@Override
+			public void bind(ValueFactory factory, Query query) {
+				RdfVariableBindings.this.bind(factory, query, status);
+			}
+		};
+	}
+
+	public Binder createBinder(final QName qname) {
+		return new Binder() {
+			@Override
+			public void bind(ValueFactory factory, Query query) {
+				RdfVariableBindings.this.bind(factory, query, qname);
+			}
+		};
+	}
+
 	public void bind(ValueFactory factory, Query query, PatisNumber patient) {
 		Value v = factory.createLiteral(patient.getValue());
 		bind(query, v);

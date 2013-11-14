@@ -65,55 +65,43 @@ public class ExpectedResultsRdf implements ExpectedResults, Closeable {
 	@Override
 	public String getTitle() {
 		String conceptName = getAboutConcept().getName().getLocalPart();
-		String idLabel = expectationId.getLocalPart();
-		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.GET_TITLE)) {
-			synchronized (obj_query) {
-				TupleQuery query = cast(TupleQuery.class, obj_query, SparqlQueries.GET_TITLE);
-				addCommonBindings(query);
-				Set<String> titles = queryResultsToTitleSet(query);
-				if(isSingleton(titles)) {
-					idLabel = getSingleElement(titles);
-				} else if (titles.size() > 1) {
-					idLabel = compose(titles);
-				}
-			}
-		} catch (RepositoryException ex) {
-			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, 
-					"Sesame repository error while reading title label",
-					ex);
-			idLabel = "<<ERROR>>";
-		}
+		String idLabel = queryIdLabel();
 		String fullTitle = String.format("Expected %s (%s)", conceptName, idLabel);
 		return fullTitle;
 	}
 
 	@Override
 	public boolean isInDefined(PatisNumber patient) {
-		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.IS_PATIENT_DEFINED)) {
-			synchronized (obj_query) {
-				BooleanQuery query = cast(BooleanQuery.class, obj_query, SparqlQueries.IS_PATIENT_DEFINED);
-				addCommonBindings(query);
-				RdfVariableBindings.PATIENT.bind(valueFactory, query, patient);
-				return query.evaluate();
-			}
-		} catch (RepositoryException | QueryEvaluationException ex) {
-			throw new Error(ex);
+		try {
+			RdfVariableBindings.Binder patientInputVariableBinder = createPatientBinder(patient);
+			boolean result = evaluateQuery(SparqlQueries.IS_PATIENT_DEFINED, patientInputVariableBinder);
+			return result;
+		} catch (QueryEvaluationException | RepositoryException ex) {
+			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, String.format(
+					"Sesame repository error while checking expected results for "
+					+ "concept %s, expectation %s, patient %s (query %s); "
+					+ "assuming no results and continuing.",
+					about.getName(), expectationId, patient.getValue(), SparqlQueries.IS_PATIENT_DEFINED),
+					ex);
 		}
+		return false;
 	}
 
 	@Override
 	public Iterable<PatisNumber> getDefinedPatients() {
-		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.SELECT_DEFINED_PATIENTS)) {
-			synchronized (obj_query) {
-				TupleQuery query = cast(TupleQuery.class, obj_query, SparqlQueries.SELECT_DEFINED_PATIENTS);
-				addCommonBindings(query);
-				List<PatisNumber> result = queryResultsToPatientList(query);
-				return result;
-			}
-		} catch (RepositoryException ex) {
+		try {
+			RdfVariableBindings.Binder inputVariableBinder = createCommonBinder();
+			List<PatisNumber> target = new LinkedList<>();
+			List<PatisNumber> definedPatients = evaluateQuery(
+					SparqlQueries.SELECT_DEFINED_PATIENTS, inputVariableBinder,
+					target, PatisNumber.class, RdfVariableBindings.PATIENT);
+			return definedPatients;
+		} catch (QueryEvaluationException | RepositoryException ex) {
 			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, String.format(
-					"Sesame repository error while executing query %s; using empty list of expected results",
-					SparqlQueries.SELECT_DEFINED_PATIENTS),
+					"Sesame repository error while retrieving defined patients for "
+					+ "concept %s, expectation %s (query %s); "
+					+ "using empty list of expected results and continuing.",
+					about.getName(), expectationId, SparqlQueries.SELECT_DEFINED_PATIENTS),
 					ex);
 			return Collections.emptyList();
 		}
@@ -175,6 +163,120 @@ public class ExpectedResultsRdf implements ExpectedResults, Closeable {
 		RdfVariableBindings.EXPECTATION_ID.bind(valueFactory, query, expectationId);
 	}
 	
+	private String queryIdLabel() {
+		String idLabel = "unknown";
+		try {
+			RdfVariableBindings.Binder titleBinder = createCommonBinder();
+			Set<String> target = new HashSet<>();
+			Set<String> titles = evaluateQuery(SparqlQueries.GET_TITLE,titleBinder, 
+					target, String.class, RdfVariableBindings.TITLE);
+			
+			if(isSingleton(titles)) {
+				idLabel = getSingleElement(titles);
+			} else if (titles.size() > 1) {
+				idLabel = compose(titles);
+			}
+		} catch (QueryEvaluationException | RepositoryException ex) {
+			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, String.format(
+					"Sesame repository error while reading title label for "
+					+ "concept %s, expectation %s (query %s); "
+					+ "continuing with incorrect label.",
+					about.getName(), expectationId, SparqlQueries.GET_TITLE),
+					ex);
+			idLabel = "<<ERROR>>";
+		}
+		return idLabel;
+	}
+
+	private boolean isAsExpectedSingleStatus(PatisNumber patient, ConceptFoundStatus status) {
+		try {
+			RdfVariableBindings.Binder patientStatusBindingsBinder = createPatientStatusBinder(patient, status);
+			boolean result = evaluateQuery(SparqlQueries.IS_AS_EXPECTED, patientStatusBindingsBinder);
+			return result;
+		} catch (RepositoryException | QueryEvaluationException ex) {
+			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, String.format(
+					"Sesame repository error while checking status is as expected for "
+					+ "concept %s, expectation %s, patient %s, and expected status %s (query %s); "
+					+ "using %s as expected classification and continuing.",
+					about.getName(), expectationId, patient.getValue(), status.getQName(),
+					SparqlQueries.SELECT_DEFINED_PATIENTS, DEFAULT_CLASSIFICATION.name()),
+					ex);
+			return status.equals(DEFAULT_CLASSIFICATION);
+		}
+	}
+
+	private Set<ConceptFoundStatus> selectConceptFoundStatus(PatisNumber patient) {
+		try {
+			RdfVariableBindings.Binder patientBindingsBinder = createPatientBinder(patient);
+			Set<ConceptFoundStatus> target = new HashSet<>();
+			Set<ConceptFoundStatus> expectedStatusses = evaluateQuery(
+					SparqlQueries.SELECT_EXPECTED_STATUS, patientBindingsBinder, target,
+					ConceptFoundStatus.class, RdfVariableBindings.STATUS);
+			return expectedStatusses;
+		} catch (RepositoryException | QueryEvaluationException ex) {
+			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, String.format(
+					"Sesame repository error while retrieving expected status for "
+					+ "concept %s, expectation %s, and patient %s (query %s); "
+					+ "using %s as expected results and continuing.",
+					about.getName(), expectationId, patient.getValue(),
+					SparqlQueries.SELECT_EXPECTED_STATUS, DEFAULT_CLASSIFICATION),
+					ex);
+			return Collections.singleton(DEFAULT_CLASSIFICATION);
+		}
+	}
+
+
+	private RdfVariableBindings.Binder createCommonBinder() {
+		RdfVariableBindings.Binder conceptBinder = RdfVariableBindings.CONCEPT.createBinder(about);
+		RdfVariableBindings.Binder expectationIdBinder = RdfVariableBindings.EXPECTATION_ID.createBinder(expectationId);
+		RdfVariableBindings.Binder commonBindingsBinders = RdfVariableBindings.createCompoundBinder(
+				conceptBinder, expectationIdBinder);
+		return commonBindingsBinders;
+	}
+
+	private RdfVariableBindings.Binder createPatientBinder(PatisNumber patient) {
+		RdfVariableBindings.Binder commonBindingsBinder = createCommonBinder();
+		RdfVariableBindings.Binder patientBinder = RdfVariableBindings.PATIENT.createBinder(patient);
+		RdfVariableBindings.Binder allPatientBinder = RdfVariableBindings.createCompoundBinder(
+				commonBindingsBinder, patientBinder);
+		return allPatientBinder;
+	}
+
+	private RdfVariableBindings.Binder createPatientStatusBinder(PatisNumber patient, ConceptFoundStatus status) {
+		RdfVariableBindings.Binder patientBinder = createPatientBinder(patient);
+		RdfVariableBindings.Binder statusBinder = RdfVariableBindings.STATUS.createBinder(status);
+		RdfVariableBindings.Binder allPatientStatusBinder = RdfVariableBindings.createCompoundBinder(
+				patientBinder, statusBinder);
+		return allPatientStatusBinder;
+	}
+
+	private <TElement, TCollection extends Collection<TElement>> TCollection evaluateQuery(
+			SparqlQueries queryId, 
+			RdfVariableBindings.Binder inputVariableBinder, 
+			TCollection target, Class<TElement> valueElementType,
+			RdfVariableBindings resultBinding) 
+				throws RepositoryException, QueryEvaluationException {
+		try (AutoClosableQuery obj_query = preparedQueries.get(queryId)) {
+			synchronized (obj_query) {
+				TupleQuery query = cast(TupleQuery.class, obj_query, queryId);
+				TCollection result = evaluateTupleQuery(
+						query, inputVariableBinder, target, valueElementType, resultBinding);
+				return result;
+			}
+		} 
+	}
+
+	private boolean evaluateQuery(SparqlQueries queryId, RdfVariableBindings.Binder inputVariableBinder) 
+			throws QueryEvaluationException, RepositoryException {
+		try (AutoClosableQuery obj_query = preparedQueries.get(queryId)) {
+			synchronized (obj_query) {
+				BooleanQuery query = cast(BooleanQuery.class, obj_query, queryId);
+				boolean result = evaluateBooleanQuery(query, inputVariableBinder);
+				return result;
+			}
+		}
+	}
+
 	private static <T extends Query> T cast(Class<T> targetClass, Query query, SparqlQueries id) {
 		if (!targetClass.isInstance(query)) {
 			throw new Error(new ClassCastException(String.format(
@@ -183,27 +285,40 @@ public class ExpectedResultsRdf implements ExpectedResults, Closeable {
 		return targetClass.cast(query);
 	}
 
-	private static <T> Collection<? super T> addQueryResults(Collection<? super T> target, TupleQuery query,
-			Class<T> valueType, RdfVariableBindings binding) {
+	private <TElement, TCollection extends Collection<TElement>> TCollection evaluateTupleQuery(
+			TupleQuery query, RdfVariableBindings.Binder inputVariableBinder,
+			TCollection target, Class<TElement> valueElementType,
+			RdfVariableBindings resultBinding) throws QueryEvaluationException {
+		query.clearBindings();
+		inputVariableBinder.bind(valueFactory, query);
+		addQueryResults(target, query, valueElementType, resultBinding);
+		return target;
+	}
+
+	private static <T> Collection<? super T> addQueryResults(
+			Collection<? super T> target, TupleQuery query,
+			Class<T> valueType, RdfVariableBindings binding) throws QueryEvaluationException {
+		TupleQueryResult result = null;
 		try {
-			TupleQueryResult result = null;
-			try {
-					result = query.evaluate();
-					while(result.hasNext()) {
-						BindingSet boundVariables = result.next();
-						target.add(binding.getValue(valueType, boundVariables));
-					}
-			} finally {
-				if (result != null) {
-					result.close();
+				result = query.evaluate();
+				while(result.hasNext()) {
+					BindingSet boundVariables = result.next();
+					target.add(binding.getValue(valueType, boundVariables));
 				}
+		} finally {
+			if (result != null) {
+				result.close();
 			}
-		} catch (QueryEvaluationException ex) {
-			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, 
-					"Sesame repository error while executing query; collection of expected results might be incomplete",
-					ex);
 		}
 		return target;
+	}
+
+	private boolean evaluateBooleanQuery(BooleanQuery query, RdfVariableBindings.Binder inputVariableBinder) 
+			throws QueryEvaluationException {
+		query.clearBindings();
+		inputVariableBinder.bind(valueFactory, query);
+		boolean result = query.evaluate();
+		return result;
 	}
 
 	private static boolean isSingleton(Set<?> set) {
@@ -216,58 +331,6 @@ public class ExpectedResultsRdf implements ExpectedResults, Closeable {
 		}
 		Iterator<T> i = statusSingleton.iterator();
 		return i.next();
-	}
-
-	private List<PatisNumber> queryResultsToPatientList(TupleQuery query) {
-		List<PatisNumber> target = new LinkedList<>();
-		addQueryResults(target, query, PatisNumber.class, RdfVariableBindings.PATIENT);
-		return target;
-	}
-	
-	private Set<ConceptFoundStatus> queryResultsToStatusSet(TupleQuery query) {
-		Set<ConceptFoundStatus> target = new HashSet<>();
-		addQueryResults(target, query, ConceptFoundStatus.class, RdfVariableBindings.STATUS);
-		return target;
-	}
-
-	private Set<String> queryResultsToTitleSet(TupleQuery query) {
-		Set<String> target = new HashSet<>();
-		addQueryResults(target, query, String.class, RdfVariableBindings.TITLE);
-		return target;
-	}
-
-	private boolean isAsExpectedSingleStatus(PatisNumber patient, ConceptFoundStatus status) {
-		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.IS_AS_EXPECTED)) {
-			synchronized (obj_query) {
-				BooleanQuery query = cast(BooleanQuery.class, obj_query, SparqlQueries.IS_AS_EXPECTED);
-				addCommonBindings(query);
-				RdfVariableBindings.PATIENT.bind(valueFactory, query, patient);
-				RdfVariableBindings.STATUS.bind(valueFactory, query, status);
-				return query.evaluate();
-			}
-		} catch (RepositoryException | QueryEvaluationException ex) {
-			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, String.format(
-					"Sesame repository error while executing query %s; using empty list of expected results",
-					SparqlQueries.SELECT_DEFINED_PATIENTS),
-					ex);
-			return status.equals(DEFAULT_CLASSIFICATION);
-		}
-	}
-
-	private Set<ConceptFoundStatus> selectConceptFoundStatus(PatisNumber patient) {
-		try (AutoClosableQuery obj_query = preparedQueries.get(SparqlQueries.SELECT_EXPECTED_STATUS)) {
-			TupleQuery query = cast(TupleQuery.class,obj_query, SparqlQueries.SELECT_EXPECTED_STATUS);
-			addCommonBindings(query);
-			RdfVariableBindings.PATIENT.bind(valueFactory, query, patient);
-			Set<ConceptFoundStatus> expectedStatusses = queryResultsToStatusSet(query);
-			return expectedStatusses;
-		} catch (RepositoryException ex) {
-			Logger.getLogger(ExpectedResultsRdf.class.getName()).log(Level.WARNING, String.format(
-					"Sesame repository error while executing query %s; using UNKNOWN as expected results",
-					SparqlQueries.SELECT_EXPECTED_STATUS),
-					ex);
-			return Collections.singleton(DEFAULT_CLASSIFICATION);
-		}
 	}
 
 	private static String compose(Set<String> items) {

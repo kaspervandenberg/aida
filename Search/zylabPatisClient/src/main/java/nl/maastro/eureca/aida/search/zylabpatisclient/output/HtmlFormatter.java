@@ -33,7 +33,6 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		SNIPPET_DIV("span", "class=\"snippet\" style=\"display:none\""),
 		ELIGIBILITY_CLASS("span") {
 			private String cssClass="eligibily";
-			private String classExpr="class";
 
 			@Override
 			public String open() {
@@ -42,14 +41,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 			
 			@Override
 			public String open(String params) {
-				String modParams;
-				if(params.contains(classExpr)) {
-					modParams = params.replaceFirst(
-							classExpr + "=\"",
-							classExpr +"=\"" + cssClass + " ");
-				} else {
-					modParams = params + " " + classExpr + "=\"" + cssClass + "\"";
-				}
+				String modParams = combineClass(cssClass, params);
 				return super.open(modParams);
 			} },
 		LABEL("label", "class=\"showSnippetChoice\""),
@@ -58,6 +50,31 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		TABLE_ROW("tr"),
 		TABLE_CELL("td"),
 		TABLE_HEADER_CELL("th"),
+		ROTATED_TABLE_HEADER_CELL("th><div><span") {
+			private final String cssClass="rotate-45";
+
+			@Override
+			public String open() {
+				return "<th class=\"" + cssClass + "\"><div><span>";
+			}
+
+			@Override
+			public String open(String params) {
+				String modParams = combineClass(cssClass, params);
+				return String.format("<th %s><div<span>", modParams);
+			}
+
+			@Override
+			public String close() {
+				return "</span></div></th>";
+			}
+
+			@Override
+			public String format(String arg) {
+				return String.format("%s%s%s\n", open(), arg, close());
+			}
+			
+		},
 		TABLE_HEADER("thead"),
 		STYLE("style", "type=\"text/css\""),
 		LINK("a"),
@@ -67,7 +84,8 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		DOC_TITLE("title"),
 		META_CHARSET("meta",
 				String.format("charset=\"%s\"", StandardCharsets.UTF_8.name())),
-		TITLE("h1");
+		TITLE("h1"),
+		SUBTITLE("h2");
 
 		private final String tag;
 		private final String tag_o;
@@ -106,6 +124,20 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 					((params_.isEmpty() || params_.startsWith(" "))
 						? params_
 						: " " + params_);
+		}
+
+		protected String combineClass(String existingClass, String params) {
+			final String classExpr="class";
+			
+			String modParams;
+			if(params.contains(classExpr)) {
+				modParams = params.replaceFirst(
+						classExpr + "=\"",
+						classExpr +"=\"" + existingClass + " ");
+			} else {
+				modParams = params + " " + classExpr + "=\"" + existingClass + "\"";
+			}
+			return modParams;
 		}
 	}
 	
@@ -273,31 +305,129 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 				+ "\t" + "if(el && el.style && cb) {\n"
 				+ "\t\t" + 	"el.style.display = cb.checked ? 'inline' : 'none';\n"
 				+ "\t" + "}\n"
-				+ "}\n");
+				+ "}\n\n");
 		out.append(Tags.SCRIPT.close());
 	}
 
 	public static void writeStyle(Appendable out) throws IOException {
+		final String MAASTRO_BLUE= "#0c4c90"; 
+		final String MAASTRO_TURQUOISE= "#09979e";
+		final String VARIANT_BLUE_LIGHT= "#EAF3FD";
+		final String VARIANT_TURQUOISE_LIGHT = "#CFEDEE";
+		final String GREY = "#CCC";
+		
 		out.append(Tags.STYLE.open());
-		out.append(
-			"table th {\n"
-			+ "\t" +	"border:1px solid black;\n"
+		out.append("" 
+			+ "h1 {\n"
+			+ "\t" +	"font-size: 400%;\n"
+			+ "\t" +	"color: " + MAASTRO_TURQUOISE + ";\n"
+			+ "}\n\n"
+				
+			+ "h2 {\n"
+			+ "\t" +	"font-size: 350%;\n"
+			+ "\t" +	"color: " + MAASTRO_TURQUOISE +";\n"
+			+ "\t" +	"font-style:italic;\n"
+			+ "}\n\n"
+				
+			+ "table th {\n"
+			+ "\t" +	"font-family: Sans-serif;\n"
+			+ "\t" +	"font-size:125%;\n"
+			+ "\t" +	"color: white;\n"
+			+ "\t" +	"padding: 0.2em;\n"
+			+ "}\n\n"
+
+			+ "table th:not(.rotate-45) {\n"
+			+ "\t" +	"background: " + MAASTRO_BLUE +";\n"
+			+ "}\n\n"
+
+			+ "table:not(.table-header-rotated) thead th {\n"
+			+ "\t" +	"border-left-style: solid;\n"	
+			+ "\t" +	"border-left-width: 0.1em;\n"	
+			+ "\t" +	"border-left-color: white;\n\n"	
+
+			+ "\t" +	"border-right-style: solid;\n"	
+			+ "\t" +	"border-right-width: 0.1em;\n"	
+			+ "\t" +	"border-right-color: white;\n\n"
+
+			+ "\t" +	"border-top-left-radius: 0.8em\n"
+			+ "\t" +	"border-top-right-radius: 0.8em\n\n"
+			+ "}\n\n"
+
+			+ "table.table-header-rotated th.rotate-45 {\n"
+			+ "\t" +	"height: 240px;\n"
+			+ "\t" +	"width: 80px;\n"
+			+ "\t" +	"min-width: 80px;\n"
+			+ "\t" +	"max-width: 80px;\n"
+			+ "\t" +	"position: relative;\n"
+			+ "\t" +	"vertical-align: bottom;\n"
+			+ "\t" +	"padding: 0px\n"
+			+ "\t" +	"line-height: 0.8;\n"
+			+ "}\n\n"
+				
+			+ "table.table-header-rotated th.rotate-45 div {\n"
+			+ "\t" +	"overflow: hidden;\n"
+			+ "\t" +	"position: relative;\n"
+			+ "\t" +	"top: 0px;\n"
+			+ "\t" +	"left: 120px;\n"
+			+ "\t" +	"height: 100%;\n\n"
+				
+		  	+ "\t" +	"-ms-transform:skew(-45deg,0deg);\n"
+			+ "\t" +	"-moz-transform:skew(-45deg,0deg);\n"
+			+ "\t" +	"-webkit-transform:skew(-45deg,0deg);\n"
+			+ "\t" +	"-o-transform:skew(-45deg,0deg);\n"
+			+ "\t" +	"transform:skew(-45deg,0deg);\n\n"
+
+			+ "\t" +	"border-left-style: solid;\n"	
+			+ "\t" +	"border-left-width: 0.1em;\n"	
+			+ "\t" +	"border-left-color: white;\n\n"	
+
+			+ "\t" +	"border-right-style: solid;\n"	
+			+ "\t" +	"border-right-width: 0.1em;\n"	
+			+ "\t" +	"border-right-color: white;\n\n"
+
+			+ "\t" +	"border-top-left-radius: 0.8em;\n"
+			+ "\t" +	"border-top-right-radius: 0.8em;\n\n"
+			+ "\t" +	"background: " + MAASTRO_BLUE +";\n"
+			+ "}\n\n"
+	
+			+ "table.table-header-rotated th.rotate-45 span {\n"
+			+ "\t" +	"-ms-transform:skew(45deg,0deg) rotate(315deg);\n"
+			+ "\t" +	"-moz-transform:skew(45deg,0deg) rotate(315deg);\n"
+			+ "\t" +	"-webkit-transform:skew(45deg,0deg) rotate(315deg);\n"
+			+ "\t" +	"-o-transform:skew(45deg,0deg) rotate(315deg);\n"
+			+ "\t" +	"transform:skew(45deg,0deg) rotate(315deg);\n\n"
+
+			+ "\t" +	"position: absolute;\n"
+			+ "\t" +	"bottom: 30px;\n" 
+			+ "\t" +	"left: -5px;\n"
+			+ "\t" +	"display: inline-block;\n"
+  			+ "\t" +	"width: 85px;\n"
+			+ "\t" +	"text-align: left;\n"
 			+ "}\n\n"
 
 			+ "table td {\n"
-			+ "\t" +	"border:#ccc 1px solid;\n"
+			+ "\t" +	"font-family: Sans-serif;\n"
+			+ "\t" +	"border-top-color: " + GREY + ";\n"
+			+ "\t" + 	"border-top-width: 0.1em;\n"
+			+ "\t" +	"border-top-style: solid;\n"
+			+ "\t" +	"border-bottom-color: " + GREY + ";\n"
+			+ "\t" + 	"border-bottom-width: 0.1em;\n"
+			+ "\t" +	"border-bottom-style: solid;\n"
+			+ "\t" +	"border-left-style: none;\n"
+			+ "\t" +	"border-right-style: none;\n"
+			+ "\t" +	"padding: 0.8em"
 			+ "}\n\n"
 
 			+ "table tr:nth-child(even) {\n"
-			+ "\t" +	"background: #F4EFEF;\n"
+			+ "\t" +	"background: " + VARIANT_TURQUOISE_LIGHT + ";\n"
 			+ "}\n\n"
 
 			+ "table tr:nth-child(odd) {"
-			+ "\t" +	"background: #FAFAFA;\n"
+			+ "\t" +	"background: " + VARIANT_BLUE_LIGHT + ";\n"
 			+ "}\n\n"
 			 
 			+ ".showSnippetChoice {\n"
-			+ "\t" +	"color:blue;\n"
+			+ "\t" +	"color:" + MAASTRO_BLUE + ";\n"
 			+ "\t" + 	"font-size:8pt;\n"
 			+ "\t" +	"float: right;\n"
 			+ "}\n\n"
@@ -316,8 +446,9 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	}
 
 	public static void writeValidationCounts(Appendable out, ResultComparisonTable table) throws IOException {
-		out.append(HtmlFormatter.Tags.TABLE.open());
-		writeTableHeaderSingleRow(out, 1, table.getQualifications());
+		out.append(HtmlFormatter.Tags.SUBTITLE.format("Summary"));
+		out.append(HtmlFormatter.Tags.TABLE.open("class=\"table-header-rotated\""));
+		writeTableHeaderSingleRow(out, 1, table.getQualifications(), true);
 		
 		for (ResultComparison comp : table.getComparisons()) {
 			writeValidationCountRow(out, comp, table.getQualifications());
@@ -362,6 +493,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	
 	@Override
 	public void writeTable(Appendable out, SearchResultTable table) throws IOException {
+		out.append(HtmlFormatter.Tags.SUBTITLE.format("Results"));
 		out.append(Tags.TABLE.open());
 		out.append(Tags.TABLE_HEADER.open());
 		out.append(Tags.TABLE_ROW.open());
@@ -415,8 +547,10 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		out.append("\t\t" + Tags.ELIGIBILITY_CLASS.close() + "\n");
 	}
 
-	private static <T extends Enum<T>> void writeTableHeaderSingleRow(Appendable out, int nEmptyCells, Iterable<T> headerItems)
+	private static <T extends Enum<T>> void writeTableHeaderSingleRow(
+			Appendable out, int nEmptyCells, Iterable<T> headerItems, boolean rotated)
 			throws IOException {
+		final int maxLabelLength = 14;
 		out.append(HtmlFormatter.Tags.TABLE_HEADER.open());
 		out.append(HtmlFormatter.Tags.TABLE_ROW.open());
 		
@@ -424,7 +558,18 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 			out.append(HtmlFormatter.Tags.TABLE_HEADER_CELL.format(""));
 		}
 		for (T item : headerItems) {
-			out.append(HtmlFormatter.Tags.TABLE_HEADER_CELL.format(item.name()));
+			String itemName = item.name();
+			if(itemName.length() >= maxLabelLength) {
+				String prefix = itemName.substring(0, maxLabelLength);
+				String rest = itemName.substring(maxLabelLength);
+				String alteredRest = rest.replaceFirst("_", "_<br/>");
+				itemName = prefix + alteredRest;
+			}
+			if(rotated) {
+				out.append(HtmlFormatter.Tags.ROTATED_TABLE_HEADER_CELL.format(itemName));
+			} else {
+				out.append(HtmlFormatter.Tags.TABLE_HEADER_CELL.format(itemName));
+			}
 		}
 		
 		out.append(HtmlFormatter.Tags.TABLE_ROW.close());

@@ -7,8 +7,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +31,12 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
+import org.apache.lucene.search.CachingWrapperFilter;
+import org.apache.lucene.search.FieldCacheTermsFilter;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 //import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
@@ -53,6 +61,7 @@ public class LocalLuceneSearcher extends SearcherBase {
 	private final DynamicAdapter queryAdapter;
 	private final IndexSearcher searcher;
 	private final File index;
+	private Filter patisFilter = null;
 
 	public LocalLuceneSearcher(final File index_, String defaultField_,
 			int maxResults_, final ForkJoinPool taskPool_,
@@ -64,8 +73,8 @@ public class LocalLuceneSearcher extends SearcherBase {
 		index = index_;
 	}
 
-	@Override
-	public SearchResult searchFor(
+	protected SearchResult searchFor(
+			final Filter filter,
 			final nl.maastro.eureca.aida.search.zylabpatisclient.query.Query query,
 			final Iterable<SemanticModifier> modifiers,
 			final PatisNumber patient) {
@@ -82,7 +91,7 @@ public class LocalLuceneSearcher extends SearcherBase {
 					queryAdapter.adapt(LuceneObject.class, patientQuery)
 					.getRepresentation();
 			try {
-					TopDocs result = searcher.search(luceneQuery, getMaxResults());
+					TopDocs result = searcher.search(luceneQuery, filter, getMaxResults());
 					perModifierResults.add(new SearchResultImpl(patient, result.totalHits, getMatchingDocs(luceneQuery, semMod, result)));
 					
 			} catch (IOException ex) {
@@ -103,6 +112,28 @@ public class LocalLuceneSearcher extends SearcherBase {
 		return SearchResultImpl.combine(perModifierResults.toArray(
 				new SearchResult[perModifierResults.size()]));
 	}
+
+	@Override
+	public SearchResult searchFor(
+			final nl.maastro.eureca.aida.search.zylabpatisclient.query.Query query,
+			final Iterable<SemanticModifier> modifiers,
+			final PatisNumber patient) {
+		return searchFor(this.patisFilter, query, modifiers, patient);
+	}
+
+	public void initFilter(Iterable<PatisNumber> patients) {
+//		ArrayList<String> l_patisnummers = new ArrayList<>();
+		List<Term> patisTerms = new LinkedList<>();
+		for (PatisNumber item : patients) {
+			patisTerms.add(item.getTerm());
+//			l_patisnummers.add(item.getValue());
+		}
+//		String[] a_patisnummers = l_patisnummers.toArray(new String[l_patisnummers.size()]);
+		
+		patisFilter = new CachingWrapperFilter(new TermsFilter(patisTerms));
+//		this.patisFilter = new FieldCacheTermsFilter(PatisNumber.PATIS_FIELD, a_patisnummers);
+	}
+	
 
 	private Set<ResultDocument> getMatchingDocs(
 			org.apache.lucene.search.Query query,

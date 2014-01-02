@@ -31,7 +31,7 @@ public class PatisNumber extends HasString {
 	 * The (name of the) Lucene-field in which the PatisNumber a document is 
 	 * about is stored.  This must match field name in the index.
 	 */
-	private static final transient String PATIS_FIELD = "Patisnummer";
+	public static final transient String PATIS_FIELD = "Patisnummer";
 
 	/**
 	 * The actual number
@@ -180,4 +180,7 @@ public class PatisNumber extends HasString {
 		return result.toString();
 	}
 	
+	public Term getTerm() {
+		return new Term(PATIS_FIELD, value);
+	}
 }

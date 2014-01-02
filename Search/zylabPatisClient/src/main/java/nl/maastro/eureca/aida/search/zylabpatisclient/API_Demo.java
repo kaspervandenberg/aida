@@ -131,6 +131,10 @@ public class API_Demo {
 			HtmlFormatter.writeDocStart(out,
 					String.format("Results of %1$tT (on %1$ta %1$te %1$tb)\n", now));
 			HtmlFormatter.writeValidationCounts(out, validationComparisonTable);
+			if(searcher instanceof LocalLuceneSearcher) {
+				LocalLuceneSearcher loc_searcher = (LocalLuceneSearcher)searcher;
+				loc_searcher.initFilter(resultTable.getPatients());
+			}
 			formatter.writeTable(out, resultTable);
 			HtmlFormatter.writeDocEnd(out);
 			out.close();

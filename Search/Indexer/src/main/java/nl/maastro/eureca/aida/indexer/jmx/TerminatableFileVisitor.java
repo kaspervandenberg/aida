@@ -10,6 +10,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Decorate a {@link #delegate} {@link FileVisitor} to terminate when a flag
  * ({@link #continue_file_traversal} is {@code false}.
+ * 
+ * {@link IndexerService} provides a method to decorate {@code FileVisitor}s
+ * with {@code TerminatableFileVisitor} allowing to control the directory crawl
+ * process via JMX (Java Management Extensions, see Oracle's
+ * <a href=http://www.oracle.com/technetwork/java/javase/tech/docs-jsp-135989.html>
+ * JMX Documentation</a>})
+ *
+ * Combine different {@link FileVisitor}-adapters to create the required 
+ * behaviour:
+ * <ul><li>{@link 
+ * 		nl.maastro.eureca.aida.indexer.RecentlyChanged_ConditionalFileVisitor},
+ * 		</li>
+ * <li>{@link
+ * 		nl.maastro.eureca.aida.indexer.jmx.TerminatableFileVisitor}, and</li>
+ * <li>{@link nl.maastro.eureca.aida.indexer.TaskSubmittingFileVisitor}.</li></ul>
+ * When the file crawling part of the indexing process has to change, create 
+ * new {@code FileVisitor}-adapters with a single function and use it in the
+ * {@code FileVisitor} composition.
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */

@@ -7,8 +7,8 @@ import java.nio.file.FileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 /**
- * Baseclass for {@link FileVisitor}s that forward the visited file to a delagate 
- * {@code FileVisitor} when a condition is met.
+ * Baseclass for {@link FileVisitor}-adaptors that forward the visited file to 
+ * a delagate {@code FileVisitor} when a condition is met.
  * 
  * {@code ConditionalFileVisitor} provides a {@code isConditionMet_*}-method 
  * for each {@code visit-*}-method of {@link FileVisitor}, deriving classes 
@@ -17,7 +17,18 @@ import java.nio.file.attribute.BasicFileAttributes;
  * 		forwarded to delegate;</li>
  * <li>when {@code isConditionMet_*} returns the file or directory (including 
  * 		all files and subdirectories it contains) is skipped ({@link 
- * 		FileVisitResult#CONTINUE} and {@link FileVisitResult#SKIP_SUBTREE}).</li></ul>
+ * 		FileVisitResult#CONTINUE} and {@link FileVisitResult#SKIP_SUBTREE}).
+ * 		</li></ul>
+ * 
+ * Combine different {@link FileVisitor}-adapters to create the required
+ * behaviour:
+ * <ul><li>{@link RecentlyChanged_ConditionalFileVisitor},</li>
+ * <li>{@link nl.maastro.eureca.aida.indexer.jmx.TerminatableFileVisitor},
+ * 		and</li>
+ * <li>{@link TaskSubmittingFileVisitor}.</li></ul>
+ * <em>Advise:</em> when the file crawling part of the  indexing process has 
+ * to change, create new {@code FileVisitor}-adapters with a single function 
+ * and use it in the {@code FileVisitor} composition.
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */

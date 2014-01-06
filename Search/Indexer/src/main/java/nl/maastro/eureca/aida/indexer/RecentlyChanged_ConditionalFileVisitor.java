@@ -9,6 +9,16 @@ import java.nio.file.attribute.FileTime;
 /**
  * A FileVisitor that only visits files which were recently created or modified.
  *
+ * Combine different {@link FileVisitor}-adapters to create the required 
+ * behaviour:
+ * <ul><li>{@link RecentlyChanged_ConditionalFileVisitor},</li>
+ * <li>{@link nl.maastro.eureca.aida.indexer.jmx.TerminatableFileVisitor},
+ * 		and</li>
+ * <li>{@link TaskSubmittingFileVisitor}.</li></ul>
+ * <em>Advise:</em> when the file crawling part of the  indexing process has 
+ * to change, create new {@code FileVisitor}-adapters with a single function
+ * and use it in the {@code FileVisitor} composition.
+ *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class RecentlyChanged_ConditionalFileVisitor<TDir> 

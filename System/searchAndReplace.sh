@@ -21,8 +21,14 @@ grepExpr() {
 	for ((i = 0; i < ( ${#PATTERNS[@]} - 1); i+=2)); do
 		echo -n "(${PATTERNS[$i]})|"
 	done
-	echo -n "^(?!x)x"		# will never match,
-
+	echo -n "^(?!x)x"		# '^(?!x)x' is intended to never 
+					# match, so that it can be OR-ed
+					#  with the last clause in
+					# $PATTERNS.
+					# This grep expression is a
+					# Perl regexp and requires
+					# the grep '--perl-regexp'-
+					# switch.
 }
 
 sedProgram() {
@@ -36,7 +42,10 @@ findExpr() {
 	for FILEPAT in "${FILEPATTERNS[@]}"; do
 		echo -n "-name '$FILEPAT' -o "
 	done
-	echo -n "-false \)"
+	echo -n "-false \)"		# intentionally use '-false'-
+					# expression which can be OR-ed
+					# ('-o') with last clause in
+					# $FILEPATTERNS.
 }
 
 

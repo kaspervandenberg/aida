@@ -4,24 +4,41 @@
 # Order the array of patterns from most specific to most general; since 
 # all matching patterns are executed in order
 PATTERNS=(
-	"http://localhost:8080/" "$TARGET_URL"
-	"http://localhost:80/" "$TARGET_URL"
-	"localhost" "$TARGET_HOST"
-	"\([^[:alnum:]]\)8080\([^[:alnum:]]\)" "\1$TARGET_PORT\2"
-	"\([^[:alnum:]]\)80\([^[:alnum:]]\)" "\1$TARGET_PORT\2"
-	"/home/sophijka/Tomcat/apache-tomcat-5.5.20" "$CATALINA_HOME"
-	"/scratch/emij/old.jakarta" "$CATALINA_HOME"
+	'http://localhost:8080/' "$TARGET_URL/"
+	'http://localhost:80/' "$TARGET_URL/"
+	'(\W):8080/(\W|sesame\b)' "\1:$TARGET_PORT/\2"
+	'(\W):80/(\W|sesame\b)' "\1:$TARGET_PORT/\2"
+	'/home/sophijka/Tomcat/apache-tomcat-5.5.20' "$CATALINA_HOME"
+	'/scratch/emij/old.jakarta' "$CATALINA_HOME"
 )
 
-FILEPATTERNS=( '*.java' '*.xml' '*.js' ) 
+
+FILEPATTERNS=( '*.java' '*.js') 
 
 BACKUPEXT=.rename-bak
 
-sedExpr() {
-	INDEX=$1
-	RESULT=$2
-	eval "$RESULT=\"s,${PATTERNS[$INDEX]},${PATTERNS[$INDEX +1]},g\""
-} 
+grepExpr() {
+	for ((i = 0; i < ( ${#PATTERNS[@]} - 1); i+=2)); do
+		echo -n "(${PATTERNS[$i]})|"
+	done
+	echo -n "^(?!x)x"		# will never match,
+
+}
+
+sedProgram() {
+	for ((i = 0; i < ( ${#PATTERNS[@]} - 1); i+=2)); do
+		echo -n "s,${PATTERNS[$i]},${PATTERNS[$i +1]},g; "
+	done
+}
+
+findExpr() {
+	echo -n "-type f \( "
+	for FILEPAT in "${FILEPATTERNS[@]}"; do
+		echo -n "-name '$FILEPAT' -o "
+	done
+	echo -n "-false \)"
+}
+
 
 echo "Replacing (in files ${FILEPATTERNS[@]}):"
 echo "(Backup to $BACKUPEXT)"
@@ -29,23 +46,15 @@ for ((i = 0; i < ( ${#PATTERNS[@]} - 1); i+=2)); do
 	echo -e "\t"${PATTERNS[$i]} "->" ${PATTERNS[$i + 1]}
 done
 
-COMMAND_LIST=""
-COMMAND_LIST_FORMATTED=""
+COMMAND="find . `findExpr` |\
+	 xargs grep --files-with-matches --perl-regexp --regexp='`grepExpr`' |\
+	 xargs sed --regexp-extended --separate --in-place='$BACKUPEXT' --expression='`sedProgram`'"
 
-for FILEPAT in "${FILEPATTERNS[@]}"; do
-	for ((i = 0; i < ( ${#PATTERNS[@]} - 1); i+=2)); do
-		sedExpr $i EXPR
-		COMMAND="find . -type f -name \"$FILEPAT\" -exec sed -i"$BACKUPEXT" '"$EXPR"' {} \; ;"
-		COMMAND_LIST+="$COMMAND"
-		COMMAND_LIST_FORMATTED+=$COMMAND\\n
-	done
-done
-
-echo -e $COMMAND_LIST_FORMATTED
+echo $COMMAND
 echo Execute these replacement commands?
 select yn in "Yes" "No"; do
 	case $yn in
-		Yes) eval $COMMAND_LIST; break;;
+		Yes) eval $COMMAND; break;;
 		No) echo No files altered; exit;
 	esac
 done

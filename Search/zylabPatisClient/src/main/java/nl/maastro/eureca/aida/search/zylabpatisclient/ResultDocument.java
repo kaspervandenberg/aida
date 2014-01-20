@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import checkers.nullness.quals.NonNull;
 import checkers.nullness.quals.Nullable;
 import java.net.URI;
 import java.net.URL;
@@ -24,7 +25,7 @@ public class ResultDocument {
 	private final @Nullable String documentType;
 	private final Map<SemanticModifier, Set<Snippet>> snippets;
 
-	public ResultDocument(DocumentId docId_, URI available_, String documentType_,
+	public ResultDocument(DocumentId docId_, @Nullable URI available_, @Nullable String documentType_,
 			Map<SemanticModifier, Set<Snippet>> snippets_) {
 		docId = docId_;
 		available = available_;
@@ -82,11 +83,11 @@ public class ResultDocument {
 		return available != null;
 	}
 	
-	public URI getUrl() {
+	public @Nullable URI getUrl() {
 		return available;
 	}
 
-	public String getType() {
+	public @Nullable String getType() {
 		return documentType;
 	}
 
@@ -95,7 +96,12 @@ public class ResultDocument {
 	}
 	
 	public Set<Snippet> getSnippets(SemanticModifier modifier) {
-		return Collections.unmodifiableSet(snippets.get(modifier));
+		Set<Snippet> result = snippets.get(modifier);
+		if (result != null) {
+			return Collections.unmodifiableSet(result);
+		} else {
+			return Collections.<Snippet>emptySet();
+		}
 	}
 
 	public Set<Snippet> getSnippets() {
@@ -134,7 +140,8 @@ public class ResultDocument {
 
 	public Set<Snippet> reclassify(SemanticModifier oldValue, SemanticModifier newValue) {
 		if(snippets.containsKey(oldValue) && !oldValue.equals(newValue)) {
-			Set<Snippet> tmp = snippets.remove(oldValue);
+			@SuppressWarnings("nullness")
+			@NonNull Set<Snippet> tmp = snippets.remove(oldValue);
 			snippets.put(newValue, tmp);
 			return tmp;
 		} else {

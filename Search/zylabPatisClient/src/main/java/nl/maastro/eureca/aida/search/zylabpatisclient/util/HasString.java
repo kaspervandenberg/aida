@@ -1,6 +1,8 @@
 // © Maastro Clinic
 package nl.maastro.eureca.aida.search.zylabpatisclient.util;
 
+import checkers.nullness.quals.Nullable;
+import dataflow.quals.Pure;
 import java.util.Objects;
 
 /**
@@ -26,6 +28,7 @@ public abstract class HasString implements Comparable<HasString> {
 		this.value = value_;
 	}
 
+	@Pure
 	@Override
 	public int hashCode() {
 		int hash = 7;
@@ -33,8 +36,9 @@ public abstract class HasString implements Comparable<HasString> {
 		return hash;
 	}
 
+	@Pure
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (obj == null) {
 			return false;
 		}
@@ -48,13 +52,15 @@ public abstract class HasString implements Comparable<HasString> {
 		return true;
 	}
 
+	@Pure
 	@Override
 	public String toString() {
 		return value; 
 	}
 
+	@Pure
 	@Override
-	public int compareTo(HasString o) {
+	public int compareTo(@Nullable HasString o) {
 		if(o == null) {
 			throw new NullPointerException("Cannot compare to null");
 		}
@@ -62,8 +68,17 @@ public abstract class HasString implements Comparable<HasString> {
 			return 0;
 		}
 		if(this.getClass() != o.getClass()) {
-			return this.getClass().getCanonicalName().compareTo(
-					o.getClass().getCanonicalName());
+			String thisClassName = this.getClass().getCanonicalName();
+			String otherClassName = o.getClass().getCanonicalName();
+			if (thisClassName != null && otherClassName != null) {
+				return thisClassName.compareTo(otherClassName);
+			} else if (thisClassName == null && otherClassName != null) {
+				return -1;
+			} else if (thisClassName == null && otherClassName == null) {
+				return this.getClass().hashCode() - o.getClass().hashCode();
+			} else if (thisClassName != null && otherClassName == null) {
+				return 1;
+			}
 		}
 		if(this.value == null || o.value == null) {
 			throw new NullPointerException("Cannot compare HasString-objects that have null as value");

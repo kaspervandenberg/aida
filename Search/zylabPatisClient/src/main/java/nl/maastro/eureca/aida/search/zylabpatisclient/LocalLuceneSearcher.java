@@ -145,8 +145,9 @@ public class LocalLuceneSearcher extends SearcherBase {
 
 					URI uri = null;
 					try {
-						uri = Config.instance().getDocumentServer().resolve(
-							new URI(null, null, id, "index=" + index.getName(), null));
+						@SuppressWarnings("nullness") // URI constructor accepts nulls
+						URI toResolve = new URI(null, null, id, "index=" + index.getName(), null);
+						uri = Config.instance().getDocumentServer().resolve(toResolve);
 					} catch (URISyntaxException ex) {
 						log.log(Level.WARNING, 
 								String.format("Exception when creating URI from %s, %s, and %s",

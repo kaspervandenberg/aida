@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import checkers.nullness.quals.Nullable;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
@@ -19,8 +20,8 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoun
  */
 public class ResultDocument {
 	private final DocumentId docId;
-	private final /*@Nullable*/URI available;
-	private final /*@Nullable*/String documentType;
+	private final @Nullable URI available;
+	private final @Nullable String documentType;
 	private final Map<SemanticModifier, Set<Snippet>> snippets;
 
 	public ResultDocument(DocumentId docId_, URI available_, String documentType_,

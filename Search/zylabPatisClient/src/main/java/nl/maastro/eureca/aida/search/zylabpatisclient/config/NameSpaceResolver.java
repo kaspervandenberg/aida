@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.config;
 
+import checkers.nullness.quals.Nullable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -293,7 +294,7 @@ public class NameSpaceResolver {
 	 * @throws URISyntaxException	when {@code ns.}{@link Namespace#getURI()}
 	 * 		returns an invalid {@link java.net.URI}.
 	 */
-	public /*@Nullable*/ Namespace add(final Namespace ns) throws URISyntaxException {
+	public @Nullable Namespace add(final Namespace ns) throws URISyntaxException {
 		String prefix = ns.getPrefix();
 		boolean replace = this.containsPrefix(prefix);
 		/*@Nullable*/ Namespace previousValue =
@@ -534,7 +535,7 @@ public class NameSpaceResolver {
 	 * 			{@code replace} must be {@code false}</li></ul>
 	 */
 	private void addReverseMapping(final URI nsUri, final Namespace ns,
-			final boolean replace, final /*@Nullable*/ Namespace previous) {
+			final boolean replace, final @Nullable Namespace previous) {
 		if (!uriToNs.containsKey(nsUri)) {
 			uriToNs.put(nsUri, new ConcurrentHashMap<String, Namespace>());
 		} 

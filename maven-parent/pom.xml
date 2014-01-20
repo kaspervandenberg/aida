@@ -71,6 +71,12 @@
 					<artifactId>xmlbeans-maven-plugin</artifactId>
 					<version>2.3.3</version>
 				</plugin>
+
+				<plugin>
+					<groupId>edu.washington.cs.types.checker</groupId>
+					<artifactId>checker-maven-plugin</artifactId>
+					<version>1.7.0</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -89,6 +95,12 @@
 				<artifactId>junit</artifactId>
 				<version>4.11</version>
 				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>edu.washington.cs.types.checker</groupId>
+				<artifactId>checker-quals</artifactId>
+				<version>1.7.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

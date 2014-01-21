@@ -1,6 +1,9 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.util;
 
+import checkers.nullness.quals.Nullable;
+/*>>> import checkers.nullness.quals.KeyFor; */
+import dataflow.quals.Pure;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -78,6 +81,14 @@ public class ClassMap<TKeyClass, TValue> extends HashMap<Class<? extends TKeyCla
 		this.strategy = strategy_;
 	}
 
+	/**
+	 * Create a {@code Class}–{@code Void}
+	 * @param <TKey>
+	 * @param strategy_
+	 * @param items_
+	 * @return 
+	 */
+	@Pure
 	public static <TKey> ClassMap<TKey, Void> createClassToVoidMap(RetrievalStrategies strategy_,
 			Set<? extends Class<? extends TKey>> items_) {
 		HashMap<Class<? extends TKey>, Void> itemMap = new HashMap<>(items_.size());
@@ -87,14 +98,19 @@ public class ClassMap<TKeyClass, TValue> extends HashMap<Class<? extends TKeyCla
 		return new ClassMap<>(strategy_, itemMap);
 	}
 
-	public static <TKey> Set<Class<? extends TKey>> createClassSet(
+	@Pure
+	public static <TKey> Set<? extends Class<? extends TKey>> createClassSet(
 			RetrievalStrategies strategy_,
-			Set<? extends Class<? extends TKey>> items_) {
-		return createClassToVoidMap(strategy_, items_).keySet();
+			Set<? extends Class<? extends TKey>> items_)
+	{
+		ClassMap<TKey, Void> class_map_without_values = createClassToVoidMap(strategy_, items_);
+		Set</*@KeyFor("class_map_without_values")*/Class<? extends TKey>> result = class_map_without_values.keySet();
+		return result;
 	}
 
+	@Pure
 	@Override
-	public boolean containsKey(Object o_request) {
+	public boolean containsKey(@Nullable Object o_request) {
 		if (!(o_request instanceof Class)) {
 			return false;
 		}
@@ -103,49 +119,69 @@ public class ClassMap<TKeyClass, TValue> extends HashMap<Class<? extends TKeyCla
 		return containsKey(request);
 	}
 
-	public boolean containsKey(Class<? extends TKeyClass> request) {
-		Class<? extends TKeyClass> storedKey = lookup(request);
-		if(storedKey != null) {
-			return true;
-		} else {
-			return false;
+	@Pure
+	public boolean containsKey(@Nullable Class<? extends TKeyClass> request) {
+		if (request != null) {
+			Class<? extends TKeyClass> storedKey = lookup(request);
+			if(storedKey != null) {
+				return true;
+			}
 		}
+		return false;
 	}
 
-	public boolean containsKeyStrict(Class<? extends TKeyClass> key) {
+	@Pure
+	public boolean containsKeyStrict(@Nullable Class<? extends TKeyClass> key) {
 		return super.containsKey(key);
 	}
 
+	@Pure
 	public Class<? extends TKeyClass> getMatchingStoredKey(Class<? extends TKeyClass> request) {
 		Class<? extends TKeyClass> result = lookup(request);
 		if(result != null) {
 			return result;
 		} else {
 			throw new NoSuchElementException(String.format(
-					"%s not stored (or any of its parents) in this map",
+					"%s not stored (or any of %s) in this map",
 					request.getName()));
 		}
 	}
 
+	@Pure
 	@Override
-	public TValue get(Object o_request) {
+	@SuppressWarnings("nullness")	// Kludge: checker framework requires 
+				// signature of overriden HashMap.get to be
+				//		<TValue extends @Nullable Object> @NonNull TValue get(…)
+				// however,
+				//		<TValue extends @NonNull Object> @Nullable TValue get(…)
+				// describes ClassMap better: a map that does not contain null
+				// values and with get(…)-methods that follow Map's semantics,
+				// i.e. return null when requesting a value of a key that the
+				// map does not contain.
+	public @Nullable TValue get(@Nullable Object o_request) {
 		if (!(o_request instanceof Class)) {
-			throw new NoSuchElementException(String.format("No elements of type %s stored.", o_request.getClass().getName()));
+			return (TValue) null;
 		}
 		@SuppressWarnings("unchecked")
 		Class<? extends TKeyClass> request = (Class) o_request;
 		return get(request);
 	}
 
-	public TValue get(Class<? extends TKeyClass> request) {
+	@Pure
+	public @Nullable TValue get(@Nullable Class<? extends TKeyClass> request) {
+		if (request == null) {
+			return (TValue) null;
+		}
 		return getStrict(getMatchingStoredKey(request));
 	}
 
-	public TValue getStrict(Class<? extends TKeyClass> key) {
+	@Pure
+	public @Nullable TValue getStrict(@Nullable Class<? extends TKeyClass> key) {
 		return super.get(key);
 	}
 	
-	private Class<? extends TKeyClass> lookup(Class<? extends TKeyClass> request) {
+	@Pure
+	private @Nullable Class<? extends TKeyClass> lookup(Class<? extends TKeyClass> request) {
 		for (Class<? extends TKeyClass> stored : this.keySet()) {
 			if (strategy.matches(request, stored)) {
 				return stored;

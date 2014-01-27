@@ -1,9 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+// © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.Nullable;
 import java.util.Objects;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -19,15 +18,16 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 
 /**
  *
- * @author kasper2
+ * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class QueryDisplay {
-	private static QueryDisplay singleton;
+	private static @Nullable QueryDisplay singleton = null;
 
 	private QueryDisplay() {
 		// Intentionally left empty
 	}
 
+	@EnsuresNonNull("singleton")
 	public static QueryDisplay instance() {
 		if(singleton == null) {
 			singleton = new QueryDisplay();

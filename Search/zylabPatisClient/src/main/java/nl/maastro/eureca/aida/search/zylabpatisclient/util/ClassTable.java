@@ -308,8 +308,8 @@ public class ClassTable<TOuterKeyClass, TInnerKeyClass, TValue>
 	@SuppressWarnings("nullness")
 	@EnsuresNonNullIf(expression={"get(#1, #2)", "get(#1)", "get(#1).get(#2)"}, result=true)
 	public boolean containsKeyPair(
-			Class<TOuterKeyClass> key1,
-			Class<TInnerKeyClass> key2)
+			Class<? extends TOuterKeyClass> key1,
+			Class<? extends TInnerKeyClass> key2)
 	{
 		return containsKeyPair_impl(key1, key2);
 	}
@@ -317,8 +317,8 @@ public class ClassTable<TOuterKeyClass, TInnerKeyClass, TValue>
 
 	@Pure
 	private boolean containsKeyPair_impl(
-			Class<TOuterKeyClass> key1,
-			Class<TInnerKeyClass> key2)
+			Class<? extends TOuterKeyClass> key1,
+			Class<? extends TInnerKeyClass> key2)
 	{
 		if (this.containsKey(key1)) {
 			return this.get(key1).containsKey(key2);

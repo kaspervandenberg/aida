@@ -1,6 +1,9 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.MonotonicNonNull;
+import checkers.nullness.quals.Nullable;
 import java.util.Objects;
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.util.QNameUtil;
@@ -73,7 +76,7 @@ public class StringToParseTreeAdapter extends ParseTreeBase implements Query {
 	private final QName id;
 	private final StringQuery adapted;
 	private final String defaultField;
-	private transient QueryNode parsedQuery = null;
+	private transient @MonotonicNonNull QueryNode parsedQuery = null;
 
 	public StringToParseTreeAdapter(
 			SyntaxParser parser_, QName id_, StringQuery adapted_, String defaultField_) {
@@ -84,6 +87,7 @@ public class StringToParseTreeAdapter extends ParseTreeBase implements Query {
 	}
 	
 	@Override
+	@EnsuresNonNull("parsedQuery")
 	public QueryNode getRepresentation() {
 		if(parsedQuery == null) {
 			try {

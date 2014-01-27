@@ -1,6 +1,8 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.MonotonicNonNull;
 import java.util.ArrayList;
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
@@ -45,14 +47,15 @@ public class LexicalPatternBuilder {
 		}
 	}
 	
-	private static LexicalPatternBuilder instance = null;
-	private String defaultField = null;
+	private static @MonotonicNonNull LexicalPatternBuilder instance = null;
+	private @MonotonicNonNull String defaultField = null;
 	private float defalutFuzzyDistance = 1.0f;
 	private int defaultSpanNearDistance = 2;
 
 	private LexicalPatternBuilder() {
 	}
 
+	@EnsuresNonNull("instance")
 	public static LexicalPatternBuilder instance() {
 		if(instance == null) {
 			instance = new LexicalPatternBuilder();
@@ -110,6 +113,7 @@ public class LexicalPatternBuilder {
 				new SpanOrQuery(pats.getSpanQueries()));
 	}
 	
+	@EnsuresNonNull("defaultField")
 	public LexicalPatternBuilder setDefaultField(final String newValue_) {
 		this.defaultField = newValue_;
 		return this;

@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.input;
 
+import checkers.nullness.quals.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -48,8 +49,11 @@ public class PatisCsvReader {
 		
 	}
 
-	private static final Logger log =
-			Logger.getLogger(PatisCsvReader.class.getCanonicalName());
+	private static final @Nullable String canonical_class_name = PatisCsvReader.class.getCanonicalName();
+	private static final Logger log = 
+			(canonical_class_name != null) ?
+				Logger.getLogger(canonical_class_name) :
+				Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	private String separator = ";";
 	private int column = 0;
 	private int ignoredLines = 1;

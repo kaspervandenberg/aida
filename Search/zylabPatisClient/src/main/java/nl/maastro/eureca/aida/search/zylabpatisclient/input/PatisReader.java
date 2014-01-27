@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.input;
 
+import checkers.nullness.quals.Nullable;
 import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearcher;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -13,7 +14,6 @@ import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
@@ -24,9 +24,9 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoun
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class PatisReader {
-	private PatisCsvReader csvReader = null;
-	private PatisExpectedEmdReader emdReader = null;
-	private Gson gson = null;
+	private @Nullable PatisCsvReader csvReader = null;
+	private @Nullable PatisExpectedEmdReader emdReader = null;
+	private @Nullable Gson gson = null;
 
 	public List<PatisNumber> readFromCsv(InputStreamReader csvSource) {
 		return getCsvReader().read(csvSource);

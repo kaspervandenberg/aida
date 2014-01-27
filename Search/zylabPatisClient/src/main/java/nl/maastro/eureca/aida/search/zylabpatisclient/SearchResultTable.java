@@ -1,6 +1,9 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.EnsuresNonNullIf;
+import checkers.nullness.quals.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -105,7 +108,9 @@ public class SearchResultTable {
 
 	public SearchResult getCell(PatisNumber row, String column) {
 		if(containsColumn(column) && containsPatient(row)) {
-			return columns.get(column).getCell(row);
+			@Nullable Column col = columns.get(column);
+			assert (col != null) : "@AssumeAssertion(nullness)";
+			return col.getCell(row);
 		} else {
 			throw new NoSuchElementException(String.format("Table contains no cell (%s, %s)", row.getValue(), column));
 		}
@@ -119,20 +124,28 @@ public class SearchResultTable {
 		return getCell(row, getNameFor(column));
 	}
 
-	public boolean containsColumn(String columnName) {
+	@SuppressWarnings("nullness")
+	@EnsuresNonNullIf(expression={"columns.get(#1)"}, result=true)
+	public boolean containsColumn(final String columnName) {
 		return columns.containsKey(columnName);
 	}
-
-	public boolean containsColumn(ExpectedResults expectedCol) {
+	
+	public boolean containsColumn(final ExpectedResults expectedCol) {
 		return containsColumn(getNameFor(expectedCol));
 	}
 
-	public boolean containsColumn(Concept conceptCol) {
+	public boolean containsColumn(final Concept conceptCol) {
 		return containsColumn(getNameFor(conceptCol));
 	}
 
-	public Iterable<SearchResult> getColumn(String columnName) {
-		return columns.get(columnName).getValues(getPatients());
+	public Iterable<SearchResult> getColumn(final String columnName) {
+		if (containsColumn(columnName)) {
+			return columns.get(columnName).getValues(getPatients());
+		} else {
+			throw new NoSuchElementException(String.format(
+					"Table contains no coloumn named, %s",
+					columnName));
+		}
 	}
 
 	public Iterable<SearchResult> getColumn(ExpectedResults expectedCol) {
@@ -147,12 +160,24 @@ public class SearchResultTable {
 		return rows.contains(patient);
 	}
 
-	public void addExpectedResultsColumn(ExpectedResults item) {
+	@SuppressWarnings("nullness")
+	@EnsuresNonNull({"columns.get(getNameFor(#1))"})
+	public void addExpectedResultsColumn(final ExpectedResults item) {
+		addExpectedResultsColumn_impl(item);
+	}
+
+	private void addExpectedResultsColumn_impl(final ExpectedResults item) {
 		Column toAdd = new ValidationColumn(item);
 		columns.put(toAdd.getName(), toAdd);
 	}
 
-	public void addConceptSearchColumn(Concept concept, Iterable<SemanticModifier> modifiersToApply) {
+	@SuppressWarnings("nullness")
+	@EnsuresNonNull({"columns.get(getNameFor(#1))"})
+	public void addConceptSearchColumn(final Concept concept, Iterable<SemanticModifier> modifiersToApply) {
+		addConceptSearchColumn_impl(concept, modifiersToApply);
+	}
+
+	public void addConceptSearchColumn_impl(final Concept concept, Iterable<SemanticModifier> modifiersToApply) {
 		Column toAdd = new SearchedColumn(concept, modifiersToApply);
 		columns.put(toAdd.getName(), toAdd);
 	}

@@ -5,6 +5,7 @@ import checkers.nullness.quals.EnsuresNonNullIf;
 import checkers.nullness.quals.Nullable;
 import dataflow.quals.Pure;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A {@link ClassMap} containing {@link ClassMap}s.
@@ -62,6 +63,33 @@ public class ClassTable<TOuterKeyClass, TInnerKeyClass, TValue>
 					inner_retrieval_strategy,
 					entry.getValue());
 			super.put(entry.getKey(), inner);
+		}
+	}
+
+
+	private ClassTable(
+			ClassMap.RetrievalStrategies outer_strategy,
+			ClassMap.RetrievalStrategies inner_strategy,
+			Map<? extends Class<? extends TOuterKeyClass>,
+					Set<? extends Class<? extends TInnerKeyClass>>> m,
+			Class<TValue> void_class)
+	{
+		super(outer_strategy);
+
+		if (!Void.TYPE.isAssignableFrom(void_class)) {
+			throw new Error("This constructor only works for ClassTable<?, ?, Void>.");
+		}
+		
+		inner_retrieval_strategy = inner_strategy;
+		
+		for (Map.Entry<? extends Class<? extends TOuterKeyClass>, 
+				Set<? extends Class<? extends TInnerKeyClass>>> entry : m.entrySet()) {
+			ClassMap<TInnerKeyClass, Void> inner = createClassToVoidMap(
+					inner_retrieval_strategy,
+					entry.getValue());
+			@SuppressWarnings("unchecked")
+			ClassMap<TInnerKeyClass, TValue> inner_tvalue_map = (ClassMap<TInnerKeyClass, TValue>)inner;
+			super.put(entry.getKey(), inner_tvalue_map);
 		}
 	}
 
@@ -126,6 +154,38 @@ public class ClassTable<TOuterKeyClass, TInnerKeyClass, TValue>
 				RetrievalStrategies.SUBCLASS,		// RetrievalStrategies terminology is reversed from this: given stored, match SUBCLASS requests
 				RetrievalStrategies.SUPERCLASS,		//  ""
 				m);
+	}
+
+
+	/**
+	 * Create a {@link ClassTable} containing {@link Void} values, comparable 
+	 * to a {@link Map} of {@link Set}s, the lookup starts with the
+	 * input class (the outer map) and has the resulting class as second
+	 * argument (inner maps).
+	 * 
+	 * Use operations such as {@link #containsKeyPair(java.lang.Class, 
+	 * java.lang.Class)}, {@link #containsKey(java.lang.Class) }, and 
+	 * {@link #getMatchingStoredKey(java.lang.Class)}.
+	 * 
+	 * @param <TSourceClass>	the type of the classes used as source
+	 * @param <TTargetClass>	the type of the classes used as target
+	 * @param <TValue>			the type stored in this table.
+	 * @param m					{@link Map} of {@link Set} to copy the 
+	 * 							contents from. 
+	 * 
+	 * @return	{@link ClassTable} filled with (a copy of) {@code m}.
+	 */
+	public static <TSourceClass, TTargetClass>
+			ClassTable<TSourceClass, TTargetClass, Void>
+			create_source_to_target_void_table(
+				Map<? extends Class<? extends TSourceClass>,
+						Set<? extends Class<? extends TTargetClass>>> m)
+	{
+		return new ClassTable<>(
+				RetrievalStrategies.SUBCLASS,		// RetrievalStrategies terminology is reversed from this: given stored, match SUBCLASS requests
+				RetrievalStrategies.SUPERCLASS,		//  ""
+				m,
+				Void.TYPE);
 	}
 	
 
@@ -195,6 +255,38 @@ public class ClassTable<TOuterKeyClass, TInnerKeyClass, TValue>
 				RetrievalStrategies.SUPERCLASS,		// RetrievalStrategies terminology is reversed from this: given stored, match SUPERCLASS requests
 				RetrievalStrategies.SUBCLASS,		//  ""
 				m);
+	}
+	
+
+	/**
+	 * Create a {@link ClassTable} containing {@link Void} values, comparable 
+	 * to a {@link Map} of {@link Set}s, the lookup starts with the
+	 * input class (the outer map) and has the resulting class as second
+	 * argument (inner maps).
+	 * 
+	 * Use operations such as {@link #containsKeyPair(java.lang.Class, 
+	 * java.lang.Class)}, {@link #containsKey(java.lang.Class) }, and 
+	 * {@link #getMatchingStoredKey(java.lang.Class)}.
+	 * 
+	 * @param <TSourceClass>	the type of the classes used as source
+	 * @param <TTargetClass>	the type of the classes used as target
+	 * @param <TValue>			the type stored in this table.
+	 * @param m					{@link Map} of {@link Set} to copy the 
+	 * 							contents from. 
+	 * 
+	 * @return	{@link ClassTable} filled with (a copy of) {@code m}.
+	 */
+	public static <TTargetClass, TSourceClass>
+			ClassTable<TTargetClass, TSourceClass, Void>
+			create_target_to_source_void_table(
+				Map<? extends Class<? extends TTargetClass>,
+						Set<? extends Class<? extends TSourceClass>>> m)
+	{
+		return new ClassTable<>(
+				RetrievalStrategies.SUPERCLASS,		// RetrievalStrategies terminology is reversed from this: given stored, match SUPERCLASS requests
+				RetrievalStrategies.SUBCLASS,		//  ""
+				m,
+				Void.TYPE);
 	}
 	
 

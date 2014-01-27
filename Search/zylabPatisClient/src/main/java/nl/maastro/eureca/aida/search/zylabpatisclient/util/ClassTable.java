@@ -5,6 +5,7 @@ import checkers.nullness.quals.EnsuresNonNullIf;
 import checkers.nullness.quals.Nullable;
 import dataflow.quals.Pure;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -339,4 +340,34 @@ public class ClassTable<TOuterKeyClass, TInnerKeyClass, TValue>
 			return null;
 		}
 	}
+
+
+	
+	/**
+	 * 
+	 * @param req_key1		the outer class of the request
+	 * @param req_key2		the inner class of the request; the result is
+	 * 		related to this class.
+	 * 
+	 * @return	the key stored for ({@code req_key1}, {@code req_key2}).  The 
+	 * 		returned class is related to {@code req_key2} via 
+	 * 		{@code inner_retrieval_strategy}.
+	 */
+	@Pure
+	public Class<? extends TInnerKeyClass> getMatchingStoredKey(
+			final Class<? extends TOuterKeyClass> req_key1,
+			final Class<? extends TInnerKeyClass> req_key2)
+	{
+		@Nullable ClassMap<TInnerKeyClass, TValue> inner_map = get(req_key1);
+		if (inner_map == null) {
+			throw new NoSuchElementException(String.format(
+					"(%s, %s) not stored in this map",
+					req_key1.getName(),
+					req_key2.getName()));
+		}
+		return inner_map.getMatchingStoredKey(req_key2);
+	}
+	
+
+
 }

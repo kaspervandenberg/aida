@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.contentNegotiation;
 
+import checkers.nullness.quals.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -403,10 +404,8 @@ public class MediaType {
 
 	protected boolean paramValueMatches(final String paramName, MediaType other) {
 		if (other.getClass().isAssignableFrom(this.getClass())) {
-			/*@Nullable*/
-			String thisVal = this.parameters.get(paramName);
-			/*@Nullable*/
-			String otherVal = this.parameters.get(paramName);
+			@Nullable String thisVal = this.parameters.get(paramName);
+			@Nullable String otherVal = this.parameters.get(paramName);
 			if (thisVal == null || otherVal == null) {
 				return true;
 			}

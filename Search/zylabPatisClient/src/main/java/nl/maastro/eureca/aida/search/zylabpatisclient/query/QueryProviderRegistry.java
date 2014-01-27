@@ -1,6 +1,8 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.Nullable;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.QueryProvider;
 import java.net.URI;
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ public class QueryProviderRegistry implements QueryProvider {
 	private final ServiceLoader<QueryProvider> detectedQueryProviders;
 	private final List<QueryProvider> manualQueryProviders = new ArrayList<>();
 	private final WeakHashMap<QName, QueryProvider> queryCache = new WeakHashMap<>();
-	private Set<QName> queryIDs = null;
+	private @Nullable Set<QName> queryIDs = null;
 
 	public QueryProviderRegistry() {
 		detectedQueryProviders = ServiceLoader.load(QueryProvider.class);
@@ -48,6 +50,7 @@ public class QueryProviderRegistry implements QueryProvider {
 	 * 		queries.
 	 */
 	@Override
+	@EnsuresNonNull("queryIDs")
 	public Collection<QName> getQueryIds() {
 		if(queryIDs == null) {
 			Set<QName> tmp = new HashSet<>();
@@ -252,7 +255,7 @@ public class QueryProviderRegistry implements QueryProvider {
 	 * 		<li>{@code null}, when {@code iter} does not contain any 
 	 * 			{@code QueryProvider} that provides {@code id}.</li></ul>
 	 */
-	private QueryProvider findProvider(
+	private @Nullable QueryProvider findProvider(
 			Iterator<QueryProvider> iter, final QName id) {
 		while(iter.hasNext()) {
 			QueryProvider provider = iter.next();

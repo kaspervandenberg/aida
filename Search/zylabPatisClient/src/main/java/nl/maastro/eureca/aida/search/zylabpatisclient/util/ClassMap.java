@@ -167,7 +167,7 @@ public class ClassMap<TKeyClass, TValue> extends HashMap<Class<? extends TKeyCla
 			return result;
 		} else {
 			throw new NoSuchElementException(String.format(
-					"%s not stored (or any of %s) in this map",
+					"%s not stored in this map",
 					request.getName()));
 		}
 	}

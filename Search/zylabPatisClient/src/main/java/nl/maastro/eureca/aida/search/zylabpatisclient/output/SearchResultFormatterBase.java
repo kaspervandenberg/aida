@@ -1,6 +1,10 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.output;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.MonotonicNonNull;
+import checkers.nullness.quals.NonNull;
+import checkers.nullness.quals.Nullable;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -13,17 +17,29 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResultTable;
  * @author Kasper van den Berg <kasper@kaspervandenberg.net> <kasper.vandenberg@maastro.nl>
  */
 public abstract class SearchResultFormatterBase implements SearchResultFormatter {
-	protected SearchResultFormatter snippetDelegate;
+	private static SearchResultFormatter DEFAULT_NOP_SNIPPET_WRITER = new SearchResultFormatterBase() {
+		@Override
+		public void write(Appendable out, SearchResult result) throws IOException {
+			// Do nothing
+		}
+	};
+	
+	private @MonotonicNonNull SearchResultFormatter snippetDelegate = null;
 
 	public SearchResultFormatter getSnippetStrategy() {
-		return snippetDelegate;
+		if (snippetDelegate != null) {
+			return snippetDelegate;
+		} else {
+			return DEFAULT_NOP_SNIPPET_WRITER;
+		}
 	}
 
+	@EnsuresNonNull("snippetDelegate")
 	public void setShowSnippetsStrategy(SearchResultFormatter delegate_) {
 		snippetDelegate = delegate_;
 	}
 	@SuppressWarnings("serial")
-	protected static class Table extends LinkedHashMap<PatisNumber, LinkedHashMap<String, SearchResult>> {
+	protected static class Table extends LinkedHashMap<PatisNumber, LinkedHashMap<String, /*@Nullable*/SearchResult>> {
 		
 	}
 	
@@ -55,18 +71,23 @@ public abstract class SearchResultFormatterBase implements SearchResultFormatter
 	private static Table rotate(LinkedHashMap<String, Iterable<SearchResult>> perColData) {
 		Table table = new Table();
 		List<String> columns = new LinkedList<>(perColData.keySet());
-		LinkedHashMap<String, SearchResult> emptyRow = 
+		LinkedHashMap<String, /*@Nullable*/SearchResult> emptyRow = 
 				new LinkedHashMap<>(columns.size());
 		for (String col : columns) {
 			emptyRow.put(col, null);
 		}
 
+		// TODO simplify: make intent explicit
 		for (String col : columns) {
-			for (SearchResult result : perColData.get(col)) {
-				if(!table.containsKey(result.getPatient())) {
-					table.put(result.getPatient(), new LinkedHashMap<>(emptyRow));
+			if(perColData.containsKey(col)) {
+				for (SearchResult result : perColData.get(col)) {
+					if(!table.containsKey(result.getPatient())) {
+						table.put(result.getPatient(), new LinkedHashMap<String, /*@Nullable*/SearchResult>(emptyRow));
+					}
+					@SuppressWarnings("nullness")
+					@NonNull LinkedHashMap<String, SearchResult> row = table.get(result.getPatient());
+					row.put(col, result);
 				}
-				table.get(result.getPatient()).put(col, result);
 			}
 		}
 		return table;

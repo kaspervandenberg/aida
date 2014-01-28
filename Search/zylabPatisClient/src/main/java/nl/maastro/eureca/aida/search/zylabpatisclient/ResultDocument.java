@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import checkers.nullness.quals.EnsuresNonNullIf;
 import checkers.nullness.quals.NonNull;
 import checkers.nullness.quals.Nullable;
 import java.net.URI;
@@ -79,6 +80,8 @@ public class ResultDocument {
 		return docId;
 	}
 
+	@SuppressWarnings("nullness")
+	@EnsuresNonNullIf(expression={"available", "getUrl()"}, result=true )
 	public boolean isAvailable() {
 		return available != null;
 	}
@@ -89,6 +92,15 @@ public class ResultDocument {
 
 	public @Nullable String getType() {
 		return documentType;
+	}
+
+	public String getType_or_default(String default_type) {
+		if (documentType != null) {
+			if (!documentType.isEmpty()) {
+				return documentType;
+			}
+		}
+		return default_type;
 	}
 
 	public Set<SemanticModifier> getModifiers() {

@@ -45,7 +45,6 @@
 
 	<build>
 		<plugins>
-			
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.0</version>
@@ -56,9 +55,36 @@
 						<Xlint:-unchecked/>
 						<Xlint:-deprecation/>
 					</compilerArgs>
-          <showWarnings>true</showWarnings>
-          <showDeprecation>true</showDeprecation>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.3.1</version>
+
+				<executions>
+					<execution>
+						<id>enfore-properties</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireProperty>
+									<property>aida.indexdir</property>
+									<message>Required: selecting a profile that defines the property 'aida.indexdir'.  Use "mvn help:all-profiles" to see a list of available profiles."</message>
+								</requireProperty>
+								<requireProperty>
+									<property>aida.index</property>
+									<message>Required: selecting a profile that defines the property 'aida.index'.  Use "mvn help:all-profiles" to see a list of available profiles."</message>
+								</requireProperty>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 

@@ -1,6 +1,7 @@
 .settings
 .project
 .classpath
+nb-configuration.xml
 /Search/indexWebClient/target/
 /Search/basicIndexClient/target/
 /Search/Indexer/nbproject/private/

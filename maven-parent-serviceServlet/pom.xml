@@ -3,7 +3,7 @@
 
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>maven-parent-serviceServlet</artifactId>
-	<version>0.4</version>
+	<version>0.5-SNAPSHOT</version>
 	<name>AIDA parent of services and servlets</name>
 	<description>
 		Common entries for AIDA combined AXIS services and tomcat servlets.
@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
 		<artifactId>maven-parent</artifactId>
-		<version>0.4</version>
+		<version>0.5-SNAPSHOT</version>
 		<relativePath>../maven-parent</relativePath>
 	</parent>
 	

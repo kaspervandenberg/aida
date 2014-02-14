@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns:context="http://www.springframework.org/schema/context"
+
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+					http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+					http://www.springframework.org/schema/context
+					http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:annotation-config />
+
+	<bean id="localindex" class="java.io.File">
+		<constructor-arg>
+			<!--
+				Configure 'aida.indexdir' and 'aida.index' in pom.xml
+			--> 
+			<value>${aida.indexdir}/${aida.index}</value>
+		</constructor-arg>
+	</bean>
+
+	<!--
+		Lucene querying requires a limit to the number returned results.
+		Smaller numbers will give faster responses while larger numbers 
+		ensure that no documents about a patient are ommitted.
+
+		NOTE: The implementation issues a query per patient.  Therefore
+			the total number of procuded results can be higher than
+			'max_hits_per_query' and if the index contains more than
+			'max_hits_per_query' documents for one patient this will not
+			affect the returned results for other patients.
+	-->
+	<bean id="max_hits_per_query" class="java.lang.Integer">
+		<constructor-arg value="500" />
+	</bean>
+
+	<!--
+		The name of the field (in the index) that contains the path of
+		the metadata file.
+	-->
+	<bean id="index.fields.metadata_uri" class="java.lang.String">
+		<constructor-arg value="id" />
+	</bean>
+
+	<!--
+		The name of the field (in the index) that contains the path of
+		the data file.
+	-->
+	<bean id="index.fields.data_uri" class="java.lang.String">
+		<constructor-arg value="dcterms:references" />
+	</bean>
+	
+</beans>
+
+<!-- vim: set tabstop=2 shiftwidth=2 : -->

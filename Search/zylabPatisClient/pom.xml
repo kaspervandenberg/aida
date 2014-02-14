@@ -3,8 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>zylabPatisClient</artifactId>
-	<version>0.87</version>
-	<packaging>war</packaging>
+	<version>0.88-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>AIDA::Zylab Patis Search client</name>
 	<description>
 		Client to search in Zylab's documents about patient for patients that match

@@ -1,6 +1,7 @@
 .settings
 .project
 .classpath
+nb-configuration.xml
 /Search/indexWebClient/target/
 /Search/basicIndexClient/target/
 /Search/Indexer/nbproject/private/
@@ -13,3 +14,5 @@
 /Search/zylabPatisClient/results/
 /Search/zylabPatisClient/data
 /Search/zylabPatisClient/results-*
+/Search/filename-lookup/target/
+

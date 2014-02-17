@@ -92,6 +92,11 @@ public class PatisNumber extends HasString {
 		}
 		return true;
 	}
+
+	public org.apache.lucene.search.Query as_lucene_query()
+	{
+		return new TermQuery(new Term(PATIS_FIELD, value));
+	}
 	
 	/**
 	 * Construct a Lucene {@link Query} composed of {@code other} combined with 

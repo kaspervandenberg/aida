@@ -4,7 +4,7 @@
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>indexer</artifactId>
 	<packaging>jar</packaging>
-	<version>0.87</version>
+	<version>0.88</version>
 	<name>AIDA::Indexer</name>
 	<description>
 		Build the index of documents in which AIDA::Search can
@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
 		<artifactId>maven-parent-serviceServlet</artifactId>
-		<version>0.4</version>
+		<version>0.5</version>
 		<relativePath>../../maven-parent-serviceServlet</relativePath>
 	</parent>
 
@@ -95,14 +95,12 @@
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
-			<version>4.1.0</version>
 			<!-- used in indexer.* -->
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers-common</artifactId>
-			<version>4.1.0</version>
 		</dependency>
 		
 		<dependency>

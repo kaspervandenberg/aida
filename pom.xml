@@ -7,7 +7,7 @@
 	<groupId>org.adaptivedisclosure</groupId>
 	<artifactId>aida</artifactId>
 	<packaging>pom</packaging>
-	<version>0.86</version>
+	<version>0.88</version>
 	<name>AIDA</name>
 	<description>
 		AIDA connects diverse sources of information via semantic web technology;
@@ -19,6 +19,7 @@
 		<module>Search/Indexer</module>
 		<module>Search/search</module>
 		<module>Search/zylabPatisClient</module>
+		<module>Search/filename-lookup</module>
 
 		<module>maven-parent</module>
 		<module>maven-parent-serviceServlet</module>

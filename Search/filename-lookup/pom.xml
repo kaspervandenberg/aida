@@ -105,7 +105,7 @@
 		<dependency>
 			<groupId>org.adaptivedisclosure.aida</groupId>
 			<artifactId>zylabPatisClient</artifactId>
-			<version>0.88-SNAPSHOT</version>
+			<version>0.88</version>
 		</dependency>
 
 		<dependency>

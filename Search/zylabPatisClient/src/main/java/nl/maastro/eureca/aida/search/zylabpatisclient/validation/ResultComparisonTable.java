@@ -10,6 +10,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResultTable;
+import checkers.nullness.quals.Nullable;
 
 /**
  *
@@ -19,7 +20,7 @@ public class ResultComparisonTable {
 	private class ActualResultLookupIterator implements Iterator<SearchResult> {
 		private final Concept concept;
 		private final Iterator<PatisNumber> patientIter;
-		private SearchResult peekedValue = null;
+		private @Nullable SearchResult peekedValue = null;
 
 		public ActualResultLookupIterator(ExpectedResults expected) {
 			this.concept = expected.getAboutConcept();

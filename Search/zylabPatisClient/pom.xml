@@ -124,6 +124,12 @@
 					<processors>
 						<processor>checkers.nullness.NullnessChecker</processor>
 					</processors>
+					<includes>
+						<include>nl/maastro/eureca/**/*.java</include>
+					</includes>
+					<excludes>
+						<exclude>SearcherWS/**/*.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -14,6 +14,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.Concept;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
+import checkers.nullness.quals.KeyFor;
 
 /**
  * Compare {@link SearchResult}s with {@link ExpectedResults}.
@@ -21,6 +22,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoun
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class ResultComparison {
+	@KeyFor("counters")
 	private enum MatchTypes {
 		STRICT__SINGLETONS_ONLY,
 		WEAK__EXPECTED_AND_OTHERS,
@@ -43,7 +45,7 @@ public class ResultComparison {
 		 * The {@link SearchResult}s whose {@link SearchResult#getClassification()}-set is an singletonset containing
 		 * {@link ExpectedResults#getClassification}.
 		 */
-		@SuppressWarnings("serial")
+		@SuppressWarnings({"serial", "Nullness"})
 		ACTUAL_MATCHING_EXPECTED(
 				new EnumMap<MatchTypes, List<ActualExpectedConceptFoundStatusPair>>(MatchTypes.class) {{
 				put(
@@ -54,7 +56,7 @@ public class ResultComparison {
 		 * The {@link SearchResult}s whose {@link SearchResult#getClassification()}-set contains 
 		 * {@link ExpectedResults#getClassification} and some other element.
 		 */
-		@SuppressWarnings("serial")
+		@SuppressWarnings({"serial", "Nullness"})
 		ACTUAL_CONTAINIG_EXPECTED_AND_OTHERS(
 				new EnumMap<MatchTypes, List<ActualExpectedConceptFoundStatusPair>>(MatchTypes.class) {{
 				put(
@@ -65,7 +67,7 @@ public class ResultComparison {
 		 * The {@link SearchResult}s whose {@link SearchResult#getClassification()}-set does NOT contain
 		 * {@link ExpectedResults#getClassification}. 
 		 */
-		@SuppressWarnings("serial")
+		@SuppressWarnings({"serial", "Nullness"})
 		ACTUAL_DIFFERING_FROM_EXPECTED(
 				new EnumMap<MatchTypes, List<ActualExpectedConceptFoundStatusPair>>(MatchTypes.class) {{
 				put(

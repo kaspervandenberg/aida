@@ -27,7 +27,7 @@
 			<properties>
 				<!-- The directory to use to read the indexes -->
 				<aida.indexdir>${env.INDEXDIR}</aida.indexdir>
-				<aida.index>Zylab_LATEST</aida.index>
+				<aida.index>LATEST_Zylab_complete</aida.index>
 			</properties>
 		</profile>
 

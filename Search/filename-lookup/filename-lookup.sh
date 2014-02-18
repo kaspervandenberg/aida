@@ -15,11 +15,21 @@ PROFILE=${PROFILE:-maastro_clinisearch}
 ZYLAB_MOUNT=${ZYLAB_MOUNT:-/mnt/zylab}
 INCORRECT_DATA_PATH=file:/media/medical//
 
-mvn -P ${PROFILE} \
+QUIET_MAVEN=${QUIET_MAVEN:-yes}
+if [ "${QUIET_MAVEN}" == "yes" ]; then
+	QUIET_OPT=-q
+else
+	QUIET_OPT=""
+fi
+
+mvn ${QUIET_OPT} -P ${PROFILE} \
 	compile --also-make \
 	exec:java \
 		-Dexec.mainClass=${FILELOOKUP_CLASS} \
 		-Dexec.args="$*" \
 | \
 sed -e "s,${INCORRECT_DATA_PATH},${ZYLAB_MOUNT}/,"
+
+
+# vim:set tabstop=4 shiftwidth=4 :
 

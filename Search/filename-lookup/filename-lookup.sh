@@ -12,9 +12,14 @@
 FILELOOKUP_CLASS=nl.maastro.eureca.aida.search.filename_lookup.Main
 PROFILE=${PROFILE:-maastro_clinisearch}
 
+ZYLAB_MOUNT=${ZYLAB_MOUNT:-/mnt/zylab}
+INCORRECT_DATA_PATH=file:/media/medical//
+
 mvn -P ${PROFILE} \
 	compile --also-make \
 	exec:java \
 		-Dexec.mainClass=${FILELOOKUP_CLASS} \
-		-Dexec.args="$*"
+		-Dexec.args="$*" \
+| \
+sed -e "s,${INCORRECT_DATA_PATH},${ZYLAB_MOUNT}/,"
 

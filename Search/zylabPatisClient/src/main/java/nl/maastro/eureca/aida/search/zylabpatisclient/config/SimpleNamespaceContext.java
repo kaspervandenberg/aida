@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
+import checkers.nullness.quals.Nullable;
+import checkers.nullness.quals.EnsuresNonNullIf;
 
 /**
  *
@@ -36,8 +38,13 @@ public class SimpleNamespaceContext implements NamespaceContext {
 		return result;
 	}
 
+	@SuppressWarnings("nullness")
 	@Override
-	public String getPrefix(String namespaceURI) {
+	public @Nullable String getPrefix(String namespaceURI) {
+		return getPrefix_impl(namespaceURI);
+	}
+
+	private @Nullable String getPrefix_impl(String namespaceURI) {
 		if (namespaceURI == null) {
 			throw new IllegalArgumentException("Resolving null namespaceURI");
 		}
@@ -57,8 +64,9 @@ public class SimpleNamespaceContext implements NamespaceContext {
 		return new Iterator<String>() {
 			Iterator<Map.Entry<String, String>> delegate = 
 					namespaces.entrySet().iterator();
-			String nextPrefix = null;
+			private @Nullable String nextPrefix = null;
 
+			@EnsuresNonNullIf(expression="nextPrefix", result=true)
 			@Override
 			public boolean hasNext() {
 				while (nextPrefix == null && delegate.hasNext()) {
@@ -87,3 +95,5 @@ public class SimpleNamespaceContext implements NamespaceContext {
 		};
 	}
 }
+
+// vim:set tabstop=4 shiftwidth=4 :

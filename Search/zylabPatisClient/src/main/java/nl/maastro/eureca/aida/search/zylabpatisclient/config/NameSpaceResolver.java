@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.config;
 
+import checkers.nullness.quals.NonNull;
 import checkers.nullness.quals.Nullable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -59,8 +60,13 @@ public class NameSpaceResolver {
 			}
 		}
 
+		@SuppressWarnings("nullness")
 		@Override
-		public String getPrefix(String namespaceURI) {
+		public @Nullable String getPrefix(String namespaceURI) {
+			return getPrefix__impl(namespaceURI);
+		}
+		
+		private @Nullable String getPrefix__impl(String namespaceURI) {
 			if (namespaceURI == null) {
 				throw new IllegalArgumentException("Resolving null namespaceURI");
 			}
@@ -154,7 +160,7 @@ public class NameSpaceResolver {
 	 * The context that contains this {@link NameSpaceResolver}.  Use 
 	 * {@link #popContext()} to return to {@code parent}.
 	 */
-	private /*@Nullable */ final NameSpaceResolver parent;
+	private final @Nullable NameSpaceResolver parent;
 
 	/**
 	 * Map prefixes to their {@link Namespace}.  {@code prefixToNs} and 
@@ -297,7 +303,7 @@ public class NameSpaceResolver {
 	public @Nullable Namespace add(final Namespace ns) throws URISyntaxException {
 		String prefix = ns.getPrefix();
 		boolean replace = this.containsPrefix(prefix);
-		/*@Nullable*/ Namespace previousValue =
+		@Nullable Namespace previousValue =
 				(replace ? resolvePrefix(prefix) : null);
 		prefixToNs.put(prefix, ns);
 		addReverseMapping(new URI(ns.getURI()), ns, replace, previousValue);
@@ -538,11 +544,15 @@ public class NameSpaceResolver {
 			final boolean replace, final @Nullable Namespace previous) {
 		if (!uriToNs.containsKey(nsUri)) {
 			uriToNs.put(nsUri, new ConcurrentHashMap<String, Namespace>());
-		} 
-		Map<String, Namespace> namespaces = uriToNs.get(nsUri);
+		}
+		@SuppressWarnings("nullness")
+		@NonNull Map<String, Namespace> namespaces = uriToNs.get(nsUri);
 		if (replace) {
-			assert(previous != null);
-			namespaces.remove(previous.getPrefix());
+			if (previous != null) {
+				namespaces.remove(previous.getPrefix());
+			} else {
+				throw new IllegalArgumentException("Cannot replace when previous is null.");
+			}
 		}
 		namespaces.put(ns.getPrefix(), ns);
 	}

@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.validation;
 
+import checkers.nullness.quals.EnsuresNonNullIf;
 import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearchResult;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,13 +94,15 @@ public class ExpectedResultsMap implements ExpectedResults {
 		return actual.contains(expected);
 	}
 
+	@SuppressWarnings("nullness")
+	@EnsuresNonNullIf(expression = {"getClassification(#1)", "classifications.get(#1)" }, result = true)
 	@Override
-	public boolean isInDefined(PatisNumber patient) {
+	public boolean isInDefined(final PatisNumber patient) {
 		return classifications.containsKey(patient);
 	}
 
 	@Override
-	public ConceptFoundStatus getClassification(PatisNumber patient) {
+	public ConceptFoundStatus getClassification(final PatisNumber patient) {
 		if (isInDefined(patient)) {
 			return classifications.get(patient);
 		} else {

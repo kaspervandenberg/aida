@@ -44,7 +44,14 @@ public class DummySearchResult implements SearchResult {
 		}
 
 		public static Creators valueOf(ConceptFoundStatus classification) {
-			return classificationToCreator.get(classification);
+			Creators result = classificationToCreator.get(classification);
+			if (result != null) {
+				return result;
+			} else {
+				throw new Error(String.format(
+						"classificationToCreator does not contain value for %s",
+						classification));
+			}
 		}
 
 		public DummySearchResult create(PatisNumber patient) {

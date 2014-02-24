@@ -1,6 +1,9 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.MonotonicNonNull;
+import checkers.nullness.quals.NonNull;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -156,7 +159,7 @@ enum LexicalPatterns {
 	}
 
 	private static final float EDIT_DISTANCE = 2.0f;
-	private transient QName id = null;
+	private transient @MonotonicNonNull QName id = null;
 
 	private final Builder builder;
 	private transient final Map<Config, LexicalPattern> instances =
@@ -219,9 +222,12 @@ enum LexicalPatterns {
 			LexicalPattern pat = builder.build(config);
 			instances.put(config, pat);
 		}
-		return instances.get(config);
+		@SuppressWarnings("nullness")
+		@NonNull LexicalPattern result = instances.get(config);
+		return result;
 	}
 
+	@EnsuresNonNull("id")
 	private QName getName() {
 		if (id == null) {
 			try {

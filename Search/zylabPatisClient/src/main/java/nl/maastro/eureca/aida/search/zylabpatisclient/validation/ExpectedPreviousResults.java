@@ -147,8 +147,7 @@ public class ExpectedPreviousResults implements ExpectedResults {
 		@SuppressWarnings("nullness")
 		private void makeUnmodifiable(PatisNumber key) {
 			Set<Set<ConceptFoundStatus>> values = itemsToInsert.get(key);
-			@SuppressWarnings("unchecked")	// Up–down-cast to get rid of the Set<? extends Set<ConceptFoundStatus>> introduced by the checker framework (see http://stackoverflow.com/a/7505867/814206)
-			Set<Set<ConceptFoundStatus>> unmodifiable_values = (Set<Set<ConceptFoundStatus>>) (Object) Collections.unmodifiableSet(values);
+			Set<Set<ConceptFoundStatus>> unmodifiable_values = Collections.<Set<ConceptFoundStatus>>unmodifiableSet(values);
 			itemsToInsert.put(key, unmodifiable_values);
 		}
 	}

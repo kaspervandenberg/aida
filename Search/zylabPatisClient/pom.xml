@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
 		<artifactId>maven-parent</artifactId>
-		<version>0.5</version>
+		<version>0.6-SNAPSHOT</version>
 		<relativePath>../../maven-parent</relativePath>
 	</parent>
 
@@ -111,7 +111,6 @@
 			<plugin>
 				<groupId>edu.washington.cs.types.checker</groupId>
 				<artifactId>checker-maven-plugin</artifactId>
-				<version>1.7.0</version>
 				<executions>
 					<execution>
 						<phase>process-classes</phase>
@@ -125,11 +124,14 @@
 						<processor>checkers.nullness.NullnessChecker</processor>
 					</processors>
 					<includes>
-						<include>nl/maastro/eureca/**/*.java</include>
+						<include>nl/maastro/eureca/aida/search/zylabpatisclient/**/*.java</include>
 					</includes>
 					<excludes>
 						<exclude>SearcherWS/**/*.java</exclude>
 					</excludes>
+<?ignore					
+					<javacParams>-AprintErrorStack</javacParams>
+?>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -281,7 +283,6 @@
 		<dependency>
 			<groupId>edu.washington.cs.types.checker</groupId>
 			<artifactId>checker-quals</artifactId>
-			<version>1.7.0</version>
 		</dependency>
 
 		<dependency>

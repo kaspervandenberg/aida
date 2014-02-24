@@ -50,7 +50,13 @@ public class ContentTypeNegotiator<TOutputFormatter> {
 		if(mostpreferred == null) {
 			throw new NoSuchElementException("No accepted formatter found.");
 		}
-		return formatterRepository.get(mostpreferred);
+		TOutputFormatter result = formatterRepository.get(mostpreferred);
+		if(result == null) {
+			throw new IllegalStateException(String.format(
+					"Repository does not contain an element for %s",
+					mostpreferred.toString()));
+		}
+		return result;
 		
 	}
 

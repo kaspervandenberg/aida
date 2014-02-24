@@ -1,6 +1,9 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.MonotonicNonNull;
+import checkers.nullness.quals.NonNull;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,7 +30,7 @@ public enum Concepts {
 	CHEMOKUUR(LexicalPatterns.ANY_CHEMOKUUR);
 
 	private final List<LexicalPatterns> patterns;
-	private final Map<Config, Concept> instances = new HashMap<>();
+	private final Map<Config, /*@NonNull*/Concept> instances = new HashMap<>();
 
 	private Concepts(final LexicalPatterns... patterns_) {
 		this.patterns = Arrays.asList(patterns_);
@@ -36,7 +39,7 @@ public enum Concepts {
 	private class Impl implements Concept {
 		private final QueryNode parsetree_representation;
 		private final SpanQuery luceneObject_representation;
-		private transient QName id = null;
+		private transient @MonotonicNonNull QName id = null;
 
 		public Impl(final Iterable<LexicalPattern> pats) {
 			parsetree_representation = new OrQueryNode(LexicalPatterns.containedNodes(pats));
@@ -48,6 +51,7 @@ public enum Concepts {
 			return Config.getDefaultVisitableDelegate().accept(this, visitor);
 		}
 
+		@EnsuresNonNull("id")
 		@Override
 		public QName getName() {
 			if (id == null) {
@@ -88,7 +92,10 @@ public enum Concepts {
 			Concept concept = new Impl(LexicalPatterns.toPatternIterable(config, patterns));
 			instances.put(config, concept);
 		}
-		return instances.get(config);
+		@SuppressWarnings("nullness")
+		@NonNull Concept result = instances.get(config);
+		
+		return result;
 	}
 	
 	

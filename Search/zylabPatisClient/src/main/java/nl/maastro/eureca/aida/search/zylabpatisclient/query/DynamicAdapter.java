@@ -1,5 +1,8 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
+import checkers.nullness.quals.NonNull;
+import checkers.nullness.quals.Nullable;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.util.ClassMap;
@@ -13,43 +16,54 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.util.ClassMap;
 public class DynamicAdapter {
 	
 	@SuppressWarnings("serial")  
-	private class Table extends ClassMap<Query, ClassMap<Query,  
-				QueryAdapterBuilder<? extends Query, ? extends Query>>> {
+	private class Table extends ClassMap</*@NonNull*/Query, ClassMap</*@NonNull*/Query,  
+				QueryAdapterBuilder<? extends /*@NonNull*/Query, ? extends /*@NonNull*/Query>>> {
 
 		public Table() {
 			super(RetrievalStrategies.SUPERCLASS);
 		}
-		
-		@SuppressWarnings("unchecked")
-		public <TIn extends Query, TOut extends Query> 
-				QueryAdapterBuilder<TIn, TOut> put(
+
+		@Nullable
+		public <TIn extends /*@NonNull*/Query, TOut extends /*@NonNull*/Query> 
+				QueryAdapterBuilder<? extends /*@NonNull*/Query, ? extends /*@NonNull*/Query> put(
 					Class<TOut> key1,
 					Class<TIn> key2,
 					QueryAdapterBuilder<TIn, TOut> newValue_) {
-			if (!this.containsKey(key1)) {
+			if (!super.containsKey(key1)) {
 				this.put(key1, new ClassMap<Query, QueryAdapterBuilder<? extends Query, ? extends Query>>(RetrievalStrategies.SUBCLASS));
 			}
-			QueryAdapterBuilder<? extends Query, ? extends Query> result =
-					this.getStrict(key1).put(key2, newValue_);
+			@SuppressWarnings("nullness")
+			@NonNull ClassMap<Query, QueryAdapterBuilder<? extends Query, ? extends Query>> inner_map = this.getStrict(key1);
+			@Nullable QueryAdapterBuilder<? extends Query, ? extends Query> previous = inner_map.put(key2, newValue_);
 			
 			/*
 			 * Up–down cast to convert QAB<?, ?> to QAB<TIn, TOut> 
 			 * (see http://stackoverflow.com/q/7502243/814206 and
 			 * http://stackoverflow.com/a/7505867/814206
 			 */
-			return (QueryAdapterBuilder<TIn, TOut>)(Object)result;
+			return previous;
 		}
-
+		
 		@SuppressWarnings("unchecked")
 		public <TIn extends Query, TOut extends Query> QueryAdapterBuilder<TIn, TOut> get(Class<TOut> key1, Class<TIn> key2) {
-			QueryAdapterBuilder<? extends Query, ? extends Query> result = this.get(key1).get(key2);
+			ClassMap</*@NonNull*/Query, 
+					QueryAdapterBuilder<? extends /*@NonNull*/Query, ? extends /*@NonNull*/Query>> inner_map = getStrict(key1);
 
-			/*
-			 * Up–down cast to convert QAB<?, ?> to QAB<TIn, TOut> 
-			 * (see http://stackoverflow.com/q/7502243/814206 and
-			 * http://stackoverflow.com/a/7505867/814206
-			 */
-			return (QueryAdapterBuilder<TIn, TOut>)(Object)result;
+			if (inner_map != null) {
+				QueryAdapterBuilder<? extends /*@NonNull*/Query, ? extends /*@NonNull*/Query> result = inner_map.get(key2);
+
+				if(result != null) {
+					/*
+					 * Up–down cast to convert QAB<?, ?> to QAB<TIn, TOut> 
+					 * (see http://stackoverflow.com/q/7502243/814206 and
+					 * http://stackoverflow.com/a/7505867/814206
+					 */
+					return (QueryAdapterBuilder<TIn, TOut>)(Object)result;
+				}
+			}
+
+			throw new NoSuchElementException(String.format("No adapter for (%s, %s) stored.",
+					key1, key2));
 		}
 	}
 
@@ -57,7 +71,6 @@ public class DynamicAdapter {
 	
 	public DynamicAdapter() {
 		registedBuilders = new Table();
-		
 		registedBuilders.put(StringQuery.class, StringQuery.class,
 				new IdentityAdapter<StringQuery>());
 		registedBuilders.put(ParseTree.class, ParseTree.class,
@@ -76,8 +89,10 @@ public class DynamicAdapter {
 					new ParseTreeToObjectAdapter.Builder()));
 	}
 
+
+	@Nullable
 	public <TIn extends Query, TOut extends Query> 
-			QueryAdapterBuilder<TIn, TOut>
+			QueryAdapterBuilder<? extends Query, ? extends Query>
 			register(Class<TOut> toType, Class<TIn> fromType, QueryAdapterBuilder<TIn, TOut> newValue_) {
 		return this.registedBuilders.put(toType, fromType, newValue_);
 	}
@@ -101,6 +116,7 @@ public class DynamicAdapter {
 			}
 		});
 	}
+
 
 	public Query applyModifier(Query concept, final SemanticModifier modifier) {
 		ModifierApplier applier = new ModifierApplier(modifier, concept);

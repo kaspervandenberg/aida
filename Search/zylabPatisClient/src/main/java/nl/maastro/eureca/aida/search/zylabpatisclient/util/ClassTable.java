@@ -3,6 +3,7 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.util;
 
 import checkers.nullness.quals.EnsuresNonNullIf;
 import checkers.nullness.quals.Nullable;
+/*>>> import checkers.nullness.quals.NonNull;*/;
 import dataflow.quals.Pure;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -16,7 +17,7 @@ import java.util.Set;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 @SuppressWarnings("serial")
-public class ClassTable<TOuterKeyClass, TInnerKeyClass, TValue>
+public class ClassTable<TOuterKeyClass extends /*@NonNull*/ Object, TInnerKeyClass extends /*@NonNull*/Object, TValue>
 		extends ClassMap<TOuterKeyClass, ClassMap<TInnerKeyClass, TValue>> {
 
 	private final ClassMap.RetrievalStrategies inner_retrieval_strategy;

@@ -3,6 +3,7 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.util;
 
 import checkers.nullness.quals.EnsuresNonNullIf;
 import checkers.nullness.quals.Nullable;
+/*>>> import checkers.nullness.quals.NonNull; */
 /*>>> import checkers.nullness.quals.KeyFor; */
 import dataflow.quals.Pure;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ import java.util.Set;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenbewrg.net>
  */
 @SuppressWarnings("serial")
-public class ClassMap<TKeyClass, TValue> extends HashMap<Class<? extends TKeyClass>, TValue> {
+public class ClassMap<TKeyClass extends /*@NonNull*/Object, TValue> extends HashMap<Class<? extends TKeyClass>, TValue> {
 
 	/**
 	 * Strategies that define which arguments to {@link #get(java.lang.Object)}
@@ -90,7 +91,7 @@ public class ClassMap<TKeyClass, TValue> extends HashMap<Class<? extends TKeyCla
 	 * @return 
 	 */
 	@Pure
-	public static <TKey> ClassMap<TKey, Void> createClassToVoidMap(RetrievalStrategies strategy_,
+	public static <TKey extends /*@NonNull*/Object> ClassMap<TKey, Void> createClassToVoidMap(RetrievalStrategies strategy_,
 			Set<? extends Class<? extends TKey>> items_) {
 		HashMap<Class<? extends TKey>, Void> itemMap = new HashMap<>(items_.size());
 		for (Class<? extends TKey> element : items_) {
@@ -100,7 +101,7 @@ public class ClassMap<TKeyClass, TValue> extends HashMap<Class<? extends TKeyCla
 	}
 
 	@Pure
-	public static <TKey> Set<? extends Class<? extends TKey>> createClassSet(
+	public static <TKey extends /*@NonNull*/Object> Set<? extends Class<? extends TKey>> createClassSet(
 			RetrievalStrategies strategy_,
 			Set<? extends Class<? extends TKey>> items_)
 	{

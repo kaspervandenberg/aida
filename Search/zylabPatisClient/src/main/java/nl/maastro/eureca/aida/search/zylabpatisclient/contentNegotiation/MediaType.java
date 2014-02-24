@@ -2,12 +2,13 @@
 package nl.maastro.eureca.aida.search.zylabpatisclient.contentNegotiation;
 
 import checkers.nullness.quals.Nullable;
+import dataflow.quals.Pure;
+import dataflow.quals.SideEffectFree;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.WeakHashMap;
 
 /**
@@ -128,6 +128,7 @@ public class MediaType {
 		}
 	}
 
+	@Pure
 	@Override
 	public int hashCode() {
 		int hash = 7;
@@ -137,8 +138,9 @@ public class MediaType {
 		return hash;
 	}
 
+	@Pure
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (obj == null) {
 			return false;
 		}
@@ -158,6 +160,7 @@ public class MediaType {
 		return true;
 	}
 
+	@Pure
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
@@ -224,7 +227,7 @@ public class MediaType {
 			@Override
 			public Iterator<MediaType> iterator() {
 				return new Iterator<MediaType>() {
-					MediaType nextItem = MediaType.this;
+					@Nullable MediaType nextItem = MediaType.this;
 					
 					@Override
 					public boolean hasNext() {

@@ -129,9 +129,6 @@
 					<excludes>
 						<exclude>SearcherWS/**/*.java</exclude>
 					</excludes>
-<?ignore					
-					<javacParams>-AprintErrorStack</javacParams>
-?>
 				</configuration>
 			</plugin>
 		</plugins>

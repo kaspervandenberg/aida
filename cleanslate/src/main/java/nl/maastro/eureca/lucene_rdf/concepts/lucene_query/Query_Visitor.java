@@ -20,6 +20,6 @@ public interface Query_Visitor<T> {
 	public T visit_fuzzy(Fuzzy_Query visited);
 }
 
-/* vim:set tabstop=4 shiftwidth=4 : */
+/* vim:set tabstop=4 shiftwidth=4 autoindent : */
 
 

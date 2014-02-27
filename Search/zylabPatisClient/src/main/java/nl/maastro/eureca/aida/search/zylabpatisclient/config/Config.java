@@ -718,6 +718,11 @@ public class Config {
 		try {
 			try (FileReader in = new FileReader(f)) {
 				return p.readFromJSON(in);
+			} catch (PatisReader.Parse_Failed_Exception ex) {
+				throw new Error(String.format(
+						"Failed to parse %s\nCause: %s",
+						f, ex.getMessage()),
+						ex);
 			} catch (FileNotFoundException ex) {
 				throw new Error(String.format(
 						"Configured file of patisnumbers %s not found.",

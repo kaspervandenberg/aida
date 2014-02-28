@@ -98,7 +98,18 @@
 				<aida.validationdata.metastasis>${basedir}/data/patients-metastasis-20121221_AD2.json</aida.validationdata.metastasis>
 			</properties>
 		</profile>	
+
+		<profile>
+			<id>scott_dev</id>
+			<properties>
+				<aida.indexdir>/C:/Indexes</aida.indexdir>
+				<aida.index>Zylab_test-20130602</aida.index>
+				<aida.validationdata.chemo>${basedir}/patients-chemo-20121221_AD2.json</aida.validationdata.chemo>
+				<aida.validationdata.metastasis>${basedir}/patients-metastasis-20121221_AD2.json</aida.validationdata.metastasis>
+			</properties>
+		</profile>
 	</profiles>
+
 
 	<build>
 		<plugins>
@@ -192,9 +203,19 @@
 									<property>aida.indexdir</property>
 									<message>Required: selecting a profile that defines the property 'aida.indexdir'.  Use "mvn help:all-profiles" to see a list of available profiles."</message>
 								</requireProperty>
+
 								<requireProperty>
 									<property>aida.index</property>
 									<message>Required: selecting a profile that defines the property 'aida.index'.  Use "mvn help:all-profiles" to see a list of available profiles."</message>
+								</requireProperty>
+
+								<requireProperty>
+									<property>aida.validationdata.chemo</property>
+									<message>Required: selecting a profile that defines the property 'aida.validationdata.chemo'.  Use "mvn help:all-profiles" to see a list of available profiles."</message>
+								</requireProperty>
+								<requireProperty>
+									<property>aida.validationdata.metastasis</property>
+									<message>Required: selecting a profile that defines the property 'aida.validationdata.metastasis'.  Use "mvn help:all-profiles" to see a list of available profiles."</message>
 								</requireProperty>
 							</rules>
 						</configuration>

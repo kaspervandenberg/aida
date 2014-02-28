@@ -1,6 +1,8 @@
 // © Maastr Clinics, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import checkers.nullness.quals.Nullable;
+import dataflow.quals.Pure;
 import java.util.Arrays;
 import java.util.Objects;
 import javax.xml.namespace.QName;
@@ -67,6 +69,7 @@ public class PatisNumber extends HasString {
 		}
 	}
 
+	@Pure
 	@Override
 	public int hashCode() {
 		int hash = 5;
@@ -74,8 +77,9 @@ public class PatisNumber extends HasString {
 		return hash;
 	}
 
+	@Pure
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (obj == null) {
 			return false;
 		}

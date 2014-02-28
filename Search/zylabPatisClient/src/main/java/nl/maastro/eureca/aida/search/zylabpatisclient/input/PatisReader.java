@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.input;
 
+import checkers.nullness.quals.Nullable;
 import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearcher;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -13,7 +14,6 @@ import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 
@@ -24,19 +24,45 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoun
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class PatisReader {
-	private PatisCsvReader csvReader = null;
-	private PatisExpectedEmdReader emdReader = null;
-	private Gson gson = null;
+	public class Parse_Failed_Exception extends IOException {
+
+		public Parse_Failed_Exception() {
+		}
+
+		public Parse_Failed_Exception(String message) {
+			super(message);
+		}
+
+		public Parse_Failed_Exception(String message, Throwable cause) {
+			super(message, cause);
+		}
+
+		public Parse_Failed_Exception(Throwable cause) {
+			super(cause);
+		}
+
+		public Parse_Failed_Exception(Map.Entry<String, ConceptFoundStatus> problematic_entry) {
+			super(String.format(
+					"error parsing entry: %s",
+					problematic_entry.toString()));
+		}
+		
+	}
+	
+	private @Nullable PatisCsvReader csvReader = null;
+	private @Nullable PatisExpectedEmdReader emdReader = null;
+	private @Nullable Gson gson = null;
 
 	public List<PatisNumber> readFromCsv(InputStreamReader csvSource) {
 		return getCsvReader().read(csvSource);
 	}
 
-	public Map<PatisNumber, ConceptFoundStatus> readFromJSON(InputStreamReader jsonSource) {
+	public Map<PatisNumber, ConceptFoundStatus> readFromJSON(InputStreamReader jsonSource) throws Parse_Failed_Exception {
 		Type mapT = new TypeToken<LinkedHashMap<String, ConceptFoundStatus>>(){ }.getType();
 		LinkedHashMap<String, ConceptFoundStatus> items = getGson().fromJson(jsonSource, mapT);
 		LinkedHashMap<PatisNumber, ConceptFoundStatus> result = new LinkedHashMap<>(items.size());
 		for (Map.Entry<String, ConceptFoundStatus> entry : items.entrySet()) {
+			assert_correctly_parsed(entry);
 			result.put(PatisNumber.create(entry.getKey()), entry.getValue());
 		}
 		return result;
@@ -75,13 +101,27 @@ public class PatisReader {
 		return getDummySearcher(read);
 	}
 
-	public DummySearcher getDummySearcherFromJson(InputStreamReader jsonSource) {
+	public DummySearcher getDummySearcherFromJson(InputStreamReader jsonSource) throws Parse_Failed_Exception {
 		final Map<PatisNumber, ConceptFoundStatus> read = readFromJSON(jsonSource);
 		return getDummySearcher(read);
 	}
 
 	private DummySearcher getDummySearcher(final Map<PatisNumber, ConceptFoundStatus> results) {
 		return new DummySearcher(results);
+	}
+
+	private void assert_correctly_parsed(Map.Entry<String, ConceptFoundStatus> entry)
+			throws Parse_Failed_Exception
+	{
+		if (entry.getKey() == null) {
+			throw new Parse_Failed_Exception(entry);
+		}
+		if (entry.getKey().isEmpty()) {
+			throw new Parse_Failed_Exception(entry);
+		}
+		if (entry.getValue() == null) {
+			throw new Parse_Failed_Exception(entry);
+		}
 	}
 
 	public static void main(String[] args) {

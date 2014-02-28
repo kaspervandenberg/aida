@@ -77,8 +77,12 @@ public class API_Demo {
 	private static Config initConfig() {
 		// Read config file
 		InputStream s = API_Demo.class.getResourceAsStream("/zpsc-config.xml");
-		return Config.init(s);
-		// intentionally keeping s open, since Config will read from it at a later time
+		if (s != null) {
+			return Config.init(s);
+			// intentionally keeping s open, since Config will read from it at a later time
+		} else {
+			throw new Error("Cannot read '/zpsc-config.xml'");
+		}
 	}
 
 	private static Searcher initSearcher(Config config) {

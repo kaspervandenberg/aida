@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import checkers.nullness.quals.Nullable;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import com.google.gson.Gson;
 import java.util.Collection;
@@ -11,6 +12,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -27,8 +29,8 @@ public class SearchResultImpl implements SearchResult {
 		int hits;
 	}
 	
-	private static transient Gson gsonParserInstance;
-	private static transient SearchResultImpl NO_RESULT;
+	private static transient @Nullable Gson gsonParserInstance;
+	private static transient @Nullable SearchResult NO_RESULT;
 	private final PatisNumber patient;
 	private final int totalHits;
 	
@@ -76,9 +78,9 @@ public class SearchResultImpl implements SearchResult {
 	 * 
 	 * @return 
 	 */
-	public static SearchResultImpl NO_RESULT() {
+	public static SearchResult NO_RESULT() {
 		if (NO_RESULT == null) {
-			NO_RESULT = new SearchResultImpl(null, -1);
+			NO_RESULT = new NoSearchResult();
 		}
 		return NO_RESULT;
 	}
@@ -154,7 +156,13 @@ public class SearchResultImpl implements SearchResult {
 
 	@Override
 	public ResultDocument getDoc(DocumentId id) {
-		return matchingDocs.get(id);
+		ResultDocument result = matchingDocs.get(id);
+		if (result != null) {
+			return result;
+		} else {
+			throw new NoSuchElementException(
+					"Document, " + id.getValue() + ", not found in " + this);
+		}
 	}
 	
 	@Override

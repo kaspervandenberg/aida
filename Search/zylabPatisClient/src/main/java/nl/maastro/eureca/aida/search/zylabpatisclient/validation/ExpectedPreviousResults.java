@@ -1,6 +1,10 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.validation;
 
+import checkers.nullness.quals.EnsuresNonNullIf;
+import checkers.nullness.quals.NonNull;
+/*>>> import checkers.nullness.quals.KeyFor; */
+/*>>> import checkers.nullness.quals.NonNull; */
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -35,7 +39,7 @@ public class ExpectedPreviousResults implements ExpectedResults {
 	private static final ConceptFoundStatus CONFLICTING_CLASSIFICATION = ConceptFoundStatus.FOUND_CONCEPT_UNKNOWN;
 	
 	private static class Builder {
-		private final Map<PatisNumber, Set<Set<ConceptFoundStatus>>> itemsToInsert = new ConcurrentHashMap<>();
+		private final Map<PatisNumber, Set</*@NonNull*/ Set<ConceptFoundStatus>>> itemsToInsert = new ConcurrentHashMap<>();
 		private Date searchDate = new Date();
 
 		public ExpectedPreviousResults build(Concept about) {
@@ -140,9 +144,11 @@ public class ExpectedPreviousResults implements ExpectedResults {
 		}
 				
 
+		@SuppressWarnings("nullness")
 		private void makeUnmodifiable(PatisNumber key) {
 			Set<Set<ConceptFoundStatus>> values = itemsToInsert.get(key);
-			itemsToInsert.put(key, Collections.unmodifiableSet(values));
+			Set<Set<ConceptFoundStatus>> unmodifiable_values = Collections.<Set<ConceptFoundStatus>>unmodifiableSet(values);
+			itemsToInsert.put(key, unmodifiable_values);
 		}
 	}
 	
@@ -198,7 +204,10 @@ public class ExpectedPreviousResults implements ExpectedResults {
 
 	@Override
 	public Collection<PatisNumber> getDefinedPatients() {
-		return expected.keySet();
+		Collection</*@KeyFor("expected")*/ PatisNumber> result = expected.keySet();
+		@SuppressWarnings("unchecked")	// Up–down-cast to get rid of the Collection<@KeyFor(…) PatisNumber> introduced by the checker framework (see http://stackoverflow.com/a/7505867/814206)
+		Collection<PatisNumber> interface_adhering_result = (Collection<PatisNumber>) (Object) result;
+		return interface_adhering_result;
 	}
 
 	@Override
@@ -225,8 +234,10 @@ public class ExpectedPreviousResults implements ExpectedResults {
 		}
 	}
 
+	@SuppressWarnings("nullness")
+	@EnsuresNonNullIf(expression = "expected.get(#1)", result = true)
 	@Override
-	public boolean isInDefined(PatisNumber patient) {
+	public boolean isInDefined(final PatisNumber patient) {
 		return expected.containsKey(patient);
 	}
 

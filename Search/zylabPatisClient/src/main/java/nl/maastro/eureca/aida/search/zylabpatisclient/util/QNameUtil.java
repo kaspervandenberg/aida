@@ -7,6 +7,8 @@ import java.util.UUID;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
+import checkers.nullness.quals.MonotonicNonNull;
+import checkers.nullness.quals.EnsuresNonNull;
 
 /**
  *
@@ -17,8 +19,9 @@ public class QNameUtil {
 	
 	private QNameUtil() { }
 
-	private static QNameUtil singleton = null;
+	private static @MonotonicNonNull QNameUtil singleton = null;
 	
+	@EnsuresNonNull("singleton")
 	public static QNameUtil instance() {
 		if(singleton == null) {
 			singleton = new QNameUtil();

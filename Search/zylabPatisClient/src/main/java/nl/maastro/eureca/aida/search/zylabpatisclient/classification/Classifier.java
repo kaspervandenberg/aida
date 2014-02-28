@@ -1,6 +1,8 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.classification;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.MonotonicNonNull;
 import java.util.ArrayList;
 import java.util.List;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
@@ -12,14 +14,15 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class Classifier {
-	private static Classifier instance = null;
+	private static @MonotonicNonNull Classifier instance = null;
 	
 	private final List<Rule> rules;
 
 	private Classifier() {
 		rules = new ArrayList<>();
 	}
-	
+
+	@EnsuresNonNull("instance")
 	public static Classifier instance() {
 		if(instance == null) {
 			instance = new Classifier();

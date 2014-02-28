@@ -1,6 +1,9 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.input;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.NonNull;
+import checkers.nullness.quals.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -56,18 +59,19 @@ public class PatisExpectedEmdReader implements PatisCsvReader.Classifier {
 			"WHERE (patient.patisnummer IN (?) " +
 			")";
 
-		private static DBConnection singleton = null;
+		private static @Nullable DBConnection singleton = null;
 
 		private final String username;
 		private final String password;
-		private Connection connection;
-		private PreparedStatement statement;
+		private @Nullable Connection connection = null;
+		private @Nullable PreparedStatement statement = null;
 		
 		private DBConnection() {
 			this.username = getUsername();
 			this.password = getPassword();
 		}
 
+		@EnsuresNonNull({"singleton", "singleton.connection", "singleton.statement"})
 		public static DBConnection instance() {
 			if(singleton == null) {
 				singleton = new DBConnection();
@@ -78,16 +82,21 @@ public class PatisExpectedEmdReader implements PatisCsvReader.Classifier {
 		
 		public void close() {
 			try {
-				this.statement.closeOnCompletion();
-				this.statement = null;
-				this.connection.close();
-				this.connection = null;
+				if (this.statement != null) {
+					this.statement.closeOnCompletion();
+					this.statement = null;
+				}
+				if (this.connection != null) {
+					this.connection.close();
+					this.connection = null;
+				}
 			} catch (SQLException ex) {
 				throw new Error(ex);
 			}
 		}
 
 		public ResultSet query(PatisNumber patient) {
+			init();
 			synchronized (statement) {
 				try {
 					statement.setString(1, patient.getValue());
@@ -98,13 +107,20 @@ public class PatisExpectedEmdReader implements PatisCsvReader.Classifier {
 			}
 		}
 
+		@SuppressWarnings("nullness")	// Suppressing "postcondition not satisfied"-warning as per http://stackoverflow.com/questions/21308736/ensuresnonnullif-annotation-gives-conditional-postcondition-not-satisfied-war
+		@EnsuresNonNull({"connection", "statement"})
 		private void init() {
+			init_impl();
+		}
+
+		private void init_impl() {
 			try {
 				if (connection == null || connection.isClosed()) {
 					this.connection = initConnection(username, password);
 				}
+				@NonNull Connection initialised_connection = connection;
 				if(statement == null || statement.isClosed()) {
-					this.statement = initPreparedStatement(connection);
+					this.statement = initPreparedStatement(initialised_connection);
 				}
 			} catch (SQLException ex) {
 				throw new Error(ex);
@@ -150,7 +166,12 @@ public class PatisExpectedEmdReader implements PatisCsvReader.Classifier {
 				try {
 					System.out.print(prompt);
 					BufferedReader userinput = new BufferedReader(new InputStreamReader(System.in));
-					return userinput.readLine();
+					String response = userinput.readLine();
+					if (response != null) {
+						return response;
+					} else {
+						throw new Error("User provided no answer");
+					}
 				} catch (IOException ex) {
 					throw new Error(ex);
 				}

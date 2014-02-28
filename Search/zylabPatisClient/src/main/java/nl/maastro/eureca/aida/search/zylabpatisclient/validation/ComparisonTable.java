@@ -79,11 +79,21 @@ class ComparisonTable {
 
 	private List<SearchResult> getCell(ActualExpectedConceptFoundStatusPair coordinate) {
 		Map<ConceptFoundStatus, List<SearchResult>> row = getRow(coordinate);
-		return row.get(coordinate.expected);
+		List<SearchResult> results = row.get(coordinate.expected);
+		if (results != null) {
+			return results;	
+		} else {
+			return Collections.emptyList();
+		}
 	}
 
 	private Map<ConceptFoundStatus, List<SearchResult>> getRow(ActualExpectedConceptFoundStatusPair coordinate) {
-		return data.get(coordinate.actual);
+		Map<ConceptFoundStatus, List<SearchResult>> row = data.get(coordinate.actual);
+		if (row != null) {
+			return row;
+		} else {
+			return Collections.emptyMap();
+		}
 	}
 
 	private void init(ActualExpectedConceptFoundStatusPair coordinate) {
@@ -105,3 +115,5 @@ class ComparisonTable {
 	}
 	
 }
+
+// vim:set tabstop=4 shiftwidth=4 :

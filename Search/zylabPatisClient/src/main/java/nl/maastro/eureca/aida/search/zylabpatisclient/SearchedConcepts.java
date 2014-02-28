@@ -4,6 +4,9 @@
  */
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.MonotonicNonNull;
+/*>>> import checkers.nullness.quals.KeyFor; */
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -52,7 +55,7 @@ public enum SearchedConcepts {
 	private final Concepts concept;
 	private final Strategy strat;
 	private final LinkedHashMap<PatisNumber, ConceptFoundStatus> expected = new LinkedHashMap<>();
-	private Searcher searcher = null;
+	private @MonotonicNonNull Searcher searcher = null;
 
 	private SearchedConcepts(Concepts concept_, Strategy strat_) {
 		this.strat = strat_;
@@ -73,6 +76,7 @@ public enum SearchedConcepts {
 		strat.setSearcher(this, searcher_);
 	}
 
+	@EnsuresNonNull("searcher")
 	private void setSearcher_real(Searcher searcher_) {
 		this.searcher = searcher_;
 	}
@@ -95,11 +99,17 @@ public enum SearchedConcepts {
 	}
 
 	public Searcher getSearcher() {
+		if (searcher == null) {
+			throw new IllegalStateException("This collection of searched concepts has no searcher.");
+		}
 		return searcher;
 	}
 
 	public Set<PatisNumber> getPatients() {
-		return expected.keySet();
+		Set</*@KeyFor("expected")*/PatisNumber> keys = expected.keySet();
+		@SuppressWarnings("unchecked") // Up–down cast to remove the checker framework "@KeyFor"-annotation; as per http://stackoverflow.com/a/7505867/814206
+		Set<PatisNumber> result = (Set<PatisNumber>) (Object) keys;
+		return result;
 	}
 
 	public Concept getConcept(Config config) {

@@ -3,7 +3,7 @@
 
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>maven-parent</artifactId>
-	<version>0.5</version>
+	<version>0.6</version>
 	<name>AIDA parent</name>
 	<description>
 		Common entries for AIDA
@@ -14,6 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<test.workingDirectory>${java.io.tmpdir}</test.workingDirectory>
 		<org.apache.lucene.version>4.1.0</org.apache.lucene.version>
+		<edu.washington.cs.types.checker.version>1.7.2</edu.washington.cs.types.checker.version>
 	</properties>
 
 	<repositories>
@@ -77,6 +78,15 @@
 					<artifactId>xmlbeans-maven-plugin</artifactId>
 					<version>2.3.3</version>
 				</plugin>
+
+				<plugin>
+					<groupId>edu.washington.cs.types.checker</groupId>
+					<artifactId>checker-maven-plugin</artifactId>
+					<version>${edu.washington.cs.types.checker.version}</version>
+					<configuration>
+						<javaParams>-Dfile.encoding=UTF-8</javaParams>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -131,6 +141,12 @@
 				<artifactId>junit</artifactId>
 				<version>4.11</version>
 				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>edu.washington.cs.types.checker</groupId>
+				<artifactId>checker-quals</artifactId>
+				<version>${edu.washington.cs.types.checker.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -57,8 +57,9 @@ public class PlaintextHumanFormatter extends SearchResultFormatterBase {
 			delegate.writeTable(out, results);
 		}
 	};
+	
 	public void setShowSnippetStrategy(ShowSnippetStrategy delegate_) {
-		snippetDelegate = delegate_;
+		super.setShowSnippetsStrategy(delegate_);
 	}
 
 	@Override

@@ -1,9 +1,9 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.query;
 
+import checkers.nullness.quals.EnsuresNonNull;
+/*>>> import checkers.nullness.quals.Nullable; */
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import nl.maastro.eureca.aida.search.zylabpatisclient.util.QNameUtil;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
@@ -47,6 +47,7 @@ public class ParseTreeToObjectAdapter extends LuceneObjectBase implements Query 
 			return this;
 		}
 
+		@Override
 		public ParseTreeToObjectAdapter adapt(ParseTree adapted_) {
 			Objects.requireNonNull(queryBuilder, "Set queryBuider before calling adapt.");
 			Objects.requireNonNull(suffix, "Set suffix before calling adapt.");
@@ -65,7 +66,7 @@ public class ParseTreeToObjectAdapter extends LuceneObjectBase implements Query 
 	private final QueryBuilder builder;
 	private final QName id;
 	private final ParseTree adapted;
-	private transient org.apache.lucene.search.Query builtObject = null;
+	private transient org.apache.lucene.search./*@Nullable*/ Query builtObject = null;		// Nullable must be before class name and not before package name as per http://stackoverflow.com/a/21385939/814206
 
 	public ParseTreeToObjectAdapter(QueryBuilder builder_, QName id_, ParseTree adapted_) {
 		this.builder = builder_;
@@ -74,6 +75,7 @@ public class ParseTreeToObjectAdapter extends LuceneObjectBase implements Query 
 	}
 
 	@Override
+	@EnsuresNonNull("builtObject")
 	public org.apache.lucene.search.Query getRepresentation() {
 		if(builtObject == null) {
 			try {

@@ -1,6 +1,11 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.config;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.EnsuresNonNullIf;
+import checkers.nullness.quals.MonotonicNonNull;
+import checkers.nullness.quals.Nullable;
+import checkers.nullness.quals.NonNull;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -82,11 +87,11 @@ public class Config {
 				throws IllegalArgumentException;
 	}
 
-	private static abstract class XPathOpBaseImpl<T> implements XPathOp {
+	private static abstract class XPathOpBaseImpl<T extends /*@NonNull*/ Object> implements XPathOp {
 		private final Map<String, Object> variables;
 		
 		protected XPathOpBaseImpl() {
-			variables = null;
+			variables = Collections.emptyMap();
 		}
 
 		protected XPathOpBaseImpl(final Map<String, Object> variables_) {
@@ -137,7 +142,7 @@ public class Config {
 	private static class XPathOpNodeImpl extends XPathOpBaseImpl<Element> {
 		
 		private final String s_expr;
-		private transient XPathExpression<Element>  expr = null;
+		private transient @MonotonicNonNull XPathExpression<Element>  expr = null;
 		
 		public XPathOpNodeImpl(final String s_expr_) {
 			this.s_expr = s_expr_;
@@ -158,6 +163,7 @@ public class Config {
 			return getExpr().evaluate(context);
 		}
 
+		@EnsuresNonNull("expr")
 		@Override
 		protected XPathExpression<Element> getExpr() {
 			if(expr == null) {
@@ -170,7 +176,7 @@ public class Config {
 
 	private static class XPathOpAttrImpl extends XPathOpBaseImpl<Attribute> {
 		private final String s_expr;
-		private transient XPathExpression<Attribute>  expr = null;
+		private transient @MonotonicNonNull XPathExpression<Attribute>  expr = null;
 
 		public XPathOpAttrImpl(String s_expr_) {
 			this.s_expr = s_expr_;
@@ -191,6 +197,7 @@ public class Config {
 			return getExpr().evaluate(context);
 		}
 
+		@EnsuresNonNull("expr")
 		@Override
 		protected XPathExpression<Attribute> getExpr() {
 			if(expr == null) {
@@ -253,6 +260,7 @@ public class Config {
 				throw new IllegalArgumentException(
 						String.format("None of the component XPath accepted %s", name.toString()),
 						new Exception("Multiple causes") {
+							@SuppressWarnings("nullness")
 							final List<IllegalArgumentException> causes = new ArrayList<>(suppressedExceptions);
 						});
 			}
@@ -271,14 +279,39 @@ public class Config {
 	}
 			
 	private class QueryPatterns implements QueryProvider {
+		final Map<QName, Query> patterns;
+
+		public QueryPatterns() {
+			List<? extends Content> nodes = XPaths.QUERY.getAllNodes(getConfigDoc());
+			patterns = new HashMap<>(nodes.size());
+			for (Content n : nodes) {
+				final QName id = readId(getNamespaces(), getConfigDoc(), XPaths.ID);
+				final String value = n.getValue();
+				patterns.put(id, new StringQueryBase() {
+
+					@Override
+					public String getRepresentation() {
+						return value;
+					}
+
+					@Override
+					public QName getName() {
+						return id;
+					}
+				});
+			}
+		}
+		
 		@Override
 		public Collection<QName> getQueryIds() {
-			return Collections.unmodifiableSet(queries.keySet());
+			return Collections.unmodifiableSet(patterns.keySet());
 		}
 
+		@SuppressWarnings("nullness")
+		@EnsuresNonNullIf(expression = "get(#1)", result = true)
 		@Override
-		public boolean provides(QName id) {
-			return queries.containsKey(id);
+		public boolean provides(final QName id) {
+			return patterns.containsKey(id);
 		}
 
 		@Override
@@ -287,14 +320,16 @@ public class Config {
 				throw new NoSuchElementException(
 						String.format("No query with id %s configured.", id.toString()));
 			}
-			return queries.get(id);
+			@SuppressWarnings("nullness")
+			@NonNull Query result = patterns.get(id);
+			return result;
 		}
 		
 
 		@Override
 		@Deprecated
 		public boolean hasString(QName id) {
-			return queries.containsKey(id);
+			return patterns.containsKey(id);
 		}
 
 		@Override
@@ -395,7 +430,7 @@ public class Config {
 		
 		;
 		public final XPathOp delegate;
-		public final String s_expr;
+		public final @Nullable String s_expr;
 		
 		private XPathImpls(final Class<? extends XPathOp> implementation, final String s_expr_) {
 			try {
@@ -459,7 +494,7 @@ public class Config {
 
 		private XPaths(XPathImpls impl) {
 			delegate = impl.delegate;
-			defaultValue = null;
+			defaultValue = "";
 		}
 
 		private XPaths(XPathImpls impl, final String defaultValue_) {
@@ -526,7 +561,7 @@ public class Config {
 				"http://clinisearch.ad.maastro.nl:80/search/item/"),
 		;
 
-		private static Properties props = null;
+		private static @MonotonicNonNull Properties props = null;
 		private final String key;
 		private final String defaultValue;
 		
@@ -540,17 +575,24 @@ public class Config {
 		}
 
 		public String getValue() {
-			return getProperties().getProperty(key, defaultValue);
+			@SuppressWarnings("nullness")
+			@NonNull String result = getProperties().getProperty(key, defaultValue);
+			return result;
 		}
 
+		@EnsuresNonNull("props")
 		private static Properties getProperties() {
 			if(props == null) {
 				InputStream propertyFile = Config.PropertyKeys.class.getResourceAsStream(SEARCH_PROPERTY_RESOURCE);
-				props = new Properties();
-				try {
-					props.load(propertyFile);
-				} catch (IOException ex) {
-					throw new Error(ex);
+				if(propertyFile != null) {
+					props = new Properties();
+					try {
+						props.load(propertyFile);
+					} catch (IOException ex) {
+						throw new Error(ex);
+					}
+				} else {
+					throw new Error("Unable to read property file");
 				}
 			}
 			return props;
@@ -565,29 +607,31 @@ public class Config {
 			DualRepresentationQuery.Visitable.AS_LUCENE_OBJECT;
 
 	
-	private static Config singleton = null;
+	private static @MonotonicNonNull Config singleton = null;
 	
-	private static XPathFactory xpathfactory = null;
-	private static Collection<Namespace> xpathNamespaces = null;
+	private static @MonotonicNonNull XPathFactory xpathfactory = null;
+	private static @MonotonicNonNull Collection<Namespace> xpathNamespaces = null;
 
 	private final InputStream configStream;
 	private final ForkJoinPool taskPool;
-	private Element configDoc = null;
-	private NameSpaceResolver namespaces = null; 
-	private Map<QName, Query> queries = null;
-	private Map<QName, File> jsonFiles = null;
+	private @MonotonicNonNull Element configDoc = null;
+	private @MonotonicNonNull NameSpaceResolver namespaces = null; 
+	private @MonotonicNonNull QueryPatterns queries = null;
+	private @MonotonicNonNull Map<QName, File> jsonFiles = null;
 
-	private Searcher searcher = null;
+	private @MonotonicNonNull Searcher searcher = null;
 	
 	private Config(InputStream configStream_, ForkJoinPool taskPool_) {
 		configStream = configStream_;
 		taskPool = taskPool_;
 	}
 	
+	@EnsuresNonNull("singleton")
 	public static Config init(InputStream configStream) {
 		return init(configStream, new ForkJoinPool());
 	}
 	
+	@EnsuresNonNull("singleton")
 	public static Config init(InputStream configStream, ForkJoinPool taskPool_) {
 		if(singleton != null) {
 			throw new IllegalStateException("Call init() exactly once.");
@@ -612,6 +656,7 @@ public class Config {
 		return VISITABLE_DELEGATE;
 	}
 
+	@EnsuresNonNull("searcher")
 	public Searcher getSearcher() throws ServiceException, IOException {
 		if(searcher == null) {
 			String defaultField = XPaths.DEFAULT_FIELD.getAttrValue(getConfigDoc());
@@ -630,30 +675,15 @@ public class Config {
 		return searcher;
 	}
 
+	@EnsuresNonNull("queries")
 	public QueryProvider getConfiguredQueries() {
 		if(queries == null) {
-			List<? extends Content> nodes = XPaths.QUERY.getAllNodes(getConfigDoc());
-			queries = new HashMap<>(nodes.size());
-			for (Content n : nodes) {
-				final QName id = readId(getNamespaces(), getConfigDoc(), XPaths.ID);
-				final String value = n.getValue();
-				queries.put(id, new StringQueryBase() {
-
-					@Override
-					public String getRepresentation() {
-						return value;
-					}
-
-					@Override
-					public QName getName() {
-						return id;
-					}
-				});
-			}
+			queries = this.new QueryPatterns();
 		}
-		return this.new QueryPatterns();
+		return queries;
 	}
 
+	@EnsuresNonNull("namespaces")
 	public NameSpaceResolver getNamespaces() {
 		if(namespaces == null) {
 			namespaces = NameSpaceResolver.createDefault();
@@ -688,6 +718,11 @@ public class Config {
 		try {
 			try (FileReader in = new FileReader(f)) {
 				return p.readFromJSON(in);
+			} catch (PatisReader.Parse_Failed_Exception ex) {
+				throw new Error(String.format(
+						"Failed to parse %s\nCause: %s",
+						f, ex.getMessage()),
+						ex);
 			} catch (FileNotFoundException ex) {
 				throw new Error(String.format(
 						"Configured file of patisnumbers %s not found.",
@@ -709,7 +744,11 @@ public class Config {
 	}
 
 	private static SAXBuilder getParser() {
-		Source schemaSource = new StreamSource(Config.class.getResourceAsStream(SCHEMA_RESOURCE));
+		@Nullable InputStream schema_stream = Config.class.getResourceAsStream(SCHEMA_RESOURCE);
+		if (schema_stream == null) {
+			throw new Error ("Cannot read schema");
+		}
+		Source schemaSource = new StreamSource(schema_stream);
 		
 		try {
 			Schema  schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).
@@ -723,6 +762,7 @@ public class Config {
 		}
 	}
 
+	@EnsuresNonNull("xpathfactory")
 	private static XPathFactory getXPathFactory() {
 		if(xpathfactory == null) {
 			xpathfactory = XPathFactory.instance();
@@ -730,6 +770,7 @@ public class Config {
 		return xpathfactory;
 	}
 
+	@EnsuresNonNull("xpathNamespaces")
 	private static Collection<Namespace> getXpathNamespaces() {
 		if(xpathNamespaces == null) {
 			xpathNamespaces = new ArrayDeque<>(1);
@@ -738,11 +779,12 @@ public class Config {
 		return xpathNamespaces;
 	}
 	
-	private static <T> XPathExpression<T> compileExpr(
+	private static <T extends /*@NonNull*/ Object> XPathExpression<T> compileExpr(
 			String expr, Map<String, Object> variables, Filter<T> filter) {
 		return getXPathFactory().compile(expr, filter, variables, getXpathNamespaces());
 	}
 
+	@EnsuresNonNull("configDoc")
 	private Element getConfigDoc() {
 		if(configDoc == null) {
 			configDoc = parseXml(configStream).getContent(Filters.element()).get(0);
@@ -770,6 +812,7 @@ public class Config {
 				"Local index file is not configured.");
 	}
 
+	@EnsuresNonNull("jsonFiles")
 	private File getPatientsJsonFile(QName concept) {
 		if(jsonFiles == null) {
 			List<? extends Content> nodes = XPaths.PATIS_FILE_JASON.getAllNodes(getConfigDoc());
@@ -782,7 +825,15 @@ public class Config {
 				jsonFiles.put(id, f);
 			}
 		}
-		return jsonFiles.get(concept);
+		File result = jsonFiles.get(concept);
+		if (result != null) {
+			return result;
+		} else {
+			throw new NoSuchElementException(String.format(
+					"No JSON file configured for concept %s.",
+					concept));
+		}
+		
 	}
 
 	private File getFile(final Content context, final XPathOp fileAttr, 

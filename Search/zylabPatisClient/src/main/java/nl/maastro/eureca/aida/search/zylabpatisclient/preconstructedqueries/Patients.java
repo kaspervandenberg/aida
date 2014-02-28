@@ -1,6 +1,8 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.MonotonicNonNull;
 import java.util.LinkedHashMap;
 import nl.maastro.eureca.aida.search.zylabpatisclient.DummySearcher;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
@@ -12,7 +14,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoun
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class Patients {
-	private static Patients instance = null;
+	private static @MonotonicNonNull Patients instance = null;
 
 	private final LinkedHashMap<PatisNumber, ConceptFoundStatus> expectedMetastasis;
 
@@ -20,6 +22,7 @@ public class Patients {
 		expectedMetastasis = initExpectedMetastasis();
 	}
 
+	@EnsuresNonNull("instance")
 	public static Patients instance() {
 		if(instance == null) {
 			instance = new Patients();

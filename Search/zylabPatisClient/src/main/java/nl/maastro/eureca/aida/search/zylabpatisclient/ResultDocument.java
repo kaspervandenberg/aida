@@ -1,6 +1,9 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import checkers.nullness.quals.EnsuresNonNullIf;
+import checkers.nullness.quals.NonNull;
+import checkers.nullness.quals.Nullable;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
@@ -19,11 +22,11 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoun
  */
 public class ResultDocument {
 	private final DocumentId docId;
-	private final /*@Nullable*/URI available;
-	private final /*@Nullable*/String documentType;
+	private final @Nullable URI available;
+	private final @Nullable String documentType;
 	private final Map<SemanticModifier, Set<Snippet>> snippets;
 
-	public ResultDocument(DocumentId docId_, URI available_, String documentType_,
+	public ResultDocument(DocumentId docId_, @Nullable URI available_, @Nullable String documentType_,
 			Map<SemanticModifier, Set<Snippet>> snippets_) {
 		docId = docId_;
 		available = available_;
@@ -77,16 +80,27 @@ public class ResultDocument {
 		return docId;
 	}
 
+	@SuppressWarnings("nullness")
+	@EnsuresNonNullIf(expression={"available", "getUrl()"}, result=true )
 	public boolean isAvailable() {
 		return available != null;
 	}
 	
-	public URI getUrl() {
+	public @Nullable URI getUrl() {
 		return available;
 	}
 
-	public String getType() {
+	public @Nullable String getType() {
 		return documentType;
+	}
+
+	public String getType_or_default(String default_type) {
+		if (documentType != null) {
+			if (!documentType.isEmpty()) {
+				return documentType;
+			}
+		}
+		return default_type;
 	}
 
 	public Set<SemanticModifier> getModifiers() {
@@ -94,7 +108,12 @@ public class ResultDocument {
 	}
 	
 	public Set<Snippet> getSnippets(SemanticModifier modifier) {
-		return Collections.unmodifiableSet(snippets.get(modifier));
+		Set<Snippet> result = snippets.get(modifier);
+		if (result != null) {
+			return Collections.unmodifiableSet(result);
+		} else {
+			return Collections.<Snippet>emptySet();
+		}
 	}
 
 	public Set<Snippet> getSnippets() {
@@ -133,7 +152,8 @@ public class ResultDocument {
 
 	public Set<Snippet> reclassify(SemanticModifier oldValue, SemanticModifier newValue) {
 		if(snippets.containsKey(oldValue) && !oldValue.equals(newValue)) {
-			Set<Snippet> tmp = snippets.remove(oldValue);
+			@SuppressWarnings("nullness")
+			@NonNull Set<Snippet> tmp = snippets.remove(oldValue);
 			snippets.put(newValue, tmp);
 			return tmp;
 		} else {

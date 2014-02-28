@@ -4,8 +4,8 @@
 # Order the array of patterns from most specific to most general; since 
 # all matching patterns are executed in order
 PATTERNS=(
-	'http://localhost:8080/' "$TARGET_URL/"
-	'http://localhost:80/' "$TARGET_URL/"
+	'http://localhost:8080/' "$TARGET_URL"
+	'http://localhost:80/' "$TARGET_URL"
 	'(\W):8080/(\W|sesame\b)' "\1:$TARGET_PORT/\2"
 	'(\W):80/(\W|sesame\b)' "\1:$TARGET_PORT/\2"
 	'/home/sophijka/Tomcat/apache-tomcat-5.5.20' "$CATALINA_HOME"

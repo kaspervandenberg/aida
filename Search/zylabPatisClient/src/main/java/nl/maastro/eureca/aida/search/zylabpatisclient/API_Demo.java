@@ -18,8 +18,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.rpc.ServiceException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
@@ -56,21 +54,20 @@ public class API_Demo {
 
 	private final Config config;
 	private final Searcher searcher;
-	private final List<SemanticModifier> modifiers;
 	private final SearchResultFormatter formatter;
 	private final SearchResultTable resultTable;
 	private final ResultComparisonTable validationComparisonTable;
 
-	public API_Demo() {
+	public API_Demo() throws ServiceException, IOException {
 		this.config = initConfig();
 		this.searcher = initSearcher(config);
 		initSearchedConcepts(config, searcher);
-		this.modifiers = initSemanticModifiers(config);
 		HtmlFormatter tmp = new HtmlFormatter();
 		tmp.setShowSnippetsStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW);
 		this.formatter = tmp;
-		this.resultTable = new SearchResultTable(searcher);
-		this.validationComparisonTable = new ResultComparisonTable(resultTable);
+		Report_Builder builder = initReport(config, Report_Builder.Purpose.VALIDATION);
+		this.resultTable = builder.build_search_table();
+		this.validationComparisonTable = builder.build_validation_table();
 	}
 
 	
@@ -99,15 +96,6 @@ public class API_Demo {
 		SearchedConcepts.EXPECTED_METASTASIS.addExpected(Patients.instance().getExpectedMetastasis(), false);
 		SearchedConcepts.init(config, searcher);
 	}
-
-	private static List<SemanticModifier> initSemanticModifiers(Config config) {
-		List<SemanticModifier> result = new ArrayList<>(SemanticModifiers.values().length + 1);
-		result.add(SemanticModifier.Constants.NULL_MODIFIER);
-		for (SemanticModifiers semmod : SemanticModifiers.values()) {
-			result.add(semmod.getModifier(config));
-		}
-		return result;
-	}
 	
 	private static Classifier initClassifier(Config config) {
 		Classifier instance = Classifier.instance();
@@ -125,6 +113,24 @@ public class API_Demo {
 				ConceptFoundStatus.FOUND));
 		return instance;
 	}
+
+
+	private static Report_Builder initReport(Config config, Report_Builder.Purpose purpose)
+			throws ServiceException, IOException
+	{
+		Report_Builder builder = new Report_Builder();
+		builder	.set_config(config)
+				.set_purpose(purpose)
+				.use_default_searcher()
+				.use_predefined_semantic_modifiers()
+				
+				.add_concept(Concepts.METASTASIS)
+				.add_concept(Concepts.CHEMOKUUR);
+
+		return builder;
+	}	
+		
+	
 	
 	public void writeTable() {
 		Date now = new Date();
@@ -141,64 +147,6 @@ public class API_Demo {
 		} catch (IOException ex) {
 			throw new Error(ex);
 		}
-	}
-
-	/**
-	 * @return an {@link ExpectedResults}-object containing the expected results of {@code predefinedConcept}
-	 * 		as read from a json file as via {@link Config}.
-
-	 */
-	public ExpectedResults createExpectedResults(Concepts predefinedConcept) {
-		Concept concept = predefinedConcept.getConcept(config);
-		Map<PatisNumber, ConceptFoundStatus> expectedClassifications = config.getPatients(concept.getName());
-		
-		return ExpectedResultsMap.createWrapper(concept, expectedClassifications);
-	}
-
-	/**
-	 * @return	an {@link ExpectedResults}-object of the results of a previous report stored by using 
-	 * 		{@link #storeResults(Concepts) }.
-
-	 * @throws IllegalArgumentException 	when the current directory contains no file for
-	 * 		{@code predefinedConcept}.
-	 */
-	public ExpectedResults readExpectedPreviousResults(Concepts predefinedConcept) 
-			throws FileNotFoundException, IOException, IllegalArgumentException {
-		Concept concept = predefinedConcept.getConcept(config);
-		File file = new FileNames().getMostRecentJson(concept);
-		FileReader input = new FileReader(file);
-		
-		return ExpectedPreviousResults.read(concept, input);
-	}
-
-	/**
-	 * Add a column containing the expected results to the report.
-	 * 
-	 * The {@link ExpectedResults#getDefinedPatients() patients} in {@code newColumn} are not added automatically,
-	 * call {@link #addDefinedPatients(ExpectedResults)} to add them. 
-	 */
-	public void addExpectedResultsColumn(ExpectedResults newColumn) {
-		resultTable.addExpectedResultsColumn(newColumn);
-		validationComparisonTable.addExpectedResult(newColumn);
-	}
-
-	/**
-	 * Add rows for all patients for whom {@code patientSource} defines expected results.
-	 * 
-	 * Each added patient has a single row: adding a patient multiple times results only in a single row.  Adding 
-	 * a patient multiple times will occur, for example, when multiple ExpectedResults define results the same 
-	 * patient.
-	 */
-	public void addDefinedPatients(ExpectedResults patientSource) {
-		resultTable.addAll(patientSource.getDefinedPatients());
-	}
-
-	/**
-	 * Add a column containing results of searching for a concept.
-	 */
-	public void addConceptSearchColumn(Concepts preConstructedConcept) {
-		Concept concept = preConstructedConcept.getConcept(config);
-		resultTable.addConceptSearchColumn(concept, modifiers);
 	}
 
 	public void setValidationQualifications(Set<ResultComparison.Qualifications> newValidationQualifications) {
@@ -234,38 +182,8 @@ public class API_Demo {
 	 * Finally, store for later use with:
 	 * <ul><li>{@link storeResults(Concepts)}</li></ul>.
 	 */
-	static public void main(String[] args) throws IOException {
+	static public void main(String[] args) throws IOException, ServiceException {
 		API_Demo instance = new API_Demo();
-		
-		ExpectedResults metastasisValidation = instance.createExpectedResults(Concepts.METASTASIS);
-		instance.addExpectedResultsColumn(metastasisValidation);
-		instance.addDefinedPatients(metastasisValidation);
-
-		try {
-			ExpectedResults metastasisPrevious = instance.readExpectedPreviousResults(Concepts.METASTASIS);
-			instance.addExpectedResultsColumn(metastasisPrevious);
-			instance.addDefinedPatients(metastasisPrevious);
-		} catch (IOException | IllegalArgumentException ex) {
-			// Log and skip column
-			Logger.getLogger(API_Demo.class.getName()).log(Level.WARNING, "No previous metastasis results", ex);
-		}
-		
-		instance.addConceptSearchColumn(Concepts.METASTASIS);
-
-		ExpectedResults chemokuurValidation = instance.createExpectedResults(Concepts.CHEMOKUUR);
-		instance.addExpectedResultsColumn(chemokuurValidation);
-		instance.addDefinedPatients(chemokuurValidation);
-
-		try {
-			ExpectedResults chemokuurPrevious = instance.readExpectedPreviousResults(Concepts.CHEMOKUUR);
-			instance.addExpectedResultsColumn(chemokuurPrevious);
-			instance.addDefinedPatients(chemokuurPrevious);
-		} catch (IOException | IllegalArgumentException ex) {
-			// Log and skip column
-			Logger.getLogger(API_Demo.class.getName()).log(Level.WARNING, "No previous chemokuur results", ex);
-		}
-
-		instance.addConceptSearchColumn(Concepts.CHEMOKUUR);
 		
 		instance.setValidationQualifications(EnumSet.of(
 				ACTUAL_MATCHING_EXPECTED, ACTUAL_CONTAINIG_EXPECTED_AND_OTHERS, 

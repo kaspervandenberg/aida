@@ -12,9 +12,27 @@ public interface Variable {
 		UNBOUND
 	};
 
-	public void set(Query_Expression new_value);
+	public static class Unbound_Variable_Exception extends IllegalStateException {
+		public Unbound_Variable_Exception() {
+			super();
+		}
+
+		public Unbound_Variable_Exception(String message) {
+			super(message);
+		}
+
+		public Unbound_Variable_Exception(String message, Throwable cause) {
+			super(message, cause);
+		}
+
+		public Unbound_Variable_Exception(Throwable cause) {
+			super(cause);
+		}
+	};
+
+	public void set(Object new_value);
 	public State state();
-	public Query_Expression get_value();
+	public Object get_value();
 }
 
 /* vim:set tabstop=4 shiftwidth=4 autoindent : */

@@ -3,20 +3,15 @@ package nl.maastro.eureca.aida.search.zylabpatisclient;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.SearchResultFormatter;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.xml.rpc.ServiceException;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
@@ -30,7 +25,6 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Pati
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.SemanticModifiers;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedPreviousResults;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedResults;
-import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedResultsMap;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparison;
 import static nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparison.Qualifications.*;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparisonTable;

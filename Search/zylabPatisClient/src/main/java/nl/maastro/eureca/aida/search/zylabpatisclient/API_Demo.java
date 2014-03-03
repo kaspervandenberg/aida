@@ -65,7 +65,7 @@ public class API_Demo {
 		HtmlFormatter tmp = new HtmlFormatter();
 		tmp.setShowSnippetsStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW);
 		this.formatter = tmp;
-		Report_Builder builder = initReport(config, Report_Builder.Purpose.VALIDATION);
+		Report_Builder builder = initReport(config, searcher, Report_Builder.Purpose.VALIDATION);
 		this.resultTable = builder.build_search_table();
 		this.validationComparisonTable = builder.build_validation_table();
 	}
@@ -115,13 +115,12 @@ public class API_Demo {
 	}
 
 
-	private static Report_Builder initReport(Config config, Report_Builder.Purpose purpose)
-			throws ServiceException, IOException
+	private static Report_Builder initReport(Config config, Searcher searcher, Report_Builder.Purpose purpose)
 	{
 		Report_Builder builder = new Report_Builder();
 		builder	.set_config(config)
 				.set_purpose(purpose)
-				.use_default_searcher()
+				.set_searcher(searcher)
 				.use_predefined_semantic_modifiers()
 				
 				.add_concept(Concepts.METASTASIS)

@@ -105,8 +105,8 @@ public class ClassMap<TKeyClass extends /*@NonNull*/Object, TValue> extends Hash
 			RetrievalStrategies strategy_,
 			Set<? extends Class<? extends TKey>> items_)
 	{
-		ClassMap<TKey, Void> class_map_without_values = createClassToVoidMap(strategy_, items_);
-		Set</*@KeyFor("class_map_without_values")*/Class<? extends TKey>> result = class_map_without_values.keySet();
+		ClassMap<TKey, Void> classMapWithoutValues = createClassToVoidMap(strategy_, items_);
+		Set</*@KeyFor("classMapWithoutValues")*/Class<? extends TKey>> result = classMapWithoutValues.keySet();
 		return result;
 	}
 
@@ -114,20 +114,20 @@ public class ClassMap<TKeyClass extends /*@NonNull*/Object, TValue> extends Hash
 	@Override
 	@SuppressWarnings("nullness")
 	@EnsuresNonNullIf(expression={"get(#1)", "getMatchingStoredKey(#1)", "lookup(#1)"}, result=true)
-	public boolean containsKey(final @Nullable Object o_request)
+	public boolean containsKey(final @Nullable Object obj_request)
 	{
-		return containsKey_impl(o_request);
+		return containsKey_impl(obj_request);
 	}
 	
 	
 	@Pure
-	private boolean containsKey_impl(final @Nullable Object o_request)
+	private boolean containsKey_impl(final @Nullable Object obj_request)
 	{
-		if (!(o_request instanceof Class)) {
+		if (!(obj_request instanceof Class)) {
 			return false;
 		}
 		@SuppressWarnings("unchecked")
-		Class<? extends TKeyClass> request = (Class) o_request;
+		Class<? extends TKeyClass> request = (Class) obj_request;
 		if (containsKey(request)) {
 			return true;
 		} else {

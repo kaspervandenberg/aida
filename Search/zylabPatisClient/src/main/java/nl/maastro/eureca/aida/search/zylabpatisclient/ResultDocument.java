@@ -94,13 +94,13 @@ public class ResultDocument {
 		return documentType;
 	}
 
-	public String getType_or_default(String default_type) {
+	public String getTypeOrDefault(String defaultType) {
 		if (documentType != null) {
 			if (!documentType.isEmpty()) {
 				return documentType;
 			}
 		}
-		return default_type;
+		return defaultType;
 	}
 
 	public Set<SemanticModifier> getModifiers() {

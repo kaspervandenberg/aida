@@ -718,7 +718,7 @@ public class Config {
 		try {
 			try (FileReader in = new FileReader(f)) {
 				return p.readFromJSON(in);
-			} catch (PatisReader.Parse_Failed_Exception ex) {
+			} catch (PatisReader.ParseFailedException ex) {
 				throw new Error(String.format(
 						"Failed to parse %s\nCause: %s",
 						f, ex.getMessage()),
@@ -744,11 +744,11 @@ public class Config {
 	}
 
 	private static SAXBuilder getParser() {
-		@Nullable InputStream schema_stream = Config.class.getResourceAsStream(SCHEMA_RESOURCE);
-		if (schema_stream == null) {
+		@Nullable InputStream schemaStream = Config.class.getResourceAsStream(SCHEMA_RESOURCE);
+		if (schemaStream == null) {
 			throw new Error ("Cannot read schema");
 		}
-		Source schemaSource = new StreamSource(schema_stream);
+		Source schemaSource = new StreamSource(schemaStream);
 		
 		try {
 			Schema  schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).
@@ -837,17 +837,17 @@ public class Config {
 	}
 
 	private File getFile(final Content context, final XPathOp fileAttr, 
-			final String msg_UriSyntaxException, 
-			final String msg_notConfigured) {
+			final String msgUriSyntaxException, 
+			final String msgNotConfigured) {
 		String addr = fileAttr.getAttrValue(context);
 		if(addr != null) {
 			try {
 				return new File(new URI(addr));
 			} catch (URISyntaxException ex) {
-				throw new Error(String.format(msg_UriSyntaxException, addr), ex);
+				throw new Error(String.format(msgUriSyntaxException, addr), ex);
 			}
 		} else {
-			throw new Error(msg_notConfigured);
+			throw new Error(msgNotConfigured);
 		}
 		
 	}

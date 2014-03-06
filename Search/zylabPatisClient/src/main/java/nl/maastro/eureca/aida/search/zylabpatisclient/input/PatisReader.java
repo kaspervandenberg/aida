@@ -24,27 +24,27 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoun
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class PatisReader {
-	public class Parse_Failed_Exception extends IOException {
+	public class ParseFailedException extends IOException {
 
-		public Parse_Failed_Exception() {
+		public ParseFailedException() {
 		}
 
-		public Parse_Failed_Exception(String message) {
+		public ParseFailedException(String message) {
 			super(message);
 		}
 
-		public Parse_Failed_Exception(String message, Throwable cause) {
+		public ParseFailedException(String message, Throwable cause) {
 			super(message, cause);
 		}
 
-		public Parse_Failed_Exception(Throwable cause) {
+		public ParseFailedException(Throwable cause) {
 			super(cause);
 		}
 
-		public Parse_Failed_Exception(Map.Entry<String, ConceptFoundStatus> problematic_entry) {
+		public ParseFailedException(Map.Entry<String, ConceptFoundStatus> problematicEntry) {
 			super(String.format(
 					"error parsing entry: %s",
-					problematic_entry.toString()));
+					problematicEntry.toString()));
 		}
 		
 	}
@@ -57,12 +57,12 @@ public class PatisReader {
 		return getCsvReader().read(csvSource);
 	}
 
-	public Map<PatisNumber, ConceptFoundStatus> readFromJSON(InputStreamReader jsonSource) throws Parse_Failed_Exception {
+	public Map<PatisNumber, ConceptFoundStatus> readFromJSON(InputStreamReader jsonSource) throws ParseFailedException {
 		Type mapT = new TypeToken<LinkedHashMap<String, ConceptFoundStatus>>(){ }.getType();
 		LinkedHashMap<String, ConceptFoundStatus> items = getGson().fromJson(jsonSource, mapT);
 		LinkedHashMap<PatisNumber, ConceptFoundStatus> result = new LinkedHashMap<>(items.size());
 		for (Map.Entry<String, ConceptFoundStatus> entry : items.entrySet()) {
-			assert_correctly_parsed(entry);
+			assertCorrectlyParsed(entry);
 			result.put(PatisNumber.create(entry.getKey()), entry.getValue());
 		}
 		return result;
@@ -101,7 +101,7 @@ public class PatisReader {
 		return getDummySearcher(read);
 	}
 
-	public DummySearcher getDummySearcherFromJson(InputStreamReader jsonSource) throws Parse_Failed_Exception {
+	public DummySearcher getDummySearcherFromJson(InputStreamReader jsonSource) throws ParseFailedException {
 		final Map<PatisNumber, ConceptFoundStatus> read = readFromJSON(jsonSource);
 		return getDummySearcher(read);
 	}
@@ -110,38 +110,38 @@ public class PatisReader {
 		return new DummySearcher(results);
 	}
 
-	private void assert_correctly_parsed(Map.Entry<String, ConceptFoundStatus> entry)
-			throws Parse_Failed_Exception
+	private void assertCorrectlyParsed(Map.Entry<String, ConceptFoundStatus> entry)
+			throws ParseFailedException
 	{
 		if (entry.getKey() == null) {
-			throw new Parse_Failed_Exception(entry);
+			throw new ParseFailedException(entry);
 		}
 		if (entry.getKey().isEmpty()) {
-			throw new Parse_Failed_Exception(entry);
+			throw new ParseFailedException(entry);
 		}
 		if (entry.getValue() == null) {
-			throw new Parse_Failed_Exception(entry);
+			throw new ParseFailedException(entry);
 		}
 	}
 
 	public static void main(String[] args) {
-		final String msg_useage = String.format(
+		final String msgUseage = String.format(
 				"java %s {patients.csv} {patients.json} {classifier_class}",
 				PatisReader.class.getName());
-		final String errMsg_illegalArgument = 
+		final String errMsgIllegalArgument = 
 				"Specify two files and optionally a classifier as arguments.";
-		final String errMsg_inputFileNotFound = 
+		final String errMsgInputFileNotFound = 
 				"File, %s, not found (or unreadable).";
-		final String errMsg_outputFileNotAvailabe =
+		final String errMsgOutputFileNotAvailabe =
 				"File, %s, cannot be created.";
-		final String errMsg_closing = 
+		final String errMsgClosing = 
 				"Error closing input fle.";
 		
 		final PatisReader instance = new PatisReader();
 
 		if(args.length < 2) {
-			System.out.println(msg_useage);
-			throw new Error(new IllegalArgumentException(errMsg_illegalArgument));
+			System.out.println(msgUseage);
+			throw new Error(new IllegalArgumentException(errMsgIllegalArgument));
 		}
 		PatisCsvReader.Classifier classifier;
 		if (args.length >= 3) {
@@ -162,13 +162,13 @@ public class PatisReader {
 							instance.getCsvReader().read(in, classifier);
 					instance.writeToJSON(out, expected);
 				} catch (IOException ex) {
-					throw new Error(String.format(errMsg_outputFileNotAvailabe, args[1]), ex);
+					throw new Error(String.format(errMsgOutputFileNotAvailabe, args[1]), ex);
 				}
 			} catch (FileNotFoundException ex) {
-				throw new Error(String.format(errMsg_inputFileNotFound, args[0]), ex);
+				throw new Error(String.format(errMsgInputFileNotFound, args[0]), ex);
 			}
 		} catch (IOException ex) {
-			throw new Error(errMsg_closing, ex);
+			throw new Error(errMsgClosing, ex);
 		}
 	}
 }

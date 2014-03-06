@@ -65,13 +65,13 @@ public class ContentTypeNegotiator<TOutputFormatter> {
 		Map<MediaType, Double> result = new HashMap<>(types.length);
 		
 		for (String t : types) {
-			String mediaRange_acceptParams[] = t.split(QUALITY_PARAM_SEPARATOR, 2);
+			String mediaRangeAcceptParams[] = t.split(QUALITY_PARAM_SEPARATOR, 2);
 			Double quality = 1.0;
-			if(mediaRange_acceptParams.length == 2) {
-				String s_quality = Separators.PARAMETER.split(mediaRange_acceptParams[1])[0];
+			if(mediaRangeAcceptParams.length == 2) {
+				String s_quality = Separators.PARAMETER.split(mediaRangeAcceptParams[1])[0];
 				quality = Double.valueOf(s_quality);
 			}
-			result.put(MediaType.parse(mediaRange_acceptParams[0]), quality);
+			result.put(MediaType.parse(mediaRangeAcceptParams[0]), quality);
 		}
 		return result;
 	}

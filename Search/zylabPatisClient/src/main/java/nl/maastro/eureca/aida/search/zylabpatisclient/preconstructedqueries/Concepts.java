@@ -37,13 +37,13 @@ public enum Concepts {
 	}
 
 	private class Impl implements Concept {
-		private final QueryNode parsetree_representation;
-		private final SpanQuery luceneObject_representation;
+		private final QueryNode parsetreeRepresentation;
+		private final SpanQuery luceneObjectRepresentation;
 		private transient @MonotonicNonNull QName id = null;
 
 		public Impl(final Iterable<LexicalPattern> pats) {
-			parsetree_representation = new OrQueryNode(LexicalPatterns.containedNodes(pats));
-			luceneObject_representation = new SpanOrQuery(LexicalPatterns.containedSpans(pats));
+			parsetreeRepresentation = new OrQueryNode(LexicalPatterns.containedNodes(pats));
+			luceneObjectRepresentation = new SpanOrQuery(LexicalPatterns.containedSpans(pats));
 		};
 		
 		@Override
@@ -56,7 +56,7 @@ public enum Concepts {
 		public QName getName() {
 			if (id == null) {
 				try {
-					id = QNameUtil.instance().createQName_inPreconstructedNamespace(
+					id = QNameUtil.instance().createQNameInPreconstructedNamespace(
 							Concepts.this.name().toLowerCase());
 				} catch (URISyntaxException ex) {
 					throw new Error(ex);
@@ -67,23 +67,23 @@ public enum Concepts {
 
 		@Override
 		public SpanQuery getRepresentation() {
-			return getLuceneObject_representation();
+			return getLuceneObjectRepresentation();
 		}
 
 		/**
-		 * @return the parsetree_representation
+		 * @return the parsetreeRepresentation
 		 */
 		@Override
-		public QueryNode getParsetree_representation() {
-			return parsetree_representation;
+		public QueryNode getParsetreeRepresentation() {
+			return parsetreeRepresentation;
 		}
 
 		/**
-		 * @return the luceneObject_representation
+		 * @return the luceneObjectRepresentation
 		 */
 		@Override
-		public SpanQuery getLuceneObject_representation() {
-			return luceneObject_representation;
+		public SpanQuery getLuceneObjectRepresentation() {
+			return luceneObjectRepresentation;
 		}
 	}
 	

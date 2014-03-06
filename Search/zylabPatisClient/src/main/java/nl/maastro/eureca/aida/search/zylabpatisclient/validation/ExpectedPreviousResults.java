@@ -206,8 +206,8 @@ public class ExpectedPreviousResults implements ExpectedResults {
 	public Collection<PatisNumber> getDefinedPatients() {
 		Collection</*@KeyFor("expected")*/ PatisNumber> result = expected.keySet();
 		@SuppressWarnings("unchecked")	// Up–down-cast to get rid of the Collection<@KeyFor(…) PatisNumber> introduced by the checker framework (see http://stackoverflow.com/a/7505867/814206)
-		Collection<PatisNumber> interface_adhering_result = (Collection<PatisNumber>) (Object) result;
-		return interface_adhering_result;
+		Collection<PatisNumber> interfaceAdheringResult = (Collection<PatisNumber>) (Object) result;
+		return interfaceAdheringResult;
 	}
 
 	@Override

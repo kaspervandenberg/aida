@@ -49,10 +49,10 @@ public class PatisCsvReader {
 		
 	}
 
-	private static final @Nullable String canonical_class_name = PatisCsvReader.class.getCanonicalName();
+	private static final @Nullable String canonicalClassName = PatisCsvReader.class.getCanonicalName();
 	private static final Logger log = 
-			(canonical_class_name != null) ?
-				Logger.getLogger(canonical_class_name) :
+			(canonicalClassName != null) ?
+				Logger.getLogger(canonicalClassName) :
 				Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	private String separator = ";";
 	private int column = 0;

@@ -118,9 +118,9 @@ public class PatisExpectedEmdReader implements PatisCsvReader.Classifier {
 				if (connection == null || connection.isClosed()) {
 					this.connection = initConnection(username, password);
 				}
-				@NonNull Connection initialised_connection = connection;
+				@NonNull Connection initialisedConnection = connection;
 				if(statement == null || statement.isClosed()) {
-					this.statement = initPreparedStatement(initialised_connection);
+					this.statement = initPreparedStatement(initialisedConnection);
 				}
 			} catch (SQLException ex) {
 				throw new Error(ex);

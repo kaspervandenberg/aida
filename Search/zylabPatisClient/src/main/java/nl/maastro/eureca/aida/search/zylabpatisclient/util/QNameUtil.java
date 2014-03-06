@@ -69,7 +69,7 @@ public class QNameUtil {
 	 * @throws URISyntaxException when the constructed URI has an syntax 
 	 * 		error. 
 	 */
-	public QName createQName_inPreconstructedNamespace(String localpart) 
+	public QName createQNameInPreconstructedNamespace(String localpart) 
 			throws URISyntaxException {
 		return new QName(Config.PropertyKeys.PRECONSTRUCTED_URI.getValue(),
 				localpart,

@@ -182,7 +182,7 @@ public class FileNamesTest {
 		QNameUtil qnames = QNameUtil.instance();
 		Concept mocked = mock(Concept.class);
 		try {
-			when (mocked.getName()) .thenReturn(qnames.createQName_inPreconstructedNamespace(CONCEPT_LOCALNAME));
+			when (mocked.getName()) .thenReturn(qnames.createQNameInPreconstructedNamespace(CONCEPT_LOCALNAME));
 		} catch (Exception ex) {
 			throw new Error(ex);
 		}

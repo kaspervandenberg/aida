@@ -63,10 +63,10 @@ public class NameSpaceResolver {
 		@SuppressWarnings("nullness")
 		@Override
 		public @Nullable String getPrefix(String namespaceURI) {
-			return getPrefix__impl(namespaceURI);
+			return getPrefix_impl(namespaceURI);
 		}
 		
-		private @Nullable String getPrefix__impl(String namespaceURI) {
+		private @Nullable String getPrefix_impl(String namespaceURI) {
 			if (namespaceURI == null) {
 				throw new IllegalArgumentException("Resolving null namespaceURI");
 			}

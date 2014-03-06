@@ -168,7 +168,7 @@ enum LexicalPatterns {
 	static List<QueryNode> containedNodes(final Iterable<LexicalPattern> pats) {
 		final List<QueryNode> nodes = new ArrayList<>();
 		for (LexicalPattern p : pats) {
-			nodes.add(p.getParsetree_representation());
+			nodes.add(p.getParsetreeRepresentation());
 		}
 		return nodes;
 	}
@@ -177,7 +177,7 @@ enum LexicalPatterns {
 		final ArrayList<SpanQuery> result = new ArrayList<>();
 		Iterator<LexicalPattern> i = pats.iterator();
 		while(i.hasNext()) {
-			result.add(i.next().getLuceneObject_representation());
+			result.add(i.next().getLuceneObjectRepresentation());
 		}
 		return result.toArray(new SpanQuery[result.size()]);
 	}
@@ -231,7 +231,7 @@ enum LexicalPatterns {
 	private QName getName() {
 		if (id == null) {
 			try {
-				id = QNameUtil.instance().createQName_inPreconstructedNamespace(
+				id = QNameUtil.instance().createQNameInPreconstructedNamespace(
 						LexicalPatterns.this.name().toLowerCase());
 			} catch (URISyntaxException ex) {
 				throw new Error(ex);

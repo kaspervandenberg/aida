@@ -59,9 +59,9 @@ public class API_Demo {
 		HtmlFormatter tmp = new HtmlFormatter();
 		tmp.setShowSnippetsStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW);
 		this.formatter = tmp;
-		Report_Builder builder = initReport(config, searcher, Report_Builder.Purpose.VALIDATION);
-		this.resultTable = builder.build_search_table();
-		this.validationComparisonTable = builder.build_validation_table();
+		ReportBuilder builder = initReport(config, searcher, ReportBuilder.Purpose.VALIDATION);
+		this.resultTable = builder.buildSearchTable();
+		this.validationComparisonTable = builder.buildValidationTable();
 	}
 
 	
@@ -109,16 +109,16 @@ public class API_Demo {
 	}
 
 
-	private static Report_Builder initReport(Config config, Searcher searcher, Report_Builder.Purpose purpose)
+	private static ReportBuilder initReport(Config config, Searcher searcher, ReportBuilder.Purpose purpose)
 	{
-		Report_Builder builder = new Report_Builder();
-		builder	.set_config(config)
-				.set_purpose(purpose)
-				.set_searcher(searcher)
-				.use_predefined_semantic_modifiers()
+		ReportBuilder builder = new ReportBuilder();
+		builder	.setConfig(config)
+				.setPurpose(purpose)
+				.setSearcher(searcher)
+				.usePredefinedSemanticModifiers()
 				
-				.add_concept(Concepts.METASTASIS)
-				.add_concept(Concepts.CHEMOKUUR);
+				.addConcept(Concepts.METASTASIS)
+				.addConcept(Concepts.CHEMOKUUR);
 
 		return builder;
 	}	

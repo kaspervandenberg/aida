@@ -8,6 +8,13 @@ import dataflow.quals.Pure;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import dataflow.quals.Pure;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;import dataflow.quals.Pure;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * A {@link ClassMap} containing {@link ClassMap}s.
@@ -148,7 +155,7 @@ public class ClassTable<TOuterKeyClass extends /*@NonNull*/ Object, TInnerKeyCla
 	 */
 	public static <TSourceClass, TTargetClass, TValue>
 			ClassTable<TSourceClass, TTargetClass, TValue>
-			create_source_to_target(
+			createSourceToTarget(
 				Map<? extends Class<? extends TSourceClass>,
 					Map<? extends Class<? extends TTargetClass>, ? extends TValue>> m)
 	{
@@ -359,14 +366,14 @@ public class ClassTable<TOuterKeyClass extends /*@NonNull*/ Object, TInnerKeyCla
 			final Class<? extends TOuterKeyClass> reqKey1,
 			final Class<? extends TInnerKeyClass> reqKey2)
 	{
-		@Nullable ClassMap<TInnerKeyClass, TValue> inner_map = get(reqKey1);
-		if (inner_map == null) {
+		@Nullable ClassMap<TInnerKeyClass, TValue> innerMap = get(reqKey1);
+		if (innerMap == null) {
 			throw new NoSuchElementException(String.format(
 					"(%s, %s) not stored in this map",
 					reqKey1.getName(),
 					reqKey2.getName()));
 		}
-		return inner_map.getMatchingStoredKey(reqKey2);
+		return innerMap.getMatchingStoredKey(reqKey2);
 	}
 	
 

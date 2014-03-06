@@ -26,11 +26,11 @@
 
 		NOTE: The implementation issues a query per patient.  Therefore
 			the total number of procuded results can be higher than
-			'max_hits_per_query' and if the index contains more than
-			'max_hits_per_query' documents for one patient this will not
+			'maxHitsPerQuery' and if the index contains more than
+			'maxHitsPerQuery' documents for one patient this will not
 			affect the returned results for other patients.
 	-->
-	<bean id="max_hits_per_query" class="java.lang.Integer">
+	<bean id="maxHitsPerQuery" class="java.lang.Integer">
 		<constructor-arg value="500" />
 	</bean>
 
@@ -38,7 +38,7 @@
 		The name of the field (in the index) that contains the path of
 		the metadata file.
 	-->
-	<bean id="index.fields.metadata_uri" class="java.lang.String">
+	<bean id="index.fields.metadataUri" class="java.lang.String">
 		<constructor-arg value="id" />
 	</bean>
 
@@ -46,7 +46,7 @@
 		The name of the field (in the index) that contains the path of
 		the data file.
 	-->
-	<bean id="index.fields.data_uri" class="java.lang.String">
+	<bean id="index.fields.dataUri" class="java.lang.String">
 		<constructor-arg value="dcterms:references" />
 	</bean>
 	

@@ -16,14 +16,14 @@ import org.apache.lucene.search.spans.SpanQuery;
 public interface DualRepresentationQuery extends Query  {
 
 	/**
-	 * @return the parsetree_representation
+	 * @return the parsetreeRepresentation
 	 */
-	QueryNode getParsetree_representation();
+	QueryNode getParsetreeRepresentation();
 
 	/**
-	 * @return the luceneObject_representation
+	 * @return the luceneObjectRepresentation
 	 */
-	SpanQuery getLuceneObject_representation();
+	SpanQuery getLuceneObjectRepresentation();
 
 	/**
 	 * Allows implementors of {@link DualRepresentationQuery} to forward
@@ -44,7 +44,7 @@ public interface DualRepresentationQuery extends Query  {
 				return visitor.visit(new ParseTreeBase() {
 					@Override
 					public QueryNode getRepresentation() {
-						return src.getParsetree_representation();
+						return src.getParsetreeRepresentation();
 					}
 
 					@Override
@@ -66,7 +66,7 @@ public interface DualRepresentationQuery extends Query  {
 				return visitor.visit(new LuceneObjectBase() {
 					@Override
 					public org.apache.lucene.search.Query getRepresentation() {
-						return src.getLuceneObject_representation();
+						return src.getLuceneObjectRepresentation();
 					}
 
 					@Override

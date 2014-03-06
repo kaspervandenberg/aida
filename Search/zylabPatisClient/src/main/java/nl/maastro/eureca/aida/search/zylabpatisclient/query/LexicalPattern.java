@@ -16,7 +16,7 @@ public class LexicalPattern implements Query, DualRepresentationQuery, LuceneObj
 	 *
 	 * @see nl.maastro.eureca.aida.search.zylabpatisclient.PreconstructedQueries.LexicalPatterns#luceneObject_representation
 	 */
-	private final QueryNode parsetree_representation;
+	private final QueryNode parsetreeRepresentation;
 	/**
 	 * The {@code LexicalPattern} as
 	 * {@link org.apache.lucene.search.Query}-object that
@@ -29,13 +29,13 @@ public class LexicalPattern implements Query, DualRepresentationQuery, LuceneObj
 	 * <ul><li>as a parse tree; and</li>
 	 * 		<li>as a lucene.search.SpanQuery.</li></ul>
 	 */
-	private final SpanQuery luceneObject_representation;
+	private final SpanQuery luceneObjectRepresentation;
 	private final QName id;
 
 	public LexicalPattern(final QName id_, final QueryNode parseTree_, final org.apache.lucene.search.spans.SpanQuery luceneObject_) {
 		this.id = id_;
-		this.parsetree_representation = parseTree_;
-		this.luceneObject_representation = luceneObject_;
+		this.parsetreeRepresentation = parseTree_;
+		this.luceneObjectRepresentation = luceneObject_;
 	}
 
 	@Override
@@ -49,17 +49,17 @@ public class LexicalPattern implements Query, DualRepresentationQuery, LuceneObj
 	}
 
 	@Override
-	public QueryNode getParsetree_representation() {
-		return parsetree_representation;
+	public QueryNode getParsetreeRepresentation() {
+		return parsetreeRepresentation;
 	}
 
 	@Override
-	public SpanQuery getLuceneObject_representation() {
-		return luceneObject_representation;
+	public SpanQuery getLuceneObjectRepresentation() {
+		return luceneObjectRepresentation;
 	}
 
 	@Override
 	public org.apache.lucene.search.Query getRepresentation() {
-		return this.getLuceneObject_representation();
+		return this.getLuceneObjectRepresentation();
 	}
 }

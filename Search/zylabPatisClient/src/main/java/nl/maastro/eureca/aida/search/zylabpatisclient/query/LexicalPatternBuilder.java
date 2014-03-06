@@ -37,8 +37,8 @@ public class LexicalPatternBuilder {
 			luceneObjects = new ArrayList<>();
 			
 			for (LexicalPattern pat : patterns) {
-				luceneObjects.add(pat.getLuceneObject_representation());
-				nodes.add(pat.getParsetree_representation());
+				luceneObjects.add(pat.getLuceneObjectRepresentation());
+				nodes.add(pat.getParsetreeRepresentation());
 			}
 		}
 		

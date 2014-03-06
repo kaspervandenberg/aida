@@ -29,7 +29,7 @@ public enum SearchedConcepts {
 		REAL {
 			@Override
 			public void setSearcher(SearchedConcepts container, Searcher searcher_) {
-				container.setSearcher_real(searcher_);
+				container.setSearcherReal(searcher_);
 			}
 
 			@Override
@@ -44,7 +44,7 @@ public enum SearchedConcepts {
 
 			@Override
 			public void addExpected(SearchedConcepts container, Map<PatisNumber, ConceptFoundStatus> expected_, boolean preserveExisting) {
-				container.addExpected_sim(expected_, preserveExisting);
+				container.addExpectedSim(expected_, preserveExisting);
 			}
 		};
 
@@ -77,7 +77,7 @@ public enum SearchedConcepts {
 	}
 
 	@EnsuresNonNull("searcher")
-	private void setSearcher_real(Searcher searcher_) {
+	private void setSearcherReal(Searcher searcher_) {
 		this.searcher = searcher_;
 	}
 
@@ -85,7 +85,7 @@ public enum SearchedConcepts {
 		strat.addExpected(this, expected_, preserveExisting);
 	}
 
-	private void addExpected_sim(Map<PatisNumber, ConceptFoundStatus> expected_, boolean preserveExisting) {
+	private void addExpectedSim(Map<PatisNumber, ConceptFoundStatus> expected_, boolean preserveExisting) {
 		LinkedHashMap<PatisNumber, ConceptFoundStatus> toAdd = new LinkedHashMap<>(expected_);
 		if (preserveExisting) {
 			toAdd.keySet().removeAll(this.expected.keySet());

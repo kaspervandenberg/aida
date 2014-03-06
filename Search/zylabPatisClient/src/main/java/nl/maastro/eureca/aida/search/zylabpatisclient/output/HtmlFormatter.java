@@ -206,8 +206,8 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 				docName = doc.getId().getValue();
 			}
 			
-			String docType = doc.getType_or_default("");
-			String doc_type_msg = (!docType.isEmpty()) ?	// if docType is available show it, else ignore it. 
+			String docType = doc.getTypeOrDefault("");
+			String docTypeMsg = (!docType.isEmpty()) ?	// if docType is available show it, else ignore it. 
 					String.format("(type: %s)", docType) :
 					"";
 							
@@ -215,7 +215,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 			String innerPattern = !perDocSnippets.isEmpty() ?
 					"Document: %s %s %%s, snippets:\n" :
 					"Document: %s %s %%s";
-			String outerPattern = String.format(innerPattern, docName, doc_type_msg);
+			String outerPattern = String.format(innerPattern, docName, docTypeMsg);
 			
 			writeEligibility(out, outerPattern, doc.getClassifiers());
 			writePerDocModifierList(out, doc, doc.getModifiers());

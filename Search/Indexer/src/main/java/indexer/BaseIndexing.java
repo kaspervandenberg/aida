@@ -151,8 +151,8 @@ public class BaseIndexing implements AutoCloseable {
 					indexWriterUtil.getIndexWriter().addDocument(doc.getDocument(), analyzer);
 					indexWriterUtil.getIndexWriter().commit();
 
-					ZylabMetadataXml.FileRef ref_about = context.get(ZylabMetadataXml.FileRef.class);
-					if(ref_about != null) {
+					ZylabMetadataXml.FileRef refAbout = context.get(ZylabMetadataXml.FileRef.class);
+					if(refAbout != null) {
 						String s_about= doc.metadata.get(ZylabMetadataXml.FixedProperties.ABOUT_RESOLVED.get());
 						try {
 							URI about = new URI(s_about);

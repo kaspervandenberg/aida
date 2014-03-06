@@ -48,12 +48,12 @@ public class ExpectedPreviousResultsTest {
 		}
 
 		@Override
-		public QueryNode getParsetree_representation() {
+		public QueryNode getParsetreeRepresentation() {
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 
 		@Override
-		public SpanQuery getLuceneObject_representation() {
+		public SpanQuery getLuceneObjectRepresentation() {
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 

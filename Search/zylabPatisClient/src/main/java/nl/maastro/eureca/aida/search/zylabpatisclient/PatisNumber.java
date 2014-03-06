@@ -93,7 +93,7 @@ public class PatisNumber extends HasString {
 		return true;
 	}
 
-	public org.apache.lucene.search.Query as_lucene_query()
+	public org.apache.lucene.search.Query asLuceneQuery()
 	{
 		return new TermQuery(new Term(PATIS_FIELD, value));
 	}

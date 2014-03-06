@@ -33,8 +33,8 @@ public class DynamicAdapter {
 				this.put(key1, new ClassMap<Query, QueryAdapterBuilder<? extends Query, ? extends Query>>(RetrievalStrategies.SUBCLASS));
 			}
 			@SuppressWarnings("nullness")
-			@NonNull ClassMap<Query, QueryAdapterBuilder<? extends Query, ? extends Query>> inner_map = this.getStrict(key1);
-			@Nullable QueryAdapterBuilder<? extends Query, ? extends Query> previous = inner_map.put(key2, newValue_);
+			@NonNull ClassMap<Query, QueryAdapterBuilder<? extends Query, ? extends Query>> innerMap = this.getStrict(key1);
+			@Nullable QueryAdapterBuilder<? extends Query, ? extends Query> previous = innerMap.put(key2, newValue_);
 			
 			/*
 			 * Up–down cast to convert QAB<?, ?> to QAB<TIn, TOut> 
@@ -47,10 +47,10 @@ public class DynamicAdapter {
 		@SuppressWarnings("unchecked")
 		public <TIn extends Query, TOut extends Query> QueryAdapterBuilder<TIn, TOut> get(Class<TOut> key1, Class<TIn> key2) {
 			ClassMap</*@NonNull*/Query, 
-					QueryAdapterBuilder<? extends /*@NonNull*/Query, ? extends /*@NonNull*/Query>> inner_map = getStrict(key1);
+					QueryAdapterBuilder<? extends /*@NonNull*/Query, ? extends /*@NonNull*/Query>> innerMap = getStrict(key1);
 
-			if (inner_map != null) {
-				QueryAdapterBuilder<? extends /*@NonNull*/Query, ? extends /*@NonNull*/Query> result = inner_map.get(key2);
+			if (innerMap != null) {
+				QueryAdapterBuilder<? extends /*@NonNull*/Query, ? extends /*@NonNull*/Query> result = innerMap.get(key2);
 
 				if(result != null) {
 					/*
@@ -120,6 +120,6 @@ public class DynamicAdapter {
 
 	public Query applyModifier(Query concept, final SemanticModifier modifier) {
 		ModifierApplier applier = new ModifierApplier(modifier, concept);
-		return applier.get_modified_query();
+		return applier.getModifiedQuery();
 	}
 }

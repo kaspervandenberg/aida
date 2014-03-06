@@ -6,7 +6,6 @@ package nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries;
 
 /*>>> import checkers.initialization.quals.UnknownInitialization; */
 import checkers.initialization.quals.Initialized;
-import checkers.nullness.NullnessUtils;
 import checkers.nullness.quals.NonNull;
 /*>>> import checkers.nullness.quals.KeyFor; */
 /*>>> import checkers.nullness.quals.Nullable; */
@@ -238,9 +237,9 @@ public enum SemanticModifiers {
 			
 			adapters = new ClassMap<>(ClassMap.RetrievalStrategies.SUBCLASS);
 			adapters.put(LuceneObject.class,
-				createSingletonMapping(LuceneObject.class, getAdapter_luceneObject()));
+				createSingletonMapping(LuceneObject.class, getAdapterLuceneObject()));
 			adapters.put(ParseTree.class,
-				createSingletonMapping(ParseTree.class, getAdapter_parseTree()));
+				createSingletonMapping(ParseTree.class, getAdapterParseTree()));
 		}
 		
 
@@ -249,10 +248,10 @@ public enum SemanticModifiers {
 				Class<TIn> inClass, Class<TOut> outClass)
 				throws IllegalArgumentException {
 			ClassMap<Query, QueryAdapterBuilder<? extends Query, ? extends Query>> 
-					builders_supporting_inClass = adapters.get(inClass);
-			if (builders_supporting_inClass != null) {
+					buildersSupportingInClass = adapters.get(inClass);
+			if (buildersSupportingInClass != null) {
 				QueryAdapterBuilder<? extends Query, ? extends Query> builder = 
-						builders_supporting_inClass.get(outClass);
+						buildersSupportingInClass.get(outClass);
 				if (builder != null) {
 					@SuppressWarnings("unchecked")
 					QueryAdapterBuilder<TIn, TOut> result = (QueryAdapterBuilder<TIn, TOut>) builder;
@@ -266,16 +265,16 @@ public enum SemanticModifiers {
 		public Map<Class<? extends Query>, Set<Class<? extends Query>>> getSupportedTypes() {
 			Map<Class<? extends Query>, Set<Class<? extends /*@NonNull*/Query>>> result = new HashMap<>();
 			@SuppressWarnings({"nullness", "unchecked"}) // Remove checker framework '@KeyFor'-annotation using up–down cast, see http://stackoverflow.com/a/7505867/814206 
-			Set<Class<? extends Query>> key_set = (Set<Class<? extends Query>>) (Object) adapters.keySet();
-			for (Class<? extends Query> inClass : key_set) {
-				ClassMap<Query, QueryAdapterBuilder<? extends Query, ? extends Query>> adapters_for_inClass =
+			Set<Class<? extends Query>> keySet = (Set<Class<? extends Query>>) (Object) adapters.keySet();
+			for (Class<? extends Query> inClass : keySet) {
+				ClassMap<Query, QueryAdapterBuilder<? extends Query, ? extends Query>> adaptersForInClass =
 						adapters.get(inClass);
-				if (adapters_for_inClass == null) {
+				if (adaptersForInClass == null) {
 					throw new Error("adapters contains null value.");
 				}
 				@SuppressWarnings({"nullness", "unchecked"}) // Remove checker framework '@KeyFor'-annotation using up–down cast, see http://stackoverflow.com/a/7505867/814206 
-				Set<Class<? extends Query>> supported_target_types = (Set<Class<? extends Query>>) (Object) adapters_for_inClass.keySet();
-				result.put(inClass, supported_target_types);
+				Set<Class<? extends Query>> supportedTargetTypes = (Set<Class<? extends Query>>) (Object) adaptersForInClass.keySet();
+				result.put(inClass, supportedTargetTypes);
 			}
 			return result;
 		}
@@ -339,7 +338,7 @@ public enum SemanticModifiers {
 		}
 
 		
-		private QueryAdapterBuilder<LuceneObject, LuceneObject> getAdapter_luceneObject(
+		private QueryAdapterBuilder<LuceneObject, LuceneObject> getAdapterLuceneObject(
 				/*>>> @UnknownInitialization Impl this*/) {
 			return new QueryAdapterBuilder<LuceneObject, LuceneObject>() {
 				@Override
@@ -362,7 +361,7 @@ public enum SemanticModifiers {
 			};
 		}
 
-		private QueryAdapterBuilder<ParseTree, ParseTree> getAdapter_parseTree(
+		private QueryAdapterBuilder<ParseTree, ParseTree> getAdapterParseTree(
 				/*>>> @UnknownInitialization Impl this*/) {
 			return new QueryAdapterBuilder<ParseTree, ParseTree>() {
 				@Override

@@ -55,8 +55,8 @@ public class PatisJSON {
 		return emdReader.getExpectedMetastasis(patients);
 	}
 
-	public void writeJSON(InputStreamReader patisCsv, Appendable out_json) {
-		gson.toJson(expected(patisCsv), out_json);
+	public void writeJSON(InputStreamReader patisCsv, Appendable outJson) {
+		gson.toJson(expected(patisCsv), outJson);
 	}
 	
 	public static void main(String[] args) {
@@ -64,8 +64,8 @@ public class PatisJSON {
 		File f_out = new File(args[1]);
 		try {
 			try (InputStreamReader is_patisCsv = new FileReader(f_patisCsv)) {
-				try (FileWriter os_out = new FileWriter(f_out)) {
-					PatisJSON.instance().writeJSON(is_patisCsv, os_out);
+				try (FileWriter osOut = new FileWriter(f_out)) {
+					PatisJSON.instance().writeJSON(is_patisCsv, osOut);
 				} catch(IOException ex) {
 					throw new Error(String.format("Cannot write to %s", f_out.toString()));
 				}

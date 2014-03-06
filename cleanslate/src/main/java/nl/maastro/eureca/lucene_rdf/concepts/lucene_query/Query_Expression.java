@@ -4,7 +4,6 @@ package nl.maastro.eureca.lucene_rdf.concepts.lucene_query;
 
 import nl.maastro.eureca.lucene_rdf.concepts.auxiliary.Identifier;
 import nl.maastro.eureca.lucene_rdf.concepts.lucene_query.binding.Variable;
-import nl.maastro.eureca.lucene_rdf.concepts.lucene_query.binding.Binding;
 
 import java.util.Map;
 
@@ -18,7 +17,7 @@ public interface Query_Expression {
 	 *
 	 * @param <T>	type of result that {@code visitor} returns, is opaque
 	 *		to {@code Query}.
-	 * @return		the result of the {@code visit_…}-metohd.
+	 * @return		the result of the {@code visit_…}-method.
 	 */
 	public <T> T accept(Query_Visitor<T> visitor);
 
@@ -74,7 +73,7 @@ public interface Query_Expression {
 
 	/**
 	 * Only the {@link Variable}s that this {@code Query_Expression} directely
-	 * contains, <em>not</em> {@code Variable} that subexpressions contain.
+	 * contains, <em>not</em> {@code Variable}s that subexpressions contain.
 	 *
 	 * @see #variables()
 	 */

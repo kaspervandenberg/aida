@@ -1,15 +1,20 @@
 // © Kasper van den Berg, 2014
 package nl.maastro.eureca.lucene_rdf.concepts.auxiliary;
 
+import checkers.nullness.quals.Nullable;
+import dataflow.quals.Pure;
+
 /**
  * (Tagging) interface for classes used as identifier.
  */
 public interface Identifier {
 
 	@Override
-	public boolean equals(Object other);
+	@Pure
+	public boolean equals(@Nullable Object other);
 
 	@Override
+	@Pure
 	public int hashCode();
 }
 

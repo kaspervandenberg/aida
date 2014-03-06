@@ -69,6 +69,26 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+				<groupId>edu.washington.cs.types.checker</groupId>
+				<artifactId>checker-maven-plugin</artifactId>
+				<version>1.7.2</version>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<processors>
+						<processor>checkers.nullness.NullnessChecker</processor>
+					</processors>
+				</configuration>
+			</plugin>
+
 		</plugins>
 
 		<resources>

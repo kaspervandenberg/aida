@@ -36,7 +36,8 @@ public interface QueryExpression {
 	 *
 	 * <p>The {@code Iterable} must only iterate over the direct subexpressions;
 	 * it must <em>NOT</em> return transitive subexpression (i.e subexpressions
-	 * of subexpressions).</p>
+	 * of subexpressions).  The subexpressions should form an a-cyclic directed
+	 * graph.</p>
 	 *
 	 * @return an {@link Iterable} that complies with the three specifications
 	 *		stated above.

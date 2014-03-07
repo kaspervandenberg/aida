@@ -80,10 +80,10 @@ public interface Variable extends QueryExpression {
 	/**
 	 * Bind this {@code Variable}'s value to {@code newValue}.
 	 * 
-	 * <p>Calling {@code set()} multiple times is allowed.  {@link #get()}
+	 * <p>Calling {@code set()} multiple times is allowed.  {@link #getValue()}
 	 * will return the value set most recently.</p>
 	 * 
-	 * @throws nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.Variable.IllegalValueTypeException
+	 * @throws IllegalValueTypeException
 	 * 		when ∄ C∊{@link #getAcceptedTypes()} : {@code newValue instanceof C}
 	 */
 	public void set(QueryExpression newValue)
@@ -96,7 +96,7 @@ public interface Variable extends QueryExpression {
 	 * 		the returned value will be an instance of one of the types returned
 	 * 		by {@link #getAcceptedTypes()}
 	 * 
-	 * @throws nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.Variable.UnboundVariableException
+	 * @throws UnboundVariableException
 	 * 		if and only if {@link #state()} == {@link State#UNBOUND}
 	 */
 	public QueryExpression getValue()
@@ -111,7 +111,7 @@ public interface Variable extends QueryExpression {
 
 	/**
 	 * @return	the types of {@link QueryExpression} that {@link #set} accepts
-	 * 		and as a consequence {@link #get()} may return.
+	 * 		and as a consequence {@link #getValue()} may return.
 	 */
 	public Set<Class<? extends QueryExpression>> getAcceptedTypes();
 	

@@ -9,7 +9,7 @@ import nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.Variable;
  * 
  * @param <T>	type that {@code visit…}-methods return.
  *
- * @see [GoF] Visitor pattern
+ * @see "[GoF] Visitor pattern"
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */

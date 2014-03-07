@@ -25,10 +25,10 @@ public interface QueryExpression {
 	/**
 	 * Access the subexpressions that this {@code QueryExpression} contains.
 	 *
-	 * <p>The returned {@link Iterable}'s {@link java.util,Iterator} must support
+	 * <p>The returned {@link Iterable}'s {@link java.util.Iterator} must support
 	 * {@link java.util.Iterator#hasNext()} and {@link java.util.Iterator#next()}.
 	 * {@link java.util.Iterator#remove()} is optional a may throw
-	 * {@link UnsupportedException}.</p>
+	 * {@link UnsupportedOperationException}.</p>
 	 *
 	 * <p>When this {@code QueryExpression} contains no subexpressions, the
 	 * {@code Iterable} must return an empty iterator (e.g. 
@@ -63,7 +63,7 @@ public interface QueryExpression {
 	 * <p>The returned map must support read only access; methods such as
 	 * {@link java.util.Map#put(Object, Object)} and 
 	 * {@link java.util.Map#remove(Object)} may throw a 
-	 * {@link UnsupportedException}.</p>
+	 * {@link UnsupportedOperationException}.</p>
 	 *
 	 * @return a {@link java.util.Map} that complies with the specifications
 	 *		stated above.
@@ -72,9 +72,10 @@ public interface QueryExpression {
 
 
 	/**
-	 * Only the {@link Variable}s that this {@code QueryExpression} directely
-	 * contains, <em>not</em> {@code Variable}s that subexpressions contain.
-	 *
+	 * @return Map with only the {@link Variable}s that this 
+	 * 		{@code QueryExpression}	directely contains, <em>not</em>
+	 * 		{@code Variable}s that subexpressions contain.
+	 * 
 	 * @see #variables()
 	 */
 	public Map<Identifier, Variable> directVariables();

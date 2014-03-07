@@ -18,7 +18,7 @@ public interface Literal extends QueryExpression {
 
 	/**
 	 * Visitor pattern: call the {@code visitor}'s {@link 
-	 * QueryVisitor#visit_literal}-method.
+	 * QueryVisitor#visitLiteral}-method.
 	 *
 	 * @param <T>	type of result that {@code visitor} returns, is opaque
 	 *		to {@code Query}.

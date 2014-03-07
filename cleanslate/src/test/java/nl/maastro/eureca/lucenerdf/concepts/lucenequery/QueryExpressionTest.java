@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
+import nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.Variable;
 import static org.hamcrest.Matchers.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -77,25 +78,71 @@ public abstract class QueryExpressionTest {
 	}
 
 
+	/**
+	 * {@link QueryExpression#directVariables()} ⊆ 
+	 * {@link QueryExpression#variables()}.
+	 * 
+	 * <p>Part I of test: {@code variables()} = ({@code directVariables()}
+	 * ∪ (⋃ {@code subexpression} ∈ {@link QueryExpression#subexpressions()} :
+	 * {@code subexpression.variables()}).</p>
+	 * 
+	 * @see #testVariablesContainsAllSubexpressionVariables() 
+	 * @see #testVariablesContainsOnlyAcceptableVariables() 
+	 */
 	@Test
 	public void testVariablesContainsAllDirectVariables()
 	{
-		assertThat (testee.variables().values(),
-				containsInAnyOrder(testee.directVariables().values().toArray()));
+		assertThat (testee.directVariables().values(),
+				everyItem(isIn(testee.variables().values())));
 	}
 
 
+	/**
+	 * ∀ s ∈ {@link QueryExpression#subexpressions()} : {@code s.variables()}
+	 * ⊆ {@link QueryExpression#variables()}.
+	 * 
+	 * <p>Part II of test: {@code variables()} = 
+	 * ({@link QueryExpression#directVariables()} ∪ (⋃ {@code subexpression} ∈ 
+	 * {@code subexpressions()} : {@code subexpression.variables()}).</p>
+	 * 
+	 * @see #testVariablesContainsAllDirectVariables() 
+	 * @see #testVariablesContainsOnlyAcceptableVariables() 
+	 */
 	@Test
 	public void testVariablesContainsAllSubexpressionVariables()
 	{
-		Set<QueryExpression> subexpressionVariables =
-				new HashSet<>();
 		for (QueryExpression subexpression : testee.subexpressions()) {
-			subexpressionVariables.addAll(subexpression.variables().values());
+			assertThat(subexpression.variables().values(), 
+					everyItem(isIn(testee.variables().values())));
+		}
+	}
+
+
+	/**
+	 * {@link QueryExpression#variables()} ⊆ 
+	 * {@link QueryExpression#directVariables()} ∪ (⋃ {@code subexpression} ∈ 
+	 * {@link QueryExpression#subexpressions()} : {@code 
+	 * subexpression.variables()}).
+	 * 
+	 * <p>Part III of test: {@code variables()} = * ({@code directVariables()}
+	 * ∪ (⋃ {@code subexpression} ∈ * {@code subexpressions()} : {@code 
+	 * subexpression.variables()}).</p>
+	 * 
+	 * @see #testVariablesContainsAllDirectVariables() 
+	 * @see #testVariablesContainsAllSubexpressionVariables() 
+	 */
+	@Test
+	public void testVariablesContainsOnlyAcceptableVariables()
+	{
+		Set<Variable> acceptableVariables = new HashSet<>();
+
+		acceptableVariables.addAll(testee.directVariables().values());
+		for (QueryExpression subexpression : testee.subexpressions()) {
+			acceptableVariables.addAll(subexpression.variables().values());
 		}
 
 		assertThat (testee.variables().values(),
-				containsInAnyOrder(subexpressionVariables.toArray()));
+				everyItem(isIn(acceptableVariables)));
 	}
 
 

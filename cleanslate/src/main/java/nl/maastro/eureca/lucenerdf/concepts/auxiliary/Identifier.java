@@ -1,5 +1,5 @@
 // © Kasper van den Berg, 2014
-package nl.maastro.eureca.lucene_rdf.concepts.auxiliary;
+package nl.maastro.eureca.lucenerdf.concepts.auxiliary;
 
 import checkers.nullness.quals.Nullable;
 import dataflow.quals.Pure;

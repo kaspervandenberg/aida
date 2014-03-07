@@ -1,16 +1,16 @@
 // © Kasper van den Berg, 2014
 
-package nl.maastro.eureca.lucene_rdf.concepts.lucene_query;
+package nl.maastro.eureca.lucenerdf.concepts.lucenequery;
 
-import nl.maastro.eureca.lucene_rdf.concepts.auxiliary.Identifier;
-import nl.maastro.eureca.lucene_rdf.concepts.lucene_query.binding.Variable;
+import nl.maastro.eureca.lucenerdf.concepts.auxiliary.Identifier;
+import nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.Variable;
 
 import java.util.Map;
 
 /**
  * Top level interface representing queries in Lucene.
  */
-public interface Query_Expression {
+public interface QueryExpression {
 	/**
 	 * Visitor pattern: call the {@code visitor}'s method that corresponds
 	 * to this class.
@@ -19,18 +19,18 @@ public interface Query_Expression {
 	 *		to {@code Query}.
 	 * @return		the result of the {@code visit_…}-method.
 	 */
-	public <T> T accept(Query_Visitor<T> visitor);
+	public <T> T accept(QueryVisitor<T> visitor);
 
 
 	/**
-	 * Access the subexpressions that this {@code Query_Expression} contains.
+	 * Access the subexpressions that this {@code QueryExpression} contains.
 	 *
 	 * <p>The returned {@link Iterable}'s {@link java.util,Iterator} must support
 	 * {@link java.util.Iterator#hasNext()} and {@link java.util.Iterator#next()}.
 	 * {@link java.util.Iterator#remove()} is optional a may throw
 	 * {@link UnsupportedException}.</p>
 	 *
-	 * <p>When this {@code Query_Expression} contains no subexpressions, the
+	 * <p>When this {@code QueryExpression} contains no subexpressions, the
 	 * {@code Iterable} must return an empty iterator (e.g. 
 	 * {@link java.util.Collections#emptyIterator()}).</p>
 	 *
@@ -41,23 +41,23 @@ public interface Query_Expression {
 	 * @return an {@link Iterable} that complies with the three specifications
 	 *		stated above.
 	 */
-	public Iterable<Query_Expression> subexpressions();
+	public Iterable<QueryExpression> subexpressions();
 
 
 	/**
-	 * {@link Variable}s that this {@code Query_Expression} has.
+	 * {@link Variable}s that this {@code QueryExpression} has.
 	 *
 	 * <p>The map of variables contains both the direct {@code Variables} of
-	 * this {@code Query_Expression} <em>and</em> the variables of
-	 * subexpressions.  Use {@link #direct_variables()} to retrieve only 
+	 * this {@code QueryExpression} <em>and</em> the variables of
+	 * subexpressions.  Use {@link #directVariables()} to retrieve only 
 	 * the direct variables.  Prefer {@code variables()} to 
-	 * {@code direct_variables()}.</p>
+	 * {@code directVariables()}.</p>
 	 * 
-	 * <p>This {@code Query_Expression} must ensure that identifiers of
-	 * variables from subexpressions differ.  The {@code Query_Expression}
+	 * <p>This {@code QueryExpression} must ensure that identifiers of
+	 * variables from subexpressions differ.  The {@code QueryExpression}
 	 * can change the identifiers of variables of subexpressions.</p>
 	 *
-	 * <p>When this {@code Query_Expression} nor any of its subexpressions 
+	 * <p>When this {@code QueryExpression} nor any of its subexpressions 
 	 * have variables the map will be {@link java.util.Map#isEmpty() empty}.</p>
 	 *
 	 * <p>The returned map must support read only access; methods such as
@@ -72,12 +72,12 @@ public interface Query_Expression {
 
 
 	/**
-	 * Only the {@link Variable}s that this {@code Query_Expression} directely
+	 * Only the {@link Variable}s that this {@code QueryExpression} directely
 	 * contains, <em>not</em> {@code Variable}s that subexpressions contain.
 	 *
 	 * @see #variables()
 	 */
-	public Map<Identifier, Variable> direct_variables();
+	public Map<Identifier, Variable> directVariables();
 
 }
 

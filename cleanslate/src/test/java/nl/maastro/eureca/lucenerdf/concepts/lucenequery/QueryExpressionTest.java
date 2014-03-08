@@ -9,14 +9,13 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 import nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.Variable;
-import static org.hamcrest.Matchers.*;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.Before;
-import org.mockito.Mockito;
-import static org.mockito.Mockito.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests whether a concrete {@link QueryExpression} follows the contract that
@@ -39,29 +38,24 @@ public abstract class QueryExpressionTest {
 		this.testee = getTestee();
 	}
 
-
 	@Test
-	public void testAccept()
+	public final void testAccept()
 	{
 		final int callCount[] = {0};
 		
 		@SuppressWarnings("unchecked")
-		QueryVisitor<Void> mockedVisitor = (QueryVisitor<Void>)mock(QueryVisitor.class);
-		Answer<Void> countVisitCalls = new Answer<Void>() {
-			@Override
-			public Void answer(InvocationOnMock invocation) throws Throwable
-			{
-				callCount[0]++;
-				return null;
-			}
-		};
-		
-		doAnswer(countVisitCalls).when(mockedVisitor).visitDefault(
-				Mockito.any(QueryExpression.class));
-		doAnswer(countVisitCalls).when(mockedVisitor).visitLiteral(
-				Mockito.any(Literal.class));
-		doAnswer(countVisitCalls).when(mockedVisitor).visitVariable(
-				Mockito.any(Variable.class));
+		QueryVisitor<Void> mockedVisitor = (QueryVisitor<Void>)mock(QueryVisitor.class,
+				new Answer<Void>() {
+					@Override
+					public Void answer(InvocationOnMock invocation) throws Throwable
+					{
+						if ((invocation.getArguments()[0] instanceof QueryExpression) &&
+								invocation.getArguments()[0].equals(testee)) {
+							callCount[0]++;
+						}
+						return null;
+					}
+				});
 		
 		
 		testee.accept(mockedVisitor);
@@ -71,7 +65,7 @@ public abstract class QueryExpressionTest {
 
 	
 	@Test
-	public void testSubexpressionsIsAcyclicDirectedGraph()
+	public final void testSubexpressionsIsAcyclicDirectedGraph()
 	{
 		class NodeForbiddenNodesPair {
 			private final QueryExpression node;
@@ -125,7 +119,7 @@ public abstract class QueryExpressionTest {
 	 * @see #testVariablesContainsOnlyAcceptableVariables() 
 	 */
 	@Test
-	public void testVariablesContainsAllDirectVariables()
+	public final void testVariablesContainsAllDirectVariables()
 	{
 		assertThat (testee.directVariables().values(),
 				everyItem(isIn(testee.variables().values())));
@@ -144,7 +138,7 @@ public abstract class QueryExpressionTest {
 	 * @see #testVariablesContainsOnlyAcceptableVariables() 
 	 */
 	@Test
-	public void testVariablesContainsAllSubexpressionVariables()
+	public final void testVariablesContainsAllSubexpressionVariables()
 	{
 		for (QueryExpression subexpression : testee.subexpressions()) {
 			assertThat(subexpression.variables().values(), 
@@ -167,7 +161,7 @@ public abstract class QueryExpressionTest {
 	 * @see #testVariablesContainsAllSubexpressionVariables() 
 	 */
 	@Test
-	public void testVariablesContainsOnlyAcceptableVariables()
+	public final void testVariablesContainsOnlyAcceptableVariables()
 	{
 		Set<Variable> acceptableVariables = new HashSet<>();
 

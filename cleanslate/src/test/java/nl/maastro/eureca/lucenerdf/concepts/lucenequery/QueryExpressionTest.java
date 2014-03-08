@@ -13,6 +13,10 @@ import static org.hamcrest.Matchers.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /**
  * Tests whether a concrete {@link QueryExpression} follows the contract that
@@ -35,6 +39,37 @@ public abstract class QueryExpressionTest {
 		this.testee = getTestee();
 	}
 
+
+	@Test
+	public void testAccept()
+	{
+		final int callCount[] = {0};
+		
+		@SuppressWarnings("unchecked")
+		QueryVisitor<Void> mockedVisitor = (QueryVisitor<Void>)mock(QueryVisitor.class);
+		Answer<Void> countVisitCalls = new Answer<Void>() {
+			@Override
+			public Void answer(InvocationOnMock invocation) throws Throwable
+			{
+				callCount[0]++;
+				return null;
+			}
+		};
+		
+		doAnswer(countVisitCalls).when(mockedVisitor).visitDefault(
+				Mockito.any(QueryExpression.class));
+		doAnswer(countVisitCalls).when(mockedVisitor).visitLiteral(
+				Mockito.any(Literal.class));
+		doAnswer(countVisitCalls).when(mockedVisitor).visitVariable(
+				Mockito.any(Variable.class));
+		
+		
+		testee.accept(mockedVisitor);
+
+		assertThat(callCount[0], equalTo(1));
+	}
+
+	
 	@Test
 	public void testSubexpressionsIsAcyclicDirectedGraph()
 	{
@@ -144,9 +179,6 @@ public abstract class QueryExpressionTest {
 		assertThat (testee.variables().values(),
 				everyItem(isIn(acceptableVariables)));
 	}
-
-
-	
 }
 
 /* vim:set tabstop=4 shiftwidth=4 autoindent : */

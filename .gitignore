@@ -15,4 +15,4 @@ nb-configuration.xml
 /Search/zylabPatisClient/data
 /Search/zylabPatisClient/results-*
 /Search/filename-lookup/target/
-
+/cleanslate/target/

@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+/*>>>import checkers.initialization.quals.UnderInitialization; */
 import java.io.BufferedOutputStream;
 import java.io.File;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.SearchResultFormatter;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
@@ -18,6 +20,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.Classifier;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.InterDocOverride;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.IntraDocOverride;
+import nl.maastro.eureca.aida.search.zylabpatisclient.config.CommandLineParser;
 import nl.maastro.eureca.aida.search.zylabpatisclient.config.Config;
 import nl.maastro.eureca.aida.search.zylabpatisclient.output.HtmlFormatter;
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Concepts;
@@ -25,9 +28,9 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.Pati
 import nl.maastro.eureca.aida.search.zylabpatisclient.preconstructedqueries.SemanticModifiers;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedPreviousResults;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedResults;
-import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparison;
 import static nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparison.Qualifications.*;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultComparisonTable;
+import org.apache.commons.cli.ParseException;
 
 /**
  * Demostrates how to use the classes in {@link nl.maastro.eureca.aida.search.zylabpatisclient}.
@@ -45,23 +48,86 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ResultCompariso
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class API_Demo {
+	private class ResultTableContainer {
+		private final SearchResultTable resultTable;
+
+		public ResultTableContainer(ReportBuilder builder)
+				throws ServiceException, IOException
+		{
+			this.resultTable = builder.buildSearchTable();
+		}
+
+
+		public void write(Appendable target, SearchResultFormatter formatter)
+				throws IOException
+		{
+			formatter.writeTable(target, resultTable);
+		}
+
+
+		public Iterable<SearchResult> getColumn(Concept concept)
+		{
+			return resultTable.getColumn(concept);
+		}
+		
+
+		public void addRows(Collection<PatisNumber> patients)
+		{
+			resultTable.addAll(patients);
+		}
+	}
+
+	private class ValidationResultTableContainer extends ResultTableContainer {
+		private final ResultComparisonTable validationComparisonTable;
+		
+		public ValidationResultTableContainer(ReportBuilder builder)
+				throws ServiceException, IllegalStateException, IOException
+		{
+			super(builder);
+			validationComparisonTable = builder.buildValidationTable();
+			
+			validationComparisonTable.setQualifications(EnumSet.of(
+					ACTUAL_MATCHING_EXPECTED, ACTUAL_CONTAINIG_EXPECTED_AND_OTHERS, 
+					ACTUAL_DIFFERING_FROM_EXPECTED, EXTRA_ACTUAL_RESULTS, MISSING_ACTUAL_RESULTS));
+		}
+
+
+		@Override
+		public void write(Appendable target, SearchResultFormatter formatter) throws IOException
+		{
+			if (formatter instanceof HtmlFormatter) {
+				((HtmlFormatter)formatter).writeValidationCounts(target, validationComparisonTable);
+			}
+			super.write(target, formatter);
+		}
+	}
 
 	private final Config config;
 	private final Searcher searcher;
 	private final SearchResultFormatter formatter;
-	private final SearchResultTable resultTable;
-	private final ResultComparisonTable validationComparisonTable;
+	private final ReportBuilder.Purpose reportPurpose;
+	private final ResultTableContainer tables;
 
-	public API_Demo() throws ServiceException, IOException {
+	public API_Demo(CommandLineParser commandline) throws ServiceException, IOException {
 		this.config = initConfig();
 		this.searcher = initSearcher(config);
 		initSearchedConcepts(config, searcher);
 		HtmlFormatter tmp = new HtmlFormatter();
 		tmp.setShowSnippetsStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW);
 		this.formatter = tmp;
-		ReportBuilder builder = initReport(config, searcher, ReportBuilder.Purpose.VALIDATION);
-		this.resultTable = builder.buildSearchTable();
-		this.validationComparisonTable = builder.buildValidationTable();
+		reportPurpose = commandline.getReportPurpose();
+
+		ReportBuilder builder = initReport(config, searcher, reportPurpose);
+		
+		if (reportPurpose.equals(ReportBuilder.Purpose.VALIDATION)) {
+			this.tables = new ValidationResultTableContainer(builder);
+		} else {
+			this.tables = new ResultTableContainer(builder);
+			
+			@SuppressWarnings("unchecked")	// Up–down cast to remove the checker framework "@KeyFor"-annotation; as per http://stackoverflow.com/a/7505867/814206
+			final Set<PatisNumber> dummyPatients = (Set<PatisNumber>)(Object)Patients.instance().getExpectedMetastasis().keySet();
+			this.tables.addRows(dummyPatients);
+		}
 	}
 
 	
@@ -122,28 +188,20 @@ public class API_Demo {
 
 		return builder;
 	}	
-		
-	
-	
+
 	public void writeTable() {
 		Date now = new Date();
 		File f = new FileNames().createHtmlResultsFile();
-		try {
-			OutputStreamWriter out = new OutputStreamWriter(new BufferedOutputStream(
-					new FileOutputStream(f)), StandardCharsets.UTF_8);
+		try (OutputStreamWriter out = new OutputStreamWriter(
+					new BufferedOutputStream(
+						new FileOutputStream(f)), StandardCharsets.UTF_8)) {
 			HtmlFormatter.writeDocStart(out,
 					String.format("Results of %1$tT (on %1$ta %1$te %1$tb)\n", now));
-			HtmlFormatter.writeValidationCounts(out, validationComparisonTable);
-			formatter.writeTable(out, resultTable);
+			tables.write(out, formatter);
 			HtmlFormatter.writeDocEnd(out);
-			out.close();
 		} catch (IOException ex) {
 			throw new Error(ex);
 		}
-	}
-
-	public void setValidationQualifications(Set<ResultComparison.Qualifications> newValidationQualifications) {
-		validationComparisonTable.setQualifications(newValidationQualifications);
 	}
 
 	/**
@@ -154,7 +212,7 @@ public class API_Demo {
 	 */
 	public void storeResults(Concepts preConstructedConcept) throws IOException {
 		Concept concept = preConstructedConcept.getConcept(config);
-		Iterable<SearchResult> toStore = resultTable.getColumn(concept);
+		Iterable<SearchResult> toStore = tables.getColumn(concept);
 		ExpectedPreviousResults resultStorer = ExpectedPreviousResults.create(concept, toStore);
 		File f = new FileNames().createJsonResultsFile(concept);
 		FileWriter outputFile = new FileWriter(f);
@@ -175,17 +233,18 @@ public class API_Demo {
 	 * Finally, store for later use with:
 	 * <ul><li>{@link storeResults(Concepts)}</li></ul>.
 	 */
-	static public void main(String[] args) throws IOException, ServiceException {
-		API_Demo instance = new API_Demo();
-		
-		instance.setValidationQualifications(EnumSet.of(
-				ACTUAL_MATCHING_EXPECTED, ACTUAL_CONTAINIG_EXPECTED_AND_OTHERS, 
-				ACTUAL_DIFFERING_FROM_EXPECTED, EXTRA_ACTUAL_RESULTS, MISSING_ACTUAL_RESULTS));
-
-		instance.storeResults(Concepts.METASTASIS);
-		instance.storeResults(Concepts.CHEMOKUUR);
-		
-		instance.writeTable();
+	static public void main(String[] args) throws IOException, ServiceException, ParseException {
+		CommandLineParser commandline = new CommandLineParser(args);
+		if (!commandline.isHelpRequested()) {
+			API_Demo instance = new API_Demo(commandline);
+			
+			instance.storeResults(Concepts.METASTASIS);
+			instance.storeResults(Concepts.CHEMOKUUR);
+			
+			instance.writeTable();
+		} else {
+			commandline.printUseage();
+		}
 	}
 
 }

@@ -446,7 +446,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		out.append(Tags.STYLE.close());
 	}
 
-	public static void writeValidationCounts(Appendable out, ResultComparisonTable table) throws IOException {
+	public void writeValidationCounts(Appendable out, ResultComparisonTable table) throws IOException {
 		out.append(HtmlFormatter.Tags.SUBTITLE.format("Summary"));
 		out.append(HtmlFormatter.Tags.TABLE.open("class=\"table-header-rotated\""));
 		writeTableHeaderSingleRow(out, 1, table.getQualifications(), true);

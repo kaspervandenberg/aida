@@ -271,7 +271,7 @@ public class ReportBuilder {
 
 
 	@EnsuresNonNull({"purpose", "configContext", "searcher", "modifiersToApply", "constructed"})
-	public SearchResultTable buildSearchTable() throws IllegalStateException, ServiceException, IOException {
+	public SearchResultTable buildSearchTable() throws ServiceException, IOException {
 		checkSettings();
 		if (constructed == null) {
 			build();

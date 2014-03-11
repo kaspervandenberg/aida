@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>filename-lookup</artifactId>
-	<version>0.89</version>
+	<version>0.90</version>
 	<packaging>jar</packaging>
 	<name>AIDA::filename lookup</name>
 	<description>
@@ -69,6 +69,29 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<!--
+					Create runnable jar.
+					The generated jar requires dependencies in ../lib, therefore
+					copy runnable jar to ${PREFIX}/bin and dependencies to
+					${PREFIX}/lib.
+				-->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				
+				<configuration>
+					<archive>
+						<addMavenDescriptor>true</addMavenDescriptor>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>../lib/</classpathPrefix>
+							<mainClass>nl.maastro.eureca.aida.search.filenamelookup.Main</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
 		</plugins>
 
 		<resources>

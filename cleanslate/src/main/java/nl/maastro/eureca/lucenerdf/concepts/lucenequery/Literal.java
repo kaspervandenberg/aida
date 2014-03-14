@@ -69,3 +69,6 @@ public interface Literal extends QueryExpression {
 				nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.Variable>
 			directVariables();
 }
+
+/* vim:set tabstop=4 shiftwidth=4 autoindent spell spelllang=en_gb : */
+

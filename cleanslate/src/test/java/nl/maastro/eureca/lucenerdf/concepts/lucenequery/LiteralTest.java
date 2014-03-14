@@ -74,4 +74,4 @@ public abstract class LiteralTest extends QueryExpressionTest {
 	}
 }
 
-/* vim:set tabstop=4 shiftwidth=4 autoindent : */
+/* vim:set tabstop=4 shiftwidth=4 autoindent spell spelllang=en_gb : */

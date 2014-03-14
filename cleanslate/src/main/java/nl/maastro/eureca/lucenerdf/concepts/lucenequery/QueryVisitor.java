@@ -27,5 +27,5 @@ public interface QueryVisitor<T> {
 */
 }
 
-
+/* vim:set tabstop=4 shiftwidth=4 autoindent spell spelllang=en_gb : */
 

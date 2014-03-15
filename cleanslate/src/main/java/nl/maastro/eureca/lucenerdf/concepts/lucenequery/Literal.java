@@ -37,7 +37,7 @@ public interface Literal extends QueryExpression {
 	 */
 	@Override
 	@Pure
-	public Iterable<QueryExpression> subexpressions();
+	public Iterable<? extends QueryExpression> subexpressions();
 
 
 	/**
@@ -51,7 +51,7 @@ public interface Literal extends QueryExpression {
 	@Pure
 	public java.util.Map<
 				nl.maastro.eureca.lucenerdf.concepts.auxiliary.Identifier,
-				nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.Variable>
+				? extends nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.Variable>
 			variables();
 
 

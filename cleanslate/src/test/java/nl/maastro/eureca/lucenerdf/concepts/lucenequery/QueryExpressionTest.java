@@ -121,8 +121,13 @@ public abstract class QueryExpressionTest {
 	@Test
 	public final void testVariablesContainsAllDirectVariables()
 	{
-		assertThat (testee.directVariables().values(),
-				everyItem(isIn(testee.variables().values())));
+		Set<Variable> directVariables = new HashSet<>(
+				testee.directVariables().values());
+		Set<Variable> allVariables = new HashSet<>(
+				testee.variables().values());
+
+		assertThat (directVariables,
+				everyItem(isIn(allVariables)));
 	}
 
 
@@ -140,9 +145,15 @@ public abstract class QueryExpressionTest {
 	@Test
 	public final void testVariablesContainsAllSubexpressionVariables()
 	{
+		Set<Variable> allVariables = new HashSet<>(
+				testee.variables().values());
+
 		for (QueryExpression subexpression : testee.subexpressions()) {
-			assertThat(subexpression.variables().values(), 
-					everyItem(isIn(testee.variables().values())));
+			Set<Variable> subexpressionVariables = new HashSet<>(
+					subexpression.variables().values());
+
+			assertThat(subexpressionVariables, 
+					everyItem(isIn(allVariables)));
 		}
 	}
 
@@ -170,7 +181,10 @@ public abstract class QueryExpressionTest {
 			acceptableVariables.addAll(subexpression.variables().values());
 		}
 
-		assertThat (testee.variables().values(),
+		Set<Variable> allVariables = new HashSet<>(
+				testee.variables().values());
+
+		assertThat (allVariables,
 				everyItem(isIn(acceptableVariables)));
 	}
 }

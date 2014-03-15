@@ -42,7 +42,7 @@ public interface QueryExpression {
 	 * @return an {@link Iterable} that complies with the three specifications
 	 *		stated above.
 	 */
-	public Iterable<QueryExpression> subexpressions();
+	public Iterable<? extends QueryExpression> subexpressions();
 
 
 	/**
@@ -69,7 +69,7 @@ public interface QueryExpression {
 	 * @return a {@link java.util.Map} that complies with the specifications
 	 *		stated above.
 	 */
-	public Map<Identifier, Variable> variables();
+	public Map<Identifier, ? extends Variable> variables();
 
 
 	/**
@@ -79,7 +79,7 @@ public interface QueryExpression {
 	 * 
 	 * @see #variables()
 	 */
-	public Map<Identifier, Variable> directVariables();
+	public Map<Identifier, ? extends Variable> directVariables();
 
 }
 

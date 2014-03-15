@@ -5,6 +5,7 @@ import checkers.nullness.quals.EnsuresNonNull;
 import checkers.nullness.quals.MonotonicNonNull;
 import nl.maastro.eureca.lucenerdf.concepts.auxiliary.Identifier;
 import nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.Variable;
+import java.util.Set;
 import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.*;
@@ -49,7 +50,7 @@ public abstract class LiteralTest extends QueryExpressionTest {
 	@Test
 	public final void testSubexpressionsEmpty()
 	{
-		assertThat (testee.subexpressions(),
+		assertThat ((Iterable<QueryExpression>)testee.subexpressions(),
 				emptyIterableOf(QueryExpression.class));
 	}
 
@@ -57,7 +58,7 @@ public abstract class LiteralTest extends QueryExpressionTest {
 	@Test
 	public final void testVariablesEmpty()
 	{
-		assertThat (testee.variables().values(),
+		assertThat ((Set<Variable>)testee.variables().values(),
 				emptyCollectionOf(Variable.class));
 		assertThat (testee.variables().keySet(),
 				emptyCollectionOf(Identifier.class));

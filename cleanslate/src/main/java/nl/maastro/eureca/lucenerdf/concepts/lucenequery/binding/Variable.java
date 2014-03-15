@@ -138,7 +138,7 @@ public interface Variable extends QueryExpression {
 	 * 		<li>an empty iterable.</li></ul>
 	 */
 	@Override
-	public Iterable<QueryExpression> subexpressions();
+	public Iterable<? extends QueryExpression> subexpressions();
 
 
 	/**
@@ -150,7 +150,7 @@ public interface Variable extends QueryExpression {
 	 * @see QueryExpression#variables()
 	 */
 	@Override
-	public Map<Identifier, Variable> variables();
+	public Map<Identifier, ? extends Variable> variables();
 
 
 	/**
@@ -159,7 +159,7 @@ public interface Variable extends QueryExpression {
 	 * @see QueryExpression#directVariables() 
 	 */
 	@Override
-	public Map<Identifier, Variable> directVariables();
+	public Map<Identifier, ? extends Variable> directVariables();
 
 
 }

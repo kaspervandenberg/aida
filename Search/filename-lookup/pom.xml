@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
@@ -13,13 +14,9 @@
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
 		<artifactId>maven-parent</artifactId>
-		<version>0.6</version>
+		<version>0.7-SNAPSHOT</version>
 		<relativePath>../../maven-parent</relativePath>
 	</parent>
-
-	<properties>
-		<org.springframework.version>3.0.5.RELEASE</org.springframework.version>
-	</properties>
 
 	<profiles>
 		<profile>
@@ -106,7 +103,6 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>${org.springframework.version}</version>
 			<!--
 				Use Spring framework for dependency injection.
 				Application Context (depends on spring-core, spring-expression, spring-aop, spring-beans) 
@@ -117,7 +113,6 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>${org.springframework.version}</version>
 			<!--
 				Use Spring framework for dependency injection.
 			-->
@@ -126,7 +121,6 @@
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
-			<version>7.0</version>
 			<type>jar</type>
 			<!--
 				Provides the standard @Inject and @Resource annotations understood by
@@ -164,3 +158,4 @@
 </project>
 
 <!-- vim: set tabstop=2 shiftwidth=2 : -->
+

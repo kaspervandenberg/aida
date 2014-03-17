@@ -4,7 +4,7 @@
 
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>maven-parent</artifactId>
-	<version>0.6</version>
+	<version>0.7-SNAPSHOT</version>
 	<name>AIDA parent</name>
 	<description>
 		Common entries for AIDA
@@ -16,6 +16,7 @@
 		<test.workingDirectory>${java.io.tmpdir}</test.workingDirectory>
 		<org.apache.lucene.version>4.1.0</org.apache.lucene.version>
 		<edu.washington.cs.types.checker.version>1.7.2</edu.washington.cs.types.checker.version>
+		<org.springframework.version>4.0.2.RELEASE</org.springframework.version>
 	</properties>
 
 	<repositories>
@@ -136,6 +137,37 @@
 				<version>${org.apache.lucene.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${org.springframework.version}</version>
+				<!--
+					Use Spring framework for dependency injection.
+					Application Context (depends on spring-core, spring-expression, spring-aop, spring-beans) 
+					This is the central artifact for Spring's Dependency Injection Container and is generally always defined
+				-->
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-beans</artifactId>
+				<version>${org.springframework.version}</version>
+				<!--
+					Use Spring framework for dependency injection.
+				-->
+			</dependency>
+
+			<dependency>
+				<groupId>javax</groupId>
+				<artifactId>javaee-web-api</artifactId>
+				<version>7.0</version>
+				<type>jar</type>
+				<!--
+					Provides the standard @Inject and @Resource annotations understood by
+					springframework and other dependency frameworks.
+				-->
+			</dependency>
+		 
 			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-library</artifactId>

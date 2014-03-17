@@ -12,6 +12,8 @@ import nl.maastro.eureca.lucenerdf.concepts.lucenequery.QueryVisitor;
  * Describes a part of a 
  * {@link nl.maastro.eureca.lucenerdf.concepts.lucenequery.QueryExpression}}
  * that can vary.
+ *
+ * @author Kasper van den Berg <kasper@kaspervandenberg.net> <kasper.vandenberg@maastro.nl>
  */
 public interface Variable extends QueryExpression {
 	public enum State {

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+">
+
+	<bean id="emd.datasource"
+		  class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://AS-EMD-01-S:3306/WEB_EMD" />
+		<!-- username and password are required application will ask user for them -->
+	</bean>
+	
+	<bean id="recentEmdPatients-1week"
+		  class="nl.maastro.eureca.aida.search.zylabpatisclient.input.EmdPatientReader">
+		<property name="emd" ref="emd.datasource" />
+		<property name="period" value="7" />
+	</bean>
+
+</beans>
+
+<!-- vim:set tabstop=4 shiftwidth=4 : -->

@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +60,11 @@ public class ReportBuilder {
 			addConceptSearchColumn(concept, semanticModifiersToApply);
 		}
 
+
+		public void addPatients(Collection<PatisNumber> patients)
+		{
+			this.searchResults.addAll(patients);
+		}
 		
 		/**
 		 * Add a column containing results of searching for a concept.
@@ -69,7 +75,6 @@ public class ReportBuilder {
 		{
 			searchResults.addConceptSearchColumn(concept, semanticModifiersToApply);
 		}
-
 
 
 		protected Concept getConcept(Concepts predefinedConcept)
@@ -99,8 +104,8 @@ public class ReportBuilder {
 			addValidationSources(predefinedConcept);
 			super.addConceptColumns(predefinedConcept, semanticModifiersToApply);
 		}
-		
-		
+
+
 		private void addValidationSources(
 				Concepts predefinedConcept)
 		{
@@ -198,6 +203,7 @@ public class ReportBuilder {
 	private @MonotonicNonNull Config configContext = null;
 	private @MonotonicNonNull Searcher searcher = null;
 	private List<Concepts> columns_toConstruct = new LinkedList<>();
+	private List<PatisNumber> rows_toConstruct = new LinkedList<>();
 	private @MonotonicNonNull List<SemanticModifier> modifiersToApply = null;
 	private @Nullable TableUnderConstruction constructed = null;
 	
@@ -243,6 +249,13 @@ public class ReportBuilder {
 	public ReportBuilder addConcept (Concepts predefinedConcept)
 	{
 		columns_toConstruct.add(predefinedConcept);
+		invallidateConstructedTable();
+		return this;
+	}
+
+	public ReportBuilder addPatients(Collection<PatisNumber> patients)
+	{
+		rows_toConstruct.addAll(patients);
 		invallidateConstructedTable();
 		return this;
 	}
@@ -322,6 +335,8 @@ public class ReportBuilder {
 		for (Concepts predefinedConcept : columns_toConstruct) {
 			toConstruct.addConceptColumns(predefinedConcept, modifiersToApply);
 		}
+		
+		toConstruct.addPatients(rows_toConstruct);
 
 		constructed = toConstruct;
 	}

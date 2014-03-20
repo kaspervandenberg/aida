@@ -109,14 +109,14 @@ public class API_Demo {
 	private final ResultTableContainer tables;
 
 	public API_Demo(CommandLineParser commandline) throws ServiceException, IOException {
-		this.config = initConfig();
+		this.config = initConfig(commandline);
 		this.searcher = initSearcher(config);
-		initSearchedConcepts(config, searcher);
 		HtmlFormatter tmp = new HtmlFormatter();
 		tmp.setShowSnippetsStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW);
 		this.formatter = tmp;
 		reportPurpose = commandline.getReportPurpose();
 
+		initSearchedConcepts(config, searcher, reportPurpose);
 		ReportBuilder builder = initReport(config, searcher, reportPurpose);
 		
 		if (reportPurpose.equals(ReportBuilder.Purpose.VALIDATION)) {
@@ -131,11 +131,11 @@ public class API_Demo {
 	}
 
 	
-	private static Config initConfig() {
+	private static Config initConfig(CommandLineParser commandline_) {
 		// Read config file
 		InputStream s = API_Demo.class.getResourceAsStream("/zpsc-config.xml");
 		if (s != null) {
-			return Config.init(s);
+			return Config.init(s, commandline_);
 			// intentionally keeping s open, since Config will read from it at a later time
 		} else {
 			throw new Error("Cannot read '/zpsc-config.xml'");
@@ -152,8 +152,10 @@ public class API_Demo {
 		}
 	}
 
-	private static void initSearchedConcepts(Config config, Searcher searcher) {
-		SearchedConcepts.EXPECTED_METASTASIS.addExpected(Patients.instance().getExpectedMetastasis(), false);
+	private static void initSearchedConcepts(Config config, Searcher searcher, ReportBuilder.Purpose reportPurpose) {
+		if (reportPurpose.equals(ReportBuilder.Purpose.VALIDATION)) {
+			SearchedConcepts.EXPECTED_METASTASIS.addExpected(Patients.instance().getExpectedMetastasis(), false);
+		}
 		SearchedConcepts.init(config, searcher);
 	}
 	
@@ -184,7 +186,9 @@ public class API_Demo {
 				.usePredefinedSemanticModifiers()
 				
 				.addConcept(Concepts.METASTASIS)
-				.addConcept(Concepts.CHEMOKUUR);
+				.addConcept(Concepts.CHEMOKUUR)
+				
+				.addPatients(config.getPatients().getPatients());
 
 		return builder;
 	}	

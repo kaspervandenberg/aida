@@ -46,6 +46,17 @@ public class CommandLineParser {
 			}
 		},
 
+		EMD_USERNAME("u") {
+			@Override
+			protected Option create() {
+				OptionBuilder.withLongOpt("emdUsername");
+				OptionBuilder.hasArg();
+				OptionBuilder.withArgName("username");
+				OptionBuilder.withDescription("Account to use when connecting to EMD database.");
+				return OptionBuilder.create(this.shortOpt);
+			}
+		},
+
 
 		;
 
@@ -68,6 +79,8 @@ public class CommandLineParser {
 			validationSwitch.addOption(PRODUCTION.create());
 			validationSwitch.addOption(VALIDATION.create());
 			opts.addOptionGroup(validationSwitch);
+
+			opts.addOption(EMD_USERNAME.create());
 
 			return opts;
 		}
@@ -128,5 +141,23 @@ public class CommandLineParser {
 	{
 		return commandline.hasOption(SupportedOptions.HELP.shortOpt); 
 	}
+
+	public boolean isEmdUsernameSpecified()
+	{
+		return commandline.hasOption(SupportedOptions.EMD_USERNAME.shortOpt) &&
+				(commandline.getOptionValue(SupportedOptions.EMD_USERNAME.shortOpt) != null);
+	}
+
+	public String getEmdUsername() throws IllegalStateException
+	{
+		String value = commandline.getOptionValue(SupportedOptions.EMD_USERNAME.shortOpt);
+		if (value == null) {
+			throw new IllegalStateException(String.format(
+					"Option %s not set.",
+					SupportedOptions.EMD_USERNAME));
+		} 
+		return value;
+	}
+	
 	
 }

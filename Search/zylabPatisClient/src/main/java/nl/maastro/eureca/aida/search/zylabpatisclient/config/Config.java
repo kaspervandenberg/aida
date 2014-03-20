@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.concurrent.ForkJoinPool;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
@@ -51,6 +53,8 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQuery;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQueryBase;
 import nl.maastro.ad.clinisearch.axis.services.SearcherWS.SearcherWS;
 import nl.maastro.ad.clinisearch.axis.services.SearcherWS.SearcherWSServiceLocator;
+import nl.maastro.eureca.aida.search.zylabpatisclient.PatientProvider;
+import nl.maastro.eureca.aida.search.zylabpatisclient.input.EmdPatientReader;
 import org.jdom2.Attribute;
 import org.jdom2.Comment;
 import org.jdom2.Content;
@@ -64,6 +68,11 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaderSchemaFactory;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
+import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -599,10 +608,13 @@ public class Config {
 		}
 	}
 	
+	private static final Logger LOGGER = Logger.getLogger(Config.class.getName());
 	private static final String NS = "http://search.aida.eureca.maastro.nl/zylabpatisclient/config";
 	private static final String NS_PREFIX = "zpsc";
 	private static final String SCHEMA_RESOURCE = "/zylabPatisClientConfig.xsd";
 	private static final String SEARCH_PROPERTY_RESOURCE = "/search.properties";
+	private static final String SPRING_BEANS_RESOURCE = "/META-INF/beans.xml";
+	private static final String EMD_DATASOURCE_BEAN_ID = "emd.datasource";
 	private static final DualRepresentationQuery.Visitable VISITABLE_DELEGATE =
 			DualRepresentationQuery.Visitable.AS_LUCENE_OBJECT;
 
@@ -613,30 +625,33 @@ public class Config {
 	private static @MonotonicNonNull Collection<Namespace> xpathNamespaces = null;
 
 	private final InputStream configStream;
+	private final CommandLineParser commandline;
 	private final ForkJoinPool taskPool;
 	private @MonotonicNonNull Element configDoc = null;
+	private @MonotonicNonNull ApplicationContext springContext = null;
 	private @MonotonicNonNull NameSpaceResolver namespaces = null; 
 	private @MonotonicNonNull QueryPatterns queries = null;
 	private @MonotonicNonNull Map<QName, File> jsonFiles = null;
 
 	private @MonotonicNonNull Searcher searcher = null;
 	
-	private Config(InputStream configStream_, ForkJoinPool taskPool_) {
-		configStream = configStream_;
-		taskPool = taskPool_;
+	private Config(InputStream configStream_, CommandLineParser commandline_, ForkJoinPool taskPool_) {
+		this.configStream = configStream_;
+		this.commandline = commandline_;
+		this.taskPool = taskPool_;
 	}
 	
 	@EnsuresNonNull("singleton")
-	public static Config init(InputStream configStream) {
-		return init(configStream, new ForkJoinPool());
+	public static Config init(InputStream configStream, CommandLineParser commandline_) {
+		return init(configStream, commandline_, new ForkJoinPool());
 	}
 	
 	@EnsuresNonNull("singleton")
-	public static Config init(InputStream configStream, ForkJoinPool taskPool_) {
+	public static Config init(InputStream configStream, CommandLineParser commandline_, ForkJoinPool taskPool_) {
 		if(singleton != null) {
 			throw new IllegalStateException("Call init() exactly once.");
 		}
-		singleton = new Config(configStream, taskPool_);
+		singleton = new Config(configStream, commandline_, taskPool_);
 		return singleton;
 	}
 	
@@ -709,6 +724,20 @@ public class Config {
 			return new URI(PropertyKeys.DOCUMENT_SERVER.getValue());
 		} catch (URISyntaxException ex) {
 			throw new Error(ex);
+		}
+	}
+
+	public PatientProvider getPatients() {
+		String[] beans = getSpringContext().getBeanNamesForType(PatientProvider.class);
+		if (beans.length >= 1) {
+			PatientProvider firstPatientProvider = 
+					getSpringContext().getBean(beans[0], PatientProvider.class);
+			if (firstPatientProvider instanceof EmdPatientReader) {
+				initEmdDataSource();
+			}
+			return firstPatientProvider;
+		} else {
+			throw new Error(new IllegalStateException("No patients configured"));
 		}
 	}
 
@@ -791,6 +820,14 @@ public class Config {
 		}
 		return configDoc;
 	}
+
+	private ApplicationContext getSpringContext()
+	{
+		if (springContext == null) {
+			springContext = new ClassPathXmlApplicationContext(SPRING_BEANS_RESOURCE);
+		}
+		return springContext;
+	}
 	
 	private URL getWebserviceAddress() {
 		String addr = XPaths.WS_ADDRES.getAttrValue(getConfigDoc());
@@ -835,6 +872,90 @@ public class Config {
 		}
 		
 	}
+
+	
+	private void initEmdDataSource() {
+		try {
+			DriverManagerDataSource emdDataSource = getSpringContext().getBean(EMD_DATASOURCE_BEAN_ID, DriverManagerDataSource.class);
+			initEmdUsername(emdDataSource);
+			initEmdPassword(emdDataSource);
+		} catch (BeanNotOfRequiredTypeException ex) {
+			LOGGER.log(
+					Level.WARNING, 
+					String.format(
+							"%s bean is not a DriverManagerDataSource; "
+							+ "cannot set username and password; "
+							+ "continuing without setting username and password.",
+							EMD_DATASOURCE_BEAN_ID),
+					ex);
+		} catch (NoSuchBeanDefinitionException ex) {
+			LOGGER.log(
+					Level.WARNING,
+					String.format(
+							"No spring bean named %s configured; "
+							+ "cannot set username and password for datasource EMD; "
+							+ "continuing without setting username and password.",
+							EMD_DATASOURCE_BEAN_ID),
+					ex);
+		}
+	}
+
+	
+	private void initEmdUsername(DriverManagerDataSource emdDatasource) {
+		if (commandline.isEmdUsernameSpecified()) {
+			emdDatasource.setUsername(commandline.getEmdUsername());
+			return;
+		} 
+
+		String configuredUsername = emdDatasource.getUsername();
+		if (configuredUsername != null && !configuredUsername.isEmpty()) {
+			emdDatasource.setUsername(configuredUsername);
+			return;
+		}
+
+		try {
+			String inputUsername = askEmdUsername(emdDatasource);
+			emdDatasource.setUsername(inputUsername);
+		} catch (IllegalStateException | IOException ex) {
+			throw new Error(ex);
+		}
+	}
+
+
+	private String askEmdUsername(DriverManagerDataSource emdDatasource) 
+			throws IllegalStateException, IOException {
+		return UserInput.promptUser(
+				"EMD username",
+				String.format("Connecting to %s", emdDatasource.getUrl()),
+				"username: ");
+	}
+
+
+	private void initEmdPassword(DriverManagerDataSource emdDatasource) {
+		String configuredPassword = emdDatasource.getPassword();
+		if (configuredPassword != null && !configuredPassword.isEmpty()) {
+			emdDatasource.setPassword(configuredPassword);
+			return;
+		}
+
+		try {
+			char[] inputPassword = askEmdpassword(emdDatasource);
+			emdDatasource.setPassword(new String(inputPassword));
+		} catch (IllegalStateException | IOException ex) {
+			throw new Error(ex);
+		}
+	}
+
+
+	private char[] askEmdpassword(DriverManagerDataSource emdDatasource) 
+			throws IllegalStateException, IOException {
+		return UserInput.promptUserPassword("EMD password",
+				String.format("Connection to %s\nUsername: %s",
+						emdDatasource.getUrl(),
+						emdDatasource.getUsername()),
+				"password: ");
+	}
+			
 
 	private File getFile(final Content context, final XPathOp fileAttr, 
 			final String msgUriSyntaxException, 

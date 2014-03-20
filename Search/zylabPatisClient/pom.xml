@@ -174,9 +174,14 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${project.build.directory}/generated-sources/axistools</outputDirectory>
+<?ignore
 							<urls>
 								<url>http://clinisearch.ad.maastro.nl/axis/services/SearcherWS?wsdl</url>	
 							</urls>
+?>
+							<wsdlFiles>
+								<wsdlFile>clinisearch.ad.maastro.nl-axis-services-SearcherWS-wsdl.wsdl</wsdlFile>
+							</wsdlFiles>
 							<packagenName>nl.maastro.eureca.aida.serviceStub</packagenName>
 						</configuration>
 					</execution>

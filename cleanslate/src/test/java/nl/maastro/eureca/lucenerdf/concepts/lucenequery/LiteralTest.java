@@ -4,7 +4,7 @@ package nl.maastro.eureca.lucenerdf.concepts.lucenequery;
 import checkers.nullness.quals.EnsuresNonNull;
 import checkers.nullness.quals.MonotonicNonNull;
 import nl.maastro.eureca.lucenerdf.concepts.auxiliary.Identifier;
-import nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.Variable;
+import nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.TokenVariable;
 import java.util.Set;
 import org.junit.Test;
 import org.junit.Before;
@@ -50,16 +50,16 @@ public abstract class LiteralTest extends QueryExpressionTest {
 	@Test
 	public final void testSubexpressionsEmpty()
 	{
-		assertThat ((Iterable<QueryExpression>)testee.subexpressions(),
-				emptyIterableOf(QueryExpression.class));
+		assertThat ((Iterable<TokenExpression>)testee.subexpressions(),
+				emptyIterableOf(TokenExpression.class));
 	}
 
 
 	@Test
 	public final void testVariablesEmpty()
 	{
-		assertThat ((Set<Variable>)testee.variables().values(),
-				emptyCollectionOf(Variable.class));
+		assertThat ((Set<TokenVariable>)testee.variables().values(),
+				emptyCollectionOf(TokenVariable.class));
 		assertThat (testee.variables().keySet(),
 				emptyCollectionOf(Identifier.class));
 	}
@@ -69,7 +69,7 @@ public abstract class LiteralTest extends QueryExpressionTest {
 	public final void testDirectVariablesEmpty()
 	{
 		assertThat (testee.directVariables().values(),
-				emptyCollectionOf(Variable.class));
+				emptyCollectionOf(TokenVariable.class));
 		assertThat (testee.directVariables().keySet(),
 				emptyCollectionOf(Identifier.class));
 	}

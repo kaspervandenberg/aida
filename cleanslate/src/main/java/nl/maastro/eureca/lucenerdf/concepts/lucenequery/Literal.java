@@ -8,7 +8,7 @@ import dataflow.quals.Pure;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public interface Literal extends QueryExpression {
+public interface Literal extends TokenExpression {
 	/**
 	 * @return	the value of this literal 
 	 */
@@ -37,7 +37,7 @@ public interface Literal extends QueryExpression {
 	 */
 	@Override
 	@Pure
-	public Iterable<? extends QueryExpression> subexpressions();
+	public Iterable<? extends TokenExpression> subexpressions();
 
 
 	/**
@@ -51,7 +51,7 @@ public interface Literal extends QueryExpression {
 	@Pure
 	public java.util.Map<
 				nl.maastro.eureca.lucenerdf.concepts.auxiliary.Identifier,
-				? extends nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.Variable>
+				? extends nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.TokenVariable>
 			variables();
 
 
@@ -66,7 +66,7 @@ public interface Literal extends QueryExpression {
 	@Pure
 	public java.util.Map<
 				nl.maastro.eureca.lucenerdf.concepts.auxiliary.Identifier,
-				nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.Variable>
+				nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.TokenVariable>
 			directVariables();
 }
 

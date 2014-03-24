@@ -17,7 +17,7 @@ public interface QueryVisitor<T> {
 	public T visitDefault(QueryExpression visited);
 	public T visitLiteral(Literal visited);
 	public T visitVariable(Variable visited);
-	public T visitTerm(QueryTerm visited);
+	public T visitTerm(TermQuery visited);
 /*
 	public T visitLiteral(Literal visited);
 	public T visitBoolean(BooleanQuery visited);

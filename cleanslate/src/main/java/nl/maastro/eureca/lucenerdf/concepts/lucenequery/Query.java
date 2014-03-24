@@ -9,7 +9,7 @@ package nl.maastro.eureca.lucenerdf.concepts.lucenequery;
  * while {@code Queries} model concepts that can be the root of a
  * {@code QueryExpression} tree.</p>
  */
-interface Query extends QueryExpression {
+public interface Query extends QueryExpression {
 }
 
 /* vim:set tabstop=4 shiftwidth=4 autoindent spell spelllang=en_gb : */

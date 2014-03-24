@@ -1,6 +1,10 @@
 // © Kasper van den Berg, 2014
 package nl.maastro.eureca.lucenerdf.concepts.lucenequery;
 
+import nl.maastro.eureca.lucenerdf.concepts.auxiliary.Identifier;
+import nl.maastro.eureca.lucenerdf.concepts.lucenequery.binding.TokenVariable;
+import java.util.Map;
+
 /**
  * Represent querying a single token (similar to a word) as a subordinate part
  * of a {@link QueryExpression}.
@@ -24,6 +28,20 @@ public interface TokenExpression extends QueryExpression {
 	 */
 	@Override
 	public Iterable<? extends TokenExpression> subexpressions();
+
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public Map<Identifier, ? extends TokenVariable> variables();
+
+
+	/**
+	 * @inheritDoc
+	 */
+	@Override
+	public Map<Identifier, ? extends TokenVariable> directVariables();
 }
 
 /* vim:set tabstop=4 shiftwidth=4 autoindent spell spelllang=en_gb : */

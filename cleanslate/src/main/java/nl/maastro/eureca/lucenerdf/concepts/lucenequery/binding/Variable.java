@@ -115,7 +115,7 @@ public interface Variable extends QueryExpression {
 	 * @return	the types of {@link QueryExpression} that {@link #set} accepts
 	 * 		and as a consequence {@link #getValue()} may return.
 	 */
-	public Set<Class<? extends QueryExpression>> getAcceptedTypes();
+	public Set<? extends Class<? extends QueryExpression>> getAcceptedTypes();
 	
 
 	/**

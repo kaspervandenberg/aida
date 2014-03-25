@@ -1,7 +1,9 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+/*>>>import checkers.nullness.quals.Nullable;*/
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
@@ -17,6 +19,10 @@ public interface SearchResult {
 	 * @return the patient
 	 */
 	public PatisNumber getPatient();
+
+	public /*>>>@Nullable*/ Date getPatientBirthDate();
+	
+	public Sex getPatientSex();
 
 	/**
 	 * @return the total number of matches over all documents in the index.

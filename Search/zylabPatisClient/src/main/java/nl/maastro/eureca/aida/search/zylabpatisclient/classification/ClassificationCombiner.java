@@ -1,7 +1,9 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.classification;
 
+/*>>>import checkers.nullness.quals.Nullable;*/
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import nl.maastro.eureca.aida.search.zylabpatisclient.DocumentId;
@@ -9,6 +11,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.ResultDocument;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
+import nl.maastro.eureca.aida.search.zylabpatisclient.Sex;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
 
 /**
@@ -29,6 +32,16 @@ public abstract class ClassificationCombiner implements Rule {
 		@Override
 		public PatisNumber getPatient() {
 			return delegate.getPatient();
+		}
+
+		@Override
+		public /*>>>@Nullable*/ Date getPatientBirthDate() {
+			return delegate.getPatientBirthDate();
+		}
+
+		@Override
+		public Sex getPatientSex() {
+			return delegate.getPatientSex();
 		}
 
 		@Override

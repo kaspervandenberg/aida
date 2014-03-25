@@ -6,6 +6,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoun
 import com.google.gson.Gson;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -135,6 +136,31 @@ public class SearchResultImpl implements SearchResult {
 		return patient;
 	}
 
+	@Override
+	public /*>>>@Nullable*/ Date getPatientBirthDate() {
+		if (!matchingDocs.isEmpty()) {
+			ResultDocument firstDoc = getFirstResultDocument();
+			Date  result = firstDoc.getPatientBirthDate();
+			assert result != null :	"Assumption: every indexed document has " +
+									"a birth date for the patient; and in " +
+									"every document this birth date is correct.";
+			return result;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public Sex getPatientSex() {
+		if (!matchingDocs.isEmpty()) {
+			ResultDocument firstDoc = getFirstResultDocument();
+			Sex result = firstDoc.getPatientSex();
+			return result;
+		} else {
+			return Sex.UNKNOWN;
+		}
+	}
+
 	/**
 	 * @return the total number of matches over all documents in the index.
 	 * 		{@code nHits} can be greater than the sum of the hits in 
@@ -222,6 +248,16 @@ public class SearchResultImpl implements SearchResult {
 			gsonParserInstance = new Gson();
 		}
 		return gsonParserInstance;
+	}
+
+	private ResultDocument getFirstResultDocument() {
+		if (!matchingDocs.isEmpty()) {
+			ResultDocument result =  matchingDocs.values().iterator().next();
+			return result;
+		} else {
+			throw new Error(new IllegalStateException(
+					"Cannot retrieve first document from empty collection of matchingDocs."));
+		}
 	}
 	
 }

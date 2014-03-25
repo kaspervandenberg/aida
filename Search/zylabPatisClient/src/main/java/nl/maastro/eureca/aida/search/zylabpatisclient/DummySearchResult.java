@@ -1,8 +1,10 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+/*>>>import checkers.nullness.quals.Nullable;*/
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -84,6 +86,16 @@ public class DummySearchResult implements SearchResult {
 	@Override
 	public PatisNumber getPatient() {
 		return patient;
+	}
+
+	@Override
+	public /*>>>@Nullable*/ Date getPatientBirthDate() {
+		return null;
+	}
+
+	@Override
+	public Sex getPatientSex() {
+		return Sex.UNKNOWN;
 	}
 
 	@Override

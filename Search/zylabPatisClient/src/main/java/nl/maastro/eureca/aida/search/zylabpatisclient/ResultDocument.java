@@ -111,7 +111,6 @@ public class ResultDocument {
 		} else {
 			return null;
 		}
-		
 	}
 
 	public Sex getPatientSex() {

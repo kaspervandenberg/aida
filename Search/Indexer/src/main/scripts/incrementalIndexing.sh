@@ -14,6 +14,18 @@ DATA_DIR=${DATA_DIR:-/mnt/zylab/XmlFields}
 AIDA_VAR_BASE_DIR=${AIDA_VAR_BASE_DIR:-${INDEXDIR:-/var/local/aida/indexes}/..}
 
 ##
+## {@param INDEXDIR}
+## \\t Directory where indexer.Indexer stores the index named as configured in
+## \\t {@code INDEXCONFIG_XML}.
+#
+# The mutual reference between AIDA_VAR_BASE_DIR and INDEXDIR might look like 
+# a code smell, but this allows setting either one and the other being derived
+# by default.
+# Since incrementalIndexing.sh is designed to be executed via cron, we cannot 
+# expect INDEXDIR to be set.
+INDEXDIR=${INDEXDIR:-${AIDA_VAR_BASE_DIR}/indexes}
+
+##
 ## {@param INDEXCONFIG_XML}
 ## \\t Configuration used by {@code indexer.Indexer}
 INDEXCONFIG_XML=${INDEXCONFIG_XML:-${AIDA_VAR_BASE_DIR}/conf/indexconfig.xml}

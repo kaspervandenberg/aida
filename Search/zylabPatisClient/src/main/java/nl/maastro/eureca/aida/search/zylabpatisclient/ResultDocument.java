@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,31 +22,31 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoun
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 public class ResultDocument {
+	
 	private final DocumentId docId;
 	private final @Nullable URI available;
 	private final @Nullable String documentType;
+	private final @Nullable Date patientBirthDate;
+	private final Sex patientSex;
 	private final Map<SemanticModifier, Set<Snippet>> snippets;
 
 	public ResultDocument(DocumentId docId_, @Nullable URI available_, @Nullable String documentType_,
+			@Nullable Date patientBirthDate_, Sex patientSex_,
 			Map<SemanticModifier, Set<Snippet>> snippets_) {
 		docId = docId_;
 		available = available_;
 		documentType = documentType_;
+		patientBirthDate = patientBirthDate_;
+		patientSex = patientSex_;
 		snippets = snippets_;
-	}
-
-	public ResultDocument(DocumentId docId_, URI available_, String documentType_) {
-		this(docId_, available_, documentType_, new HashMap<SemanticModifier, Set<Snippet>>());
-	}
-	
-	public ResultDocument(DocumentId docId_) {
-		this(docId_, null, null, new HashMap<SemanticModifier, Set<Snippet>>());
 	}
 
 	public ResultDocument(ResultDocument other) {
 		this.docId = other.getId();
 		this.available = other.getUrl();
 		this.documentType = other.getType();
+		this.patientBirthDate = other.getPatientBirthDate();
+		this.patientSex = other.getPatientSex();
 		
 		Set<SemanticModifier> othersModifers = other.getModifiers(); 
 		this.snippets = new HashMap<>(othersModifers.size());
@@ -101,6 +102,20 @@ public class ResultDocument {
 			}
 		}
 		return defaultType;
+	}
+
+	public @Nullable Date getPatientBirthDate() {
+		Date result = this.patientBirthDate;
+		if (result != null) {
+			return new Date(result.getTime());
+		} else {
+			return null;
+		}
+		
+	}
+
+	public Sex getPatientSex() {
+		return this.patientSex;
 	}
 
 	public Set<SemanticModifier> getModifiers() {

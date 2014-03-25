@@ -1,19 +1,19 @@
 // © Maastro Clinics, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient;
 
+import checkers.nullness.quals.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.Arrays;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ForkJoinPool;
@@ -50,6 +50,7 @@ import org.apache.lucene.util.Version;
 public class LocalLuceneSearcher extends SearcherBase {
 	private static final Logger log = Logger.getLogger(LocalLuceneSearcher.class.getName());
 	private static final StandardQueryParser parser = new StandardQueryParser();
+	private static final DateFormat dateParser = initDateParser();
 	private final DynamicAdapter queryAdapter;
 	private final IndexSearcher searcher;
 	private final File index;
@@ -102,6 +103,19 @@ public class LocalLuceneSearcher extends SearcherBase {
 		}
 		return SearchResultImpl.combine(perModifierResults.toArray(
 				new SearchResult[perModifierResults.size()]));
+	}
+
+	private static DateFormat initDateParser() {
+		DateFormat result = DateFormat.getDateInstance();	// Try to initialise a Dateformatter as
+															// java documents that it should be done
+		if (result instanceof SimpleDateFormat) {
+			((SimpleDateFormat)result).applyPattern("yyyyMMdd");
+		} else {
+			// Fallback to constructing a SimpleDateFormat when
+			// DateFormat.getInstance does not support the applyPattern()-method.
+			result = new SimpleDateFormat("yyyyMMdd");
+		}
+		return result;
 	}
 
 	private Set<ResultDocument> getMatchingDocs(
@@ -157,11 +171,15 @@ public class LocalLuceneSearcher extends SearcherBase {
 					}
 					
 					String docType = doc.get("Document_type");
+					Date patientBirthDate = getPatientBirthDate(doc, id);
+					Sex patientSex = getPatientSex(doc, id);
 					
 					docs.add(new ResultDocument(
 							new DocumentId(id),
 							uri,
 							docType,
+							patientBirthDate,
+							patientSex,
 							Collections.<SemanticModifier, Set<Snippet>>singletonMap(
 								modifier, docFragments)));
 				} catch (InvalidTokenOffsetsException ex) {
@@ -175,5 +193,39 @@ public class LocalLuceneSearcher extends SearcherBase {
 			log.log(Level.WARNING, String.format("IOException when querying local Lucene instance"), ex);
 			return Collections.emptySet();
 		}
+	}
+
+	private static @Nullable Date getPatientBirthDate(Document doc, String id) {
+		String str_patientBirthDate = doc.get("Geboortedatum");
+		try {
+			Date result = dateParser.parse(str_patientBirthDate);
+			return result;
+		}
+		catch (ParseException ex) {
+			log.log(Level.WARNING, String.format(
+					"Document %s does not contain patient's birth date in " +
+					"the format yyyyMMdd (value in document: \"%s\").\n" +
+					"Continuing with unknown date of birth.",
+					id, str_patientBirthDate),
+					ex);
+			return null;
+		}
+	}
+
+	private static Sex getPatientSex(Document doc, String id) {
+		String str_patientSex = doc.get("Geslacht");
+		try {
+			Sex patientSex = Sex.parse(str_patientSex);
+			return patientSex;
+		} catch (IllegalArgumentException ex) {
+			log.log(Level.WARNING, String.format(
+					"Document %s does not contain patient's sex in " +
+					"the expected format ('M'/'V') (value in document: \"%s\").\n" +
+					"Continuing with unknown sex.",
+					id, str_patientSex),
+					ex);
+			return Sex.UNKNOWN;
+		}
+		
 	}
 }

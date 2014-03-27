@@ -23,7 +23,7 @@ AIDA_VAR_BASE_DIR=${AIDA_VAR_BASE_DIR:-${INDEXDIR:-/var/local/aida/indexes}/..}
 # by default.
 # Since incrementalIndexing.sh is designed to be executed via cron, we cannot 
 # expect INDEXDIR to be set.
-INDEXDIR=${INDEXDIR:-${AIDA_VAR_BASE_DIR}/indexes}
+export INDEXDIR=${INDEXDIR:-${AIDA_VAR_BASE_DIR}/indexes}
 
 ##
 ## {@param INDEXCONFIG_XML}
@@ -61,6 +61,7 @@ INDEXING_LOG_DIR=${INDEXING_LOG_DIR:-${AIDA_VAR_BASE_DIR}/log}
 # end of configuration
 DATE_PATTERN='+%Y%m%d_%H%M%S'
 PROG=$0
+LOG=${INDEXING_LOG_DIR}/$(date ${DATE_PATTERN})
 
 main() {
 	if echo "$@" | egrep -q -e '(-h)|(--help)'; then
@@ -69,11 +70,13 @@ main() {
 		exit
 	fi
 
+	initDirectories
+	echo "Started indexing at $(date)" | tee -a ${LOG}
 	movePreviousStaging
-	initStaging
 	createCurrentTimestamp
 	stageFiles
 	invokeIndexer
+	echo "Finished indexing at $(date)" | tee -a ${LOG}
 }
 
 
@@ -91,23 +94,20 @@ doHelp() {
 }
 
 
-# Move any existing staging directory out of the way
-movePreviousStaging() {
-	if [ -d ${INDEX_STAGING_DIR} ] && [ "$(find ${INDEX_STAGING_DIR} -maxdepth 0 -! -empty )" ]; then
-		echo Moving \'${INDEX_STAGING_DIR}\' to \'$(getPreviousStagingDirName)\'
-		mkdir --parents ${OLD_STAGING_PREFIX_DIR}
-		mv ${INDEX_STAGING_DIR} $(getPreviousStagingDirName)
-	fi
+# Ensure directories that this script uses exist
+initDirectories() {
+	mkdir --parents ${INDEXING_LOG_DIR}
+	mkdir --parents ${INDEX_STAGING_DIR}
+	mkdir --parents ${OLD_STAGING_PREFIX_DIR}
+	mkdir --parents ${INDEXING_TIMESTAMP_DIR}
 }
 
 
-# Initialise an empty staging directory
-initStaging() {
-	mkdir --parents ${INDEX_STAGING_DIR}
-	if isZylabXmlFieldsDir; then
-		for i in {0..255}; do
-			mkdir --parents ${INDEX_STAGING_DIR}/$(printf '%02X' $i)
-		done
+# Move any existing staging directory out of the way
+movePreviousStaging() {
+	if [ -d ${INDEX_STAGING_DIR} ] && [ "$(find ${INDEX_STAGING_DIR} -maxdepth 0 -! -empty )" ]; then
+		echo Moving \'${INDEX_STAGING_DIR}\' to \'$(getPreviousStagingDirName)\' | tee -a ${LOG}
+		mv ${INDEX_STAGING_DIR} $(getPreviousStagingDirName)
 	fi
 }
 
@@ -128,11 +128,10 @@ stageFiles() {
 
 
 invokeIndexer() {
-	mkdir --parents ${INDEXING_LOG_DIR}
 	mvn -f ${AIDA_SRC_DIR}/Search/Indexer/pom.xml \
 		compile exec:java \
 		-Dexec.mainClass=indexer.Indexer -Dexec.args=${INDEXCONFIG_XML} |
-	tee ${INDEXING_LOG_DIR}/$(date ${DATE_PATTERN})
+	tee -a ${LOG}
 }
 
 
@@ -140,7 +139,7 @@ stageAllFilesInCWD() {
 	local TARGET="$1"
 	while IFS= read -r -d '' line; do
 		stageFile "${TARGET}" "${line}"
-	done < <(find . -newer $(getPreviousTimestampFile) -print0)
+	done < <(find . -type f -newer $(getPreviousTimestampFile) -print0)
 }
 
 # Copy a single file to ${TARGET_DIR} when it doesn't exist in
@@ -162,7 +161,6 @@ createCurrentTimestamp() {
 	# previous timestamp must be determined BEFORE creating a new timestamp file
 	getPreviousTimestampFile > /dev/null
 
-	mkdir --parents ${INDEXING_TIMESTAMP_DIR}
 	touch ${INDEXING_TIMESTAMP_DIR}/ts-$(date ${DATE_PATTERN})
 }
 
@@ -183,7 +181,6 @@ getPreviousTimestampFile() {
 		if [ -d ${INDEXING_TIMESTAMP_DIR} ] && [ "$(find ${INDEXING_TIMESTAMP_DIR} -maxdepth 0 -! -empty)" ]; then
 			PREVIOUS_TIMESTAMP=${INDEXING_TIMESTAMP_DIR}/$(ls --sort=time -1 ${INDEXING_TIMESTAMP_DIR} | head --lines=1)
 		else
-			mkdir --parents ${INDEXING_TIMESTAMP_DIR}
 			touch -t 197001010000 ${INDEXING_TIMESTAMP_DIR}/oldestTime
 			PREVIOUS_TIMESTAMP=${INDEXING_TIMESTAMP_DIR}/oldestTime
 		fi

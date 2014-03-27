@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.search.zylabpatisclient.output;
 
+import checkers.nullness.quals.Nullable;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -8,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +18,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.ResultDocument;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResultTable;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
+import nl.maastro.eureca.aida.search.zylabpatisclient.Gender;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
 import nl.maastro.eureca.aida.search.zylabpatisclient.classification.ConceptFoundStatus;
 import nl.maastro.eureca.aida.search.zylabpatisclient.util.QNameUtil;
@@ -499,6 +502,8 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		out.append(Tags.TABLE_HEADER.open());
 		out.append(Tags.TABLE_ROW.open());
 		out.append(Tags.TABLE_HEADER_CELL.format("PatisNr"));
+		out.append(Tags.TABLE_HEADER_CELL.format("Age"));
+		out.append(Tags.TABLE_HEADER_CELL.format("Gender"));
 		for (String dataSetId : table.getColumnNames()) {
 			out.append(Tags.TABLE_HEADER_CELL.format(dataSetId));
 		}
@@ -514,6 +519,8 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	protected void writeTableRow(Appendable out, SearchResultTable data, PatisNumber row) throws IOException {
 		out.append(Tags.TABLE_ROW.open());
 		out.append("\t" + Tags.TABLE_HEADER_CELL.format(row.getValue()) + "\n");
+		writeAgeCell(out, data, row);
+		writeGenderCell(out, data, row);
 		super.writeTableRow(out, data, row);
 		out.append(Tags.TABLE_ROW.close() + "\n");
 	}
@@ -589,4 +596,22 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 
 		out.append(HtmlFormatter.Tags.TABLE_ROW.close());
 	}
+
+	private static void writeAgeCell(Appendable out, SearchResultTable data, PatisNumber patient) throws IOException {
+		@Nullable Integer age = data.getPatientAge(patient);
+		out.append("\t" +
+				Tags.TABLE_CELL.format(
+						age != null ?
+						String.format("%d", age) : 
+						"unknown") + 
+				"\n");
+	}
+
+	private static void writeGenderCell(Appendable out, SearchResultTable data, PatisNumber patient) throws IOException {
+		Gender gender = data.getPatientGender(patient);
+		out.append("\t" +
+				Tags.TABLE_CELL.format(
+				gender.toString()) +
+				"\n");
+	}	
 }

@@ -408,6 +408,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.3</version>
+		</dependency>
+
+		<dependency>
 			<groupId>net.kaspervandenberg</groupId>
 			<artifactId>apps.common.util.cache</artifactId>
 			<version>1.0.2</version>

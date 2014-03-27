@@ -4,8 +4,11 @@ package nl.maastro.eureca.aida.search.zylabpatisclient;
 import checkers.nullness.quals.EnsuresNonNull;
 import checkers.nullness.quals.EnsuresNonNullIf;
 import checkers.nullness.quals.Nullable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -13,6 +16,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import net.kaspervandenberg.apps.common.util.cache.MultiCache;
 import nl.maastro.eureca.aida.search.zylabpatisclient.validation.ExpectedResults;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.Years;
 
 /**
  * 
@@ -156,6 +162,33 @@ public class SearchResultTable {
 		return getColumn(getNameFor(conceptCol));
 	}
 
+	public Iterable<SearchResult> getRow(final PatisNumber patient) {
+		return new Iterable<SearchResult>() {
+			@Override
+			public Iterator<SearchResult> iterator() {
+				return new Iterator<SearchResult>() {
+					private Iterator<Column> delegate = 
+							SearchResultTable.this.columns.values().iterator();
+
+					@Override
+					public boolean hasNext() {
+						return delegate.hasNext();
+					}
+
+					@Override
+					public SearchResult next() {
+						return delegate.next().getCell(patient);
+					}
+
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException("Not supported.");
+					}
+				};
+			}
+		};
+	}
+
 	public boolean containsPatient(PatisNumber patient) {
 		return rows.contains(patient);
 	}
@@ -185,6 +218,29 @@ public class SearchResultTable {
 	public void addAll(Collection<PatisNumber> patients) {
 		rows.addAll(patients);
 	}
+
+	public Gender getPatientGender(PatisNumber patient) {
+		for (SearchResult searchResult : getRow(patient)) {
+			Gender value = searchResult.getPatientGender();
+			if (!value.equals(Gender.UNKNOWN)) {
+				return value;
+			}
+		}
+		return Gender.UNKNOWN;
+	}
+
+	public @Nullable Integer getPatientAge(PatisNumber patient) {
+		for (SearchResult searchResult : getRow(patient)) {
+			@Nullable Date dateOfBirth = searchResult.getPatientBirthDate();
+			if (dateOfBirth != null) {
+				return Years.yearsBetween(new LocalDate(dateOfBirth), new LocalDate()).getYears();
+			}
+		}
+
+		return null;		
+	}
+
+	
 
 	private static String getNameFor(Concept concept) {
 		return concept.getName().getLocalPart();

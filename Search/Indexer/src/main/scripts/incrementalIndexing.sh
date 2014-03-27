@@ -23,7 +23,7 @@ AIDA_VAR_BASE_DIR=${AIDA_VAR_BASE_DIR:-${INDEXDIR:-/var/local/aida/indexes}/..}
 # by default.
 # Since incrementalIndexing.sh is designed to be executed via cron, we cannot 
 # expect INDEXDIR to be set.
-INDEXDIR=${INDEXDIR:-${AIDA_VAR_BASE_DIR}/indexes}
+export INDEXDIR=${INDEXDIR:-${AIDA_VAR_BASE_DIR}/indexes}
 
 ##
 ## {@param INDEXCONFIG_XML}

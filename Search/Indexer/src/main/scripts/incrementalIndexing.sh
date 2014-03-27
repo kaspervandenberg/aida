@@ -70,9 +70,9 @@ main() {
 		exit
 	fi
 
+	initDirectories
 	echo "Started indexing at $(date)" | tee -a ${LOG}
 	movePreviousStaging
-	initStaging
 	createCurrentTimestamp
 	stageFiles
 	invokeIndexer
@@ -94,19 +94,21 @@ doHelp() {
 }
 
 
+# Ensure directories that this script uses exist
+initDirectories() {
+	mkdir --parents ${INDEXING_LOG_DIR}
+	mkdir --parents ${INDEX_STAGING_DIR}
+	mkdir --parents ${OLD_STAGING_PREFIX_DIR}
+	mkdir --parents ${INDEXING_TIMESTAMP_DIR}
+}
+
+
 # Move any existing staging directory out of the way
 movePreviousStaging() {
 	if [ -d ${INDEX_STAGING_DIR} ] && [ "$(find ${INDEX_STAGING_DIR} -maxdepth 0 -! -empty )" ]; then
 		echo Moving \'${INDEX_STAGING_DIR}\' to \'$(getPreviousStagingDirName)\' | tee -a ${LOG}
-		mkdir --parents ${OLD_STAGING_PREFIX_DIR}
 		mv ${INDEX_STAGING_DIR} $(getPreviousStagingDirName)
 	fi
-}
-
-
-# Initialise an empty staging directory
-initStaging() {
-	mkdir --parents ${INDEX_STAGING_DIR}
 }
 
 
@@ -126,7 +128,6 @@ stageFiles() {
 
 
 invokeIndexer() {
-	mkdir --parents ${INDEXING_LOG_DIR}
 	mvn -f ${AIDA_SRC_DIR}/Search/Indexer/pom.xml \
 		compile exec:java \
 		-Dexec.mainClass=indexer.Indexer -Dexec.args=${INDEXCONFIG_XML} |
@@ -160,7 +161,6 @@ createCurrentTimestamp() {
 	# previous timestamp must be determined BEFORE creating a new timestamp file
 	getPreviousTimestampFile > /dev/null
 
-	mkdir --parents ${INDEXING_TIMESTAMP_DIR}
 	touch ${INDEXING_TIMESTAMP_DIR}/ts-$(date ${DATE_PATTERN})
 }
 
@@ -181,7 +181,6 @@ getPreviousTimestampFile() {
 		if [ -d ${INDEXING_TIMESTAMP_DIR} ] && [ "$(find ${INDEXING_TIMESTAMP_DIR} -maxdepth 0 -! -empty)" ]; then
 			PREVIOUS_TIMESTAMP=${INDEXING_TIMESTAMP_DIR}/$(ls --sort=time -1 ${INDEXING_TIMESTAMP_DIR} | head --lines=1)
 		else
-			mkdir --parents ${INDEXING_TIMESTAMP_DIR}
 			touch -t 197001010000 ${INDEXING_TIMESTAMP_DIR}/oldestTime
 			PREVIOUS_TIMESTAMP=${INDEXING_TIMESTAMP_DIR}/oldestTime
 		fi

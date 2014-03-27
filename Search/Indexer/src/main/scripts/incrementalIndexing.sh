@@ -61,6 +61,7 @@ INDEXING_LOG_DIR=${INDEXING_LOG_DIR:-${AIDA_VAR_BASE_DIR}/log}
 # end of configuration
 DATE_PATTERN='+%Y%m%d_%H%M%S'
 PROG=$0
+LOG=${INDEXING_LOG_DIR}/$(date ${DATE_PATTERN})
 
 main() {
 	if echo "$@" | egrep -q -e '(-h)|(--help)'; then
@@ -69,11 +70,13 @@ main() {
 		exit
 	fi
 
+	echo "Started indexing at $(date)" | tee -a ${LOG}
 	movePreviousStaging
 	initStaging
 	createCurrentTimestamp
 	stageFiles
 	invokeIndexer
+	echo "Finished indexing at $(date)" | tee -a ${LOG}
 }
 
 
@@ -94,7 +97,7 @@ doHelp() {
 # Move any existing staging directory out of the way
 movePreviousStaging() {
 	if [ -d ${INDEX_STAGING_DIR} ] && [ "$(find ${INDEX_STAGING_DIR} -maxdepth 0 -! -empty )" ]; then
-		echo Moving \'${INDEX_STAGING_DIR}\' to \'$(getPreviousStagingDirName)\'
+		echo Moving \'${INDEX_STAGING_DIR}\' to \'$(getPreviousStagingDirName)\' | tee -a ${LOG}
 		mkdir --parents ${OLD_STAGING_PREFIX_DIR}
 		mv ${INDEX_STAGING_DIR} $(getPreviousStagingDirName)
 	fi
@@ -127,7 +130,7 @@ invokeIndexer() {
 	mvn -f ${AIDA_SRC_DIR}/Search/Indexer/pom.xml \
 		compile exec:java \
 		-Dexec.mainClass=indexer.Indexer -Dexec.args=${INDEXCONFIG_XML} |
-	tee ${INDEXING_LOG_DIR}/$(date ${DATE_PATTERN})
+	tee -a ${LOG}
 }
 
 

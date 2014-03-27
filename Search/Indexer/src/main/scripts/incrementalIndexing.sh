@@ -104,11 +104,6 @@ movePreviousStaging() {
 # Initialise an empty staging directory
 initStaging() {
 	mkdir --parents ${INDEX_STAGING_DIR}
-	if isZylabXmlFieldsDir; then
-		for i in {0..255}; do
-			mkdir --parents ${INDEX_STAGING_DIR}/$(printf '%02X' $i)
-		done
-	fi
 }
 
 
@@ -140,7 +135,7 @@ stageAllFilesInCWD() {
 	local TARGET="$1"
 	while IFS= read -r -d '' line; do
 		stageFile "${TARGET}" "${line}"
-	done < <(find . -newer $(getPreviousTimestampFile) -print0)
+	done < <(find . -type f -newer $(getPreviousTimestampFile) -print0)
 }
 
 # Copy a single file to ${TARGET_DIR} when it doesn't exist in

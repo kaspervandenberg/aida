@@ -22,7 +22,7 @@ public interface SearchResult {
 
 	public /*>>>@Nullable*/ Date getPatientBirthDate();
 	
-	public Sex getPatientSex();
+	public Gender getPatientGender();
 
 	/**
 	 * @return the total number of matches over all documents in the index.

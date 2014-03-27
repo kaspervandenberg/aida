@@ -172,14 +172,14 @@ public class LocalLuceneSearcher extends SearcherBase {
 					
 					String docType = doc.get("Document_type");
 					Date patientBirthDate = getPatientBirthDate(doc, id);
-					Sex patientSex = getPatientSex(doc, id);
+					Gender patientGender = getPatientGender(doc, id);
 					
 					docs.add(new ResultDocument(
 							new DocumentId(id),
 							uri,
 							docType,
 							patientBirthDate,
-							patientSex,
+							patientGender,
 							Collections.<SemanticModifier, Set<Snippet>>singletonMap(
 								modifier, docFragments)));
 				} catch (InvalidTokenOffsetsException ex) {
@@ -212,19 +212,19 @@ public class LocalLuceneSearcher extends SearcherBase {
 		}
 	}
 
-	private static Sex getPatientSex(Document doc, String id) {
-		String str_patientSex = doc.get("Geslacht");
+	private static Gender getPatientGender(Document doc, String id) {
+		String str_patientGender = doc.get("Geslacht");
 		try {
-			Sex patientSex = Sex.parse(str_patientSex);
-			return patientSex;
+			Gender patientGender = Gender.parse(str_patientGender);
+			return patientGender;
 		} catch (IllegalArgumentException ex) {
 			log.log(Level.WARNING, String.format(
-					"Document %s does not contain patient's sex in " +
+					"Document %s does not contain patient's Gender in " +
 					"the expected format ('M'/'V') (value in document: \"%s\").\n" +
-					"Continuing with unknown sex.",
-					id, str_patientSex),
+					"Continuing with unknown Gender.",
+					id, str_patientGender),
 					ex);
-			return Sex.UNKNOWN;
+			return Gender.UNKNOWN;
 		}
 		
 	}

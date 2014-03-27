@@ -94,8 +94,8 @@ public class DummySearchResult implements SearchResult {
 	}
 
 	@Override
-	public Sex getPatientSex() {
-		return Sex.UNKNOWN;
+	public Gender getPatientGender() {
+		return Gender.UNKNOWN;
 	}
 
 	@Override

@@ -5,17 +5,17 @@ package nl.maastro.eureca.aida.search.zylabpatisclient;
  *
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-public enum Sex {
+public enum Gender {
 	MALE,
 	FEMALE,
 
 	/**
-	 * Used when documents do no contain a patient's sex and 
+	 * Used when documents do no contain a patient's Gender and 
 	 * when creating dummy or empty documents.
 	 */
 	UNKNOWN;
 
-	public static Sex parse(String string) {
+	public static Gender parse(String string) {
 		switch (string) {
 			case "M":
 			case "m":
@@ -27,7 +27,7 @@ public enum Sex {
 				return FEMALE;
 
 			default:
-				throw new IllegalArgumentException(String.format("Unable to parse %s into a Sex.", string));
+				throw new IllegalArgumentException(String.format("Unable to parse %s into a Gender.", string));
 		}
 	}
 }

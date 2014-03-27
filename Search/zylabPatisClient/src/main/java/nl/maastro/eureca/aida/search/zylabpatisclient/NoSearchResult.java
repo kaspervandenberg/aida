@@ -30,7 +30,7 @@ class NoSearchResult implements SearchResult {
 	}
 
 	@Override
-	public Sex getPatientSex() {
+	public Gender getPatientGender() {
 		throw new UnsupportedOperationException("Not supported.");
 	}
 

@@ -11,7 +11,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
 import nl.maastro.eureca.aida.search.zylabpatisclient.ResultDocument;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SearchResult;
 import nl.maastro.eureca.aida.search.zylabpatisclient.SemanticModifier;
-import nl.maastro.eureca.aida.search.zylabpatisclient.Sex;
+import nl.maastro.eureca.aida.search.zylabpatisclient.Gender;
 import nl.maastro.eureca.aida.search.zylabpatisclient.Snippet;
 
 /**
@@ -40,8 +40,8 @@ public abstract class ClassificationCombiner implements Rule {
 		}
 
 		@Override
-		public Sex getPatientSex() {
-			return delegate.getPatientSex();
+		public Gender getPatientGender() {
+			return delegate.getPatientGender();
 		}
 
 		@Override

@@ -27,17 +27,17 @@ public class ResultDocument {
 	private final @Nullable URI available;
 	private final @Nullable String documentType;
 	private final @Nullable Date patientBirthDate;
-	private final Sex patientSex;
+	private final Gender patientGender;
 	private final Map<SemanticModifier, Set<Snippet>> snippets;
 
 	public ResultDocument(DocumentId docId_, @Nullable URI available_, @Nullable String documentType_,
-			@Nullable Date patientBirthDate_, Sex patientSex_,
+			@Nullable Date patientBirthDate_, Gender patientGender_,
 			Map<SemanticModifier, Set<Snippet>> snippets_) {
 		docId = docId_;
 		available = available_;
 		documentType = documentType_;
 		patientBirthDate = patientBirthDate_;
-		patientSex = patientSex_;
+		patientGender = patientGender_;
 		snippets = snippets_;
 	}
 
@@ -46,7 +46,7 @@ public class ResultDocument {
 		this.available = other.getUrl();
 		this.documentType = other.getType();
 		this.patientBirthDate = other.getPatientBirthDate();
-		this.patientSex = other.getPatientSex();
+		this.patientGender = other.getPatientGender();
 		
 		Set<SemanticModifier> othersModifers = other.getModifiers(); 
 		this.snippets = new HashMap<>(othersModifers.size());
@@ -113,8 +113,8 @@ public class ResultDocument {
 		}
 	}
 
-	public Sex getPatientSex() {
-		return this.patientSex;
+	public Gender getPatientGender() {
+		return this.patientGender;
 	}
 
 	public Set<SemanticModifier> getModifiers() {

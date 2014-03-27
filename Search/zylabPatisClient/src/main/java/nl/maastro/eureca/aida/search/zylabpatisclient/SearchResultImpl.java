@@ -151,13 +151,13 @@ public class SearchResultImpl implements SearchResult {
 	}
 
 	@Override
-	public Sex getPatientSex() {
+	public Gender getPatientGender() {
 		if (!matchingDocs.isEmpty()) {
 			ResultDocument firstDoc = getFirstResultDocument();
-			Sex result = firstDoc.getPatientSex();
+			Gender result = firstDoc.getPatientGender();
 			return result;
 		} else {
-			return Sex.UNKNOWN;
+			return Gender.UNKNOWN;
 		}
 	}
 

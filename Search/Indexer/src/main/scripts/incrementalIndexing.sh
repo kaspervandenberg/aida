@@ -206,7 +206,7 @@ isZylabXmlFieldsDir() {
 }
 
 
-main
+main $@
 
 
 # vim: set tabstop=4 shiftwidth=4 : #

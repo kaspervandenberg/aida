@@ -20,6 +20,12 @@ AIDA_VAR_BASE_DIR=${AIDA_VAR_BASE_DIR:-${INDEXDIR:-/var/local/aida/indexes}/..}
 export INDEXDIR=${INDEXDIR:-${AIDA_VAR_BASE_DIR}/indexes}
 
 ##
+## {#param PASSWORD_OPTION_FILE}
+## \\t a file containing password options, if it exists its contents is 
+## \\t passed as commandline arguments to {@code ZPSC_JAR}
+PASSWORD_OPTION_FILE=${PASSWORD_OPTION_FILE:-${HOME}/emdPassword}
+
+##
 ## {@param REPORT_LOG_DIR}
 ## \\t Directory where log output of generating the report goes
 REPORT_LOG_DIR=${REPORT_LOG_DIR:-${AIDA_VAR_BASE_DIR}/log}
@@ -55,7 +61,7 @@ main() {
 
 	initDirectories
 	echo "Started report generation at $(date)" | tee -a ${LOG}
-	java -jar ${ZPSC_JAR} "$@" | tee -a ${LOG}
+	invokeZylabPatisClient "$@"
 	echo "Finished report generation at $(date)" | tee -a ${LOG}
 }
 
@@ -78,6 +84,17 @@ doHelp() {
 
 initDirectories() {
 	mkdir --parents ${REPORT_LOG_DIR}
+}
+
+
+invokeZylabPatisClient() {
+	if [ -n ${PASSWORD_OPTION_FILE} ] && 
+			[ -f ${PASSWORD_OPTION_FILE} ] &&
+			[ -r ${PASSWORD_OPTION_FILE} ]; then
+		xargs --arg-file=${PASSWORD_OPTION_FILE} java -jar ${ZPSC_JAR} "$@" 2>&1 | tee -a ${LOG}
+	else
+		java -jar ${ZPSC_JAR} "$@" 2>&1 | tee -a ${LOG}
+	fi
 }
 
 

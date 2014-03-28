@@ -82,7 +82,7 @@ initDirectories() {
 
 
 symlinkLatest() {
-	if [ -d {REPORT_DIR} ] && [ "$(find ${REPORT_DIR} -maxdepth 0 -! -empty)"]; then
+	if [ -d ${REPORT_DIR} ] && [ "$(find ${REPORT_DIR} -maxdepth 0 -! -empty)"]; then
 		local LATEST=$( \
 				ls --sort-time -1 ${REPORT_DIR}/results*.html |
 				head --lines=1)

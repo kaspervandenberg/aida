@@ -932,6 +932,11 @@ public class Config {
 
 
 	private void initEmdPassword(DriverManagerDataSource emdDatasource) {
+		if (commandline.isEmdPasswordSpecified()) {
+			emdDatasource.setPassword(new String(commandline.getEmdPassword()));
+			return;
+		}
+		
 		String configuredPassword = emdDatasource.getPassword();
 		if (configuredPassword != null && !configuredPassword.isEmpty()) {
 			emdDatasource.setPassword(configuredPassword);

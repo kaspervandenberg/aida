@@ -57,6 +57,16 @@ public class CommandLineParser {
 			}
 		},
 
+		EMD_PASSWORD("p") {
+			@Override
+			protected Option create() {
+				OptionBuilder.withLongOpt("emdPassword");
+				OptionBuilder.hasArg();
+				OptionBuilder.withArgName("password");
+				OptionBuilder.withDescription("Password to authenticate the emdUsername account when connection to EMD database.");
+				return OptionBuilder.create(this.shortOpt);
+			}
+		},
 
 		;
 
@@ -81,6 +91,7 @@ public class CommandLineParser {
 			opts.addOptionGroup(validationSwitch);
 
 			opts.addOption(EMD_USERNAME.create());
+			opts.addOption(EMD_PASSWORD.create());
 
 			return opts;
 		}
@@ -158,6 +169,25 @@ public class CommandLineParser {
 		} 
 		return value;
 	}
+
+	public boolean isEmdPasswordSpecified()
+	{
+		return commandline.hasOption(SupportedOptions.EMD_PASSWORD.shortOpt) &&
+				(commandline.getOptionValue(SupportedOptions.EMD_PASSWORD.shortOpt) != null);
+	}
+
+	public char[] getEmdPassword() throws IllegalStateException
+	{
+		String value = commandline.getOptionValue(SupportedOptions.EMD_PASSWORD.shortOpt);
+		if (value == null) {
+			throw new IllegalStateException(String.format(
+					"Option %s not set.",
+					SupportedOptions.EMD_PASSWORD));
+		}
+		return value.toCharArray();
+	}
+			
+
 	
 	
 }

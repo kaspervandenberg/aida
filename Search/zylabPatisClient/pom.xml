@@ -57,20 +57,6 @@
 		</profile>
 
 		<profile>
-			<id>use_full_index</id>
-			<properties>
-				<aida.selected.index>${aida.full.index}</aida.selected.index>
-			</properties>
-		</profile>
-
-		<profile>
-			<id>use_6week_index</id>
-			<properties>
-				<aida.selected.index>${aida.6week.index}</aida.selected.index>
-			</properties>
-		</profile>
-
-		<profile>
 			<id>maastro_clinisearch</id>
 			<!--
 				maastro_clinisearch profile requires either 
@@ -79,9 +65,7 @@
 			<properties>
 				<!-- The directory to use to read the indexes -->
 				<aida.indexdir>${env.INDEXDIR}</aida.indexdir>
-				<aida.full.index>LATEST_Zylab_complete</aida.full.index>
-				<aida.6week.index>LATEST_6week_Zylab</aida.6week.index>
-				<aida.index>${aida.selected.index}</aida.index>
+				<aida.index>zylab</aida.index>
 				<aida.validationdata.chemo>/home/administrator/validation-data/2013-08-16.json</aida.validationdata.chemo>
 				<aida.validationdata.metastasis>/home/administrator/validation-data/patients-metastasis-20121221_AD2.json</aida.validationdata.metastasis>
 			</properties>

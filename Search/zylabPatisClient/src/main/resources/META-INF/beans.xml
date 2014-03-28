@@ -20,6 +20,19 @@
 		<property name="period" value="7" />
 	</bean>
 
+	<bean id="resultsDirectory"
+		  class="nl.maastro.eureca.aida.search.zylabpatisclient.FileNames">
+		<constructor-arg index="0">
+			<bean class="java.nio.file.Paths"
+				  factory-method="get">
+				<constructor-arg value="${aida.reportsDir}" />
+				<constructor-arg>
+					<list />
+				</constructor-arg>
+			</bean>
+		</constructor-arg> 
+	</bean>
+
 </beans>
 
 <!-- vim:set tabstop=4 shiftwidth=4 : -->

@@ -195,7 +195,7 @@ public class API_Demo {
 
 	public void writeTable() {
 		Date now = new Date();
-		File f = new FileNames().createHtmlResultsFile();
+		File f = config.getResultsDirectory().createHtmlResultsFile();
 		try (OutputStreamWriter out = new OutputStreamWriter(
 					new BufferedOutputStream(
 						new FileOutputStream(f)), StandardCharsets.UTF_8)) {
@@ -218,7 +218,7 @@ public class API_Demo {
 		Concept concept = preConstructedConcept.getConcept(config);
 		Iterable<SearchResult> toStore = tables.getColumn(concept);
 		ExpectedPreviousResults resultStorer = ExpectedPreviousResults.create(concept, toStore);
-		File f = new FileNames().createJsonResultsFile(concept);
+		File f = config.getResultsDirectory().createJsonResultsFile(concept);
 		FileWriter outputFile = new FileWriter(f);
 		resultStorer.writeAsJson(outputFile);
 		outputFile.flush();

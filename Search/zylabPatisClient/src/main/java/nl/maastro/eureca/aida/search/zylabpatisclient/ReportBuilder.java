@@ -167,7 +167,7 @@ public class ReportBuilder {
 		private ExpectedResults readExpectedPreviousResults(Concepts predefinedConcept) 
 				throws FileNotFoundException, IOException, IllegalArgumentException {
 			Concept concept = getConcept(predefinedConcept);
-			File file = new FileNames().getMostRecentJson(concept);
+			File file = configContext.getResultsDirectory().getMostRecentJson(concept);
 			FileReader input = new FileReader(file);
 			
 			return ExpectedPreviousResults.read(concept, input);

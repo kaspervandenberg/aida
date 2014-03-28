@@ -53,6 +53,7 @@ import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQuery;
 import nl.maastro.eureca.aida.search.zylabpatisclient.query.StringQueryBase;
 import nl.maastro.ad.clinisearch.axis.services.SearcherWS.SearcherWS;
 import nl.maastro.ad.clinisearch.axis.services.SearcherWS.SearcherWSServiceLocator;
+import nl.maastro.eureca.aida.search.zylabpatisclient.FileNames;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatientProvider;
 import nl.maastro.eureca.aida.search.zylabpatisclient.input.EmdPatientReader;
 import org.jdom2.Attribute;
@@ -739,6 +740,10 @@ public class Config {
 		} else {
 			throw new Error(new IllegalStateException("No patients configured"));
 		}
+	}
+
+	public FileNames getResultsDirectory() {
+		return getSpringContext().getBean("resultsDirectory", FileNames.class);
 	}
 
 	public Map<PatisNumber, ConceptFoundStatus> getPatients(QName concept) {

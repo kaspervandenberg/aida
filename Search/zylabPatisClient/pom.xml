@@ -66,6 +66,7 @@
 				<!-- The directory to use to read the indexes -->
 				<aida.indexdir>${env.INDEXDIR}</aida.indexdir>
 				<aida.index>zylab</aida.index>
+				<aida.reportsDir>/var/www/zpsc</aida.reportsDir>
 				<aida.validationdata.chemo>/home/administrator/validation-data/2013-08-16.json</aida.validationdata.chemo>
 				<aida.validationdata.metastasis>/home/administrator/validation-data/patients-metastasis-20121221_AD2.json</aida.validationdata.metastasis>
 			</properties>
@@ -78,6 +79,7 @@
 				<!-- The directory to use to read the indexes -->
 				<aida.indexdir>/home/kasper/tmp/vocab/aida/indexes</aida.indexdir>
 				<aida.index>Zylab_test-20130602</aida.index>
+				<aida.reportsDir>.</aida.reportsDir>
 				<aida.validationdata.chemo>${basedir}/data/patients-chemo-20121221_AD2.json</aida.validationdata.chemo>
 				<aida.validationdata.metastasis>${basedir}/data/patients-metastasis-20121221_AD2.json</aida.validationdata.metastasis>
 			</properties>
@@ -88,6 +90,7 @@
 			<properties>
 				<aida.indexdir>/C:/Indexes</aida.indexdir>
 				<aida.index>Zylab_test-20130602</aida.index>
+				<aida.reportsDir>.</aida.reportsDir>
 				<aida.validationdata.chemo>${basedir}/patients-chemo-20121221_AD2.json</aida.validationdata.chemo>
 				<aida.validationdata.metastasis>${basedir}/patients-metastasis-20121221_AD2.json</aida.validationdata.metastasis>
 			</properties>

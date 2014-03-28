@@ -61,7 +61,7 @@ INDEXING_LOG_DIR=${INDEXING_LOG_DIR:-${AIDA_VAR_BASE_DIR}/log}
 # end of configuration
 DATE_PATTERN='+%Y%m%d_%H%M%S'
 PROG=$0
-LOG=${INDEXING_LOG_DIR}/$(date ${DATE_PATTERN})
+LOG=${INDEXING_LOG_DIR}/index-$(date ${DATE_PATTERN})
 
 main() {
 	if echo "$@" | egrep -q -e '(-h)|(--help)'; then

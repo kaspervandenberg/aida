@@ -100,18 +100,18 @@ invokeZylabPatisClient() {
 
 
 symlinkLatest() {
-	if [ -d ${REPORT_DIR} ] && [ "$(find ${REPORT_DIR} -maxdepth 0 -! -empty)"]; then
+	if [ -d ${REPORT_DIR} ] && [ "$(find ${REPORT_DIR} -maxdepth 0 -! -empty)" ]; then
 		local LATEST=$( \
 				ls --sort=time -1 ${REPORT_DIR}/results*.html |
 				head --lines=1)
 		if [ -n ${LATEST} ]; then
-			echo "Moving symlink ${LATEST_REPORT_SYMLINK_TARGET} to point to ${LATEST}" | tee ${LOG}
-			ln --force --symbolic ${LATEST} ${LATEST_REPORT_SYMLINK_TARGET} 2>&1 | tee ${LOG}
+			echo "Moving symlink ${LATEST_REPORT_SYMLINK_TARGET} to point to ${LATEST}" | tee -a ${LOG}
+			ln --force --symbolic ${LATEST} ${LATEST_REPORT_SYMLINK_TARGET} 2>&1 | tee -a ${LOG}
 		else
-			echo "WARNING: no latest results; continuing without moving symlink" | tee ${LOG}
+			echo "WARNING: no latest results; continuing without moving symlink" | tee -a ${LOG}
 		fi
 	else
-		echo "WARNING: Directory ${REPORT_DIR} does not exist or is empty; continuing without moving symlink." | tee ${LOG}
+		echo "WARNING: Directory ${REPORT_DIR} does not exist or is empty; continuing without moving symlink." | tee -a ${LOG}
 	fi
 }
 

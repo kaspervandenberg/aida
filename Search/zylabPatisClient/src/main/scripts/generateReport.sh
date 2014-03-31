@@ -104,8 +104,13 @@ symlinkLatest() {
 				ls --sort=time -1 ${REPORT_DIR}/results*.html |
 				head --lines=1)
 		if [ -n ${LATEST} ]; then
-			ln --force --symbolic ${LATEST} ${LATEST_REPORT_SYMLINK_TARGET}
+			echo "Moving symlink ${LATEST_REPORT_SYMLINK_TARGET} to point to ${LATEST}" | tee ${LOG}
+			ln --force --symbolic ${LATEST} ${LATEST_REPORT_SYMLINK_TARGET} 2>&1 | tee ${LOG}
+		else
+			echo "WARNING: no latest results; continuing without moving symlink" | tee ${LOG}
 		fi
+	else
+		echo "WARNING: Directory ${REPORT_DIR} does not exist or is empty; continuing without moving symlink." | tee ${LOG}
 	fi
 }
 

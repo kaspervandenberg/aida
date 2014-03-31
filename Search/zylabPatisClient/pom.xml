@@ -91,8 +91,8 @@
 				<aida.indexdir>/C:/Indexes</aida.indexdir>
 				<aida.index>Zylab_test-20130602</aida.index>
 				<aida.reportsDir>.</aida.reportsDir>
-				<aida.validationdata.chemo>${basedir}/patients-chemo-20121221_AD2.json</aida.validationdata.chemo>
-				<aida.validationdata.metastasis>${basedir}/patients-metastasis-20121221_AD2.json</aida.validationdata.metastasis>
+				<aida.validationdata.chemo>/C:/Users/gebruiker/documents/NetBeansProjects/aida/Search/zylabPatisClient/patients-chemo-20121221_AD2.json</aida.validationdata.chemo>
+				<aida.validationdata.metastasis>/C:/Users/gebruiker/documents/NetBeansProjects/aida/Search/zylabPatisClient/patients-metastasis-20121221_AD2.json</aida.validationdata.metastasis>
 			</properties>
 		</profile>
 	</profiles>

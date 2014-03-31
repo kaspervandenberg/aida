@@ -106,6 +106,7 @@ symlinkLatest() {
 				head --lines=1)
 		if [ -n ${LATEST} ]; then
 			echo "Moving symlink ${LATEST_REPORT_SYMLINK_TARGET} to point to ${LATEST}" | tee -a ${LOG}
+			rm ${LATEST_REPORT_SYMLINK_TARGET}
 			ln --force --symbolic ${LATEST} ${LATEST_REPORT_SYMLINK_TARGET} 2>&1 | tee -a ${LOG}
 		else
 			echo "WARNING: no latest results; continuing without moving symlink" | tee -a ${LOG}

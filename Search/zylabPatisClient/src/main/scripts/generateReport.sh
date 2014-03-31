@@ -62,6 +62,7 @@ main() {
 	initDirectories
 	echo "Started report generation at $(date)" | tee -a ${LOG}
 	invokeZylabPatisClient "$@"
+	symlinkLatest
 	echo "Finished report generation at $(date)" | tee -a ${LOG}
 }
 

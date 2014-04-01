@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.adaptivedisclosure.aida</groupId>
+	<artifactId>velocityRdf</artifactId>
+	<version>0.90</version>
+	<packaging>jar</packaging>
+	<name>AIDA::Velocity RDF reports</name>
+	<description>
+		Use Apache velocity's template processing on Sesame's RDF models.
+	</description>
+
+	<parent>
+		<groupId>org.adaptivedisclosure.aida</groupId>
+		<artifactId>maven-parent</artifactId>
+		<version>0.7-SNAPSHOT</version>
+		<relativePath>../../maven-parent</relativePath>
+	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<fork>true</fork>
+					<compilerArgs>
+						<arg>-Xlint:-unchecked</arg>
+						<arg>-Xlint:-deprecation</arg>
+					</compilerArgs>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			
+			<plugin>
+				<groupId>edu.washington.cs.types.checker</groupId>
+				<artifactId>checker-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<processors>
+						<processor>checkers.nullness.NullnessChecker</processor>
+					</processors>
+					<includes>
+						<include>nl/maastro/eureca/aida/search/zylabpatisclient/**/*.java</include>
+					</includes>
+					<excludes>
+						<exclude>SearcherWS/**/*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
+	
+	 <dependencies>
+		  <dependency>
+				<groupId>org.openrdf.sesame</groupId>
+				<artifactId>sesame-model</artifactId>
+				<version>2.7.10</version>
+		  </dependency>
+
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity</artifactId>
+				<version>1.7</version>
+			</dependency>
+
+			<dependency>
+				<groupId>net.kaspervandenberg</groupId>
+				<artifactId>apps.common.util.cache</artifactId>
+				<version>1.0.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-library</artifactId>
+				<scope>test</scope>
+			</dependency>
+					
+	 </dependencies>
+</project>
+<!-- vim: set tabstop=2 shiftwidth=2 : -->
+

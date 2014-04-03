@@ -1,8 +1,15 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.velocityrdf.n3_id_translator;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.experimental.theories.Theory;
+import static org.junit.Assert.*;
+import static org.junit.Assume.*;
+import static org.hamcrest.Matchers.*;
+import org.hamcrest.TypeSafeMatcher;
 
 /**
  * Test whether a {@link Translator} complies to the interface contract.
@@ -32,13 +39,128 @@ import org.junit.experimental.theories.Theory;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 abstract class TranslatorTest<T> {
-	private Translator<T> testee;
-
+	/**
+	 * Derived classes must provide the object to perform these tests on.
+	 * 
+	 * <p>A single test (or theory) may call {@code getTestee()} more than
+	 * once, during a single test {@code getTestee()} must return the same
+	 * instance.  For a different test-method {@code getTestee()} must return
+	 * a fresh instance.  Achieve this by setting a "testee"-field in a
+	 * "test fixture setup"-method (i.e. a method annotated with 
+	 * {@link org.junit.Before}).</p>
+	 * 
+	 * @return 	the Translator to test.
+	 */
 	protected abstract Translator<T> getTestee();
 
-	@Before
-	final public void setupTranslatorTest() {
-		testee = getTestee();
-	}
 	
+	@Theory
+	public final void testAnyGeneratedIsWellformed(final T val)
+	{
+		try {
+			String id = getTestee().getId(val);
+			
+			assertThat(id, isWellformedIdentifier());
+		}
+		catch (Exception ex) {
+			assumeNoException(ex);
+		}
+	}
+
+
+	@Theory
+	public final void testGeneratedIdIsFunctional(final T val1, final T val2)
+	{
+		assumeThat(val1, is(val2));
+		try {
+			String id1 = getTestee().getId(val1);
+			String id2 = getTestee().getId(val2);
+
+			assertThat(id1, is(id2));					
+		}
+		catch (Exception ex) {
+			assumeNoException(ex);
+		}
+	}
+
+	
+	@Theory
+	public final void testGeneratedIdIsInjective(final T val1, final T val2)
+	{
+		assumeThat(val1, is(not(val2)));
+		try {
+			String id1 = getTestee().getId(val1);
+			String id2 = getTestee().getId(val2);
+
+			assertThat(id1, is(not(id2)));					
+		}
+		catch (Exception ex) {
+			assumeNoException(ex);
+		}
+	}
+
+	
+	@Theory
+	public final void testGeneratedMatches(final T val)
+	{
+		try {
+			String id = getTestee().getId(val);
+			
+			assertThat(val, matchesIdentifier(id));
+		}
+		catch (Exception ex) {
+			assumeNoException(ex);
+		}
+	}
+
+
+	@Theory
+	public final void testMatchingAnIdEquivalentEqual(final T val1, final T val2)
+	{
+		try {
+			String id1 = getTestee().getId(val1);
+
+			assertThat(val2, either(
+					matchesIdentifier(id1)).or(
+					is(not(val1))));
+		}
+		catch (Exception ex) {
+			assumeNoException(ex);
+		}
+	}
+
+	
+	public final Matcher<T> matchesIdentifier(final String id)
+	{
+		return new TypeSafeMatcher<T>() {
+			@Override
+			protected boolean matchesSafely(T item) {
+				return getTestee().matches(item, id);
+			}
+
+			@Override
+			public void describeTo(Description description) {
+				description.appendValue(getTestee());
+				description.appendText(".matches identifier ");
+				description.appendValue(id);
+			}
+		};
+	}
+
+
+	public final Matcher<String> isWellformedIdentifier()
+	{
+		return new TypeSafeMatcher<String>() {
+			@Override
+			protected boolean matchesSafely(String item) {
+				return getTestee().isWellFormed(item);
+			}
+
+			@Override
+			public void describeTo(Description description) {
+				description.appendValue(getTestee());
+				description.appendText(".isWellFormed (identifier) ");
+			}
+		};
+	}
 }

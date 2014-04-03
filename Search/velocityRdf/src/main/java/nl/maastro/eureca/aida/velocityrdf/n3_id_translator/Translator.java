@@ -14,6 +14,15 @@ package nl.maastro.eureca.aida.velocityrdf.n3_id_translator;
  * 			<li>{@link org.openrdf.model.BNode}, or</li>
  * 			<li>{@link org.openrdf.model.Literal}.</li></ul>
  * 
+ * <p>The generated identifier must be interpreted within the context of
+ * a {@link org.openrdf.model.Model}:
+ * <ul><li>{@link #getId(java.lang.Object)} is permitted to generate a 
+ * 			different identifier for the same resource in a different model;
+ * 			and</li>
+ * 		<li>the same identifier might {@linkplain #matches(java.lang.Object,
+ * 			java.lang.String) match} a different {@link org.openrdf.model.Value}
+ * 			in a different {@code Model}.</li></ul>
+ * 
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 interface Translator<T> {
@@ -40,7 +49,9 @@ interface Translator<T> {
 	 * Generate an identifier for {@code val}.
 	 * 
 	 * <p>The generated identifier is {@link #isWellFormed(java.lang.String) 
-	 * wellformed}.  {@link nl.maastro.eureca.aida.velocityrdf.n3_id_translator.TranslatorTest#</p>
+	 * wellformed}. <br />
+	 * See test:
+	 * <ul><li>TranslatorTest#testAnyGeneratedIsWellformed.</li></ul></p>
 	 * 
 	 * <p>The generated identifier will be 
 	 * {@link Object#equals(java.lang.Object) equal} to any other identifier
@@ -49,8 +60,10 @@ interface Translator<T> {
 	 * ∀(<var>val<sub>1</sub></var>, <var>val<sub>2</sub></var> ∈ {@code T}):
 	 * (<var>val<sub>1</sub></var> = <var>val<sub>2</sub></var>) 
 	 * ↔ ({@code this.getId(}<var>val<sub>1</sub></var>{@code )}
-	 * {@code .equals(this.getId(}<var>val<sub>2</sub></var>{@code ))}
-	 * </p>
+	 * {@code .equals(this.getId(}<var>val<sub>2</sub></var>{@code ))}<br />
+	 * See test:
+	 * <ul><li>TranslatorTest#testGeneratedIdIsFunctional; and</li>
+	 * 		<li>TranslatorTest#testGeneratedIdIsInjective.</li></ul></p>
 	 * 
 	 * @param val	the value from the {@link org.openrdf.model.Model} for which 
 	 * 		to generate an identifier.
@@ -63,11 +76,29 @@ interface Translator<T> {
 	/**
 	 * Check whether {@code id} is an identifier for {@code val}.
 	 * 
-	 * <p>
+	 * <p>While {@link #getId()} will generate a single unique identifier
+	 * for {@code val}, it is possible that multiple identifiers match
+	 * the value.<br />
+	 * ∀(<var>val</var> ∈ {@code <T>}): {@code this.matches(}<var>val</var>,
+	 * {@code this.getId(}<var>val</var>{@code ))}<br />
+	 * ∀(<var>val<sub>1</sub></var>, <var>val<sub>2</sub></var> ∈ {@code <T>},
+	 * <var>id<sub>1</sub></var> = 
+	 * {@code this.getId(}<var>val<sub>1</sub></var>{@code )}): 
+	 * {@code this.matches(}<var>val<sub>2</sub></var>, 
+	 * <var>id<sub>1</sub></var>{@code )} ⊕ (<var>val<sub>1</sub></var> ≠
+	 * <var>val<sub>2</sub></var>)<br />
+	 * See tests:
+	 * <ul><li>TranslatorTest#testGeneratedMatches; and</li>
+	 * 		<li>TranslatorTest#testMatchingAnIdEquivalentEqual.</li></ul></p>
 	 * 
-	 * @param val
-	 * @param id
-	 * @return 
+	 * @param val	the	{@link org.openrdf.model.Value} or 
+	 * 		{@link org.openrdf.model.Statement} to check
+	 * @param id	the identifier to check
+	 * 
+	 * @return <ul><li>{@code true}: {@code id} is an identifier for
+	 * 			{@code value}; or</li>
+	 * 		<li>{@code false}: {@code id} does not match {@code value}.</li>
+	 * 		</ul>	
 	 */
 	public boolean matches(final T val, final String id);
 	

@@ -21,6 +21,7 @@
 		<module>Search/search</module>
 		<module>Search/zylabPatisClient</module>
 		<module>Search/filename-lookup</module>
+		<module>Search/velocityRdf</module>
 
 		<module>maven-parent</module>
 		<module>maven-parent-serviceServlet</module>

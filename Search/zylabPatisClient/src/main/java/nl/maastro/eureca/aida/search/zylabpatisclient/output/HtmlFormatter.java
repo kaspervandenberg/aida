@@ -467,7 +467,8 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 			+ "\t" +	"border-bottom-style: solid;\n"
 			+ "\t" +	"border-left-style: none;\n"
 			+ "\t" +	"border-right-style: none;\n"
-			+ "\t" +	"padding: 0.8em"
+			+ "\t" +	"padding: 0.8em;\n"
+			+ "\t" +	"vertical-align: top;\n"
 			+ "}\n\n"
 
 			+ "table tr:nth-child(even) {\n"
@@ -604,7 +605,6 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	@Override
 	protected void writeTableRow(Appendable out, SearchResultTable data, PatisNumber row) throws IOException {
 		out.append(Tags.TABLE_ROW.open());
-		String id = row.getValue();
 		out.append("\t" + Tags.TABLE_HEADER_CELL.open());
 		out.append(row.getValue());
 		if (getSnippetStrategy() instanceof SnippetFormatter)

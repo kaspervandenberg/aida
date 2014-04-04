@@ -113,7 +113,7 @@ public class API_Demo {
 		this.searcher = initSearcher(config);
 		HtmlFormatter tmp = new HtmlFormatter();
 		tmp.setShowSnippetsStrategy(
-				tmp.createSnippetStrategy(HtmlFormatter.SnippetDisplayStrategy.DYNAMIC_SHOW));
+				tmp.createSnippetStrategy(HtmlFormatter.SnippetDisplayStrategy.BUFFERED_SHOW));
 		this.formatter = tmp;
 		reportPurpose = commandline.getReportPurpose();
 

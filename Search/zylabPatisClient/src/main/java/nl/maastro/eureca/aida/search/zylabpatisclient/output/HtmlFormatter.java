@@ -9,8 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import nl.maastro.eureca.aida.search.zylabpatisclient.PatisNumber;
@@ -162,6 +160,13 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 				writeCheckbox(out, id);
 				writeSnippetDiv(out, result, id);
 			} },
+		BUFFERED_SHOW {
+			@Override
+			public void write(HtmlFormatter context, Appendable out, SearchResult result) throws IOException {
+				String id = result.getPatient().getValue() + "-" + QNameUtil.instance().tinySemiUnique();
+				writeCheckbox(out, id);
+				writeSnippetDiv(context.getSnippetBuffer(), result, id);
+			} }
 		;
 
 		public abstract void write(HtmlFormatter context, Appendable out, SearchResult result) throws IOException;
@@ -279,6 +284,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 	}
 
 	private static final String eligCssPrefix = "eligibility-";
+	private StringBuilder bufferedSnippets = new StringBuilder();
 
 	public static void writeDocStart(Appendable out, String title) throws IOException {
 		out.append(Tags.DOC_HTML.open() + "\n");
@@ -533,6 +539,10 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		out.append(Tags.TABLE.close());
 	}
 
+	private Appendable getSnippetBuffer() {
+		return this.bufferedSnippets;
+	}
+
 	@Override
 	protected void writeTableRow(Appendable out, SearchResultTable data, PatisNumber row) throws IOException {
 		out.append(Tags.TABLE_ROW.open());
@@ -541,6 +551,7 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		writeGenderCell(out, data, row);
 		super.writeTableRow(out, data, row);
 		out.append(Tags.TABLE_ROW.close() + "\n");
+		writeBufferedSnippetsRow(out, data.getColumnCount() + 3);
 	}
 
 	@Override
@@ -632,4 +643,19 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 				gender.toString()) +
 				"\n");
 	}	
+
+	private void writeBufferedSnippetsRow(Appendable out, int nColumns) throws IOException {
+		if (bufferedSnippets.length() > 0)
+		{
+			out.append(Tags.TABLE_ROW.open());
+			out.append(Tags.TABLE_CELL.format(""));
+			out.append(Tags.TABLE_CELL.open(String.format(
+					"colspan=%s",
+					nColumns - 1)));
+			out.append(bufferedSnippets);
+			out.append(Tags.TABLE_CELL.close());
+			out.append(Tags.TABLE_ROW.close());
+			bufferedSnippets = new StringBuilder();
+		}
+	}
 }

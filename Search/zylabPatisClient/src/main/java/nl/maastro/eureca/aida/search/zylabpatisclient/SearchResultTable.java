@@ -162,6 +162,10 @@ public class SearchResultTable {
 		return getColumn(getNameFor(conceptCol));
 	}
 
+	public int getColumnCount() {
+		return columns.size();
+	}
+
 	public Iterable<SearchResult> getRow(final PatisNumber patient) {
 		return new Iterable<SearchResult>() {
 			@Override

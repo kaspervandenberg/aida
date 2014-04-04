@@ -16,3 +16,4 @@ nb-configuration.xml
 /Search/zylabPatisClient/results-*
 /Search/filename-lookup/target/
 
+/Search/velocityRdf/target/

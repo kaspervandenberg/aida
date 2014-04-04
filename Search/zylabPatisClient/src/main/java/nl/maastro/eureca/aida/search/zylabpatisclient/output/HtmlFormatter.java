@@ -142,6 +142,11 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		}
 	}
 	
+	public interface SnippetFormatter extends SearchResultFormatter {
+		public void atEndOfRowHeadingCell(Appendable out, PatisNumber row) throws IOException;
+		public void atEndOfRow(Appendable out, int nColumns, PatisNumber row) throws IOException;
+	}
+	
 	public enum SnippetDisplayStrategy {
 		SHOW_ALWAYS {
 			@Override
@@ -158,34 +163,73 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 			public void write(HtmlFormatter context, Appendable out, SearchResult result) throws IOException {
 				String id = result.getPatient().getValue() + "-" + QNameUtil.instance().tinySemiUnique();
 				writeCheckbox(out, id);
-				writeSnippetDiv(out, result, id);
+				StringBuilder contents = new StringBuilder();
+				writeSnippet(contents, result);
+				writeSnippetDiv(out, contents, id);
 			} },
 		BUFFERED_SHOW {
 			@Override
 			public void write(HtmlFormatter context, Appendable out, SearchResult result) throws IOException {
-				String id = result.getPatient().getValue() + "-" + QNameUtil.instance().tinySemiUnique();
-				writeCheckbox(out, id);
-				writeSnippetDiv(context.getSnippetBuffer(), result, id);
-			} }
+				writeSnippet(context.getSnippetBuffer(), result);
+			}
+
+			@Override
+			public void atEndOfRowHeadingCell(HtmlFormatter context, Appendable out, PatisNumber row) throws IOException {
+			}
+		
+			
+			@Override
+			public void atEndOfRow(HtmlFormatter context, Appendable out, int nColumns, PatisNumber row) throws IOException {
+				if (context.getSnippetBuffer().length() > 0)
+				{
+					String id = row.getValue();
+					out.append(Tags.TABLE_ROW.open());
+					out.append("\t" + Tags.TABLE_CELL.open() + "\n\t");
+					writeCheckbox(out, id);
+					out.append("\t" + Tags.TABLE_CELL.close() + "\n");
+					out.append("\t" + Tags.TABLE_CELL.open(String.format(
+							"colspan=%s",
+							nColumns - 1)) + "\n\t");
+					writeSnippetDiv(out, context.getSnippetBuffer(), id);
+					out.append("\t" + Tags.TABLE_CELL.close() + "\n");
+					out.append(Tags.TABLE_ROW.close());
+					context.clearSnippetBuffer();
+				}
+			}
+
+		}
 		;
 
 		public abstract void write(HtmlFormatter context, Appendable out, SearchResult result) throws IOException;
+
+		public void atEndOfRowHeadingCell(HtmlFormatter context, Appendable out, PatisNumber row)
+				throws IOException
+		{
+			// intentionally left blank
+		}
+
+		public void atEndOfRow(HtmlFormatter context, Appendable out, int nColumns, PatisNumber row)
+				throws IOException
+		{
+			// intentionally left blank
+		}
 
 		private static void writeCheckbox(Appendable out, String id) throws IOException {
 			out.append(Tags.LABEL.open());
 			out.append(Tags.DISPLAY_CHECKBOX.open(
 					String.format(
-						"id=\"cb-%1$s\" onclick=\"toggleShow(\'cb-%1$s\',\'%1$s\')\"",
+						"id=\"cb-%1$s\" onclick=\""
+						+ "toggleShow(\'cb-%1$s\',\'snippets-%1$s\')\"",
 						id)));
 			out.append(Tags.DISPLAY_CHECKBOX.close());
 			out.append("details");
-			out.append(Tags.LABEL.close() + "\n");
+			out.append(Tags.LABEL.close());
 		}
 
-		private static void writeSnippetDiv(Appendable out, SearchResult result, String id) 
+		private static void writeSnippetDiv(Appendable out, CharSequence contents, String id) 
 				throws IOException {
-			out.append(Tags.SNIPPET_DIV.open(String.format("id=\"%s\"", id)));
-			writeSnippet(out, result);
+			out.append(Tags.SNIPPET_DIV.open(String.format("id=\"snippets-%s\"", id)));
+			out.append(contents);
 			out.append(Tags.SNIPPET_DIV.close());
 		}
 		
@@ -453,8 +497,8 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		out.append(Tags.STYLE.close());
 	}
 
-	public SearchResultFormatter createSnippetStrategy(final SnippetDisplayStrategy strat) {
-		return new SearchResultFormatter() {
+	public SnippetFormatter createSnippetStrategy(final SnippetDisplayStrategy strat) {
+		return new SnippetFormatter() {
 			@Override
 			public void write(Appendable out, SearchResult result) throws IOException {
 				strat.write(HtmlFormatter.this, out, result);
@@ -468,6 +512,16 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 			@Override
 			public void writeTable(Appendable out, SearchResultTable results) throws IOException {
 				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+
+			@Override
+			public void atEndOfRowHeadingCell(Appendable out, PatisNumber row) throws IOException {
+				strat.atEndOfRowHeadingCell(HtmlFormatter.this, out, row);
+			}
+
+			@Override
+			public void atEndOfRow(Appendable out, int nColumns, PatisNumber row) throws IOException {
+				strat.atEndOfRow(HtmlFormatter.this, out, nColumns, row);
 			}
 		};
 	}
@@ -539,19 +593,33 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		out.append(Tags.TABLE.close());
 	}
 
-	private Appendable getSnippetBuffer() {
+	private StringBuilder getSnippetBuffer() {
 		return this.bufferedSnippets;
+	}
+
+	private void clearSnippetBuffer() {
+		this.bufferedSnippets = new StringBuilder();
 	}
 
 	@Override
 	protected void writeTableRow(Appendable out, SearchResultTable data, PatisNumber row) throws IOException {
 		out.append(Tags.TABLE_ROW.open());
-		out.append("\t" + Tags.TABLE_HEADER_CELL.format(row.getValue()) + "\n");
+		String id = row.getValue();
+		out.append("\t" + Tags.TABLE_HEADER_CELL.open());
+		out.append(row.getValue());
+		if (getSnippetStrategy() instanceof SnippetFormatter)
+		{
+			((SnippetFormatter)getSnippetStrategy()).atEndOfRowHeadingCell(out, row);
+		}
+		out.append("\t" + Tags.TABLE_HEADER_CELL.close());
 		writeAgeCell(out, data, row);
 		writeGenderCell(out, data, row);
 		super.writeTableRow(out, data, row);
 		out.append(Tags.TABLE_ROW.close() + "\n");
-		writeBufferedSnippetsRow(out, data.getColumnCount() + 3);
+		if (getSnippetStrategy() instanceof SnippetFormatter)
+		{
+			((SnippetFormatter)getSnippetStrategy()).atEndOfRow(out, data.getColumnCount() + 3, row);
+		}
 	}
 
 	@Override
@@ -644,18 +712,4 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 				"\n");
 	}	
 
-	private void writeBufferedSnippetsRow(Appendable out, int nColumns) throws IOException {
-		if (bufferedSnippets.length() > 0)
-		{
-			out.append(Tags.TABLE_ROW.open());
-			out.append(Tags.TABLE_CELL.format(""));
-			out.append(Tags.TABLE_CELL.open(String.format(
-					"colspan=%s",
-					nColumns - 1)));
-			out.append(bufferedSnippets);
-			out.append(Tags.TABLE_CELL.close());
-			out.append(Tags.TABLE_ROW.close());
-			bufferedSnippets = new StringBuilder();
-		}
-	}
 }

@@ -144,38 +144,45 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		}
 	}
 	
-	public enum SnippetDisplayStrategy implements SearchResultFormatter {
+	public enum SnippetDisplayStrategy {
 		SHOW_ALWAYS {
 			@Override
-			public void write(Appendable out, SearchResult result) throws IOException {
+			public void write(HtmlFormatter context, Appendable out, SearchResult result) throws IOException {
 				writeSnippet(out, result);
 			} },
 		SHOW_NEVER {
 			@Override
-			public void write(Appendable out, SearchResult result) throws IOException {
+			public void write(HtmlFormatter context, Appendable out, SearchResult result) throws IOException {
 				// No code needed
 			} },
 		DYNAMIC_SHOW {
-
 			@Override
-			public void write(Appendable out, SearchResult result) throws IOException {
+			public void write(HtmlFormatter context, Appendable out, SearchResult result) throws IOException {
 				String id = result.getPatient().getValue() + "-" + QNameUtil.instance().tinySemiUnique();
-				out.append(Tags.LABEL.open());
-				out.append(Tags.DISPLAY_CHECKBOX.open(
-						String.format(
-							"id=\"cb-%1$s\" onclick=\"toggleShow(\'cb-%1$s\',\'%1$s\')\"",
-							id)));
-				out.append(Tags.DISPLAY_CHECKBOX.close());
-				out.append("details");
-				out.append(Tags.LABEL.close() + "\n");
-				
-				out.append(Tags.SNIPPET_DIV.open(String.format("id=\"%s\"", id)));
-				writeSnippet(out, result);
-				out.append(Tags.SNIPPET_DIV.close());
-			}
-
-		}
+				writeCheckbox(out, id);
+				writeSnippetDiv(out, result, id);
+			} },
 		;
+
+		public abstract void write(HtmlFormatter context, Appendable out, SearchResult result) throws IOException;
+
+		private static void writeCheckbox(Appendable out, String id) throws IOException {
+			out.append(Tags.LABEL.open());
+			out.append(Tags.DISPLAY_CHECKBOX.open(
+					String.format(
+						"id=\"cb-%1$s\" onclick=\"toggleShow(\'cb-%1$s\',\'%1$s\')\"",
+						id)));
+			out.append(Tags.DISPLAY_CHECKBOX.close());
+			out.append("details");
+			out.append(Tags.LABEL.close() + "\n");
+		}
+
+		private static void writeSnippetDiv(Appendable out, SearchResult result, String id) 
+				throws IOException {
+			out.append(Tags.SNIPPET_DIV.open(String.format("id=\"%s\"", id)));
+			writeSnippet(out, result);
+			out.append(Tags.SNIPPET_DIV.close());
+		}
 		
 		private static void writeSnippet(Appendable out, SearchResult result) throws IOException {
 			writeDocumentList(out, result.getMatchingDocuments());
@@ -258,18 +265,9 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		private static void writeSnippet(Appendable out, Snippet snippet) throws IOException {
 			out.append(snippet.getValue());
 		}
-
-		@Override
-		public void writeList(Appendable out, Iterable<SearchResult> results) throws IOException {
-			throw new UnsupportedOperationException("Not supported.");
-		}
-
-		@Override
-		public void writeTable(Appendable out, SearchResultTable results) throws IOException {
-			throw new UnsupportedOperationException("Not supported.");
-		}
-		
 	}
+
+	
 
 	private static final EnumMap<ConceptFoundStatus, Color> eligibilityColours;
 	static {
@@ -448,6 +446,26 @@ public class HtmlFormatter extends SearchResultFormatterBase {
 		}
 		out.append(Tags.STYLE.close());
 	}
+
+	public SearchResultFormatter createSnippetStrategy(final SnippetDisplayStrategy strat) {
+		return new SearchResultFormatter() {
+			@Override
+			public void write(Appendable out, SearchResult result) throws IOException {
+				strat.write(HtmlFormatter.this, out, result);
+			}
+
+			@Override
+			public void writeList(Appendable out, Iterable<SearchResult> results) throws IOException {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+
+			@Override
+			public void writeTable(Appendable out, SearchResultTable results) throws IOException {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		};
+	}
+	
 
 	public void writeValidationCounts(Appendable out, ResultComparisonTable table) throws IOException {
 		out.append(HtmlFormatter.Tags.SUBTITLE.format("Summary"));

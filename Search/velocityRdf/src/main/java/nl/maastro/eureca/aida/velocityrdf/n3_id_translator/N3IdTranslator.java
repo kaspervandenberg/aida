@@ -39,6 +39,26 @@ public class N3IdTranslator {
 	}
 
 
+	public org.apache.commons.collections4.Transformer<Value, String> valueIdGenerator()
+	{
+		return new org.apache.commons.collections4.Transformer<Value, String>() {
+			@Override
+			public String transform(Value input) {
+				return getId(input);
+			} };
+	}
+
+
+	public org.apache.commons.collections4.Transformer<Statement, String> statementIdGenerator()
+	{
+		return new org.apache.commons.collections4.Transformer<Statement, String>() {
+			@Override
+			public String transform(Statement input) {
+				return getId(input);
+			} };
+	}
+
+
 	public String getId(Statement statement)
 	{
 		String id = getTranslators().getStatementTranslator().getId(statement);

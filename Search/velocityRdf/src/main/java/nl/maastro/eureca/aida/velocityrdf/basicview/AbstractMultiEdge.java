@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.velocityrdf.basicview;
 
+/*>>>import checkers.nullness.quals.NonNull;*/
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
@@ -97,7 +98,7 @@ abstract class AbstractMultiEdge {
 	}
 
 	
-	private <TRdfValueType> Iterator<TRdfValueType> filter(
+	private <TRdfValueType/*>>>extends @NonNull Object*/> Iterator<TRdfValueType> filter(
 			final Iterator<? extends Value> sourceIter,
 			final Class<TRdfValueType> typeToInclude)
 	{
@@ -113,7 +114,8 @@ abstract class AbstractMultiEdge {
 	}
 
 	
-	private <I, O> Transformer<I, O> dynCastTransformer(final Class<O> targetType)
+	private <I/*>>>extends @NonNull Object*/, O/*>>>extends @NonNull Object*/>
+			Transformer<I, O> dynCastTransformer(final Class<O> targetType)
 	{
 		return new Transformer<I, O>() {
 			@Override

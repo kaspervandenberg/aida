@@ -1,6 +1,8 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.velocityrdf.n3_id_translator;
 
+import checkers.nullness.quals.EnsuresNonNull;
+import checkers.nullness.quals.MonotonicNonNull;
 import checkers.nullness.quals.Nullable;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +22,7 @@ import org.openrdf.model.Value;
  */
 public class N3IdTranslator {
 	private final Model rdfModel;
-	private final TranslatorRepository translators;
+	private @MonotonicNonNull TranslatorRepository translators;
 	
 	private final transient Cache<Map<String, Namespace>> namespacePrefixes = new Cache<Map<String, Namespace>>() {
 		@Override
@@ -34,13 +36,12 @@ public class N3IdTranslator {
 
 	public N3IdTranslator(final Model rdfModel_) {
 		this.rdfModel = rdfModel_;
-		this.translators = new TranslatorRepository(this);
 	}
 
 
 	public String getId(Statement statement)
 	{
-		String id = translators.getStatementTranslator().getId(statement);
+		String id = getTranslators().getStatementTranslator().getId(statement);
 		statementIds.put(id, statement);
 		return id;
 	}
@@ -48,7 +49,7 @@ public class N3IdTranslator {
 
 	public String getId(Value value)
 	{
-		String id = translators.getValueTranslator().getId(value);
+		String id = getTranslators().getValueTranslator().getId(value);
 		valueIds.put(id, value);
 		return id;
 	}
@@ -89,9 +90,7 @@ public class N3IdTranslator {
 		}
 		else
 		{
-			Value result = findValue(id);
-			valueIds.put(id, result);
-			return result;
+			return findValue(id);
 		}
 	}
 
@@ -104,7 +103,7 @@ public class N3IdTranslator {
 	
 	public URI getUri(String id)
 	{
-		if (!translators.getUriTranslator().isWellFormed(id))
+		if (!getTranslators().getUriTranslator().isWellFormed(id))
 		{
 			throw new IllegalArgumentException(String.format(
 					"%s is not an identifier for an URI",
@@ -131,7 +130,17 @@ public class N3IdTranslator {
 
 	
 	public Namespace getNamespaceByUri(String uri) {
-		return namespacePrefixes.get().get(uri);
+		Namespace result = namespacePrefixes.get().get(uri);
+		if (result != null) 
+		{
+			return result;
+		}
+		else
+		{
+			throw new NoSuchElementException(String.format(
+					"Model contains no namespace for %s",
+					uri));
+		}
 	}
 
 	
@@ -145,6 +154,16 @@ public class N3IdTranslator {
 		return result;
 	}
 
+
+	@EnsuresNonNull("translators")
+	private TranslatorRepository getTranslators()
+	{
+		if (translators == null) 
+		{
+			translators = new TranslatorRepository(this);
+		}
+		return translators;
+	}
 
 	private Statement findStatement(String targetId) throws NoSuchElementException
 	{
@@ -197,11 +216,11 @@ public class N3IdTranslator {
 	}
 	
 
-	private Statement tryFindStatement(String targetId)
+	private @Nullable Statement tryFindStatement(String targetId)
 	{
 		for (Statement s : rdfModel)
 		{
-			if (translators.getStatementTranslator().matches(s, targetId))
+			if (getTranslators().getStatementTranslator().matches(s, targetId))
 			{
 				statementIds.put(targetId, s);
 				return s;
@@ -236,7 +255,7 @@ public class N3IdTranslator {
 	{
 		for (Resource subj : rdfModel.subjects())
 		{
-			if (translators.getResourceTranslator().matches(subj, targetId))
+			if (getTranslators().getResourceTranslator().matches(subj, targetId))
 			{
 				valueIds.put(targetId, subj);
 				return subj;
@@ -250,7 +269,7 @@ public class N3IdTranslator {
 	{
 		for (Value obj : rdfModel.objects())
 		{
-			if (translators.getValueTranslator().matches(obj, targetId))
+			if (getTranslators().getValueTranslator().matches(obj, targetId))
 			{
 				valueIds.put(targetId, obj);
 				return obj;
@@ -264,7 +283,7 @@ public class N3IdTranslator {
 	{
 		for (URI pred : rdfModel.predicates())
 		{
-			if (translators.getUriTranslator().matches(pred, targetId))
+			if (getTranslators().getUriTranslator().matches(pred, targetId))
 			{
 				valueIds.put(targetId, pred);
 				return pred;

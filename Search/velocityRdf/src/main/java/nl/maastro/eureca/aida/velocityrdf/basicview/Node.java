@@ -1,6 +1,7 @@
 // © Maastro Clinic, 2013
 package nl.maastro.eureca.aida.velocityrdf.basicview;
 
+/*>>>import checkers.nullness.quals.NonNull;*/
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -110,7 +111,7 @@ public class Node {
 	}
 	
 
-	private <TMultiEdge> ArrayList<TMultiEdge> getPredicates(
+	private <TMultiEdge/*>>>extends @NonNull Object*/> ArrayList<TMultiEdge> getPredicates(
 			final Model targetPredicates,
 			final Transformer<URI, TMultiEdge> multiEdgeCreator)
 	{

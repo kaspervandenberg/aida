@@ -54,12 +54,9 @@
 					<processors>
 						<processor>checkers.nullness.NullnessChecker</processor>
 					</processors>
-					<includes>
-						<include>nl/maastro/eureca/aida/search/zylabpatisclient/**/*.java</include>
-					</includes>
-					<excludes>
-						<exclude>SearcherWS/**/*.java</exclude>
-					</excludes>
+					<javacParams>
+							-Astubs=${basedir}/src/sesame-stubs/astub/nullness-stub
+					</javacParams>
 				</configuration>
 			</plugin>
 		</plugins>

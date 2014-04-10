@@ -67,8 +67,12 @@ public class ResultDocument {
 			if(!target.getId().equals(src.getId()) ||
 					!Objects.equals(target.getUrl(), src.getUrl()) ||
 					!Objects.equals(target.getType(), src.getType())) {
-				throw new IllegalArgumentException(
-						"Combined ResultDocuments should all have the same document id, url, and type");
+				throw new IllegalArgumentException(String.format(
+						"Combined ResultDocuments should all have the same document id, url, and type.\n"
+						+ "source id: %s, type: %s, url: %s\n"
+						+ "target id: %s, type: %s, url: %s",
+						src.getId(), src.getType(), src.getUrl(),
+						target.getId(), target.getType(), target.getUrl()));
 			}
 			for (SemanticModifier semMod : src.getModifiers()) {
 				target.addAllSnippets(semMod, src.getSnippets(semMod));

@@ -84,13 +84,20 @@ main() {
 # doHelp uses lines starting with ## to create the output
 # the tags {@param ...} and {@code ...} colorize words
 doHelp() {
-	grep '^##' "${PROG}" | 
-	sed -e 's/##//' \
-		-e 's/{@param \(.*\)}/\\\\E[32;40m\1\\\\E[37;40m/' \
-		-e 's/{@code \(.*\)}/\\\\E[36;40m\1\\\\E[37;40m/' |
+	grep '^##' "${PROG}" |
+	sed -e 's/^##[[:space:]]*//' |
 	while read line; do
-		echo -e "${line}";
-	done
+		if ( echo "${line}" | grep -q '{@param [^}]*}' ); then
+			# color parameter and echo evaulated value
+			eval echo -e $(echo ${line} | sed \
+				-e 's/^\(.*\){@param \([^}]*\)}\(.*\)$/\
+				\"\1\\\\E[32;40m\2\\\\E[37;40m\\t(value: \"$\2\")\3\"/');
+		else
+			# other color commands
+			echo -e $(echo ${line} | sed \
+				-e 's/{@code \([^}]*\)}/\\E[36;40m\1\\E[37;40m/g');
+		fi
+	done;
 }
 
 

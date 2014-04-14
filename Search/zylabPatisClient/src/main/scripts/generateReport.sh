@@ -20,7 +20,7 @@ AIDA_VAR_BASE_DIR=${AIDA_VAR_BASE_DIR:-${INDEXDIR:-/var/local/aida/indexes}/..}
 export INDEXDIR=${INDEXDIR:-${AIDA_VAR_BASE_DIR}/indexes}
 
 ##
-## {#param PASSWORD_OPTION_FILE}
+## {@param PASSWORD_OPTION_FILE}
 ## \\t a file containing password options, if it exists its contents is 
 ## \\t passed as commandline arguments to {@code ZPSC_JAR}
 PASSWORD_OPTION_FILE=${PASSWORD_OPTION_FILE:-${HOME}/emdPassword}
@@ -72,13 +72,20 @@ main() {
 # doHelp uses lines starting with ## to create the output
 # the tags {@param ...} and {@code ...} colorize words
 doHelp() {
-	grep '^##' "${PROG}" | 
-	sed -e 's/##//' \
-		-e 's/{@param \([^}]*\)}/\\\\E[32;40m\1\\\\E[37;40m/g' \
-		-e 's/{@code \([^}]*\)}/\\\\E[36;40m\1\\\\E[37;40m/g' |
+	grep '^##' "${PROG}" |
+	sed -e 's/^##[[:space:]]*//' |
 	while read line; do
-		echo -e "${line}";
-	done
+		if ( echo "${line}" | grep -q '{@param [^}]*}' ); then
+			# color parameter and echo evaulated value
+			eval echo -e $(echo ${line} | sed \
+				-e 's/^\(.*\){@param \([^}]*\)}\(.*\)$/\
+				\"\1\\\\E[32;40m\2\\\\E[37;40m\\t(value: \"$\2\")\3\"/');
+		else
+			# other color commands
+			echo -e $(echo ${line} | sed \
+				-e 's/{@code \([^}]*\)}/\\E[36;40m\1\\E[37;40m/g');
+		fi
+	done;
 	java -jar $ZPSC_JAR --help
 }
 

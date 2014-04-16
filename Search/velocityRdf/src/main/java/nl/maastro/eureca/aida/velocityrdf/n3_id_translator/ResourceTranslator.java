@@ -49,3 +49,6 @@ class ResourceTranslator implements Translator<Resource> {
 	}
 	
 }
+
+/* vim:set tabstop=4 shiftwidth=4 autoindent textwidth=80 : */
+

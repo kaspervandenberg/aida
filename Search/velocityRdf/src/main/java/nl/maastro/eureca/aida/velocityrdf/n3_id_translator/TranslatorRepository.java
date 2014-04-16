@@ -161,4 +161,6 @@ class TranslatorRepository {
 	}
 }
 
-/* vim:set tabstop=4 shiftwidth=4: */
+
+/* vim:set tabstop=4 shiftwidth=4 autoindent textwidth=80 : */
+

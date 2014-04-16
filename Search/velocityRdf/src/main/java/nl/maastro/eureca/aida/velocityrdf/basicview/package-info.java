@@ -6,3 +6,6 @@
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 package nl.maastro.eureca.aida.velocityrdf.basicview;
+
+/* vim:set tabstop=4 shiftwidth=4 autoindent textwidth=80 : */
+

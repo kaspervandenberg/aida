@@ -138,3 +138,6 @@ public class Node {
 		return result;
 	}
 }
+
+/* vim:set tabstop=4 shiftwidth=4 autoindent textwidth=80 : */
+

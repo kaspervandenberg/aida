@@ -115,3 +115,6 @@ import java.util.regex.Pattern;
 		return pattern.matcher(instance).matches();
 	}
 }
+
+/* vim:set tabstop=4 shiftwidth=4 autoindent textwidth=80 : */
+

@@ -98,3 +98,6 @@ public class RdfContext extends AbstractContext {
 		throw new UnsupportedOperationException("Not supported; modify model via RDF.");
 	}
 }
+
+/* vim:set tabstop=4 shiftwidth=4 autoindent textwidth=80 : */
+

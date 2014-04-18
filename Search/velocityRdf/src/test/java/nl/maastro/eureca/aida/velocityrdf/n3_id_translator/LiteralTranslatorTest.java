@@ -1,4 +1,4 @@
-// © Maastro, 2014
+// © Maastro Clinic, 2014
 package nl.maastro.eureca.aida.velocityrdf.n3_id_translator;
 
 import checkers.nullness.quals.Nullable;

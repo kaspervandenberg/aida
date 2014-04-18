@@ -1,4 +1,4 @@
-// © Maastro Clinic, 2013
+// © Maastro Clinic, 2014
 package nl.maastro.eureca.aida.velocityrdf.basicview;
 
 import nl.maastro.eureca.aida.velocityrdf.n3_id_translator.N3IdTranslator;

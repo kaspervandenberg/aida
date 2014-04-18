@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+// © Maastro Clinic, 2014
 package nl.maastro.eureca.aida.velocityrdf.n3_id_translator;
 
 import org.openrdf.model.URI;

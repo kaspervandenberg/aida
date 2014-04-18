@@ -10,6 +10,8 @@ import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 import static org.hamcrest.Matchers.*;
 import org.hamcrest.TypeSafeMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test whether a {@link Translator} complies to the interface contract.
@@ -38,7 +40,10 @@ import org.hamcrest.TypeSafeMatcher;
  * 
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
-abstract class TranslatorTest<T> {
+public abstract class TranslatorTest<T> {
+	private static final Logger LOG =
+			LoggerFactory.getLogger(TranslatorTest.class);
+
 	/**
 	 * Derived classes must provide the object to perform these tests on.
 	 * 
@@ -60,7 +65,16 @@ abstract class TranslatorTest<T> {
 		try {
 			String id = getTestee().getId(val);
 			
-			assertThat(id, isWellformedIdentifier());
+
+			LOG.info(
+					"Test: identifier {} generated for item "
+					+ "{}(type {}) is well formed?",
+					id, val, val.getClass());
+			assertThat(String.format(
+							"identifier %s generated for item "
+							+ "%s (type %s) is not well formed",
+							id, val, val.getClass()),
+					id, isWellformedIdentifier());
 		}
 		catch (Exception ex) {
 			assumeNoException(ex);

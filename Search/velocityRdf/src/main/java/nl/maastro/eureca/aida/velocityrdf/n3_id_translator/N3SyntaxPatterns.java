@@ -2,6 +2,10 @@
 package nl.maastro.eureca.aida.velocityrdf.n3_id_translator;
 
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Regular expressions matchings part of the N3/Turle syntax.
@@ -14,7 +18,7 @@ import java.util.regex.Pattern;
 			"[A-Z]|_|[a-z]|"
 			+ "[\u00C0-\u00D6]|[\u00D8-\u00F6]|[\u00F8-\u02FF]|[\u0370-\u037D]|"
 			+ "[\u037F-\u1FFF]|[\u200C-\u200D]|[\u2070-\u218F]|[\u2C00-\u2FEF]|"
-			+ "[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\\x{10000}-\\x{EFFFF}]"),
+			+ "[\u3001-\uD7FF]|[\uF900-\uFDCF]|[\uFDF0-\uFFFD]|[\\x{10000}-\\x{0EFFFF}]"),
 
 	NAME_CHAR(
 			// From Turtle spec: http://www.w3.org/TeamSubmission/turtle/#nameChar
@@ -45,7 +49,7 @@ import java.util.regex.Pattern;
 			"(?:\\\\u" + HEX.patternExpr() + "{4}+)"
 			+ "|(?:\\\\U" + HEX.patternExpr() + "{8}+)"
 			+ "|(?:\\\\\\\\)"
-			+ "[\u0020-\u005B]|[\u005D-\\x{10FFFF}]"),
+			+ "[\\x{0020}-\\x{005B}]|[\\x{005D}-\\x{10FFFF}]"),
 	
 	U_CHARACTER(
 			// From Turle spec: http://www.w3.org/TeamSubmission/turtle/#ucharacter
@@ -83,6 +87,13 @@ import java.util.regex.Pattern;
 			// From Turle spec: http://www.w3.org/TeamSubmission/turtle/#resource
 			URI_REF.patternExpr() + "|" + QNAME.patternExpr()),
 
+	LITERAL(
+			// Based on Turtle spec, restricted data type:
+			// * http://www.w3.org/TeamSubmission/turtle/#literal
+			STRING.patternExpr() 
+			+ "|(?:" + STRING.patternExpr()
+			+ "\\^\\^" + RESOURCE.patternExpr() + ")"),
+
 	SUBJECT(
 			// Based on Turle spec, restricted blank node:
 			// * http://www.w3.org/TeamSubmission/turtle/#subject
@@ -98,11 +109,26 @@ import java.util.regex.Pattern;
 			+ "|" + STRING.patternExpr()),
 
 	;
+
+	private static final Logger LOG =
+			LoggerFactory.getLogger(N3SyntaxPatterns.class);
+
 	private final Pattern pattern;
 
 	private N3SyntaxPatterns(final String patternExpr)
 	{
-		this.pattern = Pattern.compile(patternExpr);
+		try {
+			this.pattern = Pattern.compile(patternExpr);
+		} catch(IllegalArgumentException ex) {
+			LoggerFactory.getLogger(N3SyntaxPatterns.class).error(
+					"Exception in Pattern {} (\"{}\")",
+					this,
+					patternExpr);
+			LoggerFactory.getLogger(N3SyntaxPatterns.class).error(
+					"Exception: ",
+					ex);
+			throw ex;
+		}
 	}
 
 	public String patternExpr()

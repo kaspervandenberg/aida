@@ -14,7 +14,7 @@ class LiteralTranslator implements Translator<Literal> {
 
 	@Override
 	public boolean isWellFormed(final String id) {
-		return N3SyntaxPatterns.STRING.matches(id);
+		return N3SyntaxPatterns.LITERAL.matches(id);
 	}
 
 	@Override

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 	NAME(
 			// From Turtle spec: http://www.w3.org/TeamSubmission/turtle/#name
 			NAME_START_CHAR.patternExpr() 
-			+ NAME_CHAR.patternExpr()),
+			+ NAME_CHAR.patternExpr() + "*"),
 	
 	PREFIX_NAME(
 			// From Turtle spec: http://www.w3.org/TeamSubmission/turtle/#prefixName

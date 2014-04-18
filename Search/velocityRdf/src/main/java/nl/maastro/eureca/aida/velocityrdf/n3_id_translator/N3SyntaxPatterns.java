@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import checkers.initialization.quals.Initialized;
 
 /**
  * Regular expressions matchings part of the N3/Turle syntax.
@@ -120,9 +120,11 @@ import org.slf4j.LoggerFactory;
 		try {
 			this.pattern = Pattern.compile(patternExpr);
 		} catch(IllegalArgumentException ex) {
+			@SuppressWarnings("Initialization")
+			@Initialized N3SyntaxPatterns self = this;
 			LoggerFactory.getLogger(N3SyntaxPatterns.class).error(
 					"Exception in Pattern {} (\"{}\")",
-					this,
+					self,
 					patternExpr);
 			LoggerFactory.getLogger(N3SyntaxPatterns.class).error(
 					"Exception: ",

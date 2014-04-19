@@ -7,7 +7,6 @@ import checkers.nullness.quals.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import net.kaspervandenberg.apps.common.util.cache.Cache;
 import org.openrdf.model.Model;
 import org.openrdf.model.Namespace;
 import org.openrdf.model.Resource;
@@ -22,20 +21,17 @@ import org.openrdf.model.Value;
  */
 public class N3IdTranslator {
 	private final Model rdfModel;
+	private final NamespaceContainer namespaces;
 	private @MonotonicNonNull TranslatorRepository translators;
 	
-	private final transient Cache<Map<String, Namespace>> namespacePrefixes = new Cache<Map<String, Namespace>>() {
-		@Override
-		protected Map<String, Namespace> calc() {
-			return createPrefixLookup();
-		}
-	};
 
 	private final transient Map<String, Statement> statementIds = new HashMap<>();
 	private final transient Map<String, Value> valueIds = new HashMap<>();
 
 	public N3IdTranslator(final Model rdfModel_) {
 		this.rdfModel = rdfModel_;
+		this.namespaces = new NamespaceContainer(
+				this.rdfModel.getNamespaces());
 	}
 
 
@@ -143,44 +139,14 @@ public class N3IdTranslator {
 		}
 	}
 
-	public boolean containsPrefixForUri(String uri)
-	{
-		return namespacePrefixes.get().containsKey(uri);
-	}
-
-	
-	public Namespace getNamespaceByUri(String uri) {
-		Namespace result = namespacePrefixes.get().get(uri);
-		if (result != null) 
-		{
-			return result;
-		}
-		else
-		{
-			throw new NoSuchElementException(String.format(
-					"Model contains no namespace for %s",
-					uri));
-		}
-	}
-
-	
-	private Map<String, Namespace> createPrefixLookup()
-	{
-		Map<String, Namespace> result = new HashMap<>();
-		for (Namespace namespace : rdfModel.getNamespaces())
-		{
-			result.put(namespace.getName(), namespace);
-		}
-		return result;
-	}
-
 
 	@EnsuresNonNull("translators")
 	private TranslatorRepository getTranslators()
 	{
 		if (translators == null) 
 		{
-			translators = new TranslatorRepository(this);
+			throw new UnsupportedOperationException("Not yet implemented");
+//			translators = new TranslatorRepository(this);
 		}
 		return translators;
 	}

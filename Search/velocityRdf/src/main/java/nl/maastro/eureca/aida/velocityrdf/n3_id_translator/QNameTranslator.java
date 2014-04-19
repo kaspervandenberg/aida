@@ -9,10 +9,10 @@ import org.openrdf.model.URI;
  * @author kasper
  */
 class QNameTranslator implements Translator<URI> {
-	private final N3IdTranslator context;
+	private final NamespaceContainer namespaces;
 
-	QNameTranslator(final N3IdTranslator context) {
-		this.context = context;
+	QNameTranslator(final NamespaceContainer namespaces_) {
+		this.namespaces = namespaces_;
 	}
 
 	@Override
@@ -23,8 +23,8 @@ class QNameTranslator implements Translator<URI> {
 	@Override
 	public String getId(final URI uri) {
 		String namespace = uri.getNamespace();
-		if (context.containsPrefixForUri(namespace)) {
-			Namespace ns = context.getNamespaceByUri(namespace);
+		if (namespaces.containsPrefixForUri(namespace)) {
+			Namespace ns = namespaces.getNamespaceByUri(namespace);
 			return getQnameId(ns, uri);
 		} else {
 			throw new Error(String.format("Attempt to create a QName for namespace %s without a defined prefix (URI: %s); " + "fix code to use FullUriTranslator instead.", namespace, uri));

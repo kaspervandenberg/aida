@@ -19,7 +19,7 @@ import org.openrdf.model.Value;
  * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
  */
 class TranslatorRepository {
-	private final N3IdTranslator context;
+	private final NamespaceContainer namespaces;
 
 	@MonotonicNonNull private LiteralTranslator		litTrans = null;
 	@MonotonicNonNull private QNameTranslator		qnameTrans = null;
@@ -31,9 +31,9 @@ class TranslatorRepository {
 	@MonotonicNonNull private StatementTranslator	statementTrans = null;
 
 	
-	public TranslatorRepository(final N3IdTranslator context_)
+	public TranslatorRepository(final NamespaceContainer namespaces_)
 	{
-		this.context = context_;
+		this.namespaces = namespaces_;
 	}
 
 
@@ -78,7 +78,7 @@ class TranslatorRepository {
 	public QNameTranslator getQNameTranslator()
 	{
 		if (qnameTrans == null) {
-			qnameTrans = new QNameTranslator(context);
+			qnameTrans = new QNameTranslator(namespaces);
 		}
 
 		return qnameTrans;
@@ -101,9 +101,9 @@ class TranslatorRepository {
 	{
 		if (uriTrans == null) {
 			uriTrans = new UriTranslator(
+					namespaces,
 					getQNameTranslator(),
-					getFullUriTranslator(),
-					context);
+					getFullUriTranslator());
 		}
 
 		return uriTrans;

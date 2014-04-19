@@ -8,12 +8,16 @@ import org.openrdf.model.URI;
  * @author kasper
  */
 class UriTranslator implements Translator<URI> {
+	private final NamespaceContainer namespaces;
 	private final Translator<URI> qnameTrans;
 	private final Translator<URI> fullUriTrans;
-	private final N3IdTranslator context;
 
-	public UriTranslator(final Translator<URI> qnameTrans_, final Translator<URI> fullUriTrans_, final N3IdTranslator context) {
-		this.context = context;
+	public UriTranslator(
+			final NamespaceContainer namespaces_,
+			final Translator<URI> qnameTrans_,
+			final Translator<URI> fullUriTrans_)
+	{
+		this.namespaces = namespaces_;
 		this.qnameTrans = qnameTrans_;
 		this.fullUriTrans = fullUriTrans_;
 	}
@@ -26,7 +30,7 @@ class UriTranslator implements Translator<URI> {
 	@Override
 	public String getId(final URI uri) {
 		String namespace = uri.getNamespace();
-		if (context.containsPrefixForUri(namespace)) {
+		if (namespaces.containsPrefixForUri(namespace)) {
 			return qnameTrans.getId(uri);
 		} else {
 			return fullUriTrans.getId(uri);

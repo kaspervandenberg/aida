@@ -29,8 +29,7 @@ class UriTranslator implements Translator<URI> {
 
 	@Override
 	public String getId(final URI uri) {
-		String namespace = uri.getNamespace();
-		if (namespaces.containsPrefixForUri(namespace)) {
+		if (namespaces.containsPrefixForUri(uri)) {
 			return qnameTrans.getId(uri);
 		} else {
 			return fullUriTrans.getId(uri);

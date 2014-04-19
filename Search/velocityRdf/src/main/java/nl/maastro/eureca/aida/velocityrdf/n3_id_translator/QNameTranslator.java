@@ -3,6 +3,7 @@ package nl.maastro.eureca.aida.velocityrdf.n3_id_translator;
 
 import org.openrdf.model.Namespace;
 import org.openrdf.model.URI;
+import java.util.NoSuchElementException;
 
 /**
  *
@@ -22,12 +23,18 @@ class QNameTranslator implements Translator<URI> {
 
 	@Override
 	public String getId(final URI uri) {
-		String namespace = uri.getNamespace();
-		if (namespaces.containsPrefixForUri(namespace)) {
-			Namespace ns = namespaces.getNamespaceByUri(namespace);
+		try
+		{
+			Namespace ns = namespaces.getNamespaceByUri(uri);
 			return getQnameId(ns, uri);
-		} else {
-			throw new Error(String.format("Attempt to create a QName for namespace %s without a defined prefix (URI: %s); " + "fix code to use FullUriTranslator instead.", namespace, uri));
+		}
+		catch (NoSuchElementException ex)
+		{
+			throw new Error(String.format(
+					"Attempt to create a QName for namespace %s without "
+					+ "a defined prefix (URI: %s); "
+					+ "fix code to use FullUriTranslator instead.",
+					uri.getNamespace(), uri));
 		}
 	}
 

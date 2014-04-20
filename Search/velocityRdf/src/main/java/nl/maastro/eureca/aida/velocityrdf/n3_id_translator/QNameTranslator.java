@@ -3,6 +3,8 @@ package nl.maastro.eureca.aida.velocityrdf.n3_id_translator;
 
 import org.openrdf.model.Namespace;
 import org.openrdf.model.URI;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.NoSuchElementException;
 
 /**
@@ -10,6 +12,21 @@ import java.util.NoSuchElementException;
  * @author kasper
  */
 class QNameTranslator implements Translator<URI> {
+	private static final String PREFIX_GRP = "prefix";
+	private static final String LOCAL_GRP = "local";
+	private static final Pattern QNAME_PARSE_PATTERN;
+	static {
+		try
+		{
+			QNAME_PARSE_PATTERN = Pattern.compile(
+				"(?<prefix>" + N3SyntaxPatterns.PREFIX_NAME.patternExpr() + "?)"
+				+ ":(?<local>"  + N3SyntaxPatterns.NAME.patternExpr() + ")");
+		}
+		catch (Throwable ex)
+		{
+			throw new Error("Malformed pattern", ex);
+		}
+	}
 	private final NamespaceContainer namespaces;
 
 	QNameTranslator(final NamespaceContainer namespaces_) {
@@ -18,7 +35,7 @@ class QNameTranslator implements Translator<URI> {
 
 	@Override
 	public boolean isWellFormed(String id) {
-		return N3SyntaxPatterns.NODE_ID.matches(id);
+		return N3SyntaxPatterns.QNAME.matches(id);
 	}
 
 	@Override
@@ -42,11 +59,88 @@ class QNameTranslator implements Translator<URI> {
 		return String.format("%s:%s", ns.getPrefix(), uri.getLocalName());
 	}
 
+
 	@Override
-	public boolean matches(URI val, String id) {
-		throw new UnsupportedOperationException("Not supported; use FullUriTranslator.matches() instead..");
+	public boolean matches(URI val, String id)
+	{
+		if (isWellFormed(id))
+		{
+			Matcher parsedId = parseWellFormedId(id);
+
+			return localPartsMatching(val, parsedId)
+					&& namespacesMatching(val, parsedId);
+		}
+		else
+		{
+			return false;
+		}
 	}
+
 	
+	/**
+	 * Parse the pattern into two groups: {@code PREFIX_GRP} and {@code
+	 * LOCAL_GRP}.
+	 *
+	 * @param wellformedId	{@link #wellformed} identifier.
+	 *
+	 * @return {@link Matcher} matching {@code wellformedId} containing 
+	 *		the two groups:: {@code PREFIX_GRP} and {@code LOCAL_GRP}.
+	 *
+	 * @throws IllegalArgumentException		when {@code wellformedId}
+	 *		is not well formed.
+	 */
+	private Matcher parseWellFormedId(String wellformedId)
+	{
+		Matcher result = QNAME_PARSE_PATTERN.matcher(wellformedId);
+		boolean matches = result.matches(); // Used for its side effects of
+											// setting group
+		if (!matches)
+		{
+			if (isWellFormed(wellformedId))
+			{
+				throw new Error(String.format(
+						"id (\"%s\") is wellformed, but QNAME_PARSE_PATTERN "
+						+ "(\"%s\") does not match.",
+						wellformedId, QNAME_PARSE_PATTERN));
+			}
+			else
+			{
+				throw new IllegalArgumentException(String.format(
+						"Expecting a well formed identifier; id (\"%s\") "
+						+ "is not well formed.",
+						wellformedId));
+			}
+		}
+		return result;
+	}
+
+
+	private boolean localPartsMatching(URI val, Matcher parsedId)
+	{
+		String valLocalName = val.getLocalName();
+		String idLocalName = parsedId.group(LOCAL_GRP);
+
+		return valLocalName.equals(idLocalName);
+	}
+
+
+	private boolean namespacesMatching(URI val, Matcher parsedId)
+	{
+		String valNamespaceUri = val.getNamespace();
+		String idPrefix = parsedId.group(PREFIX_GRP);
+
+		if (namespaces.containsUriForPrefix(idPrefix))
+		{
+			Namespace idNamespace = namespaces.getNamespaceByPrefix(idPrefix);
+			String idNamespaceUri = idNamespace.getName();
+
+			return valNamespaceUri.equals(idNamespaceUri);
+		}
+		else
+		{
+			return false;
+		}
+	}
 }
 
 /* vim:set tabstop=4 shiftwidth=4 autoindent textwidth=80 : */

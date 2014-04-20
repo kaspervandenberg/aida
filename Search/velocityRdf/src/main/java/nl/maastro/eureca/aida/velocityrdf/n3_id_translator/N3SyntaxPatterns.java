@@ -33,7 +33,7 @@ import checkers.initialization.quals.Initialized;
 	PREFIX_NAME(
 			// From Turtle spec: http://www.w3.org/TeamSubmission/turtle/#prefixName
 			"[" + NAME_START_CHAR.patternExpr()+ "&&[^_]]"
-			+ NAME_CHAR.patternExpr()),
+			+ NAME_CHAR.patternExpr() + "*"),
 
 	NODE_ID(
 			// From Turtle spec: http://www.w3.org/TeamSubmission/turtle/#nodeID

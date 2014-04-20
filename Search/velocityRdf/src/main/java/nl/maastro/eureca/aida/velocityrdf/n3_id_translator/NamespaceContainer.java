@@ -11,6 +11,8 @@ import org.openrdf.model.URI;
  * Contain {@link Namespace}s of a sesame rdf {@link org.openrdf.model.Model}.
  */
 class NamespaceContainer {
+	private final Map<String, Namespace> namespacesByUri =
+			new HashMap<>();
 	private final Map<String, Namespace> namespacesByPrefix =
 			new HashMap<>();
 
@@ -28,7 +30,8 @@ class NamespaceContainer {
 	{
 		for (Namespace ns: initialNamespaces_)
 		{
-			namespacesByPrefix.put(ns.getName(), ns);
+			namespacesByUri.put(ns.getName(), ns);
+			namespacesByPrefix.put(ns.getPrefix(), ns);
 		}
 	}
 
@@ -48,7 +51,7 @@ class NamespaceContainer {
 	 */
 	public boolean containsPrefixForUri(String uri)
 	{
-		return namespacesByPrefix.containsKey(uri);
+		return namespacesByUri.containsKey(uri);
 	}
 
 
@@ -71,6 +74,25 @@ class NamespaceContainer {
 
 
 	/**
+	 * Check whether this {@code NamespaceContainer} contains a namespace for
+	 * {@code prefix}.
+	 *
+	 * @param prefix	{@link Namespace#getPrefix()} of the {@code Namespace}
+	 * 		to search for.
+	 *
+	 * @return <ul><li>{@code true}: this {@code NamespaceContainer} contains
+	 *		a {@link Namespace} with {@link Namespace#getPrefix()} equal to
+	 *		{@code prefix}; or,</li>
+	 *	<li>{@code false}: this {@code NamespaceContainer} does not contain
+	 *		a {@code Namespace} for {@code prefix}.</li></ul>
+	 */
+	public boolean containsUriForPrefix(String prefix)
+	{
+		return namespacesByPrefix.containsKey(prefix);
+	}
+
+
+	/**
 	 * Retrieve {@link Namespace} for {@code uri}.
 	 *
 	 * @param uri	uri (i.e. {@link Namespace#getName()} or {@link
@@ -85,7 +107,7 @@ class NamespaceContainer {
 	public Namespace getNamespaceByUri(String uri) 
 			throws NoSuchElementException
 	{
-		Namespace result = namespacesByPrefix.get(uri);
+		Namespace result = namespacesByUri.get(uri);
 		if (result != null) 
 		{
 			return result;
@@ -115,6 +137,34 @@ class NamespaceContainer {
 			throws NoSuchElementException
 	{
 		return getNamespaceByUri(uri.getNamespace());
+	}
+
+
+	/**
+	 * Retrieve the {@link Namespace} for {@code prefix}.
+	 *
+	 * @param prefix	{@link Namespace#getPrefix()} of the {@code Namespace}
+	 * 		to search for.
+	 *
+	 * @return	{@link Namespace} for {@code prefix}.
+	 *
+	 * @throws NoSuchElementException	when this {@code NamespaceContainer}
+	 *		does not {@link #containsUriForPrefix contain} a {@code Namespace}
+	 *		for {@code prefix}.
+	 */
+	public Namespace getNamespaceByPrefix(String prefix)
+	{
+		Namespace result = namespacesByPrefix.get(prefix);
+		if (result != null) 
+		{
+			return result;
+		}
+		else
+		{
+			throw new NoSuchElementException(String.format(
+					"Model contains no namespace for %s",
+					prefix));
+		}
 	}
 }
 

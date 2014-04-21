@@ -8,8 +8,19 @@ import java.util.regex.Matcher;
 import java.util.NoSuchElementException;
 
 /**
+ * Translate {@link URI}s into QName-style identifiers.
+ * For example an {@code URI} {@code http://example.org/ns#bar} could be
+ * translated to the identifier {@code "foo:bar"}, given that the 
+ * namespace–prefix-pair {@code <"http://example.org/ns#", "foo">} exists
+ * in the used {@link NamespaceContainer}.
  *
- * @author kasper
+ * @see <a href="http://www.w3.org/TeamSubmission/turtle/#terms">Turle §RDF
+ * Term</a>
+ * @see FullUriTranslator
+ * @see UriTranslator
+ * 
+ *
+ * @author Kasper van den Berg <kasper@kaspervandenberg.net> * <kasper.vandenberg@maastro.nl>
  */
 class QNameTranslator implements Translator<URI> {
 	private static final String PREFIX_GRP = "prefix";

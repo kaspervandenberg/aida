@@ -22,7 +22,7 @@ class NamespaceContainer {
 	 *
 	 * @param initialNamespaces_	iterable of {@link Namespace}
 	 *		When {@code initialNamespaces_} contains two or	{@code Namespaces}
-	 *		with equal {@link Namespaces#getName()}, the last is retained and
+	 *		with equal {@link Namespace#getName()}, the last is retained and
 	 *		others are discarded.
 	 */
 	public NamespaceContainer(

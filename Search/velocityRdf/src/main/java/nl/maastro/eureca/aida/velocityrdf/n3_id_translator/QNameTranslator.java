@@ -92,7 +92,7 @@ class QNameTranslator implements Translator<URI> {
 	 * Parse the pattern into two groups: {@code PREFIX_GRP} and {@code
 	 * LOCAL_GRP}.
 	 *
-	 * @param wellformedId	{@link #wellformed} identifier.
+	 * @param wellformedId	{@link #isWellFormed} identifier.
 	 *
 	 * @return {@link Matcher} matching {@code wellformedId} containing 
 	 *		the two groups:: {@code PREFIX_GRP} and {@code LOCAL_GRP}.

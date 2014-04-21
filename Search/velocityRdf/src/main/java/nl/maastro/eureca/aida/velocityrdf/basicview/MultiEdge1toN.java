@@ -15,16 +15,16 @@ import org.openrdf.model.Value;
  * Represents an edge with a single source and mutliple destinations.
  * 
  * <p>For example, a {@code MultiEdge1toN} can represent the following RDF 
- * statements:
+ * statements:</p>
  * <ul>	<li>{@code :s1 :p1 :o1.}</li>
  * 		<li>{@code :s1 :p1 :o2.}</li>
  * 		<li>{@code :s1 :p1 "literal".}</li>
- * </ul>
+ * </ul><p>
  * {@link #getSubject()} would return a {@link Node} representing {@code s1}.
  * {@link #getPredicate()} would return a string {@code ":p1"}.
- * {@link #getObjectNodes()} would return a set of {@code Nodes}: {@code {:o1, 
- * :o2}}.  And, {@link #getObjectValues()} would return a set of strings:
- * {@code {"literal"}}.</p>
+ * {@link #getObjectNodes()} would return a set of {@code Nodes}: {@code &#123;:o1, 
+ * :o2&#125;}.  And, {@link #getObjectValues()} would return a set of strings:
+ * {@code &#123;"literal"&#125;}.</p>
  * 
  * <p>See {@link MultiEdgeNto1} for the converse.</p>
  *

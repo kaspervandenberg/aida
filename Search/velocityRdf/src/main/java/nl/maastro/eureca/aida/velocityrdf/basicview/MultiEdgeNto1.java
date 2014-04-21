@@ -12,14 +12,14 @@ import org.openrdf.model.URI;
 /**
  * Represent an edge with multiple sources and a single destination.
  * 
- * <p>For example, it can represent the following RDF statements:
+ * <p>For example, it can represent the following RDF statements:</p>
  * <ul>	<li>{@code :s1 :p2 :o1.}</li>
  * 		<li>{@code :s2 :p2 :o1.}</li>
  * 		<li>{@code :s3 :p2 :o1.}</li>
- * </ul>
+ * </ul><p>
  * {@link #getSubjects()} would return a set of {@link Node}s containing
- * {@code {:s1, :s2, :s3}}.  {@link #getPredicate()} would return a string 
- * {@code ":p2"}.  And, {@link #getObject()} would return a {@code Node}
+ * {@code &#123;:s1, :s2, :s3&#125;}.  {@link #getPredicate()} would return a
+ * string {@code ":p2"}.  And, {@link #getObject()} would return a {@code Node}
  * {@code :o1}.</p>
  * 
  * <p>See {@link MultiEdge1toN} for the converse.</p>

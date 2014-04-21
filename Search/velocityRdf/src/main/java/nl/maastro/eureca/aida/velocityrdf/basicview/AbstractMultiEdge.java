@@ -24,7 +24,7 @@ import static nl.maastro.eureca.aida.velocityrdf.basicview.ModelTransformerUtils
 /**
  * Common implementation for one-to-many relations.
  * 
- * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
+ * @author Kasper van den Berg &lt;kasper.vandenberg@maastro.nl&gt; &lt;kasper@kaspervandenberg.net&gt;
  */
 abstract class AbstractMultiEdge {
 	private final Model rdfModel;

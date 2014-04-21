@@ -8,7 +8,7 @@
  * forms the interface for generating identifier from model concepts and vice 
  * versa.  The other classes are implementation details.</p>
  * 
- * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
+ * @author Kasper van den Berg &lt;kasper.vandenberg@maastro.nl&gt; &lt;kasper@kaspervandenberg.net&gt;
  */
 package nl.maastro.eureca.aida.velocityrdf.n3_id_translator;
 

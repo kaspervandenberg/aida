@@ -22,7 +22,7 @@ import org.openrdf.model.URI;
  * 
  * The context is read-only.
  * 
- * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
+ * @author Kasper van den Berg &lt;kasper.vandenberg@maastro.nl&gt; &lt;kasper@kaspervandenberg.net&gt;
  */
 public class RdfContext extends AbstractContext {
 	private final Model rdfModel;

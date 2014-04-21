@@ -10,7 +10,7 @@ import org.openrdf.model.URI;
 
 /**
  *
- * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
+ * @author Kasper van den Berg &lt;kasper.vandenberg@maastro.nl&gt; &lt;kasper@kaspervandenberg.net&gt;
  */
 public class ModelTransformerUtils {
 	public static Transformer<Literal, String> literalCreator(

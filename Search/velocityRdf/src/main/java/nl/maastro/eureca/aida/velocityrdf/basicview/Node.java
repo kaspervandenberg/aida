@@ -19,7 +19,7 @@ import org.openrdf.model.Statement;
  * A RDF {@link org.openrdf.model.Resource} containing accessors to navigate
  * the RDF graph.
  *
- * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
+ * @author Kasper van den Berg &lt;kasper.vandenberg@maastro.nl&gt; &lt;kasper@kaspervandenberg.net&gt;
  */
 public class Node {
 	private final Model rdfModel;

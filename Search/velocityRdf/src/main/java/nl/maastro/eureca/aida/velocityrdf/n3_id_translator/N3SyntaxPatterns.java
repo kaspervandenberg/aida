@@ -10,7 +10,7 @@ import checkers.initialization.quals.Initialized;
 /**
  * Regular expressions matchings part of the N3/Turle syntax.
  * 
- * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
+ * @author Kasper van den Berg &lt;kasper.vandenberg@maastro.nl&gt; &lt;kasper@kaspervandenberg.net&gt;
  */
  enum N3SyntaxPatterns {
 	NAME_START_CHAR(

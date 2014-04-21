@@ -24,7 +24,7 @@ import org.openrdf.model.URI;
  * 
  * <p>See {@link MultiEdge1toN} for the converse.</p>
  *
- * @author Kasper van den Berg <kasper.vandenberg@maastro.nl> <kasper@kaspervandenberg.net>
+ * @author Kasper van den Berg &lt;kasper.vandenberg@maastro.nl&gt; &lt;kasper@kaspervandenberg.net&gt;
  */
 public class MultiEdgeNto1 {
 	private final AbstractMultiEdge delegate;

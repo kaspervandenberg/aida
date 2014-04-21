@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
  * @see UriTranslator
  * 
  *
- * @author Kasper van den Berg <kasper@kaspervandenberg.net> * <kasper.vandenberg@maastro.nl>
+ * @author Kasper van den Berg &lt;kasper.vandenberg@maastro.nl&gt; &lt;kasper@kaspervandenberg.net&gt;
  */
 class QNameTranslator implements Translator<URI> {
 	private static final String PREFIX_GRP = "prefix";

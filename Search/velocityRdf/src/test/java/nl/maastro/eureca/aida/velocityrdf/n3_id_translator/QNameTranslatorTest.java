@@ -10,43 +10,14 @@ import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
 import org.openrdf.model.URI;
 import org.openrdf.model.Namespace;
-import org.openrdf.model.impl.NamespaceImpl;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.ValueFactoryImpl;
 import static java.util.Arrays.asList;
 
 
 @RunWith(Theories.class)
 public class QNameTranslatorTest
 		extends TranslatorTest<URI> {
-	private static final ValueFactory VALUE_FACTORY =
-			new ValueFactoryImpl();
+	private static final Data data = new Data();
 
-	private static final String PREFIXES[] = {
-			"ns1", "ns2", "ns3"};
-	private static final String NAMESPACES[] = {
-			"http://test.dummy.org/namespace/",
-			"http://test.dummy.org/",
-			"http://test.dummy.org/file.html#"};
-
-	private static final NamespaceContainer namespaces = 
-			new NamespaceContainer(asList(
-					((Namespace) new NamespaceImpl(PREFIXES[0], NAMESPACES[0])),
-					((Namespace) new NamespaceImpl(PREFIXES[1], NAMESPACES[1])),
-					((Namespace) new NamespaceImpl(PREFIXES[2], NAMESPACES[2]))));
-
-	@DataPoint
-	public static final URI ns1_a = VALUE_FACTORY.createURI(NAMESPACES[0], "a");
-	
-	@DataPoint
-	public static final URI ns1_b = VALUE_FACTORY.createURI(NAMESPACES[0], "b");
-	
-	@DataPoint
-	public static final URI ns2_a = VALUE_FACTORY.createURI(NAMESPACES[1], "a");
-	
-	@DataPoint
-	public static final URI ns3_a = VALUE_FACTORY.createURI(NAMESPACES[2], "a");
-	
 
 	@Nullable
 	private QNameTranslator testee = null;
@@ -58,10 +29,38 @@ public class QNameTranslatorTest
 	}
 	
 
+	@DataPoint
+	public static URI ns1_a()
+	{
+		return data.prefixedNs1A();
+	}
+
+	
+	@DataPoint
+	public static URI ns1_b()
+	{
+		return data.prefixedNs1B();
+	}
+
+	
+	@DataPoint
+	public static URI ns2_a()
+	{
+		return data.prefixedNs2A();
+	}
+
+	
+	@DataPoint
+	public static URI ns3_a()
+	{
+		return data.prefixedNs3A();
+	}
+
+	
 	@Before
 	public void setup()
 	{
-		testee = new QNameTranslator(namespaces);
+		testee = new QNameTranslator(data.namespaces());
 	}
 
 

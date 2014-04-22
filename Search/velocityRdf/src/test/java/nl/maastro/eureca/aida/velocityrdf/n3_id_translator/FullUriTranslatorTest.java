@@ -8,26 +8,32 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.DataPoint;
 import org.junit.runner.RunWith;
 import org.openrdf.model.URI;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.ValueFactoryImpl;
 
 @RunWith(Theories.class)
 public class FullUriTranslatorTest
 		extends TranslatorTest<URI> {
-	private static final ValueFactory VALUE_FACTORY =
-			new ValueFactoryImpl();
+	private static final Data data = new Data();
 
 	@DataPoint
-	public static final URI ns_a = VALUE_FACTORY.createURI(
-			"http://test.dummy.org/namespace/a");
+	public static URI ns_a()
+	{
+		return data.fullNsA();
+	}
+
 
 	@DataPoint
-	public static final URI ns_b = VALUE_FACTORY.createURI(
-			"http://test.dummy.org/namespace/b");
+	public static URI ns_b()
+	{
+		return data.fullNsB();
+	}
+
 
 	@DataPoint
-	public static final URI other_a = VALUE_FACTORY.createURI(
-			"http://other.org/namespace/a");
+	public static URI other_a()
+	{
+		return data.fullOtherA();
+	}
+
 
 	@Nullable
 	private FullUriTranslator testee = null;

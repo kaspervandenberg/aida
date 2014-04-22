@@ -34,22 +34,41 @@ class UriTranslator implements Translator<URI> {
 	}
 
 	@Override
-	public boolean isWellFormed(final String id) {
+	public boolean isWellFormed(final String id)
+	{
 		return qnameTrans.isWellFormed(id) || fullUriTrans.isWellFormed(id);
 	}
 
+
 	@Override
-	public String getId(final URI uri) {
-		if (namespaces.containsPrefixForUri(uri)) {
+	public String getId(final URI uri)
+	{
+		if (namespaces.containsPrefixForUri(uri))
+		{
 			return qnameTrans.getId(uri);
-		} else {
+		}
+		else
+		{
 			return fullUriTrans.getId(uri);
 		}
 	}
 
+
 	@Override
-	public boolean matches(final URI val, final String id) {
-		return fullUriTrans.matches(val, id);
+	public boolean matches(final URI val, final String id)
+	{
+		if (qnameTrans.isWellFormed(id))
+		{
+			return qnameTrans.matches(val, id);
+		}
+		else if (fullUriTrans.isWellFormed(id))
+		{
+			return fullUriTrans.matches(val, id);
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
 }

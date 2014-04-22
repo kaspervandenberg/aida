@@ -4,8 +4,19 @@ package nl.maastro.eureca.aida.velocityrdf.n3_id_translator;
 import org.openrdf.model.URI;
 
 /**
+ * Translate {@link URI}s into identifiers.  These identifiers take two forms
+ * <ol><li>{@code "prefix:localpart"}; or</li>
+ *		<li>{@code "<full uri>"}.</li></ol>
+ * The chosen form depends on whether {@link NamespaceContainer} contains a
+ * {@link org.openrdf.model.Namespace} for the uri.
  *
- * @author kasper
+ * @see <a href="http://www.w3.org/TeamSubmission/turtle/#terms">Turle §RDF
+ * Term</a>
+ * @see FullUriTranslator
+ * @see QNameTranslator
+ * 
+ *
+ * @author Kasper van den Berg &lt;kasper.vandenberg@maastro.nl&gt; &lt;kasper@kaspervandenberg.net&gt;
  */
 class UriTranslator implements Translator<URI> {
 	private final NamespaceContainer namespaces;

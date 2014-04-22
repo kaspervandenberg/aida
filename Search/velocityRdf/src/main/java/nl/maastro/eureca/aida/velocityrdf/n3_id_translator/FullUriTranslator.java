@@ -4,8 +4,18 @@ package nl.maastro.eureca.aida.velocityrdf.n3_id_translator;
 import org.openrdf.model.URI;
 
 /**
+ * Translate {@link URI}s into an uri enclosed in '&lt;' and '&gt;'.
+ * For example. {@code http://example.org/ns#bar} becomes
+ * {@code "<http://example.org/ns#bar>"}.  Compare with {@link
+ * QNameTranslator} which abreviates namespaces to prefixes.
  *
- * @author kasper
+ * @see <a href="http://www.w3.org/TeamSubmission/turtle/#terms">Turle §RDF
+ * Term</a>
+ * @see QNameTranslator
+ * @see UriTranslator
+ * 
+ *
+ * @author Kasper van den Berg &lt;kasper.vandenberg@maastro.nl&gt; &lt;kasper@kaspervandenberg.net&gt;
  */
 class FullUriTranslator implements Translator<URI> {
 

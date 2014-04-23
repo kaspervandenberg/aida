@@ -3,6 +3,7 @@ package nl.maastro.eureca.aida.velocityrdf.n3_id_translator;
 
 import org.openrdf.model.URI;
 import org.openrdf.model.Namespace;
+import org.openrdf.model.BNode;
 
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
@@ -77,6 +78,37 @@ class Data {
 		return valueFactory.createURI(
 				"http://other.org/fullnamespace/a");
 	}
+
+
+	public BNode annonBNode1()
+	{
+		return valueFactory.createBNode();
+	}
+
+
+	public BNode annonBNode2()
+	{
+		return valueFactory.createBNode();
+	}
+
+
+	public BNode namedBNode1()
+	{
+		return valueFactory.createBNode("n1");
+	}
+
+
+	public BNode namedBNode2()
+	{
+		return valueFactory.createBNode("a");
+	}
+
+
+	public BNode duplBNode1()
+	{
+		return valueFactory.createBNode("n1");
+	}
+
 }
 
 /* vim:set tabstop=4 shiftwidth=4 autoindent textwidth=80 : */

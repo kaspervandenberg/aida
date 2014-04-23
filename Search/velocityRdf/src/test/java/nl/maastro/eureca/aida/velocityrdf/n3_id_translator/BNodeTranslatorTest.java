@@ -14,22 +14,37 @@ import org.openrdf.model.impl.ValueFactoryImpl;
 
 @RunWith(Theories.class)
 public class BNodeTranslatorTest extends TranslatorTest<BNode> {
-	private final static ValueFactory VALUE_FACTORY = new ValueFactoryImpl();
+	private final static Data data = new Data();
 
 	@DataPoint
-	public final static BNode annonBNode1 = VALUE_FACTORY.createBNode();
+	public static BNode annonBNode1()
+	{
+		return data.annonBNode1();
+	}
 
 	@DataPoint
-	public final static BNode annonBNode2 = VALUE_FACTORY.createBNode();
+	public static BNode annonBNode2()
+	{
+		return data.annonBNode2();
+	}
 
 	@DataPoint
-	public final static BNode namedBNode1 = VALUE_FACTORY.createBNode("n1");
+	public static BNode namedBNode1()
+	{
+		return data.namedBNode1();
+	}
 
 	@DataPoint
-	public final static BNode namedBNode2 = VALUE_FACTORY.createBNode("a");
+	public static BNode namedBNode2()
+	{
+		return data.namedBNode2();
+	}
 
 	@DataPoint
-	public final static BNode duplBNode1 = VALUE_FACTORY.createBNode("n1");
+	public static BNode duplBNode1()
+	{
+		return data.duplBNode1();
+	}
 
 	@Nullable 
 	private BNodeTranslator testee = null;

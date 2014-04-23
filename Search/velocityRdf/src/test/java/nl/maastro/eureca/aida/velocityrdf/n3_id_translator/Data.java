@@ -1,12 +1,15 @@
 // © Maastro Clinic, 2014
 package nl.maastro.eureca.aida.velocityrdf.n3_id_translator;
 
+import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
 import org.openrdf.model.Namespace;
 import org.openrdf.model.BNode;
 
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.model.impl.LiteralImpl;
+import org.openrdf.model.impl.NumericLiteralImpl;
 import org.openrdf.model.impl.NamespaceImpl;
 
 import static java.util.Arrays.asList;
@@ -34,6 +37,37 @@ class Data {
 				((Namespace) new NamespaceImpl(PREFIXES[2], NAMESPACES[2]))));
 	}
 	
+	
+	public Literal stringLiteral()
+	{
+		return new LiteralImpl("lit1");
+	}
+
+	
+	public Literal string4Literal()
+	{
+		return new LiteralImpl("4");
+	}
+
+	
+	public Literal emptyLiteral()
+	{
+		return new LiteralImpl("");
+	}
+
+	
+	public Literal number4Literal()
+	{
+		return new NumericLiteralImpl(4);
+	}
+
+	
+	public Literal number2Literal()
+	{
+		return new NumericLiteralImpl(2);
+	}
+
+
 
 	public URI prefixedNs1A()
 	{

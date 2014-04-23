@@ -8,13 +8,13 @@ import org.junit.runner.RunWith;
 import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
 import org.openrdf.model.Literal;
-import org.openrdf.model.impl.LiteralImpl;
-import org.openrdf.model.impl.NumericLiteralImpl;
 
 @RunWith(Theories.class)
 public class LiteralTranslatorTest 
 		extends TranslatorTest<Literal> {
-	/*>>>@Nullable*/
+	private static final Data data = new Data();
+
+	@Nullable
 	private LiteralTranslator testee = null;
 
 
@@ -25,19 +25,39 @@ public class LiteralTranslatorTest
 
 
 	@DataPoint
-	public static Literal stringLiteral = new LiteralImpl("lit1");
+	public static Literal stringLiteral()
+	{
+		return data.stringLiteral();
+	}
+
 
 	@DataPoint
-	public static Literal string4Literal = new LiteralImpl("4");
+	public static Literal string4Literal()
+	{
+		return data.string4Literal();
+	}
+
 
 	@DataPoint
-	public static Literal emptyLiteral = new LiteralImpl("");
+	public static Literal emptyLiteral()
+	{
+		return data.emptyLiteral();
+	}
+
 
 	@DataPoint
-	public static Literal number4Literal = new NumericLiteralImpl(4);
+	public static Literal number4Literal()
+	{
+		return data.number4Literal();
+	}
+
 
 	@DataPoint
-	public static Literal number2Literal = new NumericLiteralImpl(2);
+	public static Literal number2Literal()
+	{
+		return data.number2Literal();
+	}
+
 
 
 	@Before

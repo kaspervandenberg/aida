@@ -61,21 +61,21 @@ class Data {
 	public URI fullNsA()
 	{
 		return valueFactory.createURI(
-				"http://test.dummy.org/namespace/a");
+				"http://test.dummy.org/fullnamespace/a");
 	}
 
 	
 	public URI fullNsB()
 	{
 		return valueFactory.createURI(
-				"http://test.dummy.org/namespace/b");
+				"http://test.dummy.org/fullnamespace/b");
 	}
 
 	
 	public URI fullOtherA()
 	{
 		return valueFactory.createURI(
-				"http://other.org/namespace/a");
+				"http://other.org/fullnamespace/a");
 	}
 }
 

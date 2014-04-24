@@ -66,7 +66,7 @@ public abstract class TranslatorTest<T> {
 			String id = getTestee().getId(val);
 			
 
-			LOG.info(
+			LOG.debug(
 					"Test: identifier {} generated for item "
 					+ "{}(type {}) is well formed?",
 					id, val, val.getClass());

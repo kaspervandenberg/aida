@@ -57,13 +57,6 @@ public class QNameTranslatorTest
 	}
 
 	
-	@Before
-	public void setup()
-	{
-		testee = new QNameTranslator(data.namespaces());
-	}
-
-
 	@After
 	public void teardown()
 	{
@@ -75,8 +68,7 @@ public class QNameTranslatorTest
 	protected QNameTranslator getTestee()
 	{
 		if (testee == null) {
-			throw new IllegalStateException(
-					"Call setup(), before calling getTestee()");
+			testee = new QNameTranslator(data.namespaces());
 		}
 		return testee;
 	}

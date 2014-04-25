@@ -74,16 +74,6 @@ public class UriTranslatorTest
 	}
 
 
-	@Before
-	public void setup()
-	{
-		testee = new UriTranslator(
-			data.namespaces(),
-			new QNameTranslator(data.namespaces()),
-			new FullUriTranslator());
-	}
-
-
 	@After
 	public void teardown()
 	{
@@ -95,8 +85,10 @@ public class UriTranslatorTest
 	protected UriTranslator getTestee()
 	{
 		if (testee == null) {
-			throw new IllegalStateException(
-					"Call setup(), before calling getTestee()");
+			testee = new UriTranslator(
+				data.namespaces(),
+				new QNameTranslator(data.namespaces()),
+				new FullUriTranslator());
 		}
 		return testee;
 	}

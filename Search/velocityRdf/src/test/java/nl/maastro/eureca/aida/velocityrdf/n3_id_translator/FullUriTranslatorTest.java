@@ -45,13 +45,6 @@ public class FullUriTranslatorTest
 	}
 
 
-	@Before
-	public void setup()
-	{
-		this.testee = new FullUriTranslator();
-	}
-
-
 	@After
 	public void teardown()
 	{
@@ -63,8 +56,7 @@ public class FullUriTranslatorTest
 	protected FullUriTranslator getTestee()
 	{
 		if (testee == null) {
-			throw new IllegalStateException(
-					"Call setup(), before calling getTestee()");
+			this.testee = new FullUriTranslator();
 		}
 		return testee;
 	}

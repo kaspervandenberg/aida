@@ -58,15 +58,6 @@ public class LiteralTranslatorTest
 		return data.number2Literal();
 	}
 
-
-
-	@Before
-	public void setup()
-	{
-		testee = new LiteralTranslator();
-	}
-
-
 	@After
 	public void teardown()
 	{
@@ -77,8 +68,7 @@ public class LiteralTranslatorTest
 	protected LiteralTranslator getTestee()
 	{
 		if (testee == null) {
-			throw new IllegalStateException(
-					"Call setup(), before calling getTestee()");
+			testee = new LiteralTranslator();
 		}
 		return testee;
 	}

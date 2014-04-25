@@ -105,17 +105,6 @@ public class ResourceTranslatorTest
 		return data.duplBNode1();
 	}
 
-	@Before
-	public void setup()
-	{
-		testee = new ResourceTranslator(
-			new UriTranslator(
-				data.namespaces(),
-				new QNameTranslator(data.namespaces()),
-				new FullUriTranslator()),
-			new BNodeTranslator());
-	}
-
 
 	@After
 	public void teardown()
@@ -128,8 +117,12 @@ public class ResourceTranslatorTest
 	protected ResourceTranslator getTestee()
 	{
 		if (testee == null) {
-			throw new IllegalStateException(
-					"Call setup(), before calling getTestee()");
+			testee = new ResourceTranslator(
+				new UriTranslator(
+					data.namespaces(),
+					new QNameTranslator(data.namespaces()),
+					new FullUriTranslator()),
+				new BNodeTranslator());
 		}
 		return testee;
 	}

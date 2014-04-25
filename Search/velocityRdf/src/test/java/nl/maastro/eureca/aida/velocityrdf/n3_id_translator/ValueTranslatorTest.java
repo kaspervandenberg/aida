@@ -143,20 +143,6 @@ public class ValueTranslatorTest
 	}
 
 
-	@Before
-	public void setup()
-	{
-		testee = new ValueTranslator(
-			new ResourceTranslator(
-				new UriTranslator(
-					data.namespaces(),
-					new QNameTranslator(data.namespaces()),
-					new FullUriTranslator()),
-				new BNodeTranslator()),
-			new LiteralTranslator());
-	}
-
-
 	@After
 	public void teardown()
 	{
@@ -167,8 +153,14 @@ public class ValueTranslatorTest
 	protected ValueTranslator getTestee()
 	{
 		if (testee == null) {
-			throw new IllegalStateException(
-					"Call setup(), before calling getTestee()");
+			testee = new ValueTranslator(
+				new ResourceTranslator(
+					new UriTranslator(
+						data.namespaces(),
+						new QNameTranslator(data.namespaces()),
+						new FullUriTranslator()),
+					new BNodeTranslator()),
+				new LiteralTranslator());
 		}
 		return testee;
 	}

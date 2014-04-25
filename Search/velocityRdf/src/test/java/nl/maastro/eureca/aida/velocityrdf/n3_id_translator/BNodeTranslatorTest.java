@@ -54,13 +54,6 @@ public class BNodeTranslatorTest extends TranslatorTest<BNode> {
 		// intentionally left blank
 	}
 
-	@Before
-	public void setup()
-	{
-		testee = new BNodeTranslator();
-	}
-
-	@After
 	public void teardown()
 	{
 		testee = null;
@@ -70,8 +63,7 @@ public class BNodeTranslatorTest extends TranslatorTest<BNode> {
 	protected BNodeTranslator getTestee()
 	{
 		if (testee == null) {
-			throw new IllegalStateException(
-					"Call setup(), before calling getTestee()");
+			testee = new BNodeTranslator();
 		}
 		return testee;
 	}

@@ -34,32 +34,6 @@ public class StatementTranslatorTest
 	}
 
 
-	@Before
-	public void setup()
-	{
-		UriTranslator uriTrans = 
-				new UriTranslator(
-					data.namespaces(),
-					new QNameTranslator(data.namespaces()),
-					new FullUriTranslator());
-
-		ResourceTranslator resourceTrans =
-				new ResourceTranslator(
-					uriTrans,
-					new BNodeTranslator());
-
-		ValueTranslator valueTrans =
-				new ValueTranslator(
-					resourceTrans,
-					new LiteralTranslator());
-
-		testee = new StatementTranslator(
-				resourceTrans,
-				uriTrans,
-				valueTrans);
-	}
-
-
 	@After
 	public void teardown()
 	{
@@ -70,8 +44,26 @@ public class StatementTranslatorTest
 	protected StatementTranslator getTestee()
 	{
 		if (testee == null) {
-			throw new IllegalStateException(
-					"Call setup(), before calling getTestee()");
+			UriTranslator uriTrans = 
+					new UriTranslator(
+						data.namespaces(),
+						new QNameTranslator(data.namespaces()),
+						new FullUriTranslator());
+
+			ResourceTranslator resourceTrans =
+					new ResourceTranslator(
+						uriTrans,
+						new BNodeTranslator());
+
+			ValueTranslator valueTrans =
+					new ValueTranslator(
+						resourceTrans,
+						new LiteralTranslator());
+
+			testee = new StatementTranslator(
+					resourceTrans,
+					uriTrans,
+					valueTrans);
 		}
 		return testee;
 	}

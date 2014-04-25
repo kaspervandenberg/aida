@@ -6,8 +6,10 @@ import org.junit.Before;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.experimental.theories.DataPoint;
+import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.openrdf.model.Literal;
+
 
 @RunWith(Theories.class)
 public class LiteralTranslatorTest 
@@ -57,6 +59,14 @@ public class LiteralTranslatorTest
 	{
 		return data.number2Literal();
 	}
+
+
+	@DataPoints
+	public static Identifier.SyntaxError[] literalSyntaxErrors()
+	{
+		return Data.IdentifierSets.LITERALS.syntaxErrorIds();
+	}
+
 
 	@After
 	public void teardown()

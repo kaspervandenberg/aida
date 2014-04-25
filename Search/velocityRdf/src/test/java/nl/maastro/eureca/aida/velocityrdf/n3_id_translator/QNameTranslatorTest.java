@@ -7,6 +7,7 @@ import org.junit.After;
 import static org.junit.Assert.fail;
 import org.junit.runner.RunWith;
 import org.junit.experimental.theories.DataPoint;
+import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.openrdf.model.URI;
 import org.openrdf.model.Namespace;
@@ -57,6 +58,13 @@ public class QNameTranslatorTest
 	}
 
 	
+	@DataPoints
+	public static Identifier.SyntaxError[] qnameSyntaxErrors()
+	{
+		return Data.IdentifierSets.QNAMES.syntaxErrorIds();
+	}
+
+
 	@After
 	public void teardown()
 	{

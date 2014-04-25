@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.After;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.DataPoint;
+import org.junit.experimental.theories.DataPoints;
 import org.junit.runner.RunWith;
 import org.openrdf.model.URI;
 
@@ -32,6 +33,13 @@ public class FullUriTranslatorTest
 	public static RdfEntityContainer<URI> other_a()
 	{
 		return data.fullOtherA();
+	}
+
+
+	@DataPoints
+	public static Identifier.SyntaxError[] fullUriSyntaxErrors()
+	{
+		return Data.IdentifierSets.FULLURIS.syntaxErrorIds();
 	}
 
 

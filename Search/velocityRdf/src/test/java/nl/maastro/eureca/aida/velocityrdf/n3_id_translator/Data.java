@@ -271,6 +271,132 @@ class Data {
 	}
 
 
+	public enum IdentifierSets {
+		LITERALS(
+				"\"test_lit1\"", "\"\\uA1D2_test", "\"\\\"quote"),
+
+		BNODES(
+				"_:bs012"),
+
+		QNAMES(
+				"freshPrefix:identifier",
+				"identifierWithoutPrefix"),
+
+		FULLURIS(
+				"<http://test.org/\\uC278t>",
+				"<http://bla.com/bla#bla>"),
+
+		URIS(
+				QNAMES, FULLURIS),
+
+		RESOURCES(
+				BNODES, URIS),
+
+		VALUES(
+				LITERALS, RESOURCES),
+
+		STATEMENTS(
+				"<http://test.org/bla#bla> <http://test.org/\\uC278t> " +
+				"<http://test.org/\\uC278t>.",
+				"_:bd4 pf:test _:bd4.",
+				"_:ba4 <http://test.org/vw> \"test lit1\".")
+		;
+		
+		private final Set<Identifier> ids;
+
+		private IdentifierSets(String... identifiers_)
+		{
+			ids = createIdentifiers((String[])identifiers_);
+		}
+
+		private IdentifierSets(IdentifierSets... sets)
+		{
+			ids = new HashSet<>();
+			for(IdentifierSets s: sets)
+			{
+				ids.addAll(s.identifiers());
+			}
+		}
+
+
+		public Set<Identifier> identifiers()
+		{
+			return ids;
+		}
+
+		public Identifier.SyntaxError[] syntaxErrorIds()
+		{
+			Set<Identifier.SyntaxError> result = 
+				castToSyntaxErrorIdentifiers(allIdsExcept(
+					ids));
+			return toArray(result);
+		}
+	}
+	
+	private static Set<Identifier> syntaxErrors()
+	{
+		return createIdentifiers(
+				"\"unclosed literal",
+				"_startingWithUnderscore",
+				"\"incorrect \\uA12 hexcode\"",
+				"__:doubleUnderscoreBnode",
+				"prefix:name with spaces",
+				"_:bnode with spaces",
+				"<http://statement.org> <pf:without> \"dot\"",
+				"bf:two <http://part-statement.com>.",
+				"<http://annonymousprefix.com> _:bn1 pf:val.");
+	}
+	
+
+	private static Set<Identifier> allIdsExcept(Set<? extends Identifier>... sets)
+	{
+		Set<Identifier> result = union(
+				IdentifierSets.VALUES.identifiers(),
+				IdentifierSets.STATEMENTS.identifiers(),
+				syntaxErrors());
+		for (Set<? extends Identifier> s: sets)
+		{
+			result.removeAll(s);
+		}
+		return result;
+	}
+
+	
+	private static Set<Identifier> union(Set<? extends Identifier>... sets)
+	{
+		Set<Identifier> result = new HashSet<>();
+		for (Set<? extends Identifier> s: sets)
+		{
+			result.addAll(s);
+		}
+		return result;
+	}
+
+
+	private static Set<Identifier.WellFormed> castToWellFormedIdentifiers(
+			Set<? extends Identifier> sourceIds)
+	{
+		Set<Identifier.WellFormed> result = new HashSet<>(sourceIds.size());
+		for(Identifier source: sourceIds)
+		{
+			result.add(source.castToWellFormed());
+		}
+		return result;
+	}
+
+
+	private static Set<Identifier.SyntaxError> castToSyntaxErrorIdentifiers(
+			Set<? extends Identifier> sourceIds)
+	{
+		Set<Identifier.SyntaxError> result = new HashSet<>(sourceIds.size());
+		for(Identifier source: sourceIds)
+		{
+			result.add(source.castToSyntaxError());
+		}
+		return result;
+	}
+
+
 	private Set<RdfEntityContainer<Statement>> generateAllStatementCombinations(
 			Set<RdfEntityContainer<? extends Resource>> subjects,
 			Set<RdfEntityContainer<URI>> predicates,
@@ -288,6 +414,25 @@ class Data {
 					result.add(new RdfEntityContainer<>(stat));
 				}
 			}
+		}
+		return result;
+	}
+
+
+	private static Identifier.SyntaxError[] toArray(
+			Set<Identifier.SyntaxError> identifiers)
+	{
+		Identifier.SyntaxError[] storage = new
+				Identifier.SyntaxError[identifiers.size()];
+		return identifiers.toArray(storage);
+	}
+
+
+	private static Set<Identifier> createIdentifiers(String... values)
+	{
+		Set<Identifier> result = new HashSet<>(values.length);
+		for(String val: values) {
+			result.add(new Identifier(val));
 		}
 		return result;
 	}

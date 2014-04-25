@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.After;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.DataPoint;
+import org.junit.experimental.theories.DataPoints;
 import org.junit.runner.RunWith;
 import org.openrdf.model.Resource;
 
@@ -102,6 +103,13 @@ public class ResourceTranslatorTest extends TranslatorTest<Resource> {
 	public static RdfEntityContainer<? extends Resource> duplBNode1()
 	{
 		return data.duplBNode1();
+	}
+
+
+	@DataPoints
+	public static Identifier.SyntaxError[] resourceSyntaxErrors()
+	{
+		return Data.IdentifierSets.RESOURCES.syntaxErrorIds();
 	}
 
 

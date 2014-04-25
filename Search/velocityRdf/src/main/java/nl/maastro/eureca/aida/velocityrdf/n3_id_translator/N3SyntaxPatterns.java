@@ -46,14 +46,14 @@ import checkers.initialization.quals.Initialized;
 	
 	CHARACTER(
 			// From Turle spec: http://www.w3.org/TeamSubmission/turtle/#character
-			"(?:\\\\u" + HEX.patternExpr() + "{4}+)"
-			+ "|(?:\\\\U" + HEX.patternExpr() + "{8}+)"
+			"(?:\\\\u" + HEX.patternExpr() + "{4})"
+			+ "|(?:\\\\U" + HEX.patternExpr() + "{8})"
 			+ "|(?:\\\\\\\\)"
-			+ "[\\x{0020}-\\x{005B}]|[\\x{005D}-\\x{10FFFF}]"),
+			+ "|[\\x{0020}-\\x{005B}]|[\\x{005D}-\\x{10FFFF}]"),
 	
 	U_CHARACTER(
 			// From Turle spec: http://www.w3.org/TeamSubmission/turtle/#ucharacter
-			"[" + CHARACTER.patternExpr() + "&&[^\u003E]]"
+			"(?:(?!>)" + CHARACTER.patternExpr() + ")"
 			+ "|(?:\\\\>)"),
 
 	E_CHARACTER(
@@ -63,7 +63,7 @@ import checkers.initialization.quals.Initialized;
 
 	S_CHARACTER(
 			// From Turle spec: http://www.w3.org/TeamSubmission/turtle/#scharacter
-			"[" + E_CHARACTER.patternExpr() + "&&[^\"]]"
+			"(?:(?!\")" + E_CHARACTER.patternExpr() + ")"
 			+ "|\\\\\""),
 
 	RELATIVE_URI(

@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.experimental.theories.DataPoint;
+import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.openrdf.model.BNode;
 import org.openrdf.model.ValueFactory;
@@ -15,6 +16,9 @@ import org.openrdf.model.impl.ValueFactoryImpl;
 @RunWith(Theories.class)
 public class BNodeTranslatorTest extends TranslatorTest<BNode> {
 	private final static Data data = new Data();
+
+	@Nullable 
+	private BNodeTranslator testee = null;
 
 	@DataPoint
 	public static RdfEntityContainer<BNode> annonBNode1()
@@ -46,8 +50,13 @@ public class BNodeTranslatorTest extends TranslatorTest<BNode> {
 		return data.duplBNode1();
 	}
 
-	@Nullable 
-	private BNodeTranslator testee = null;
+
+	@DataPoints
+	public static Identifier.SyntaxError[] bnodeSyntaxErrors()
+	{
+		return Data.IdentifierSets.BNODES.syntaxErrorIds();
+	}
+
 
 	public BNodeTranslatorTest()
 	{

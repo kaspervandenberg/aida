@@ -179,6 +179,30 @@ public abstract class TranslatorTest<T> {
 			assumeNoException(ex);
 		}
 	}
+
+
+	@Theory
+	public final void testSyntaxErrorNotWellFormed(
+			final Identifier.SyntaxError erroneousIdentifier)
+	{
+		LOG.debug(
+				"Test: identifier {} should be a syntax error",
+				erroneousIdentifier.getValue());
+		assertThat(erroneousIdentifier.getValue(), 
+				not(matchers.isWellformedIdentifier()));
+	}
+
+
+	@Theory
+	public final void testSyntaxErrorNotMatches(
+			final Identifier.SyntaxError erroneousIdentifier,
+			final RdfEntityContainer<T> val_)
+	{
+		T val = val_.getValue();
+
+		assertThat(val,
+				not(matchers.matchesIdentifier(erroneousIdentifier.getValue())));
+	}
 }
 
 /* vim:set tabstop=4 shiftwidth=4 autoindent textwidth=80 : */

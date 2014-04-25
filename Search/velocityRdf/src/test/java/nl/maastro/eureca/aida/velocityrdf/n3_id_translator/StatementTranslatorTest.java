@@ -35,6 +35,13 @@ public class StatementTranslatorTest
 	}
 
 
+	@DataPoints
+	public static Identifier.SyntaxError[] statementSyntaxErrors()
+	{
+		return Data.IdentifierSets.STATEMENTS.syntaxErrorIds();
+	}
+
+
 	@After
 	public void teardown()
 	{

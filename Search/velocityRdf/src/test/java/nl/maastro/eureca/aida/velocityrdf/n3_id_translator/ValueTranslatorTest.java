@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.experimental.theories.DataPoint;
+import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.openrdf.model.Value;
 
@@ -140,6 +141,13 @@ public class ValueTranslatorTest
 	public static RdfEntityContainer<? extends Value> duplBNode1()
 	{
 		return data.duplBNode1();
+	}
+
+
+	@DataPoints
+	public static Identifier.SyntaxError[] valueSyntaxErrors()
+	{
+		return Data.IdentifierSets.VALUES.syntaxErrorIds();
 	}
 
 

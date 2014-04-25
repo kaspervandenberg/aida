@@ -26,49 +26,49 @@ public class UriTranslatorTest
 
 
 	@DataPoint
-	public static URI prefixedNs1A()
+	public static RdfEntityContainer<URI> prefixedNs1A()
 	{
 		return data.prefixedNs1A();
 	}
 
 	
 	@DataPoint
-	public static URI prefixedNs1B()
+	public static RdfEntityContainer<URI> prefixedNs1B()
 	{
 		return data.prefixedNs1B();
 	}
 
 	
 	@DataPoint
-	public static URI prefixedNs2A()
+	public static RdfEntityContainer<URI> prefixedNs2A()
 	{
 		return data.prefixedNs2A();
 	}
 
 	
 	@DataPoint
-	public static URI prefixedNs3a()
+	public static RdfEntityContainer<URI> prefixedNs3a()
 	{
 		return data.prefixedNs3A();
 	}
 
 	
 	@DataPoint
-	public static URI fullNsA()
+	public static RdfEntityContainer<URI> fullNsA()
 	{
 		return data.fullNsA();
 	}
 
 
 	@DataPoint
-	public static URI fullNsB()
+	public static RdfEntityContainer<URI> fullNsB()
 	{
 		return data.fullNsB();
 	}
 
 
 	@DataPoint
-	public static URI fullOtherA()
+	public static RdfEntityContainer<URI> fullOtherA()
 	{
 		return data.fullOtherA();
 	}

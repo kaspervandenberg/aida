@@ -25,35 +25,35 @@ public class LiteralTranslatorTest
 
 
 	@DataPoint
-	public static Literal stringLiteral()
+	public static RdfEntityContainer<Literal> stringLiteral()
 	{
 		return data.stringLiteral();
 	}
 
 
 	@DataPoint
-	public static Literal string4Literal()
+	public static RdfEntityContainer<Literal> string4Literal()
 	{
 		return data.string4Literal();
 	}
 
 
 	@DataPoint
-	public static Literal emptyLiteral()
+	public static RdfEntityContainer<Literal> emptyLiteral()
 	{
 		return data.emptyLiteral();
 	}
 
 
 	@DataPoint
-	public static Literal number4Literal()
+	public static RdfEntityContainer<Literal> number4Literal()
 	{
 		return data.number4Literal();
 	}
 
 
 	@DataPoint
-	public static Literal number2Literal()
+	public static RdfEntityContainer<Literal> number2Literal()
 	{
 		return data.number2Literal();
 	}

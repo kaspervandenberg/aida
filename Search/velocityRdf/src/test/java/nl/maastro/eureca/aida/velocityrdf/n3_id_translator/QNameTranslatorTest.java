@@ -30,28 +30,28 @@ public class QNameTranslatorTest
 	
 
 	@DataPoint
-	public static URI ns1_a()
+	public static RdfEntityContainer<URI> ns1_a()
 	{
 		return data.prefixedNs1A();
 	}
 
 	
 	@DataPoint
-	public static URI ns1_b()
+	public static RdfEntityContainer<URI> ns1_b()
 	{
 		return data.prefixedNs1B();
 	}
 
 	
 	@DataPoint
-	public static URI ns2_a()
+	public static RdfEntityContainer<URI> ns2_a()
 	{
 		return data.prefixedNs2A();
 	}
 
 	
 	@DataPoint
-	public static URI ns3_a()
+	public static RdfEntityContainer<URI> ns3_a()
 	{
 		return data.prefixedNs3A();
 	}

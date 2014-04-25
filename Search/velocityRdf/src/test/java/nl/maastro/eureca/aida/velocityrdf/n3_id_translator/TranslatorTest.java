@@ -68,8 +68,6 @@ public abstract class TranslatorTest<T> {
 	@Before
 	public void setup()
 	{
-		Translator<T> testee = getTestee();
-		assertTrue(testee != null);
 		this.matchers = new Matchers(getTestee());
 	}
 
@@ -81,8 +79,10 @@ public abstract class TranslatorTest<T> {
 
 	
 	@Theory
-	public final void testAnyGeneratedIsWellformed(final T val)
+	public final void testAnyGeneratedIsWellformed(
+			final RdfEntityContainer<T> val_)
 	{
+		T val = val_.getValue();
 		try {
 			String id = getTestee().getId(val);
 			
@@ -104,8 +104,13 @@ public abstract class TranslatorTest<T> {
 
 
 	@Theory
-	public final void testGeneratedIdIsFunctional(final T val1, final T val2)
+	public final void testGeneratedIdIsFunctional(
+			final RdfEntityContainer<T> val1_,
+			final RdfEntityContainer<T> val2_)
 	{
+		T val1 = val1_.getValue();
+		T val2 = val2_.getValue();
+
 		assumeThat(val1, is(val2));
 		try {
 			String id1 = getTestee().getId(val1);
@@ -120,8 +125,13 @@ public abstract class TranslatorTest<T> {
 
 	
 	@Theory
-	public final void testGeneratedIdIsInjective(final T val1, final T val2)
+	public final void testGeneratedIdIsInjective(
+			final RdfEntityContainer<T> val1_, 
+			final RdfEntityContainer<T> val2_)
 	{
+		T val1 = val1_.getValue();
+		T val2 = val2_.getValue();
+
 		assumeThat(val1, is(not(val2)));
 		try {
 			String id1 = getTestee().getId(val1);
@@ -136,8 +146,9 @@ public abstract class TranslatorTest<T> {
 
 	
 	@Theory
-	public final void testGeneratedMatches(final T val)
+	public final void testGeneratedMatches(final RdfEntityContainer<T> val_)
 	{
+		T val = val_.getValue();
 		try {
 			String id = getTestee().getId(val);
 			
@@ -150,8 +161,13 @@ public abstract class TranslatorTest<T> {
 
 
 	@Theory
-	public final void testMatchingAnIdEquivalentEqual(final T val1, final T val2)
+	public final void testMatchingAnIdEquivalentEqual(
+			final RdfEntityContainer<T> val1_, 
+			final RdfEntityContainer<T> val2_)
 	{
+		T val1 = val1_.getValue();
+		T val2 = val2_.getValue();
+
 		try {
 			String id1 = getTestee().getId(val1);
 

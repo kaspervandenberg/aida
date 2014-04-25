@@ -26,10 +26,11 @@ public class StatementTranslatorTest
 
 	
 	@DataPoints
-	public static Statement[] selectedStatements()
+	public static RdfEntityContainer<Statement>[] selectedStatements()
 	{
-		Set<Statement> set_statements = data.statementSelection();
-		Statement[] arr_statements = new Statement[set_statements.size()];
+		Set<RdfEntityContainer<Statement>> set_statements = data.statementSelection();
+		RdfEntityContainer<Statement>[] arr_statements = 
+				new RdfEntityContainer[set_statements.size()];
 		return set_statements.toArray(arr_statements);
 	}
 

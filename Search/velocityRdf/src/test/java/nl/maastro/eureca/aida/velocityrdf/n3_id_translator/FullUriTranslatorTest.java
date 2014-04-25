@@ -15,21 +15,21 @@ public class FullUriTranslatorTest
 	private static final Data data = new Data();
 
 	@DataPoint
-	public static URI ns_a()
+	public static RdfEntityContainer<URI> ns_a()
 	{
 		return data.fullNsA();
 	}
 
 
 	@DataPoint
-	public static URI ns_b()
+	public static RdfEntityContainer<URI> ns_b()
 	{
 		return data.fullNsB();
 	}
 
 
 	@DataPoint
-	public static URI other_a()
+	public static RdfEntityContainer<URI> other_a()
 	{
 		return data.fullOtherA();
 	}

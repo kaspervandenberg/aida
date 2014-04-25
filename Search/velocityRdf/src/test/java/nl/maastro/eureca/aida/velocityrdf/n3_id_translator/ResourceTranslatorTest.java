@@ -10,8 +10,7 @@ import org.junit.runner.RunWith;
 import org.openrdf.model.Resource;
 
 @RunWith(Theories.class)
-public class ResourceTranslatorTest
-		extends TranslatorTest<Resource> {
+public class ResourceTranslatorTest extends TranslatorTest<Resource> {
 	private static final Data data = new Data();
 
 	@Nullable
@@ -23,84 +22,84 @@ public class ResourceTranslatorTest
 	}
 
 	@DataPoint
-	public static Resource prefixedNs1A()
+	public static RdfEntityContainer<? extends Resource> prefixedNs1A()
 	{
 		return data.prefixedNs1A();
 	}
 
 
 	@DataPoint
-	public static Resource prefixedNs1B()
+	public static RdfEntityContainer<? extends Resource> prefixedNs1B()
 	{
 		return data.prefixedNs1B();
 	}
 
 
 	@DataPoint
-	public static Resource prefixedNs2A()
+	public static RdfEntityContainer<? extends Resource> prefixedNs2A()
 	{
 		return data.prefixedNs2A();
 	}
 
 
 	@DataPoint
-	public static Resource prefixedNs3A()
+	public static RdfEntityContainer<? extends Resource> prefixedNs3A()
 	{
 		return data.prefixedNs3A();
 	}
 
 	
 	@DataPoint
-	public static Resource fullNsA()
+	public static RdfEntityContainer<? extends Resource> fullNsA()
 	{
 		return data.fullNsA();
 	}
 
 	
 	@DataPoint
-	public static Resource fullNsB()
+	public static RdfEntityContainer<? extends Resource> fullNsB()
 	{
 		return data.fullNsB();
 	}
 
 	
 	@DataPoint
-	public static Resource fullOtherA()
+	public static RdfEntityContainer<? extends Resource> fullOtherA()
 	{
 		return data.fullOtherA();
 	}
 
 
 	@DataPoint
-	public static Resource annonBNode1()
+	public static RdfEntityContainer<? extends Resource> annonBNode1()
 	{
 		return data.annonBNode1();
 	}
 
 
 	@DataPoint
-	public static Resource annonBNode2()
+	public static RdfEntityContainer<? extends Resource> annonBNode2()
 	{
 		return data.annonBNode2();
 	}
 
 
 	@DataPoint
-	public static Resource namedBNode1()
+	public static RdfEntityContainer<? extends Resource> namedBNode1()
 	{
 		return data.namedBNode1();
 	}
 
 
 	@DataPoint
-	public static Resource namedBNode2()
+	public static RdfEntityContainer<? extends Resource> namedBNode2()
 	{
 		return data.namedBNode2();
 	}
 
 
 	@DataPoint
-	public static Resource duplBNode1()
+	public static RdfEntityContainer<? extends Resource> duplBNode1()
 	{
 		return data.duplBNode1();
 	}

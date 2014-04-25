@@ -25,119 +25,119 @@ public class ValueTranslatorTest
 
 
 	@DataPoint
-	public static Value stringLiteral()
+	public static RdfEntityContainer<? extends Value> stringLiteral()
 	{
 		return data.stringLiteral();
 	}
 
 
 	@DataPoint
-	public static Value string4Literal()
+	public static RdfEntityContainer<? extends Value> string4Literal()
 	{
 		return data.string4Literal();
 	}
 
 
 	@DataPoint
-	public static Value emptyLiteral()
+	public static RdfEntityContainer<? extends Value> emptyLiteral()
 	{
 		return data.emptyLiteral();
 	}
 
 
 	@DataPoint
-	public static Value number4Literal()
+	public static RdfEntityContainer<? extends Value> number4Literal()
 	{
 		return data.number4Literal();
 	}
 
 
 	@DataPoint
-	public static Value number2Literal()
+	public static RdfEntityContainer<? extends Value> number2Literal()
 	{
 		return data.number2Literal();
 	}
 
 
 	@DataPoint
-	public static Value prefixedNs1A()
+	public static RdfEntityContainer<? extends Value> prefixedNs1A()
 	{
 		return data.prefixedNs1A();
 	}
 
 
 	@DataPoint
-	public static Value prefixedNs1B()
+	public static RdfEntityContainer<? extends Value> prefixedNs1B()
 	{
 		return data.prefixedNs1B();
 	}
 
 
 	@DataPoint
-	public static Value prefixedNs2A()
+	public static RdfEntityContainer<? extends Value> prefixedNs2A()
 	{
 		return data.prefixedNs2A();
 	}
 
 
 	@DataPoint
-	public static Value prefixedNs3A()
+	public static RdfEntityContainer<? extends Value> prefixedNs3A()
 	{
 		return data.prefixedNs3A();
 	}
 
 	
 	@DataPoint
-	public static Value fullNsA()
+	public static RdfEntityContainer<? extends Value> fullNsA()
 	{
 		return data.fullNsA();
 	}
 
 	
 	@DataPoint
-	public static Value fullNsB()
+	public static RdfEntityContainer<? extends Value> fullNsB()
 	{
 		return data.fullNsB();
 	}
 
 	
 	@DataPoint
-	public static Value fullOtherA()
+	public static RdfEntityContainer<? extends Value> fullOtherA()
 	{
 		return data.fullOtherA();
 	}
 
 
 	@DataPoint
-	public static Value annonBNode1()
+	public static RdfEntityContainer<? extends Value> annonBNode1()
 	{
 		return data.annonBNode1();
 	}
 
 
 	@DataPoint
-	public static Value annonBNode2()
+	public static RdfEntityContainer<? extends Value> annonBNode2()
 	{
 		return data.annonBNode2();
 	}
 
 
 	@DataPoint
-	public static Value namedBNode1()
+	public static RdfEntityContainer<? extends Value> namedBNode1()
 	{
 		return data.namedBNode1();
 	}
 
 
 	@DataPoint
-	public static Value namedBNode2()
+	public static RdfEntityContainer<? extends Value> namedBNode2()
 	{
 		return data.namedBNode2();
 	}
 
 
 	@DataPoint
-	public static Value duplBNode1()
+	public static RdfEntityContainer<? extends Value> duplBNode1()
 	{
 		return data.duplBNode1();
 	}

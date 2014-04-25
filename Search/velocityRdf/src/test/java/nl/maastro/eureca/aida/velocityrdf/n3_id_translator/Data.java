@@ -43,249 +43,293 @@ class Data {
 	}
 	
 	
-	public Literal stringLiteral()
+	public RdfEntityContainer<Literal> stringLiteral()
 	{
-		return new LiteralImpl("lit1");
+		return newLit("lit1");
 	}
 
 	
-	public Literal string4Literal()
+	public RdfEntityContainer<Literal> string4Literal()
 	{
-		return new LiteralImpl("4");
+		return newLit("4");
 	}
 
 	
-	public Literal emptyLiteral()
+	public RdfEntityContainer<Literal> emptyLiteral()
 	{
-		return new LiteralImpl("");
+		return newLit("");
 	}
 
 	
-	public Literal number4Literal()
+	public RdfEntityContainer<Literal> number4Literal()
 	{
-		return new NumericLiteralImpl(4);
+		return newNumLit(4);
 	}
 
 	
-	public Literal number2Literal()
+	public RdfEntityContainer<Literal> number2Literal()
 	{
-		return new NumericLiteralImpl(2);
+		return newNumLit(2);
 	}
 
 
-
-	public URI prefixedNs1A()
+	public RdfEntityContainer<URI> prefixedNs1A()
 	{
-		return valueFactory.createURI(NAMESPACES[0], "a");
+		return newQName(NAMESPACES[0], "a");
 	}
 
 
-	public URI prefixedNs1B()
+	public RdfEntityContainer<URI> prefixedNs1B()
 	{
-		return valueFactory.createURI(NAMESPACES[0], "b");
+		return newQName(NAMESPACES[0], "b");
 	}
 
 
-	public URI prefixedNs2A()
+	public RdfEntityContainer<URI> prefixedNs2A()
 	{
-		return valueFactory.createURI(NAMESPACES[1], "a");
+		return newQName(NAMESPACES[1], "a");
 	}
 
 
-	public URI prefixedNs3A()
+	public RdfEntityContainer<URI> prefixedNs3A()
 	{
-		return valueFactory.createURI(NAMESPACES[2], "a");
-	}
-
-	
-	public URI fullNsA()
-	{
-		return valueFactory.createURI(
-				"http://test.dummy.org/fullnamespace/a");
+		return newQName(NAMESPACES[2], "a");
 	}
 
 	
-	public URI fullNsB()
+	public RdfEntityContainer<URI> fullNsA()
 	{
-		return valueFactory.createURI(
-				"http://test.dummy.org/fullnamespace/b");
+		return newFullUri("http://test.dummy.org/fullnamespace/a");
 	}
 
 	
-	public URI fullOtherA()
+	public RdfEntityContainer<URI> fullNsB()
 	{
-		return valueFactory.createURI(
-				"http://other.org/fullnamespace/a");
+		return newFullUri("http://test.dummy.org/fullnamespace/b");
+	}
+
+	
+	public RdfEntityContainer<URI> fullOtherA()
+	{
+		return newFullUri("http://other.org/fullnamespace/a");
 	}
 
 
-	public BNode annonBNode1()
+	public RdfEntityContainer<BNode> annonBNode1()
 	{
-		return valueFactory.createBNode();
+		return newBNode();
 	}
 
 
-	public BNode annonBNode2()
+	public RdfEntityContainer<BNode> annonBNode2()
 	{
-		return valueFactory.createBNode();
+		return newBNode();
 	}
 
 
-	public BNode namedBNode1()
+	public RdfEntityContainer<BNode> namedBNode1()
 	{
-		return valueFactory.createBNode("n1");
+		return newBNode("n1");
 	}
 
 
-	public BNode namedBNode2()
+	public RdfEntityContainer<BNode> namedBNode2()
 	{
-		return valueFactory.createBNode("a");
+		return newBNode("a");
 	}
 
 
-	public BNode duplBNode1()
+	public RdfEntityContainer<BNode> duplBNode1()
 	{
-		return valueFactory.createBNode("n1");
+		return newBNode("n1");
 	}
 
 
-	public Set<Literal> literals()
+	public Set<RdfEntityContainer<Literal>> literals()
 	{
-		return new HashSet<Literal>(asList(
+		return new HashSet<RdfEntityContainer<Literal>>(asList(
 				stringLiteral(), string4Literal(), emptyLiteral(),
 				number4Literal(), number2Literal()));
 	}
 
 
-	public Set<Literal> literalSelection()
+	public Set<RdfEntityContainer<Literal>> literalSelection()
 	{
-		return new HashSet<Literal>(asList(
+		return new HashSet<RdfEntityContainer<Literal>>(asList(
 				stringLiteral(), emptyLiteral()));
 	}
 
 
 	
-	public Set<URI> qnames()
+	public Set<RdfEntityContainer<URI>> qnames()
 	{
-		return new HashSet<URI>(asList(
+		return new HashSet<RdfEntityContainer<URI>>(asList(
 				prefixedNs1A(), prefixedNs1B(),
 				prefixedNs2A(), prefixedNs3A()));
 	}
 
 
-	public Set<URI> fullUris()
+	public Set<RdfEntityContainer<URI>> fullUris()
 	{
-		return new HashSet<URI>(asList(
+		return new HashSet<RdfEntityContainer<URI>>(asList(
 				fullNsA(), fullNsB(), fullOtherA()));
 	}
 
 
-	public Set<URI> uris()
+	public Set<RdfEntityContainer<URI>> uris()
 	{
-		Set<URI> result = new HashSet<URI>(qnames());
+		Set<RdfEntityContainer<URI>> result = 
+				new HashSet<RdfEntityContainer<URI>>(qnames());
 		result.addAll(fullUris());
 		return result;
 	}
 
-	public Set<URI> uriSelection()
+	public Set<RdfEntityContainer<URI>> uriSelection()
 	{
-		return new HashSet<URI>(asList(
+		return new HashSet<RdfEntityContainer<URI>>(asList(
 				prefixedNs1A(), fullNsA()));
 	}
 
 
-	public Set<BNode> annonBNodes()
+	public Set<RdfEntityContainer<BNode>> annonBNodes()
 	{
-		return new HashSet<BNode>(asList(
+		return new HashSet<RdfEntityContainer<BNode>>(asList(
 			annonBNode1(), annonBNode2()));
 	}
 
 
-	public Set<BNode> namedBNodes()
+	public Set<RdfEntityContainer<BNode>> namedBNodes()
 	{
-		return new HashSet<BNode>(asList(
+		return new HashSet<RdfEntityContainer<BNode>>(asList(
 			namedBNode1(), namedBNode2(), duplBNode1()));
 	}
 
 
-	public Set<BNode> bnodes()
+	public Set<RdfEntityContainer<BNode>> bnodes()
 	{
-		Set<BNode> result = new HashSet<BNode>(annonBNodes());
+		Set<RdfEntityContainer<BNode>> result =
+				new HashSet<RdfEntityContainer<BNode>>(annonBNodes());
 		result.addAll(namedBNodes());
 		return result;
 	}
 
 
-	public Set<BNode> bnodeSelection()
+	public Set<RdfEntityContainer<BNode>> bnodeSelection()
 	{
-		return new HashSet<BNode>(asList(
+		return new HashSet<RdfEntityContainer<BNode>>(asList(
 				annonBNode1(), namedBNode1()));
 	}
 
 
-	public Set<Resource> resources()
+	public Set<RdfEntityContainer<? extends Resource>> resources()
 	{
-		Set<Resource> result = new HashSet<Resource>(uris());
+		Set<RdfEntityContainer<? extends Resource>> result =
+				new HashSet<RdfEntityContainer<? extends Resource>>(uris());
 		result.addAll(bnodes());
 		return result;
 	}
 
 
-	public Set<Resource> resourceSelection()
+	public Set<RdfEntityContainer<? extends Resource>> resourceSelection()
 	{
-		Set<Resource> result = new HashSet<Resource>(uriSelection());
+		Set<RdfEntityContainer<? extends Resource>> result =
+				new HashSet<RdfEntityContainer<? extends Resource>>(uriSelection());
 		result.addAll(bnodeSelection());
 		return result;
 	}
 
 
-	public Set<Value> values()
+	public Set<RdfEntityContainer<? extends Value>> values()
 	{
-		Set<Value> result = new HashSet<Value>(resources());
+		Set<RdfEntityContainer<? extends Value>> result = 
+				new HashSet<RdfEntityContainer<? extends Value>>(resources());
 		result.addAll(literals());
 		return result;
 	}
 
 
-	public Set<Value> valueSelection()
+	public Set<RdfEntityContainer<? extends Value>> valueSelection()
 	{
-		Set<Value> result = new HashSet<Value>(resourceSelection());
+		Set<RdfEntityContainer<? extends Value>> result = 
+				new HashSet<RdfEntityContainer<? extends Value>>(resourceSelection());
 		result.addAll(literalSelection());
 		return result;
 	}
 
 
-	public Set<Statement> statements()
+	public Set<RdfEntityContainer<Statement>> statements()
 	{
 		return generateAllStatementCombinations(
 				resources(), uris(), values());
 	}
 
 
-	public Set<Statement> statementSelection()
+	public Set<RdfEntityContainer<Statement>> statementSelection()
 	{
 		return generateAllStatementCombinations(
 				resourceSelection(), uriSelection(), valueSelection());
 	}
 
 
-	private Set<Statement> generateAllStatementCombinations(
-			Set<Resource> subjects, Set<URI> predicates, Set<Value> objects)
+	private Set<RdfEntityContainer<Statement>> generateAllStatementCombinations(
+			Set<RdfEntityContainer<? extends Resource>> subjects,
+			Set<RdfEntityContainer<URI>> predicates,
+			Set<RdfEntityContainer<? extends Value>> objects)
 	{
-		Set<Statement> result = new HashSet<Statement>();
-		for (Resource subj: subjects)
+		Set<RdfEntityContainer<Statement>> result = new HashSet<>();
+		for (RdfEntityContainer<? extends Resource> subj: subjects)
 		{
-			for (URI pred: predicates)
+			for (RdfEntityContainer<? extends URI> pred: predicates)
 			{
-				for (Value obj: objects)
+				for (RdfEntityContainer<? extends Value> obj: objects)
 				{
 					Statement stat = valueFactory.createStatement(
-							subj, pred, obj);
-					result.add(stat);
+							subj.getValue(), pred.getValue(), obj.getValue());
+					result.add(new RdfEntityContainer<>(stat));
 				}
 			}
 		}
 		return result;
+	}
+
+
+	private RdfEntityContainer<Literal> newLit(String value)
+	{
+		return new RdfEntityContainer<Literal>(new LiteralImpl(value));
+	}
+
+
+	private RdfEntityContainer<Literal> newNumLit(int value)
+	{
+		return new RdfEntityContainer<Literal>(new NumericLiteralImpl(value));
+	}
+		
+
+	private RdfEntityContainer<URI> newQName(String prefix, String local)
+	{
+		return new RdfEntityContainer<URI>(
+				valueFactory.createURI(prefix, local));
+	}
+	
+
+	private RdfEntityContainer<URI> newFullUri(String fullUri)
+	{
+		return new RdfEntityContainer<URI>(
+				valueFactory.createURI(fullUri));
+	}
+
+
+	private RdfEntityContainer<BNode> newBNode()
+	{
+		return new RdfEntityContainer<BNode>(
+				valueFactory.createBNode());
+	}
+
+
+	private RdfEntityContainer<BNode> newBNode(String id)
+	{
+		return new RdfEntityContainer<BNode>(
+				valueFactory.createBNode(id));
 	}
 }
 

@@ -5,6 +5,7 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Before;
+import org.junit.After;
 import org.junit.experimental.theories.Theory;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
@@ -12,6 +13,7 @@ import static org.hamcrest.Matchers.*;
 import org.hamcrest.TypeSafeMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import checkers.nullness.quals.Nullable;
 
 /**
  * Test whether a {@link Translator} complies to the interface contract.
@@ -44,6 +46,7 @@ public abstract class TranslatorTest<T> {
 	private static final Logger LOG =
 			LoggerFactory.getLogger(TranslatorTest.class);
 
+
 	/**
 	 * Derived classes must provide the object to perform these tests on.
 	 * 
@@ -57,6 +60,24 @@ public abstract class TranslatorTest<T> {
 	 * @return 	the Translator to test.
 	 */
 	protected abstract Translator<T> getTestee();
+
+	@Nullable
+	private Matchers<T> matchers = null;
+
+	
+	@Before
+	public void setup()
+	{
+		Translator<T> testee = getTestee();
+		assertTrue(testee != null);
+		this.matchers = new Matchers(getTestee());
+	}
+
+	@After
+	public void teardown()
+	{
+		this.matchers = null;
+	}
 
 	
 	@Theory
@@ -74,7 +95,7 @@ public abstract class TranslatorTest<T> {
 							"identifier %s generated for item "
 							+ "%s (type %s) is not well formed",
 							id, val, val.getClass()),
-					id, isWellformedIdentifier());
+					id, matchers.isWellformedIdentifier());
 		}
 		catch (Exception ex) {
 			assumeNoException(ex);
@@ -120,7 +141,7 @@ public abstract class TranslatorTest<T> {
 		try {
 			String id = getTestee().getId(val);
 			
-			assertThat(val, matchesIdentifier(id));
+			assertThat(val, matchers.matchesIdentifier(id));
 		}
 		catch (Exception ex) {
 			assumeNoException(ex);
@@ -135,47 +156,12 @@ public abstract class TranslatorTest<T> {
 			String id1 = getTestee().getId(val1);
 
 			assertThat(val2, either(
-					matchesIdentifier(id1)).or(
+					matchers.matchesIdentifier(id1)).or(
 					is(not(val1))));
 		}
 		catch (Exception ex) {
 			assumeNoException(ex);
 		}
-	}
-
-	
-	public final Matcher<T> matchesIdentifier(final String id)
-	{
-		return new TypeSafeMatcher<T>() {
-			@Override
-			protected boolean matchesSafely(T item) {
-				return getTestee().matches(item, id);
-			}
-
-			@Override
-			public void describeTo(Description description) {
-				description.appendValue(getTestee());
-				description.appendText(".matches identifier ");
-				description.appendValue(id);
-			}
-		};
-	}
-
-
-	public final Matcher<String> isWellformedIdentifier()
-	{
-		return new TypeSafeMatcher<String>() {
-			@Override
-			protected boolean matchesSafely(String item) {
-				return getTestee().isWellFormed(item);
-			}
-
-			@Override
-			public void describeTo(Description description) {
-				description.appendValue(getTestee());
-				description.appendText(".isWellFormed (identifier) ");
-			}
-		};
 	}
 }
 

@@ -28,6 +28,8 @@ public class CommandLineParser {
 			}
 		},
 
+		
+
 		VALIDATION("e") {
 			@Override
 			protected Option create() {
@@ -186,8 +188,7 @@ public class CommandLineParser {
 		}
 		return value.toCharArray();
 	}
-			
-
-	
-	
 }
+
+/* vim:set shiftwidth=4 tabstop=4 noexpandtab fo=cqwa2 ai : */
+

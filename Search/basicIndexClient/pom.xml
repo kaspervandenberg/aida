@@ -4,7 +4,7 @@
 
 	<groupId>nl.maastro.eureca.aida</groupId>
 	<artifactId>index.basicClient</artifactId>
-	<version>0.90</version>
+	<version>1.6.0-SNAPSHOT</version>
 	<name>AIDA Indexer::basic client </name>
 	<description>
 		Basic client to driver the AIDA Indexer webservice.

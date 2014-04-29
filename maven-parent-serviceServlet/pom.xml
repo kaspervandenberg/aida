@@ -4,7 +4,7 @@
 
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>maven-parent-serviceServlet</artifactId>
-	<version>0.7-SNAPSHOT</version>
+	<version>1.6.0-SNAPSHOT</version>
 	<name>AIDA parent of services and servlets</name>
 	<description>
 		Common entries for AIDA combined AXIS services and tomcat servlets.

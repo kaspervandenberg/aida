@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.adaptivedisclosure.aida</groupId>
 	<artifactId>search</artifactId>
-	<version>0.90</version>
+	<version>1.6.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>AIDA::Search</name>
 	<description>
@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.adaptivedisclosure.aida</groupId>
 		<artifactId>maven-parent-serviceServlet</artifactId>
-		<version>0.7-SNAPSHOT</version>
+		<version>1.6.0-SNAPSHOT</version>
 		<relativePath>../../maven-parent-serviceServlet</relativePath>
 	</parent>
 

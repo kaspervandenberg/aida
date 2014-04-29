@@ -89,6 +89,19 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<!--
+					Record git commit as version properties.
+				-->
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+				<configuration>
+					<dotGitDirectory>
+						${project.basedir}/../../.git
+					</dotGitDirectory>
+				</configuration>
+			</plugin>
 		</plugins>
 
 		<resources>

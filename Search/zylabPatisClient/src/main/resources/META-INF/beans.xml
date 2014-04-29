@@ -13,6 +13,10 @@
 		<property name="url" value="jdbc:mysql://AS-EMD-01-S:3306/WEB_EMD" />
 		<!-- username and password are required application will ask user for them -->
 	</bean>
+
+	<bean id="soarian.datasource"
+		  class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	</bean>
 	
 	<bean id="recentEmdPatients-1week"
 		  class="nl.maastro.eureca.aida.search.zylabpatisclient.input.EmdPatientReader">

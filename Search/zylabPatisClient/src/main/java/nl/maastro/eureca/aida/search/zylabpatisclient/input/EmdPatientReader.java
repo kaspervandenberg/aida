@@ -28,64 +28,19 @@ import org.springframework.stereotype.Repository;
  * @author Kasper van den Berg <kasper@kaspervandenberg.net> <kasper.vandenberg@maastro.nl>
  */
 @Repository
-public class EmdPatientReader implements PatientProvider {
-	private static class Query {
-		private final String sql;
-
-		public Query() throws FileNotFoundException, IOException
-		{
-			this.sql = readSql();
-		}
-
-
-		public String getSql() {
-			return sql;
-		}
-
-		
-		private static String readSql() throws FileNotFoundException, IOException
-		{
-			InputStream resourceAsStream = Query.class.getResourceAsStream(
-					EmdPatientReader.RECENT_PATIENTS_SQL_FILE);
-			if (resourceAsStream != null)
-			{
-				String result = IOUtils.toString(resourceAsStream, "UTF-8");
-				return result;
-			}
-			else
-			{
-				throw new FileNotFoundException(String.format(
-						"Resource %s does not exist",
-						EmdPatientReader.RECENT_PATIENTS_SQL_FILE));
-			}
-		}
-	}
-
-	private static class PatisMapper implements RowMapper<PatisNumber> {
-		@Override
-		public PatisNumber mapRow(ResultSet rs, int rowNum) throws SQLException {
-			String value = rs.getString(EmdPatientReader.PATIS_FIELD);
-			if (value != null) {
-				return PatisNumber.create(value);
-			} else {
-				throw new SQLDataException(new NullPointerException(String.format(
-						"EMD query contains NULL value for patis number in row %d",
-						rowNum)));
-			}
-		}
-	}
-
-
-	private static final String RECENT_PATIENTS_SQL_FILE = "/sql/selectPatients.sql";
+public class EmdPatientReader extends DbPatientReader implements PatientProvider {
+	private static final String RECENT_PATIENTS_SQL_FILE = "/sql/selectPatients-emd.sql";
 	private static final String PATIS_FIELD = "patisnummer";
 	private static final int DEFAULT_PERIOD_DAYS = 7;
 	
-	private static transient Cache<Query> query = new Cache<Query>() {
+	private static transient Cache<DbPatientReader.QueryProvider> query = 
+			new Cache<DbPatientReader.QueryProvider>() {
 		@Override
-		protected Query calc() {
+		protected DbPatientReader.QueryProvider calc() {
 			try
 			{
-				return new Query();
+				return new DbPatientReader.ResourceQueryProvider(
+						RECENT_PATIENTS_SQL_FILE);
 			}
 			catch (IOException ex)
 			{
@@ -97,10 +52,10 @@ public class EmdPatientReader implements PatientProvider {
 		}
 	};
 
-	private static transient PatisMapper mapper = new PatisMapper();
+	private static transient DbPatientReader.PatisMapper mapper = 
+			new DbPatientReader.PatisMapper(
+					RECENT_PATIENTS_SQL_FILE, PATIS_FIELD);
 	
-	private /*>>>@MonotonicNonNull*/ DataSource emd = null;
-	private /*>>>@MonotonicNonNull*/ JdbcTemplate template = null;
 	private java.util.Date selection_start_date;
 
 
@@ -112,50 +67,40 @@ public class EmdPatientReader implements PatientProvider {
 
 	public EmdPatientReader(int selectionPeriodInDays_)
 	{
-		this.selection_start_date = calcSelectionDate(selectionPeriodInDays_);
+		super("emd");
+		this.selection_start_date = getDate(-1 * selectionPeriodInDays_);
 	}
 	
 
-	/*>>>@EnsuresNonNull({"emd","template"})*/
-	@Override
-	public Collection<PatisNumber> getPatients() {
-		if (emd != null && template != null)
-		{
-			return template.query(
-					query.get().getSql(),
-					new Object[]{selection_start_date, selection_start_date},
-					mapper);
-		}
-		else
-		{
-			throw new IllegalStateException("Configure datasource emd via spring.");
-		}
-	}
-
-
-	/*>>>@EnsuresNonNull({"emd","template"})*/
 	@Resource(name="emd.datasource")
 	public void setEmd(DataSource emd_)
 	{
-		this.emd = emd_;
-		this.template = new JdbcTemplate(emd_);
+		setDatasource(emd_);
 	}
 
 
 	public void setPeriod(int nDaysAgo_)
 	{
-		this.selection_start_date = calcSelectionDate(nDaysAgo_);
+		this.selection_start_date = getDate(-1 * nDaysAgo_);
 	}
 
 	
-
-	private static java.util.Date calcSelectionDate(int nDaysAgo_)
+	protected QueryProvider getQueryProvider()
 	{
-		Calendar cal = Calendar.getInstance();
-		java.util.Date now = new java.util.Date();
-		cal.setTime(now);
-		cal.add(Calendar.DAY_OF_MONTH, -1 * DEFAULT_PERIOD_DAYS);
-		return cal.getTime();
+		return query.get();
+	}
+
+
+	protected DbPatientReader.PatisMapper getPatisMapper()
+	{
+		return mapper;
+	}
+
+
+	protected Object[] getQueryParameters()
+	{
+		return new Object[] {
+				selection_start_date, selection_start_date };
 	}
 }
 
